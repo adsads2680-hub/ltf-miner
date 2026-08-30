@@ -37,12 +37,16 @@
       max-width: 430px;
       min-height: 100vh;
       margin: auto;
-      padding: 12px 12px 24px;
+      padding: 12px 12px 18px;
       background:
         radial-gradient(circle at 50% 35%, rgba(157,102,13,.32), transparent 27%),
         radial-gradient(circle at 50% 75%, rgba(90,57,5,.18), transparent 32%),
         linear-gradient(180deg,#030303 0%,#090806 55%,#020202 100%);
     }
+
+    /* =========================
+       TOP
+    ========================= */
 
     .top {
       display: grid;
@@ -147,6 +151,10 @@
       margin: 5px 0 4px;
     }
 
+    /* =========================
+       ASSETS
+    ========================= */
+
     .assets {
       display: grid;
       grid-template-columns: repeat(3,1fr);
@@ -154,7 +162,7 @@
       border-radius: 20px;
       background: linear-gradient(180deg,rgba(23,22,19,.96),rgba(7,7,6,.96));
       padding: 13px 4px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       box-shadow: inset 0 0 25px rgba(0,0,0,.35);
     }
 
@@ -193,17 +201,30 @@
       direction: ltr;
     }
 
+    /* =========================
+       MINING AREA
+    ========================= */
+
     .mine {
       position: relative;
       overflow: hidden;
-      min-height: 610px;
+
+      /* التعديل الأساسي:
+         تقليل الفراغ السفلي مع إبقاء
+         مساحة مناسبة للمحتوى */
+      min-height: 570px;
+
       border: 1px solid #503b12;
       border-radius: 24px;
-      padding: 18px 14px 20px;
+
+      /* نزّلنا المحتوى قليلًا */
+      padding: 30px 14px 18px;
+
       background:
         radial-gradient(circle at 50% 34%,rgba(143,91,7,.50),transparent 24%),
         radial-gradient(circle at 50% 45%,rgba(72,43,3,.45),transparent 45%),
         linear-gradient(180deg,#171006 0%,#090806 50%,#030303 100%);
+
       box-shadow: inset 0 0 55px rgba(0,0,0,.75);
     }
 
@@ -213,9 +234,10 @@
       width: 520px;
       height: 520px;
       left: 50%;
-      top: 15px;
+      top: 35px;
       transform: translateX(-50%);
       border-radius: 50%;
+
       background:
         repeating-radial-gradient(
           circle,
@@ -223,6 +245,7 @@
           rgba(153,108,27,.25) 53px 55px,
           transparent 56px 88px
         );
+
       opacity: .75;
       pointer-events: none;
     }
@@ -230,13 +253,19 @@
     .coin-area {
       position: relative;
       z-index: 2;
+
       width: 235px;
       height: 235px;
-      margin: 22px auto 0;
+
+      /* نزّلنا العملة */
+      margin: 42px auto 0;
+
       border-radius: 50%;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       background:
         radial-gradient(
           circle at 35% 28%,
@@ -246,7 +275,9 @@
           #3c2603 78%,
           #1a1001 100%
         );
+
       border: 7px double #e0aa2f;
+
       box-shadow:
         0 0 18px rgba(242,181,45,.7),
         0 0 55px rgba(188,120,8,.35),
@@ -259,11 +290,19 @@
       height: 185px;
       border-radius: 50%;
       border: 3px solid rgba(255,213,92,.65);
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       text-align: center;
-      background: radial-gradient(circle,rgba(255,211,76,.18),rgba(68,40,2,.55));
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,211,76,.18),
+          rgba(68,40,2,.55)
+        );
     }
 
     .coin-logo {
@@ -272,7 +311,9 @@
       font-size: 46px;
       font-weight: 900;
       letter-spacing: 2px;
-      text-shadow: 0 2px 0 #704600,0 0 12px rgba(255,220,100,.55);
+      text-shadow:
+        0 2px 0 #704600,
+        0 0 12px rgba(255,220,100,.55);
     }
 
     .coin-logo small {
@@ -283,35 +324,55 @@
       color: #f1d98d;
     }
 
+    /* =========================
+       CLAIM
+    ========================= */
+
     .claim-section {
       position: relative;
       z-index: 3;
-      margin-top: 42px;
+
+      /* نزّلنا زر المطالبة */
+      margin-top: 52px;
+
       text-align: center;
     }
 
     .claim-btn {
       width: 100%;
       height: 64px;
+
       border: 2px solid #00b47e;
       border-radius: 32px;
-      background: linear-gradient(180deg,#12a66e,#08754d);
+
+      background:
+        linear-gradient(
+          180deg,
+          #12a66e,
+          #08754d
+        );
+
       color: #d8fff1;
       font-size: 23px;
       font-weight: 900;
       letter-spacing: .5px;
-      box-shadow: 0 0 18px rgba(0,210,145,.28);
-      cursor: pointer;
-    }
 
-    .claim-btn:active:not(:disabled) {
-      transform: scale(.98);
+      box-shadow:
+        0 0 18px rgba(0,210,145,.28);
+
+      cursor: pointer;
     }
 
     .claim-btn:disabled {
       color: #8e8e8e;
       border-color: #276b54;
-      background: linear-gradient(#14553e,#0a3426);
+
+      background:
+        linear-gradient(
+          #14553e,
+          #0a3426
+        );
+
       box-shadow: none;
       cursor: not-allowed;
     }
@@ -338,32 +399,37 @@
       font-size: 9px;
     }
 
-    /* الصف الوحيد للأزرار */
+    /* =========================
+       QUICK BUTTONS
+    ========================= */
 
     .quick {
       position: relative;
       z-index: 3;
+
       display: grid;
       grid-template-columns: repeat(5,1fr);
       gap: 6px;
-      margin-top: 14px;
+
+      /* نزّلنا الأزرار قليلًا */
+      margin-top: 20px;
     }
 
     .quick-item {
       min-height: 62px;
+
       border: 1px solid #352a11;
       border-radius: 12px;
+
       background: rgba(13,12,10,.92);
+
       color: #888;
       text-align: center;
+
       font-size: 8px;
       padding-top: 8px;
-      cursor: pointer;
-      transition: .15s;
-    }
 
-    .quick-item:active {
-      transform: scale(.96);
+      cursor: pointer;
     }
 
     .quick-item .icon {
@@ -373,24 +439,35 @@
       font-size: 20px;
     }
 
+    /* =========================
+       MESSAGE
+    ========================= */
+
     .message-overlay {
       position: fixed;
       z-index: 9999;
       inset: 0;
+
       display: none;
+
       align-items: center;
       justify-content: center;
+
       padding: 25px;
+
       background: rgba(0,0,0,.78);
     }
 
     .message-box {
       width: 100%;
       max-width: 350px;
+
       border-radius: 22px;
       padding: 25px 20px;
+
       background: #151515;
       border: 1px solid #51401c;
+
       text-align: center;
     }
 
@@ -410,15 +487,23 @@
 
     .message-close {
       margin-top: 20px;
+
       min-width: 100px;
       padding: 10px 20px;
+
       border: 0;
       border-radius: 20px;
+
       background: #168b66;
       color: white;
+
       font-weight: bold;
       cursor: pointer;
     }
+
+    /* =========================
+       SMALL SCREENS
+    ========================= */
 
     @media (max-width:360px) {
 
@@ -436,9 +521,16 @@
         flex-basis: 43px;
       }
 
+      .mine {
+        min-height: 540px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
       .coin-area {
         width: 205px;
         height: 205px;
+        margin-top: 35px;
       }
 
       .coin-inner {
@@ -446,10 +538,17 @@
         height: 160px;
       }
 
+      .claim-section {
+        margin-top: 42px;
+      }
+
       .claim-btn {
         font-size: 20px;
       }
 
+      .quick {
+        margin-top: 17px;
+      }
     }
   </style>
 </head>
@@ -457,6 +556,10 @@
 <body>
 
 <div class="app">
+
+  <!-- =========================
+       HEADER
+  ========================= -->
 
   <header class="top">
 
@@ -496,13 +599,24 @@
 
     <div class="top-actions">
 
-      <button class="top-action" type="button">
-        <span class="emoji">🎁</span>
+      <button
+        class="top-action"
+        type="button"
+      >
+        <span class="emoji">
+          🎁
+        </span>
         Bonus
       </button>
 
-      <button class="top-action" type="button">
-        <span class="emoji">🔔</span>
+
+      <button
+        class="top-action"
+        type="button"
+      >
+        <span class="emoji">
+          🔔
+        </span>
         3
       </button>
 
@@ -510,6 +624,10 @@
 
   </header>
 
+
+  <!-- =========================
+       ASSETS
+  ========================= -->
 
   <section class="assets">
 
@@ -520,11 +638,17 @@
         LTF ASSETS
       </div>
 
-      <div class="asset-value" id="balance">
+      <div
+        class="asset-value"
+        id="balance"
+      >
         0
       </div>
 
-      <div class="asset-sub" id="balanceUsd">
+      <div
+        class="asset-sub"
+        id="balanceUsd"
+      >
         ≈ $0.00
       </div>
 
@@ -538,7 +662,10 @@
         HOLDING
       </div>
 
-      <div class="asset-value" id="holding">
+      <div
+        class="asset-value"
+        id="holding"
+      >
         0.00
       </div>
 
@@ -569,6 +696,10 @@
   </section>
 
 
+  <!-- =========================
+       MINER
+  ========================= -->
+
   <main class="mine">
 
     <div class="rings"></div>
@@ -580,13 +711,17 @@
 
         <div class="coin-logo">
           LTF
-          <small>MINER</small>
+          <small>
+            MINER
+          </small>
         </div>
 
       </div>
 
     </div>
 
+
+    <!-- CLAIM -->
 
     <section class="claim-section">
 
@@ -622,52 +757,64 @@
     </section>
 
 
-    <!-- الأزرار الوحيدة -->
+    <!-- =========================
+         BUTTONS
+    ========================= -->
 
     <div class="quick">
 
       <div
         class="quick-item"
-        data-page="miners"
+        id="profileBtn"
       >
-        <span class="icon">⛏</span>
-        Miners
+        <span class="icon">
+          👤
+        </span>
+        Profile
       </div>
 
 
       <div
         class="quick-item"
-        data-page="tasks"
+        id="walletBtn"
       >
-        <span class="icon">📋</span>
-        Tasks
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="friends"
-      >
-        <span class="icon">👥</span>
-        Friends
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="wallet"
-      >
-        <span class="icon">👛</span>
+        <span class="icon">
+          👛
+        </span>
         Wallet
       </div>
 
 
       <div
         class="quick-item"
-        data-page="profile"
+        id="friendsBtn"
       >
-        <span class="icon">👤</span>
-        Profile
+        <span class="icon">
+          👥
+        </span>
+        Friends
+      </div>
+
+
+      <div
+        class="quick-item"
+        id="tasksBtn"
+      >
+        <span class="icon">
+          📋
+        </span>
+        Tasks
+      </div>
+
+
+      <div
+        class="quick-item"
+        id="minersBtn"
+      >
+        <span class="icon">
+          ⛏
+        </span>
+        Miners
       </div>
 
     </div>
@@ -676,6 +823,10 @@
 
 </div>
 
+
+<!-- =========================
+     MESSAGE
+========================= -->
 
 <div
   id="messageOverlay"
@@ -688,10 +839,12 @@
       LTF Miner
     </div>
 
+
     <div
       id="messageText"
       class="message-text"
     ></div>
+
 
     <button
       id="messageClose"
@@ -738,10 +891,8 @@
 
 
   if (tg) {
-
     tg.ready();
     tg.expand();
-
   }
 
 
@@ -788,8 +939,11 @@
   ========================= */
 
   let telegramUser = null;
+
   let nextClaimAt = null;
+
   let countdownInterval = null;
+
   let isClaiming = false;
 
 
@@ -849,13 +1003,14 @@
     }
 
     const firstName =
-      telegramUser.first_name ||
-      "LTF";
+      telegramUser.first_name || "LTF";
+
 
     avatarEl.textContent =
       firstName
         .charAt(0)
         .toUpperCase();
+
 
     profileNameEl.textContent =
       telegramUser.username
@@ -988,6 +1143,7 @@
         remaining
       );
 
+
     claimBtn.disabled =
       true;
   }
@@ -1000,7 +1156,6 @@
       clearInterval(
         countdownInterval
       );
-
     }
 
 
@@ -1044,7 +1199,9 @@
       "get_ltf_status",
       {
         p_telegram_user_id:
-          Number(telegramUser.id)
+          Number(
+            telegramUser.id
+          )
       }
     );
 
@@ -1085,7 +1242,8 @@
 
       startTimer();
 
-      statusEl.textContent = "";
+      statusEl.textContent =
+        "";
 
       return;
     }
@@ -1103,7 +1261,9 @@
 
     startTimer();
 
-    statusEl.textContent = "";
+
+    statusEl.textContent =
+      "";
   }
 
 
@@ -1141,12 +1301,17 @@
     }
 
 
-    isClaiming = true;
+    isClaiming =
+      true;
 
-    claimBtn.disabled = true;
+
+    claimBtn.disabled =
+      true;
+
 
     claimBtn.textContent =
       "⏳ CLAIMING...";
+
 
     statusEl.textContent =
       "جاري تنفيذ المطالبة...";
@@ -1161,7 +1326,9 @@
         "claim_ltf",
         {
           p_telegram_user_id:
-            Number(telegramUser.id),
+            Number(
+              telegramUser.id
+            ),
 
           p_username:
             telegramUser.username ||
@@ -1213,7 +1380,9 @@
       }
 
 
-      if (result.success === true) {
+      if (
+        result.success === true
+      ) {
 
         setBalance(
           result.new_balance
@@ -1237,7 +1406,6 @@
             .notificationOccurred(
               "success"
             );
-
         }
 
 
@@ -1268,7 +1436,6 @@
         setBalance(
           result.new_balance
         );
-
       }
 
 
@@ -1282,7 +1449,9 @@
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
 
 
       showMessage(
@@ -1292,7 +1461,9 @@
 
     } finally {
 
-      isClaiming = false;
+      isClaiming =
+        false;
+
 
       claimBtn.textContent =
         "⚡ CLAIM LTF";
@@ -1300,7 +1471,9 @@
 
       updateTimer();
 
-      statusEl.textContent = "";
+
+      statusEl.textContent =
+        "";
     }
   }
 
@@ -1312,39 +1485,84 @@
 
 
   /* =========================
-     QUICK BUTTONS
+     BUTTONS
+     مؤقتًا نعرض رسالة فقط
+     بدون التأثير على الرصيد
   ========================= */
 
   document
-    .querySelectorAll(".quick-item")
-    .forEach(function(item) {
+    .getElementById("profileBtn")
+    .addEventListener(
+      "click",
+      function() {
 
-      item.addEventListener(
-        "click",
-        function() {
+        showMessage(
+          "Profile\n\n" +
+          "سيتم تفعيل هذه الصفحة لاحقًا."
+        );
 
-          const page =
-            item.dataset.page;
-
-
-          const names = {
-            miners: "Miners",
-            tasks: "Tasks",
-            friends: "Friends",
-            wallet: "Wallet",
-            profile: "Profile"
-          };
+      }
+    );
 
 
-          showMessage(
-            names[page] ||
-            "LTF Miner"
-          );
+  document
+    .getElementById("walletBtn")
+    .addEventListener(
+      "click",
+      function() {
 
-        }
-      );
+        showMessage(
+          "Wallet\n\n" +
+          "سيتم تفعيل المحفظة لاحقًا."
+        );
 
-    });
+      }
+    );
+
+
+  document
+    .getElementById("friendsBtn")
+    .addEventListener(
+      "click",
+      function() {
+
+        showMessage(
+          "Friends\n\n" +
+          "سيتم تفعيل الأصدقاء لاحقًا."
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById("tasksBtn")
+    .addEventListener(
+      "click",
+      function() {
+
+        showMessage(
+          "Tasks\n\n" +
+          "سيتم تفعيل المهام لاحقًا."
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById("minersBtn")
+    .addEventListener(
+      "click",
+      function() {
+
+        showMessage(
+          "Miners\n\n" +
+          "سيتم تفعيل المعدّنين لاحقًا."
+        );
+
+      }
+    );
 
 
   /* =========================
@@ -1359,19 +1577,24 @@
 
     if (!telegramUser) {
 
-      claimBtn.disabled = true;
+      claimBtn.disabled =
+        true;
+
 
       timerEl.textContent =
         "--:--:--";
 
+
       statusEl.textContent =
         "افتح التطبيق من داخل Telegram";
+
 
       return;
     }
 
 
     updateUserUI();
+
 
     await loadStatus();
   }
