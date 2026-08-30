@@ -2,34 +2,22 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover"
-  >
-
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#050505">
-
   <title>LTF Miner</title>
 
-  <!-- Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
       min-height: 100%;
       background: #000;
       color: #fff;
@@ -40,461 +28,216 @@
       overflow-x: hidden;
     }
 
-    button,
-    .quick-item,
-    .bottom-item {
-      font-family: inherit;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
     button {
-      border: 0;
+      font-family: inherit;
     }
 
     .app {
-
       width: 100%;
       max-width: 430px;
-
       min-height: 100vh;
-
-      margin: 0 auto;
-
-      padding:
-        max(12px, env(safe-area-inset-top))
-        12px
-        max(24px, env(safe-area-inset-bottom));
-
+      margin: auto;
+      padding: 12px 12px 24px;
       background:
-        radial-gradient(
-          circle at 50% 35%,
-          rgba(157,102,13,.32),
-          transparent 27%
-        ),
-        radial-gradient(
-          circle at 50% 75%,
-          rgba(90,57,5,.18),
-          transparent 32%
-        ),
-        linear-gradient(
-          180deg,
-          #030303 0%,
-          #090806 55%,
-          #020202 100%
-        );
+        radial-gradient(circle at 50% 35%, rgba(157,102,13,.32), transparent 27%),
+        radial-gradient(circle at 50% 75%, rgba(90,57,5,.18), transparent 32%),
+        linear-gradient(180deg,#030303 0%,#090806 55%,#020202 100%);
     }
 
-
-    /* =========================
-       TOP
-    ========================= */
-
     .top {
-
       display: grid;
-
-      grid-template-columns:
-        1fr
-        auto
-        1fr;
-
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-
       gap: 8px;
-
       min-height: 82px;
-
       padding: 4px 2px 12px;
     }
 
-
     .profile-mini {
-
       display: flex;
-
       align-items: center;
-
       gap: 8px;
-
       min-width: 0;
     }
 
-
     .avatar {
-
       width: 48px;
       height: 48px;
-
       flex: 0 0 48px;
-
       border-radius: 50%;
-
       border: 2px solid #9b701b;
-
-      background:
-        radial-gradient(
-          circle at 35% 30%,
-          #3b2a0b,
-          #080706 70%
-        );
-
+      background: radial-gradient(circle at 35% 30%,#3b2a0b,#080706 70%);
       display: flex;
-
       align-items: center;
       justify-content: center;
-
       color: #d6aa39;
-
       font-size: 22px;
-
       font-weight: bold;
     }
 
-
     .profile-text {
-
       min-width: 0;
-
       text-align: left;
-
       direction: ltr;
     }
 
-
     .profile-name {
-
       max-width: 80px;
-
       overflow: hidden;
-
       white-space: nowrap;
-
       text-overflow: ellipsis;
-
       color: #bcbcbc;
-
       font-size: 12px;
-
       font-weight: bold;
     }
 
-
     .level {
-
       display: inline-block;
-
       margin-top: 5px;
-
       padding: 3px 8px;
-
       border: 1px solid #00a97d;
-
       border-radius: 20px;
-
       color: #00c995;
-
       font-size: 9px;
     }
 
-
-    /* =========================
-       BRAND
-    ========================= */
-
     .brand {
-
       text-align: center;
-
       direction: ltr;
     }
 
-
     .brand-main {
-
       color: #d4a52c;
-
       font-size: 42px;
-
       line-height: .85;
-
       font-weight: 900;
-
       letter-spacing: 3px;
     }
 
-
     .brand-sub {
-
       margin-top: 7px;
-
       color: #777;
-
       font-size: 6px;
-
       letter-spacing: 3px;
-
       white-space: nowrap;
     }
 
-
-    /* =========================
-       TOP ACTIONS
-    ========================= */
-
     .top-actions {
-
       display: flex;
-
       justify-content: flex-end;
-
       gap: 5px;
-
       direction: ltr;
     }
 
-
     .top-action {
-
       width: 43px;
       height: 55px;
-
       border: 1px solid #3d3013;
-
       border-radius: 12px;
-
-      background:
-        linear-gradient(
-          #14120e,
-          #080807
-        );
-
+      background: linear-gradient(#14120e,#080807);
       color: #888;
-
       text-align: center;
-
       font-size: 8px;
-
       cursor: pointer;
     }
 
-
-    .top-action:active {
-
-      transform: scale(.96);
-    }
-
-
     .top-action .emoji {
-
       display: block;
-
       font-size: 19px;
-
-      margin:
-        5px 0
-        4px;
+      margin: 5px 0 4px;
     }
-
-
-    /* =========================
-       ASSETS
-    ========================= */
 
     .assets {
-
       display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
+      grid-template-columns: repeat(3,1fr);
       border: 1px solid #4a3815;
-
       border-radius: 20px;
-
-      background:
-        linear-gradient(
-          180deg,
-          rgba(23,22,19,.96),
-          rgba(7,7,6,.96)
-        );
-
+      background: linear-gradient(180deg,rgba(23,22,19,.96),rgba(7,7,6,.96));
       padding: 13px 4px;
-
       margin-bottom: 12px;
-
-      box-shadow:
-        inset 0 0 25px
-        rgba(0,0,0,.35);
+      box-shadow: inset 0 0 25px rgba(0,0,0,.35);
     }
 
-
     .asset {
-
       min-width: 0;
-
       text-align: center;
-
       border-left: 1px solid #292929;
     }
 
-
     .asset:first-child {
-
       border-left: 0;
     }
 
-
     .asset-title {
-
       color: #aaa;
-
       font-size: 9px;
-
       line-height: 1.5;
     }
 
-
     .asset-value {
-
-      margin:
-        4px 0
-        3px;
-
+      margin: 4px 0 3px;
       color: #00d89d;
-
       font-size: 19px;
-
       font-weight: bold;
-
       direction: ltr;
-
       white-space: nowrap;
     }
 
-
-    .asset:nth-child(2)
-    .asset-value {
-
+    .asset:nth-child(2) .asset-value {
       color: #f1bd34;
     }
 
-
     .asset-sub {
-
       color: #777;
-
       font-size: 8px;
-
       direction: ltr;
     }
 
-
-    /* =========================
-       MINER AREA
-    ========================= */
-
     .mine {
-
       position: relative;
-
       overflow: hidden;
-
-      min-height: 730px;
-
+      min-height: 610px;
       border: 1px solid #503b12;
-
       border-radius: 24px;
-
-      padding:
-        18px 14px
-        24px;
-
+      padding: 18px 14px 20px;
       background:
-
-        radial-gradient(
-          circle at 50% 34%,
-          rgba(143,91,7,.50),
-          transparent 24%
-        ),
-
-        radial-gradient(
-          circle at 50% 45%,
-          rgba(72,43,3,.45),
-          transparent 45%
-        ),
-
-        linear-gradient(
-          180deg,
-          #171006 0%,
-          #090806 50%,
-          #030303 100%
-        );
-
-      box-shadow:
-        inset 0 0 55px
-        rgba(0,0,0,.75);
+        radial-gradient(circle at 50% 34%,rgba(143,91,7,.50),transparent 24%),
+        radial-gradient(circle at 50% 45%,rgba(72,43,3,.45),transparent 45%),
+        linear-gradient(180deg,#171006 0%,#090806 50%,#030303 100%);
+      box-shadow: inset 0 0 55px rgba(0,0,0,.75);
     }
 
-
     .rings {
-
       position: absolute;
-
       z-index: 0;
-
       width: 520px;
       height: 520px;
-
       left: 50%;
       top: 15px;
-
-      transform:
-        translateX(-50%);
-
+      transform: translateX(-50%);
       border-radius: 50%;
-
       background:
-
         repeating-radial-gradient(
           circle,
           transparent 0 52px,
-          rgba(153,108,27,.25)
-          53px 55px,
+          rgba(153,108,27,.25) 53px 55px,
           transparent 56px 88px
         );
-
       opacity: .75;
-
       pointer-events: none;
     }
 
-
-    /* =========================
-       COIN
-    ========================= */
-
     .coin-area {
-
       position: relative;
-
       z-index: 2;
-
       width: 235px;
       height: 235px;
-
-      margin:
-        22px auto 0;
-
+      margin: 22px auto 0;
       border-radius: 50%;
-
       display: flex;
-
       align-items: center;
       justify-content: center;
-
       background:
-
         radial-gradient(
           circle at 35% 28%,
           #f1c450 0%,
@@ -503,925 +246,424 @@
           #3c2603 78%,
           #1a1001 100%
         );
-
       border: 7px double #e0aa2f;
-
       box-shadow:
-
-        0 0 18px
-        rgba(242,181,45,.7),
-
-        0 0 55px
-        rgba(188,120,8,.35),
-
-        inset 0 0 25px
-        rgba(255,224,121,.25),
-
-        inset 0 0 40px
-        rgba(0,0,0,.45);
+        0 0 18px rgba(242,181,45,.7),
+        0 0 55px rgba(188,120,8,.35),
+        inset 0 0 25px rgba(255,224,121,.25),
+        inset 0 0 40px rgba(0,0,0,.45);
     }
-
 
     .coin-inner {
-
       width: 185px;
       height: 185px;
-
       border-radius: 50%;
-
-      border:
-        3px solid
-        rgba(255,213,92,.65);
-
+      border: 3px solid rgba(255,213,92,.65);
       display: flex;
-
       align-items: center;
       justify-content: center;
-
       text-align: center;
-
-      background:
-
-        radial-gradient(
-          circle,
-          rgba(255,211,76,.18),
-          rgba(68,40,2,.55)
-        );
+      background: radial-gradient(circle,rgba(255,211,76,.18),rgba(68,40,2,.55));
     }
-
 
     .coin-logo {
-
-      width: 100%;
-
       direction: ltr;
-
       color: #f7d878;
-
       font-size: 46px;
-
       font-weight: 900;
-
       letter-spacing: 2px;
-
-      text-shadow:
-
-        0 2px 0 #704600,
-
-        0 0 12px
-        rgba(255,220,100,.55);
-
-      text-align: center;
+      text-shadow: 0 2px 0 #704600,0 0 12px rgba(255,220,100,.55);
     }
 
-
     .coin-logo small {
-
       display: block;
-
       margin-top: 6px;
-
       font-size: 8px;
-
       letter-spacing: 3px;
-
       color: #f1d98d;
     }
 
-
-    /* =========================
-       CLAIM
-    ========================= */
-
     .claim-section {
-
       position: relative;
-
       z-index: 3;
-
       margin-top: 42px;
-
       text-align: center;
     }
 
-
     .claim-btn {
-
       width: 100%;
-
       height: 64px;
-
-      border:
-        2px solid #00b47e;
-
+      border: 2px solid #00b47e;
       border-radius: 32px;
-
-      background:
-
-        linear-gradient(
-          180deg,
-          #12a66e,
-          #08754d
-        );
-
+      background: linear-gradient(180deg,#12a66e,#08754d);
       color: #d8fff1;
-
       font-size: 23px;
-
       font-weight: 900;
-
       letter-spacing: .5px;
-
-      box-shadow:
-        0 0 18px
-        rgba(0,210,145,.28);
-
+      box-shadow: 0 0 18px rgba(0,210,145,.28);
       cursor: pointer;
-
-      transition:
-        transform .15s ease,
-        opacity .15s ease;
     }
-
-
-    .claim-btn:active {
-
-      transform: scale(.985);
-    }
-
 
     .claim-btn:disabled {
-
       color: #8e8e8e;
-
       border-color: #276b54;
-
-      background:
-
-        linear-gradient(
-          #14553e,
-          #0a3426
-        );
-
+      background: linear-gradient(#14553e,#0a3426);
       box-shadow: none;
-
       cursor: not-allowed;
-
-      transform: none;
     }
 
-
     .timer-text {
-
       margin-top: 10px;
-
       color: #777;
-
       font-size: 10px;
     }
 
-
     .timer {
-
       color: #00c995;
-
       font-size: 14px;
-
       font-weight: bold;
-
       direction: ltr;
-
       display: inline-block;
-
       min-width: 70px;
-
-      margin-right: 4px;
     }
 
-
     .status {
-
       min-height: 17px;
-
       margin-top: 5px;
-
       color: #888;
-
       font-size: 9px;
     }
 
-
-    /* =========================
-       QUICK BUTTONS
-    ========================= */
-
     .quick {
-
       position: relative;
-
       z-index: 3;
-
       display: grid;
-
-      grid-template-columns:
-        repeat(5, 1fr);
-
+      grid-template-columns: repeat(5,1fr);
       gap: 6px;
-
       margin-top: 14px;
     }
 
-
     .quick-item {
-
-      min-height: 72px;
-
-      border:
-        1px solid #352a11;
-
+      min-height: 62px;
+      border: 1px solid #352a11;
       border-radius: 12px;
-
-      background:
-        rgba(13,12,10,.92);
-
+      background: rgba(13,12,10,.92);
       color: #888;
-
       text-align: center;
-
       font-size: 8px;
-
       padding-top: 8px;
-
       cursor: pointer;
-
-      transition:
-        transform .15s ease,
-        border-color .15s ease;
     }
-
-
-    .quick-item:active {
-
-      transform: scale(.96);
-
-      border-color: #8f6c1c;
-    }
-
 
     .quick-item .icon {
-
       display: block;
-
       margin-bottom: 5px;
-
       color: #c59729;
-
       font-size: 20px;
     }
 
-
-    /* =========================
-       BOTTOM NAV
-    ========================= */
-
     .bottom-nav {
-
-      position: relative;
-
-      z-index: 3;
-
       display: grid;
-
-      grid-template-columns:
-        repeat(4, 1fr);
-
+      grid-template-columns: repeat(4,1fr);
       gap: 5px;
-
-      margin-top: 14px;
-
+      margin-top: 12px;
       padding: 7px 4px;
-
-      border:
-        1px solid #30250f;
-
+      border: 1px solid #30250f;
       border-radius: 18px;
-
       background: #080807;
     }
 
-
     .bottom-item {
-
       color: #666;
-
       text-align: center;
-
       font-size: 9px;
-
       padding: 6px 2px;
-
       cursor: pointer;
-
-      transition:
-        transform .15s ease,
-        color .15s ease;
     }
-
-
-    .bottom-item:active {
-
-      transform: scale(.95);
-    }
-
 
     .bottom-item .icon {
-
       display: block;
-
       margin-bottom: 3px;
-
       font-size: 19px;
     }
 
-
     .bottom-item.active {
-
       color: #e2b63b;
     }
 
-
-    /* =========================
-       MESSAGE
-    ========================= */
-
     .message-overlay {
-
       position: fixed;
-
       z-index: 9999;
-
       inset: 0;
-
       display: none;
-
       align-items: center;
       justify-content: center;
-
       padding: 25px;
-
-      background:
-        rgba(0,0,0,.78);
+      background: rgba(0,0,0,.78);
     }
 
-
     .message-box {
-
       width: 100%;
-
       max-width: 350px;
-
       border-radius: 22px;
-
-      padding:
-        25px 20px;
-
+      padding: 25px 20px;
       background: #151515;
-
-      border:
-        1px solid #51401c;
-
+      border: 1px solid #51401c;
       text-align: center;
     }
 
-
     .message-title {
-
       margin-bottom: 12px;
-
       color: #e4b93f;
-
       font-size: 21px;
-
       font-weight: bold;
     }
 
-
     .message-text {
-
       color: #ddd;
-
       font-size: 15px;
-
       line-height: 1.7;
-
       white-space: pre-line;
     }
 
-
     .message-close {
-
       margin-top: 20px;
-
       min-width: 100px;
-
-      padding:
-        10px 20px;
-
+      padding: 10px 20px;
       border: 0;
-
       border-radius: 20px;
-
       background: #168b66;
-
       color: white;
-
       font-weight: bold;
-
       cursor: pointer;
     }
 
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 360px) {
-
+    @media (max-width:360px) {
       .brand-main {
-
         font-size: 34px;
       }
 
-
       .brand-sub {
-
         font-size: 5px;
       }
 
-
       .avatar {
-
         width: 43px;
         height: 43px;
-
         flex-basis: 43px;
       }
 
-
       .coin-area {
-
         width: 205px;
         height: 205px;
       }
 
-
       .coin-inner {
-
         width: 160px;
         height: 160px;
       }
 
-
       .claim-btn {
-
         font-size: 20px;
       }
-
-
-      .mine {
-
-        min-height: 700px;
-      }
     }
-
   </style>
 </head>
 
-
 <body>
-
 
 <div class="app">
 
-
-  <!-- =========================
-       HEADER
-  ========================= -->
-
   <header class="top">
 
-
     <div class="profile-mini">
-
-      <div
-        class="avatar"
-        id="avatar"
-      >
-        L
-      </div>
-
+      <div class="avatar" id="avatar">L</div>
 
       <div class="profile-text">
-
-        <div
-          class="profile-name"
-          id="profileName"
-        >
+        <div class="profile-name" id="profileName">
           LTF Miner
         </div>
-
 
         <div class="level">
           Lvl 347
         </div>
-
       </div>
-
     </div>
-
 
     <div class="brand">
-
-      <div class="brand-main">
-        LTF
-      </div>
-
-      <div class="brand-sub">
-        LET'S THE FUTURE
-      </div>
-
+      <div class="brand-main">LTF</div>
+      <div class="brand-sub">LET'S THE FUTURE</div>
     </div>
-
 
     <div class="top-actions">
 
-
-      <button
-        class="top-action"
-        id="bonusBtn"
-        type="button"
-      >
-
-        <span class="emoji">
-          🎁
-        </span>
-
+      <button class="top-action" type="button">
+        <span class="emoji">🎁</span>
         Bonus
-
       </button>
 
-
-      <button
-        class="top-action"
-        id="notificationBtn"
-        type="button"
-      >
-
-        <span class="emoji">
-          🔔
-        </span>
-
+      <button class="top-action" type="button">
+        <span class="emoji">🔔</span>
         3
-
       </button>
-
 
     </div>
 
   </header>
 
-
-  <!-- =========================
-       ASSETS
-  ========================= -->
-
   <section class="assets">
 
-
     <div class="asset">
-
       <div class="asset-title">
-
-        🪙
-        <br>
-
+        🪙<br>
         LTF ASSETS
-
       </div>
 
-
-      <div
-        class="asset-value"
-        id="balance"
-      >
+      <div class="asset-value" id="balance">
         0
       </div>
 
-
-      <div
-        class="asset-sub"
-        id="balanceUsd"
-      >
+      <div class="asset-sub" id="balanceUsd">
         ≈ $0.00
       </div>
-
     </div>
 
-
     <div class="asset">
-
       <div class="asset-title">
-
-        🔒
-        <br>
-
+        🔒<br>
         HOLDING
-
       </div>
 
-
-      <div
-        class="asset-value"
-        id="holding"
-      >
+      <div class="asset-value" id="holding">
         0.00
       </div>
-
 
       <div class="asset-sub">
         ≈ $0.00
       </div>
-
     </div>
 
-
     <div class="asset">
-
       <div class="asset-title">
-
-        💳
-        <br>
-
+        💳<br>
         POOL WALLET
-
       </div>
-
 
       <div class="asset-value">
         834.40
       </div>
 
-
       <div class="asset-sub">
         ≈ $834.40
       </div>
-
     </div>
-
 
   </section>
 
-
-  <!-- =========================
-       MINER
-  ========================= -->
-
   <main class="mine">
 
-
     <div class="rings"></div>
-
-
-    <!-- COIN -->
 
     <div class="coin-area">
 
       <div class="coin-inner">
 
         <div class="coin-logo">
-
           LTF
-
-          <small>
-            MINER
-          </small>
-
+          <small>MINER</small>
         </div>
 
       </div>
 
     </div>
 
-
-    <!-- CLAIM -->
-
     <section class="claim-section">
-
 
       <button
         id="claimBtn"
         class="claim-btn"
         type="button"
-        disabled
       >
         ⚡ CLAIM LTF
       </button>
 
-
       <div class="timer-text">
-
         Next Claim in
-
-        <span
-          id="timer"
-          class="timer"
-        >
-          READY
+        <span id="timer" class="timer">
+          --:--:--
         </span>
-
       </div>
 
-
-      <div
-        id="status"
-        class="status"
-      ></div>
-
+      <div id="status" class="status"></div>
 
     </section>
 
-
-    <!-- QUICK BUTTONS -->
-
     <div class="quick">
 
-
-      <div
-        class="quick-item"
-        data-page="profile"
-      >
-
-        <span class="icon">
-          👤
-        </span>
-
-        Profile
-
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="wallet"
-      >
-
-        <span class="icon">
-          👛
-        </span>
-
-        Wallet
-
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="friends"
-      >
-
-        <span class="icon">
-          👥
-        </span>
-
-        Friends
-
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="tasks"
-      >
-
-        <span class="icon">
-          📋
-        </span>
-
-        Tasks
-
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="miners"
-      >
-
-        <span class="icon">
-          ⛏
-        </span>
-
+      <div class="quick-item">
+        <span class="icon">⛏</span>
         Miners
-
       </div>
 
+      <div class="quick-item">
+        <span class="icon">📋</span>
+        Tasks
+      </div>
+
+      <div class="quick-item">
+        <span class="icon">👥</span>
+        Friends
+      </div>
+
+      <div class="quick-item">
+        <span class="icon">👛</span>
+        Wallet
+      </div>
+
+      <div class="quick-item">
+        <span class="icon">👤</span>
+        Profile
+      </div>
 
     </div>
 
-
-    <!-- BOTTOM NAV -->
-
     <nav class="bottom-nav">
 
-
-      <div
-        class="bottom-item"
-        data-page="friends"
-      >
-
-        <span class="icon">
-          👥
-        </span>
-
-        Friends
-
-      </div>
-
-
-      <div
-        class="bottom-item"
-        data-page="tasks"
-      >
-
-        <span class="icon">
-          📋
-        </span>
-
-        Tasks
-
-      </div>
-
-
-      <div
-        class="bottom-item"
-        data-page="miners"
-      >
-
-        <span class="icon">
-          ⚡
-        </span>
-
-        Miners
-
-      </div>
-
-
-      <div
-        class="bottom-item active"
-        data-page="mine"
-      >
-
-        <span class="icon">
-          ⛏
-        </span>
-
+      <div class="bottom-item active">
+        <span class="icon">⛏</span>
         Mine
-
       </div>
 
+      <div class="bottom-item">
+        <span class="icon">⚡</span>
+        Miners
+      </div>
+
+      <div class="bottom-item">
+        <span class="icon">📋</span>
+        Tasks
+      </div>
+
+      <div class="bottom-item">
+        <span class="icon">👥</span>
+        Friends
+      </div>
 
     </nav>
 
-
   </main>
-
 
 </div>
 
-
-<!-- =========================
-     MESSAGE
-========================= -->
-
-<div
-  id="messageOverlay"
-  class="message-overlay"
->
-
+<div id="messageOverlay" class="message-overlay">
 
   <div class="message-box">
-
 
     <div class="message-title">
       LTF Miner
     </div>
 
-
-    <div
-      id="messageText"
-      class="message-text"
-    ></div>
-
+    <div id="messageText" class="message-text"></div>
 
     <button
       id="messageClose"
@@ -1431,1126 +673,631 @@
       حسنًا
     </button>
 
-
   </div>
 
 </div>
 
-
 <script>
+  /* =========================
+     SUPABASE
+  ========================= */
 
+  const SUPABASE_URL =
+    "https://julnowgcrkazepbfxkau.supabase.co";
 
-/* =====================================================
-   SUPABASE
-===================================================== */
+  const SUPABASE_KEY =
+    "sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23";
 
-
-const SUPABASE_URL =
-  "https://julnowgcrkazepbfxkau.supabase.co";
-
-
-const SUPABASE_KEY =
-  "sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23";
-
-
-const supabase =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-/* =====================================================
-   TELEGRAM
-===================================================== */
-
-
-const tg =
-  window.Telegram &&
-  window.Telegram.WebApp
-    ? window.Telegram.WebApp
-    : null;
-
-
-if (tg) {
-
-  try {
-
-    tg.ready();
-
-    tg.expand();
-
-  } catch (e) {
-
-    console.log(
-      "Telegram initialization:",
-      e
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
     );
 
+
+  /* =========================
+     TELEGRAM
+  ========================= */
+
+  const tg =
+    window.Telegram &&
+    window.Telegram.WebApp
+      ? window.Telegram.WebApp
+      : null;
+
+  if (tg) {
+    tg.ready();
+    tg.expand();
   }
 
-}
+
+  /* =========================
+     ELEMENTS
+  ========================= */
+
+  const balanceEl =
+    document.getElementById("balance");
+
+  const balanceUsdEl =
+    document.getElementById("balanceUsd");
+
+  const holdingEl =
+    document.getElementById("holding");
+
+  const timerEl =
+    document.getElementById("timer");
+
+  const claimBtn =
+    document.getElementById("claimBtn");
+
+  const statusEl =
+    document.getElementById("status");
+
+  const avatarEl =
+    document.getElementById("avatar");
+
+  const profileNameEl =
+    document.getElementById("profileName");
+
+  const messageOverlay =
+    document.getElementById("messageOverlay");
+
+  const messageText =
+    document.getElementById("messageText");
+
+  const messageClose =
+    document.getElementById("messageClose");
 
 
-/* =====================================================
-   ELEMENTS
-===================================================== */
+  /* =========================
+     STATE
+  ========================= */
+
+  let telegramUser = null;
+  let nextClaimAt = null;
+  let countdownInterval = null;
+  let isClaiming = false;
 
 
-const balanceEl =
-  document.getElementById(
-    "balance"
+  /* =========================
+     MESSAGE
+  ========================= */
+
+  function showMessage(text) {
+    messageText.textContent = text;
+    messageOverlay.style.display = "flex";
+  }
+
+  function hideMessage() {
+    messageOverlay.style.display = "none";
+  }
+
+  messageClose.addEventListener(
+    "click",
+    hideMessage
   );
 
 
-const balanceUsdEl =
-  document.getElementById(
-    "balanceUsd"
-  );
+  /* =========================
+     TELEGRAM USER
+  ========================= */
 
-
-const holdingEl =
-  document.getElementById(
-    "holding"
-  );
-
-
-const timerEl =
-  document.getElementById(
-    "timer"
-  );
-
-
-const claimBtn =
-  document.getElementById(
-    "claimBtn"
-  );
-
-
-const statusEl =
-  document.getElementById(
-    "status"
-  );
-
-
-const avatarEl =
-  document.getElementById(
-    "avatar"
-  );
-
-
-const profileNameEl =
-  document.getElementById(
-    "profileName"
-  );
-
-
-const messageOverlay =
-  document.getElementById(
-    "messageOverlay"
-  );
-
-
-const messageText =
-  document.getElementById(
-    "messageText"
-  );
-
-
-const messageClose =
-  document.getElementById(
-    "messageClose"
-  );
-
-
-/* =====================================================
-   STATE
-===================================================== */
-
-
-let telegramUser = null;
-
-let nextClaimAt = null;
-
-let countdownInterval = null;
-
-let isClaiming = false;
-
-
-/* =====================================================
-   MESSAGE
-===================================================== */
-
-
-function showMessage(text) {
-
-  messageText.textContent =
-    text;
-
-  messageOverlay.style.display =
-    "flex";
-}
-
-
-function hideMessage() {
-
-  messageOverlay.style.display =
-    "none";
-}
-
-
-messageClose.addEventListener(
-  "click",
-  hideMessage
-);
-
-
-/* =====================================================
-   TELEGRAM USER
-===================================================== */
-
-
-function getTelegramUser() {
-
-  try {
+  function getTelegramUser() {
 
     if (
-      tg &&
-      tg.initDataUnsafe &&
-      tg.initDataUnsafe.user
+      !tg ||
+      !tg.initDataUnsafe ||
+      !tg.initDataUnsafe.user
     ) {
-
-      return tg.initDataUnsafe.user;
-
+      return null;
     }
 
-  } catch (error) {
-
-    console.error(
-      "Telegram user error:",
-      error
-    );
-
+    return tg.initDataUnsafe.user;
   }
 
 
-  return null;
-}
+  /* =========================
+     USER UI
+  ========================= */
 
+  function updateUserUI() {
 
-/* =====================================================
-   WAIT FOR TELEGRAM
-===================================================== */
-
-
-async function waitForTelegramUser() {
-
-  let user =
-    getTelegramUser();
-
-
-  if (user) {
-
-    return user;
-
-  }
-
-
-  for (
-    let i = 0;
-    i < 20;
-    i++
-  ) {
-
-    await new Promise(
-      resolve =>
-        setTimeout(
-          resolve,
-          250
-        )
-    );
-
-
-    user =
-      getTelegramUser();
-
-
-    if (user) {
-
-      return user;
-
+    if (!telegramUser) {
+      return;
     }
 
+    const firstName =
+      telegramUser.first_name || "LTF";
+
+    avatarEl.textContent =
+      firstName
+        .charAt(0)
+        .toUpperCase();
+
+    profileNameEl.textContent =
+      telegramUser.username
+        ? "@" + telegramUser.username
+        : firstName;
   }
 
 
-  return null;
-}
+  /* =========================
+     BALANCE
+  ========================= */
 
+  function setBalance(value) {
 
-/* =====================================================
-   USER UI
-===================================================== */
+    const number =
+      Number(value || 0);
 
-
-function updateUserUI() {
-
-  if (!telegramUser) {
-
-    return;
-  }
-
-
-  const firstName =
-    telegramUser.first_name ||
-    "LTF";
-
-
-  avatarEl.textContent =
-    firstName
-      .charAt(0)
-      .toUpperCase();
-
-
-  profileNameEl.textContent =
-    telegramUser.username
-      ? "@" +
-        telegramUser.username
-      : firstName;
-}
-
-
-/* =====================================================
-   BALANCE
-===================================================== */
-
-
-function setBalance(value) {
-
-  const number =
-    Number(value || 0);
-
-
-  balanceEl.textContent =
-    number.toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      }
-    );
-
-
-  holdingEl.textContent =
-    number.toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
-
-
-  balanceUsdEl.textContent =
-    "≈ $" +
-    number.toLocaleString(
-      "en-US",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }
-    );
-}
-
-
-/* =====================================================
-   TIMER
-===================================================== */
-
-
-function formatRemaining(ms) {
-
-  if (ms <= 0) {
-
-    return "00:00:00";
-
-  }
-
-
-  const totalSeconds =
-    Math.ceil(
-      ms / 1000
-    );
-
-
-  const hours =
-    Math.floor(
-      totalSeconds / 3600
-    );
-
-
-  const minutes =
-    Math.floor(
-      (totalSeconds % 3600) / 60
-    );
-
-
-  const seconds =
-    totalSeconds % 60;
-
-
-  return (
-
-    String(hours)
-      .padStart(2, "0")
-
-    + ":" +
-
-    String(minutes)
-      .padStart(2, "0")
-
-    + ":" +
-
-    String(seconds)
-      .padStart(2, "0")
-
-  );
-}
-
-
-/* =====================================================
-   UPDATE TIMER
-===================================================== */
-
-
-function updateTimer() {
-
-  if (!nextClaimAt) {
-
-    timerEl.textContent =
-      "READY";
-
-    claimBtn.disabled =
-      isClaiming;
-
-    return;
-  }
-
-
-  const target =
-    new Date(
-      nextClaimAt
-    ).getTime();
-
-
-  if (
-    Number.isNaN(target)
-  ) {
-
-    nextClaimAt = null;
-
-    timerEl.textContent =
-      "READY";
-
-    claimBtn.disabled =
-      isClaiming;
-
-    return;
-  }
-
-
-  const remaining =
-    target -
-    Date.now();
-
-
-  if (remaining <= 0) {
-
-    timerEl.textContent =
-      "READY";
-
-    claimBtn.disabled =
-      isClaiming;
-
-    return;
-  }
-
-
-  timerEl.textContent =
-    formatRemaining(
-      remaining
-    );
-
-
-  claimBtn.disabled = true;
-}
-
-
-/* =====================================================
-   START TIMER
-===================================================== */
-
-
-function startTimer() {
-
-  if (countdownInterval) {
-
-    clearInterval(
-      countdownInterval
-    );
-
-  }
-
-
-  updateTimer();
-
-
-  countdownInterval =
-    setInterval(
-      updateTimer,
-      1000
-    );
-}
-
-
-/* =====================================================
-   LOAD STATUS
-===================================================== */
-
-
-async function loadStatus() {
-
-  if (!telegramUser) {
-
-    statusEl.textContent =
-      "افتح التطبيق من داخل Telegram";
-
-    claimBtn.disabled =
-      true;
-
-    timerEl.textContent =
-      "--:--:--";
-
-    return;
-  }
-
-
-  statusEl.textContent =
-    "جاري تحميل بياناتك...";
-
-
-  try {
-
-
-    const {
-      data,
-      error
-    } =
-      await supabase.rpc(
-        "get_ltf_status",
+    balanceEl.textContent =
+      number.toLocaleString(
+        "en-US",
         {
-          p_telegram_user_id:
-            Number(
-              telegramUser.id
-            )
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2
         }
       );
 
-
-    if (error) {
-
-      console.error(
-        "get_ltf_status:",
-        error
+    holdingEl.textContent =
+      number.toLocaleString(
+        "en-US",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
       );
 
+    balanceUsdEl.textContent =
+      "≈ $" +
+      number.toLocaleString(
+        "en-US",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+  }
+
+
+  /* =========================
+     TIMER
+  ========================= */
+
+  function formatRemaining(ms) {
+
+    if (ms <= 0) {
+      return "00:00:00";
+    }
+
+    const totalSeconds =
+      Math.ceil(ms / 1000);
+
+    const hours =
+      Math.floor(
+        totalSeconds / 3600
+      );
+
+    const minutes =
+      Math.floor(
+        (totalSeconds % 3600) / 60
+      );
+
+    const seconds =
+      totalSeconds % 60;
+
+    return (
+      String(hours).padStart(2, "0")
+      + ":" +
+      String(minutes).padStart(2, "0")
+      + ":" +
+      String(seconds).padStart(2, "0")
+    );
+  }
+
+
+  function updateTimer() {
+
+    if (!nextClaimAt) {
+
+      timerEl.textContent =
+        "READY";
+
+      claimBtn.disabled =
+        isClaiming;
+
+      return;
+    }
+
+    const target =
+      new Date(nextClaimAt).getTime();
+
+    const remaining =
+      target - Date.now();
+
+    if (remaining <= 0) {
+
+      nextClaimAt = null;
+
+      timerEl.textContent =
+        "READY";
+
+      claimBtn.disabled =
+        isClaiming;
+
+      return;
+    }
+
+    timerEl.textContent =
+      formatRemaining(remaining);
+
+    claimBtn.disabled = true;
+  }
+
+
+  function startTimer() {
+
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+    }
+
+    updateTimer();
+
+    countdownInterval =
+      setInterval(
+        updateTimer,
+        1000
+      );
+  }
+
+
+  /* =========================
+     LOAD STATUS
+  ========================= */
+
+  async function loadStatus() {
+
+    if (!telegramUser) {
+
+      statusEl.textContent =
+        "افتح التطبيق من داخل Telegram";
+
+      claimBtn.disabled = true;
+
+      timerEl.textContent =
+        "--:--:--";
+
+      return;
+    }
+
+    statusEl.textContent =
+      "جاري تحميل بياناتك...";
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabaseClient.rpc(
+        "get_ltf_status",
+        {
+          p_telegram_user_id:
+            Number(telegramUser.id)
+        }
+      );
+
+      if (error) {
+
+        console.error(
+          "get_ltf_status:",
+          error
+        );
+
+        statusEl.textContent =
+          "تعذر تحميل البيانات";
+
+        showMessage(
+          "تعذر تحميل بيانات الحساب.\n\n" +
+          error.message
+        );
+
+        /*
+          لا نعطل الزر نهائيًا بسبب فشل
+          تحميل الحالة.
+        */
+        claimBtn.disabled = false;
+
+        nextClaimAt = null;
+
+        timerEl.textContent =
+          "READY";
+
+        return;
+      }
+
+      const result =
+        Array.isArray(data)
+          ? data[0]
+          : data;
+
+      if (!result) {
+
+        setBalance(0);
+
+        nextClaimAt = null;
+
+        startTimer();
+
+        statusEl.textContent = "";
+
+        return;
+      }
+
+      setBalance(
+        result.balance
+      );
+
+      nextClaimAt =
+        result.next_claim_at || null;
+
+      startTimer();
+
+      statusEl.textContent = "";
+
+    } catch (error) {
+
+      console.error(
+        "loadStatus:",
+        error
+      );
 
       statusEl.textContent =
         "تعذر تحميل البيانات";
 
+      claimBtn.disabled = false;
+
+      nextClaimAt = null;
+
+      timerEl.textContent =
+        "READY";
+    }
+  }
+
+
+  /* =========================
+     CLAIM
+  ========================= */
+
+  async function claimLTF() {
+
+    if (isClaiming) {
+      return;
+    }
+
+    if (!telegramUser) {
 
       showMessage(
-
-        "تعذر تحميل بيانات الحساب.\n\n" +
-
-        error.message
-
+        "يجب فتح التطبيق من داخل Telegram."
       );
 
+      return;
+    }
+
+    /*
+      حماية إضافية في الواجهة.
+      قاعدة البيانات هي الحماية الأساسية.
+    */
+    if (
+      nextClaimAt &&
+      new Date(nextClaimAt).getTime() >
+      Date.now()
+    ) {
+
+      updateTimer();
 
       return;
     }
 
+    isClaiming = true;
 
-    const result =
-      Array.isArray(data)
-        ? data[0]
-        : data;
+    claimBtn.disabled = true;
 
-
-    if (!result) {
-
-      setBalance(0);
-
-      nextClaimAt =
-        null;
-
-      startTimer();
-
-      statusEl.textContent =
-        "";
-
-      return;
-    }
-
-
-    setBalance(
-      result.balance
-    );
-
-
-    nextClaimAt =
-      result.next_claim_at ||
-      null;
-
-
-    startTimer();
-
+    claimBtn.textContent =
+      "⏳ CLAIMING...";
 
     statusEl.textContent =
-      "";
+      "جاري تنفيذ المطالبة...";
 
+    try {
 
-  } catch (error) {
-
-
-    console.error(
-      error
-    );
-
-
-    statusEl.textContent =
-      "تعذر الاتصال بالخادم";
-
-
-    showMessage(
-
-      "حدث خطأ أثناء تحميل البيانات.\n\n" +
-
-      error.message
-
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   CLAIM LTF
-===================================================== */
-
-
-async function claimLTF() {
-
-
-  if (isClaiming) {
-
-    return;
-
-  }
-
-
-  if (!telegramUser) {
-
-    showMessage(
-      "يجب فتح التطبيق من داخل Telegram."
-    );
-
-    return;
-  }
-
-
-  if (
-    nextClaimAt &&
-    new Date(
-      nextClaimAt
-    ).getTime() >
-    Date.now()
-  ) {
-
-    updateTimer();
-
-    return;
-  }
-
-
-  isClaiming =
-    true;
-
-
-  claimBtn.disabled =
-    true;
-
-
-  claimBtn.textContent =
-    "⏳ CLAIMING...";
-
-
-  statusEl.textContent =
-    "جاري تنفيذ المطالبة...";
-
-
-  try {
-
-
-    const {
-      data,
-      error
-    } =
-      await supabase.rpc(
+      const {
+        data,
+        error
+      } = await supabaseClient.rpc(
         "claim_ltf",
         {
-
           p_telegram_user_id:
-            Number(
-              telegramUser.id
-            ),
+            Number(telegramUser.id),
 
           p_username:
-            telegramUser.username ||
-            null,
+            telegramUser.username || null,
 
           p_first_name:
-            telegramUser.first_name ||
-            null
-
+            telegramUser.first_name || null
         }
       );
 
-
-    if (error) {
-
-
-      console.error(
-        "claim_ltf:",
+      console.log(
+        "claim_ltf result:",
+        data,
         error
       );
 
+      if (error) {
 
-      showMessage(
+        console.error(
+          "claim_ltf:",
+          error
+        );
 
-        "حدث خطأ أثناء المطالبة.\n\n" +
+        showMessage(
+          "حدث خطأ أثناء المطالبة.\n\n" +
+          error.message
+        );
 
-        error.message
+        await loadStatus();
 
-      );
+        return;
+      }
 
+      const result =
+        Array.isArray(data)
+          ? data[0]
+          : data;
 
-      await loadStatus();
+      if (!result) {
 
+        showMessage(
+          "لم تصل نتيجة من الخادم."
+        );
 
-      return;
+        await loadStatus();
 
-    }
+        return;
+      }
 
+      /*
+        المطالبة نجحت
+      */
+      if (result.success === true) {
 
-    const result =
-      Array.isArray(data)
-        ? data[0]
-        : data;
+        setBalance(
+          result.new_balance
+        );
 
+        nextClaimAt =
+          result.next_claim_at || null;
 
-    if (!result) {
+        startTimer();
 
-
-      showMessage(
-        "لم تصل نتيجة من الخادم."
-      );
-
-
-      await loadStatus();
-
-
-      return;
-
-    }
-
-
-    if (
-      result.success === true
-    ) {
-
-
-      setBalance(
-        result.new_balance
-      );
-
-
-      nextClaimAt =
-        result.next_claim_at ||
-        null;
-
-
-      startTimer();
-
-
-      if (
-        tg &&
-        tg.HapticFeedback
-      ) {
-
-        try {
+        if (
+          tg &&
+          tg.HapticFeedback
+        ) {
 
           tg.HapticFeedback
             .notificationOccurred(
               "success"
             );
-
-        } catch (e) {
-
-          console.log(e);
-
         }
 
+        showMessage(
+          "تمت إضافة 1 LTF بنجاح ✅\n\n" +
+          "الرصيد الجديد: " +
+          Number(
+            result.new_balance || 0
+          ).toFixed(2) +
+          " LTF"
+        );
+
+        return;
       }
 
+      /*
+        المطالبة مرفوضة بسبب الوقت
+        أو أي سبب ترسله قاعدة البيانات
+      */
+
+      if (
+        result.new_balance !== undefined &&
+        result.new_balance !== null
+      ) {
+
+        setBalance(
+          result.new_balance
+        );
+      }
+
+      nextClaimAt =
+        result.next_claim_at || null;
+
+      startTimer();
 
       showMessage(
-
-        "تمت إضافة 1 LTF بنجاح ✅\n\n" +
-
-        "الرصيد الجديد: " +
-
-        Number(
-          result.new_balance || 0
-        ).toFixed(2) +
-
-        " LTF"
-
+        result.message ||
+        "لم يحن وقت المطالبة بعد."
       );
 
+    } catch (error) {
+
+      console.error(
+        "claim exception:",
+        error
+      );
+
+      showMessage(
+        "حدث خطأ غير متوقع.\n\n" +
+        error.message
+      );
+
+      /*
+        نعيد تحميل الحالة من Supabase
+        حتى لا يبقى العداد أو الرصيد
+        في حالة خاطئة.
+      */
+      await loadStatus();
+
+    } finally {
+
+      isClaiming = false;
+
+      claimBtn.textContent =
+        "⚡ CLAIM LTF";
+
+      updateTimer();
+
+      statusEl.textContent = "";
+    }
+  }
+
+
+  claimBtn.addEventListener(
+    "click",
+    claimLTF
+  );
+
+
+  /* =========================
+     INIT
+  ========================= */
+
+  async function init() {
+
+    telegramUser =
+      getTelegramUser();
+
+    if (!telegramUser) {
+
+      claimBtn.disabled = true;
+
+      timerEl.textContent =
+        "--:--:--";
+
+      statusEl.textContent =
+        "افتح التطبيق من داخل Telegram";
 
       return;
-
     }
 
+    updateUserUI();
 
-    nextClaimAt =
-      result.next_claim_at ||
-      null;
-
-
-    if (
-      result.new_balance !==
-      undefined
-    ) {
-
-      setBalance(
-        result.new_balance
-      );
-
-    }
-
-
-    startTimer();
-
-
-    showMessage(
-
-      result.message ||
-      "لم يحن وقت المطالبة بعد."
-
-    );
-
-
-  } catch (error) {
-
-
-    console.error(
-      error
-    );
-
-
-    showMessage(
-
-      "حدث خطأ غير متوقع.\n\n" +
-
-      error.message
-
-    );
-
-
-  } finally {
-
-
-    isClaiming =
-      false;
-
-
-    claimBtn.textContent =
-      "⚡ CLAIM LTF";
-
-
-    updateTimer();
-
-
-    statusEl.textContent =
-      "";
-
-  }
-
-}
-
-
-/* =====================================================
-   CLAIM CLICK
-===================================================== */
-
-
-claimBtn.addEventListener(
-  "click",
-  claimLTF
-);
-
-
-/* =====================================================
-   PAGE BUTTONS
-===================================================== */
-
-
-function openPage(page) {
-
-
-  if (page === "mine") {
-
-    return;
-
+    await loadStatus();
   }
 
 
-  if (page === "wallet") {
-
-    showMessage(
-      "Wallet\n\nقسم المحفظة قيد التجهيز."
-    );
-
-    return;
-  }
-
-
-  if (page === "profile") {
-
-    showMessage(
-      "Profile\n\nقسم الملف الشخصي قيد التجهيز."
-    );
-
-    return;
-  }
-
-
-  if (page === "friends") {
-
-    showMessage(
-      "Friends\n\nقسم الأصدقاء قيد التجهيز."
-    );
-
-    return;
-  }
-
-
-  if (page === "tasks") {
-
-    showMessage(
-      "Tasks\n\nقسم المهام قيد التجهيز."
-    );
-
-    return;
-  }
-
-
-  if (page === "miners") {
-
-    showMessage(
-      "Miners\n\nقسم المعدنين قيد التجهيز."
-    );
-
-    return;
-  }
-
-}
-
-
-/* =====================================================
-   QUICK BUTTON EVENTS
-===================================================== */
-
-
-document
-  .querySelectorAll(
-    ".quick-item"
-  )
-  .forEach(
-    item => {
-
-      item.addEventListener(
-        "click",
-        () => {
-
-          const page =
-            item.dataset.page;
-
-          openPage(page);
-
-        }
-      );
-
-    }
-  );
-
-
-/* =====================================================
-   BOTTOM NAV EVENTS
-===================================================== */
-
-
-document
-  .querySelectorAll(
-    ".bottom-item"
-  )
-  .forEach(
-    item => {
-
-      item.addEventListener(
-        "click",
-        () => {
-
-          const page =
-            item.dataset.page;
-
-
-          document
-            .querySelectorAll(
-              ".bottom-item"
-            )
-            .forEach(
-              el =>
-                el.classList
-                  .remove(
-                    "active"
-                  )
-            );
-
-
-          item.classList.add(
-            "active"
-          );
-
-
-          openPage(page);
-
-        }
-      );
-
-    }
-  );
-
-
-/* =====================================================
-   TOP BUTTONS
-===================================================== */
-
-
-document
-  .getElementById(
-    "bonusBtn"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      showMessage(
-        "🎁 Bonus\n\nنظام البونص قيد التجهيز."
-      );
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "notificationBtn"
-  )
-  .addEventListener(
-    "click",
-    () => {
-
-      showMessage(
-        "🔔 Notifications\n\nلا توجد إشعارات جديدة."
-      );
-
-    }
-  );
-
-
-/* =====================================================
-   INIT
-===================================================== */
-
-
-async function init() {
-
-
-  timerEl.textContent =
-    "جارٍ التحميل";
-
-
-  statusEl.textContent =
-    "جاري الاتصال بـ Telegram...";
-
-
-  telegramUser =
-    await waitForTelegramUser();
-
-
-  if (!telegramUser) {
-
-
-    timerEl.textContent =
-      "--:--:--";
-
-
-    claimBtn.disabled =
-      true;
-
-
-    statusEl.textContent =
-      "افتح التطبيق من داخل Telegram";
-
-
-    return;
-
-  }
-
-
-  updateUserUI();
-
-
-  await loadStatus();
-
-}
-
-
-/* =====================================================
-   START
-===================================================== */
-
-
-init();
-
+  init();
 
 </script>
-
 
 </body>
 </html>
