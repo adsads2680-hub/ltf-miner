@@ -15,7 +15,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       min-height: 100%;
@@ -39,10 +40,27 @@
       margin: auto;
       padding: 12px 12px 24px;
       background:
-        radial-gradient(circle at 50% 35%, rgba(157,102,13,.32), transparent 27%),
-        radial-gradient(circle at 50% 75%, rgba(90,57,5,.18), transparent 32%),
-        linear-gradient(180deg,#030303 0%,#090806 55%,#020202 100%);
+        radial-gradient(
+          circle at 50% 35%,
+          rgba(157,102,13,.32),
+          transparent 27%
+        ),
+        radial-gradient(
+          circle at 50% 75%,
+          rgba(90,57,5,.18),
+          transparent 32%
+        ),
+        linear-gradient(
+          180deg,
+          #030303 0%,
+          #090806 55%,
+          #020202 100%
+        );
     }
+
+    /* =========================
+       TOP
+    ========================= */
 
     .top {
       display: grid;
@@ -66,7 +84,12 @@
       flex: 0 0 48px;
       border-radius: 50%;
       border: 2px solid #9b701b;
-      background: radial-gradient(circle at 35% 30%,#3b2a0b,#080706 70%);
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          #3b2a0b,
+          #080706 70%
+        );
       display: flex;
       align-items: center;
       justify-content: center;
@@ -134,7 +157,10 @@
       height: 55px;
       border: 1px solid #3d3013;
       border-radius: 12px;
-      background: linear-gradient(#14120e,#080807);
+      background: linear-gradient(
+        #14120e,
+        #080807
+      );
       color: #888;
       text-align: center;
       font-size: 8px;
@@ -147,15 +173,25 @@
       margin: 5px 0 4px;
     }
 
+    /* =========================
+       ASSETS
+    ========================= */
+
     .assets {
       display: grid;
       grid-template-columns: repeat(3,1fr);
       border: 1px solid #4a3815;
       border-radius: 20px;
-      background: linear-gradient(180deg,rgba(23,22,19,.96),rgba(7,7,6,.96));
+      background:
+        linear-gradient(
+          180deg,
+          rgba(23,22,19,.96),
+          rgba(7,7,6,.96)
+        );
       padding: 13px 4px;
       margin-bottom: 12px;
-      box-shadow: inset 0 0 25px rgba(0,0,0,.35);
+      box-shadow:
+        inset 0 0 25px rgba(0,0,0,.35);
     }
 
     .asset {
@@ -193,6 +229,10 @@
       direction: ltr;
     }
 
+    /* =========================
+       MINER
+    ========================= */
+
     .mine {
       position: relative;
       overflow: hidden;
@@ -201,10 +241,24 @@
       border-radius: 24px;
       padding: 18px 14px 20px;
       background:
-        radial-gradient(circle at 50% 34%,rgba(143,91,7,.50),transparent 24%),
-        radial-gradient(circle at 50% 45%,rgba(72,43,3,.45),transparent 45%),
-        linear-gradient(180deg,#171006 0%,#090806 50%,#030303 100%);
-      box-shadow: inset 0 0 55px rgba(0,0,0,.75);
+        radial-gradient(
+          circle at 50% 34%,
+          rgba(143,91,7,.50),
+          transparent 24%
+        ),
+        radial-gradient(
+          circle at 50% 45%,
+          rgba(72,43,3,.45),
+          transparent 45%
+        ),
+        linear-gradient(
+          180deg,
+          #171006 0%,
+          #090806 50%,
+          #030303 100%
+        );
+      box-shadow:
+        inset 0 0 55px rgba(0,0,0,.75);
     }
 
     .rings {
@@ -263,7 +317,12 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      background: radial-gradient(circle,rgba(255,211,76,.18),rgba(68,40,2,.55));
+      background:
+        radial-gradient(
+          circle,
+          rgba(255,211,76,.18),
+          rgba(68,40,2,.55)
+        );
     }
 
     .coin-logo {
@@ -272,7 +331,9 @@
       font-size: 46px;
       font-weight: 900;
       letter-spacing: 2px;
-      text-shadow: 0 2px 0 #704600,0 0 12px rgba(255,220,100,.55);
+      text-shadow:
+        0 2px 0 #704600,
+        0 0 12px rgba(255,220,100,.55);
     }
 
     .coin-logo small {
@@ -282,6 +343,10 @@
       letter-spacing: 3px;
       color: #f1d98d;
     }
+
+    /* =========================
+       CLAIM
+    ========================= */
 
     .claim-section {
       position: relative;
@@ -295,19 +360,33 @@
       height: 64px;
       border: 2px solid #00b47e;
       border-radius: 32px;
-      background: linear-gradient(180deg,#12a66e,#08754d);
+      background:
+        linear-gradient(
+          180deg,
+          #12a66e,
+          #08754d
+        );
       color: #d8fff1;
       font-size: 23px;
       font-weight: 900;
       letter-spacing: .5px;
-      box-shadow: 0 0 18px rgba(0,210,145,.28);
+      box-shadow:
+        0 0 18px rgba(0,210,145,.28);
       cursor: pointer;
+    }
+
+    .claim-btn:active:not(:disabled) {
+      transform: scale(.98);
     }
 
     .claim-btn:disabled {
       color: #8e8e8e;
       border-color: #276b54;
-      background: linear-gradient(#14553e,#0a3426);
+      background:
+        linear-gradient(
+          #14553e,
+          #0a3426
+        );
       box-shadow: none;
       cursor: not-allowed;
     }
@@ -334,6 +413,11 @@
       font-size: 9px;
     }
 
+    /* =========================
+       QUICK BUTTONS
+       الصف الوحيد السفلي
+    ========================= */
+
     .quick {
       position: relative;
       z-index: 3;
@@ -353,6 +437,11 @@
       font-size: 8px;
       padding-top: 8px;
       cursor: pointer;
+      transition: .15s;
+    }
+
+    .quick-item:active {
+      transform: scale(.96);
     }
 
     .quick-item .icon {
@@ -362,34 +451,9 @@
       font-size: 20px;
     }
 
-    .bottom-nav {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 5px;
-      margin-top: 12px;
-      padding: 7px 4px;
-      border: 1px solid #30250f;
-      border-radius: 18px;
-      background: #080807;
-    }
-
-    .bottom-item {
-      color: #666;
-      text-align: center;
-      font-size: 9px;
-      padding: 6px 2px;
-      cursor: pointer;
-    }
-
-    .bottom-item .icon {
-      display: block;
-      margin-bottom: 3px;
-      font-size: 19px;
-    }
-
-    .bottom-item.active {
-      color: #e2b63b;
-    }
+    /* =========================
+       MESSAGE
+    ========================= */
 
     .message-overlay {
       position: fixed;
@@ -438,7 +502,12 @@
       cursor: pointer;
     }
 
+    /* =========================
+       SMALL SCREEN
+    ========================= */
+
     @media (max-width:360px) {
+
       .brand-main {
         font-size: 34px;
       }
@@ -474,12 +543,20 @@
 
 <div class="app">
 
+  <!-- =========================
+       TOP
+  ========================== -->
+
   <header class="top">
 
     <div class="profile-mini">
-      <div class="avatar" id="avatar">L</div>
+
+      <div class="avatar" id="avatar">
+        L
+      </div>
 
       <div class="profile-text">
+
         <div class="profile-name" id="profileName">
           LTF Miner
         </div>
@@ -487,22 +564,39 @@
         <div class="level">
           Lvl 347
         </div>
+
       </div>
+
     </div>
 
+
     <div class="brand">
-      <div class="brand-main">LTF</div>
-      <div class="brand-sub">LET'S THE FUTURE</div>
+
+      <div class="brand-main">
+        LTF
+      </div>
+
+      <div class="brand-sub">
+        LET'S THE FUTURE
+      </div>
+
     </div>
+
 
     <div class="top-actions">
 
-      <button class="top-action" type="button">
+      <button
+        class="top-action"
+        type="button"
+      >
         <span class="emoji">🎁</span>
         Bonus
       </button>
 
-      <button class="top-action" type="button">
+      <button
+        class="top-action"
+        type="button"
+      >
         <span class="emoji">🔔</span>
         3
       </button>
@@ -511,39 +605,60 @@
 
   </header>
 
+
+  <!-- =========================
+       ASSETS
+  ========================== -->
+
   <section class="assets">
 
     <div class="asset">
+
       <div class="asset-title">
         🪙<br>
         LTF ASSETS
       </div>
 
-      <div class="asset-value" id="balance">
+      <div
+        class="asset-value"
+        id="balance"
+      >
         0
       </div>
 
-      <div class="asset-sub" id="balanceUsd">
+      <div
+        class="asset-sub"
+        id="balanceUsd"
+      >
         ≈ $0.00
       </div>
+
     </div>
 
+
     <div class="asset">
+
       <div class="asset-title">
         🔒<br>
         HOLDING
       </div>
 
-      <div class="asset-value" id="holding">
+      <div
+        class="asset-value"
+        id="holding"
+      >
         0.00
       </div>
 
       <div class="asset-sub">
         ≈ $0.00
       </div>
+
     </div>
 
+
     <div class="asset">
+
       <div class="asset-title">
         💳<br>
         POOL WALLET
@@ -556,26 +671,41 @@
       <div class="asset-sub">
         ≈ $834.40
       </div>
+
     </div>
 
   </section>
 
+
+  <!-- =========================
+       MINER
+  ========================== -->
+
   <main class="mine">
 
     <div class="rings"></div>
+
 
     <div class="coin-area">
 
       <div class="coin-inner">
 
         <div class="coin-logo">
+
           LTF
-          <small>MINER</small>
+
+          <small>
+            MINER
+          </small>
+
         </div>
 
       </div>
 
     </div>
+
+
+    <!-- CLAIM -->
 
     <section class="claim-section">
 
@@ -583,79 +713,110 @@
         id="claimBtn"
         class="claim-btn"
         type="button"
+        disabled
       >
         ⚡ CLAIM LTF
       </button>
 
+
       <div class="timer-text">
+
         Next Claim in
-        <span id="timer" class="timer">
+
+        <span
+          id="timer"
+          class="timer"
+        >
           --:--:--
         </span>
+
       </div>
 
-      <div id="status" class="status"></div>
+
+      <div
+        id="status"
+        class="status"
+      ></div>
 
     </section>
 
+
+    <!-- =========================
+         QUICK BUTTONS
+         لا يوجد صف ثاني مكرر
+    ========================== -->
+
     <div class="quick">
 
-      <div class="quick-item">
-        <span class="icon">⛏</span>
+      <div
+        class="quick-item"
+        data-page="miners"
+      >
+        <span class="icon">
+          ⛏
+        </span>
         Miners
       </div>
 
-      <div class="quick-item">
-        <span class="icon">📋</span>
+
+      <div
+        class="quick-item"
+        data-page="tasks"
+      >
+        <span class="icon">
+          📋
+        </span>
         Tasks
       </div>
 
-      <div class="quick-item">
-        <span class="icon">👥</span>
+
+      <div
+        class="quick-item"
+        data-page="friends"
+      >
+        <span class="icon">
+          👥
+        </span>
         Friends
       </div>
 
-      <div class="quick-item">
-        <span class="icon">👛</span>
+
+      <div
+        class="quick-item"
+        data-page="wallet"
+      >
+        <span class="icon">
+          👛
+        </span>
         Wallet
       </div>
 
-      <div class="quick-item">
-        <span class="icon">👤</span>
+
+      <div
+        class="quick-item"
+        data-page="profile"
+      >
+        <span class="icon">
+          👤
+        </span>
         Profile
       </div>
 
     </div>
 
-    <nav class="bottom-nav">
-
-      <div class="bottom-item active">
-        <span class="icon">⛏</span>
-        Mine
-      </div>
-
-      <div class="bottom-item">
-        <span class="icon">⚡</span>
-        Miners
-      </div>
-
-      <div class="bottom-item">
-        <span class="icon">📋</span>
-        Tasks
-      </div>
-
-      <div class="bottom-item">
-        <span class="icon">👥</span>
-        Friends
-      </div>
-
-    </nav>
-
   </main>
 
 </div>
 
-<div id="messageOverlay" class="message-overlay">
+
+<!-- =========================
+     MESSAGE
+========================== -->
+
+<div
+  id="messageOverlay"
+  class="message-overlay"
+>
 
   <div class="message-box">
 
@@ -663,7 +824,10 @@
       LTF Miner
     </div>
 
-    <div id="messageText" class="message-text"></div>
+    <div
+      id="messageText"
+      class="message-text"
+    ></div>
 
     <button
       id="messageClose"
@@ -677,7 +841,9 @@
 
 </div>
 
+
 <script>
+
   /* =========================
      SUPABASE
   ========================= */
@@ -688,7 +854,8 @@
   const SUPABASE_KEY =
     "sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23";
 
-  const supabaseClient =
+
+  const supabase =
     window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
@@ -705,9 +872,13 @@
       ? window.Telegram.WebApp
       : null;
 
+
   if (tg) {
+
     tg.ready();
+
     tg.expand();
+
   }
 
 
@@ -754,8 +925,11 @@
   ========================= */
 
   let telegramUser = null;
+
   let nextClaimAt = null;
+
   let countdownInterval = null;
+
   let isClaiming = false;
 
 
@@ -764,13 +938,21 @@
   ========================= */
 
   function showMessage(text) {
-    messageText.textContent = text;
-    messageOverlay.style.display = "flex";
+
+    messageText.textContent =
+      text;
+
+    messageOverlay.style.display =
+      "flex";
   }
 
+
   function hideMessage() {
-    messageOverlay.style.display = "none";
+
+    messageOverlay.style.display =
+      "none";
   }
+
 
   messageClose.addEventListener(
     "click",
@@ -806,13 +988,17 @@
       return;
     }
 
+
     const firstName =
-      telegramUser.first_name || "LTF";
+      telegramUser.first_name ||
+      "LTF";
+
 
     avatarEl.textContent =
       firstName
         .charAt(0)
         .toUpperCase();
+
 
     profileNameEl.textContent =
       telegramUser.username
@@ -830,6 +1016,7 @@
     const number =
       Number(value || 0);
 
+
     balanceEl.textContent =
       number.toLocaleString(
         "en-US",
@@ -839,6 +1026,7 @@
         }
       );
 
+
     holdingEl.textContent =
       number.toLocaleString(
         "en-US",
@@ -847,6 +1035,7 @@
           maximumFractionDigits: 2
         }
       );
+
 
     balanceUsdEl.textContent =
       "≈ $" +
@@ -870,27 +1059,34 @@
       return "00:00:00";
     }
 
+
     const totalSeconds =
       Math.ceil(ms / 1000);
+
 
     const hours =
       Math.floor(
         totalSeconds / 3600
       );
 
+
     const minutes =
       Math.floor(
         (totalSeconds % 3600) / 60
       );
 
+
     const seconds =
       totalSeconds % 60;
 
+
     return (
       String(hours).padStart(2, "0")
-      + ":" +
+      + ":"
+      +
       String(minutes).padStart(2, "0")
-      + ":" +
+      + ":"
+      +
       String(seconds).padStart(2, "0")
     );
   }
@@ -909,18 +1105,21 @@
       return;
     }
 
+
     const target =
-      new Date(nextClaimAt).getTime();
+      new Date(
+        nextClaimAt
+      ).getTime();
+
 
     const remaining =
       target - Date.now();
 
+
     if (remaining <= 0) {
 
-      nextClaimAt = null;
-
       timerEl.textContent =
-        "READY";
+        "00:00:00";
 
       claimBtn.disabled =
         isClaiming;
@@ -928,20 +1127,31 @@
       return;
     }
 
-    timerEl.textContent =
-      formatRemaining(remaining);
 
-    claimBtn.disabled = true;
+    timerEl.textContent =
+      formatRemaining(
+        remaining
+      );
+
+
+    claimBtn.disabled =
+      true;
   }
 
 
   function startTimer() {
 
     if (countdownInterval) {
-      clearInterval(countdownInterval);
+
+      clearInterval(
+        countdownInterval
+      );
+
     }
 
+
     updateTimer();
+
 
     countdownInterval =
       setInterval(
@@ -962,105 +1172,87 @@
       statusEl.textContent =
         "افتح التطبيق من داخل Telegram";
 
-      claimBtn.disabled = true;
-
-      timerEl.textContent =
-        "--:--:--";
+      claimBtn.disabled =
+        true;
 
       return;
     }
 
+
     statusEl.textContent =
       "جاري تحميل بياناتك...";
 
-    try {
 
-      const {
-        data,
-        error
-      } = await supabaseClient.rpc(
-        "get_ltf_status",
-        {
-          p_telegram_user_id:
-            Number(telegramUser.id)
-        }
-      );
-
-      if (error) {
-
-        console.error(
-          "get_ltf_status:",
-          error
-        );
-
-        statusEl.textContent =
-          "تعذر تحميل البيانات";
-
-        showMessage(
-          "تعذر تحميل بيانات الحساب.\n\n" +
-          error.message
-        );
-
-        /*
-          لا نعطل الزر نهائيًا بسبب فشل
-          تحميل الحالة.
-        */
-        claimBtn.disabled = false;
-
-        nextClaimAt = null;
-
-        timerEl.textContent =
-          "READY";
-
-        return;
+    const {
+      data,
+      error
+    } = await supabase.rpc(
+      "get_ltf_status",
+      {
+        p_telegram_user_id:
+          Number(telegramUser.id)
       }
+    );
 
-      const result =
-        Array.isArray(data)
-          ? data[0]
-          : data;
 
-      if (!result) {
-
-        setBalance(0);
-
-        nextClaimAt = null;
-
-        startTimer();
-
-        statusEl.textContent = "";
-
-        return;
-      }
-
-      setBalance(
-        result.balance
-      );
-
-      nextClaimAt =
-        result.next_claim_at || null;
-
-      startTimer();
-
-      statusEl.textContent = "";
-
-    } catch (error) {
+    if (error) {
 
       console.error(
-        "loadStatus:",
+        "get_ltf_status:",
         error
       );
+
 
       statusEl.textContent =
         "تعذر تحميل البيانات";
 
-      claimBtn.disabled = false;
+
+      showMessage(
+        "تعذر تحميل بيانات الحساب.\n\n" +
+        error.message
+      );
+
+
+      return;
+    }
+
+
+    const result =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+
+    if (!result) {
+
+      setBalance(0);
 
       nextClaimAt = null;
 
-      timerEl.textContent =
-        "READY";
+      startTimer();
+
+      statusEl.textContent =
+        "";
+
+      return;
     }
+
+
+    setBalance(
+      result.balance
+    );
+
+
+    nextClaimAt =
+      result.next_claim_at ||
+      null;
+
+
+    startTimer();
+
+
+    statusEl.textContent =
+      "";
   }
 
 
@@ -1074,6 +1266,7 @@
       return;
     }
 
+
     if (!telegramUser) {
 
       showMessage(
@@ -1083,20 +1276,19 @@
       return;
     }
 
-    /*
-      حماية إضافية في الواجهة.
-      قاعدة البيانات هي الحماية الأساسية.
-    */
+
     if (
       nextClaimAt &&
-      new Date(nextClaimAt).getTime() >
-      Date.now()
+      new Date(
+        nextClaimAt
+      ).getTime() > Date.now()
     ) {
 
       updateTimer();
 
       return;
     }
+
 
     isClaiming = true;
 
@@ -1105,33 +1297,32 @@
     claimBtn.textContent =
       "⏳ CLAIMING...";
 
+
     statusEl.textContent =
       "جاري تنفيذ المطالبة...";
+
 
     try {
 
       const {
         data,
         error
-      } = await supabaseClient.rpc(
+      } = await supabase.rpc(
         "claim_ltf",
         {
           p_telegram_user_id:
             Number(telegramUser.id),
 
           p_username:
-            telegramUser.username || null,
+            telegramUser.username ||
+            null,
 
           p_first_name:
-            telegramUser.first_name || null
+            telegramUser.first_name ||
+            null
         }
       );
 
-      console.log(
-        "claim_ltf result:",
-        data,
-        error
-      );
 
       if (error) {
 
@@ -1140,20 +1331,24 @@
           error
         );
 
+
         showMessage(
           "حدث خطأ أثناء المطالبة.\n\n" +
           error.message
         );
+
 
         await loadStatus();
 
         return;
       }
 
+
       const result =
         Array.isArray(data)
           ? data[0]
           : data;
+
 
       if (!result) {
 
@@ -1161,24 +1356,27 @@
           "لم تصل نتيجة من الخادم."
         );
 
+
         await loadStatus();
 
         return;
       }
 
-      /*
-        المطالبة نجحت
-      */
+
       if (result.success === true) {
 
         setBalance(
           result.new_balance
         );
 
+
         nextClaimAt =
-          result.next_claim_at || null;
+          result.next_claim_at ||
+          null;
+
 
         startTimer();
+
 
         if (
           tg &&
@@ -1189,7 +1387,9 @@
             .notificationOccurred(
               "success"
             );
+
         }
+
 
         showMessage(
           "تمت إضافة 1 LTF بنجاح ✅\n\n" +
@@ -1200,28 +1400,30 @@
           " LTF"
         );
 
+
         return;
       }
 
-      /*
-        المطالبة مرفوضة بسبب الوقت
-        أو أي سبب ترسله قاعدة البيانات
-      */
+
+      nextClaimAt =
+        result.next_claim_at ||
+        null;
+
 
       if (
-        result.new_balance !== undefined &&
-        result.new_balance !== null
+        result.new_balance !==
+        undefined
       ) {
 
         setBalance(
           result.new_balance
         );
+
       }
 
-      nextClaimAt =
-        result.next_claim_at || null;
 
       startTimer();
+
 
       showMessage(
         result.message ||
@@ -1231,21 +1433,14 @@
     } catch (error) {
 
       console.error(
-        "claim exception:",
         error
       );
+
 
       showMessage(
         "حدث خطأ غير متوقع.\n\n" +
         error.message
       );
-
-      /*
-        نعيد تحميل الحالة من Supabase
-        حتى لا يبقى العداد أو الرصيد
-        في حالة خاطئة.
-      */
-      await loadStatus();
 
     } finally {
 
@@ -1254,17 +1449,65 @@
       claimBtn.textContent =
         "⚡ CLAIM LTF";
 
+
       updateTimer();
 
-      statusEl.textContent = "";
+
+      statusEl.textContent =
+        "";
     }
   }
 
+
+  /* =========================
+     CLAIM CLICK
+  ========================= */
 
   claimBtn.addEventListener(
     "click",
     claimLTF
   );
+
+
+  /* =========================
+     QUICK BUTTONS
+  ========================= */
+
+  document
+    .querySelectorAll(".quick-item")
+    .forEach(function(item) {
+
+      item.addEventListener(
+        "click",
+        function() {
+
+          const page =
+            item.dataset.page;
+
+
+          /*
+            حاليًا فقط رسالة مؤقتة.
+            لاحقًا نربط كل زر بصفحته.
+          */
+
+          const names = {
+            miners: "Miners",
+            tasks: "Tasks",
+            friends: "Friends",
+            wallet: "Wallet",
+            profile: "Profile"
+          };
+
+
+          showMessage(
+            names[page] ||
+            "LTF Miner"
+          );
+
+        }
+      );
+
+    });
 
 
   /* =========================
@@ -1276,20 +1519,27 @@
     telegramUser =
       getTelegramUser();
 
+
     if (!telegramUser) {
 
-      claimBtn.disabled = true;
+      claimBtn.disabled =
+        true;
+
 
       timerEl.textContent =
         "--:--:--";
 
+
       statusEl.textContent =
         "افتح التطبيق من داخل Telegram";
+
 
       return;
     }
 
+
     updateUserUI();
+
 
     await loadStatus();
   }
