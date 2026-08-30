@@ -11,7 +11,12 @@
 </style></head><body><div class="app">
 <header class="top"><div class="user"><div class="avatar">L</div><div><b>LTF Miner</b><br><span class="lvl">Lvl 347</span></div></div><div class="brand"><b>LTF</b><small>LET'S THE FUTURE</small></div><div class="topBtns"><div class="topBtn"><span>🎁</span>Bonus</div><div class="topBtn"><span>🔔</span>3</div></div></header>
 <section class="assets"><div class="asset"><label>🪙<br>LTF ASSETS</label><strong>1.287 K</strong><small>≈ $1,287.00</small></div><div class="asset"><label>🔒<br>HOLDING</label><strong>452.60</strong><small>≈ $452.60</small></div><div class="asset"><label>💳<br>POOL WALLET</label><strong>834.40</strong><small>≈ $834.40</small></div></section>
-<main class="mine"><div class="rings"></div><div class="coin-wrap"><img src="ltf-coin-reference.jpg" alt="LTF gold coin"></div><button class="claim" onclick="alert('Claim interface ready for backend connection')">⚡ CLAIM LTF</button><div class="next">◷ Next Claim in&nbsp; <b id="timer">00:58:32</b></div><div class="quick"><div><span>⛏</span>Miners</div><div><span>📋</span>Tasks</div><div><span>👥</span>Friends</div><div><span>👛</span>Wallet</div><div><span>👤</span>Profile</div></div></main>
+<main class="mine"><div class="rings"></div><div class="coin-wrap"><img src="ltf-coin-reference.jpg" alt="LTF gold coin"></div><button class="claim" id="claimBtn">⚡ CLAIM LTF</button><div class="next">◷ Next Claim in&nbsp; <b id="timer">00:58:32</b></div><div class="quick"><div><span>⛏</span>Miners</div><div><span>📋</span>Tasks</div><div><span>👥</span>Friends</div><div><span>👛</span>Wallet</div><div><span>👤</span>Profile</div></div></main>
 <nav class="nav"><div class="active"><span>↥</span>Mine</div><div><span>⚡</span>Miners</div><div><span>📋</span>Tasks</div><div><span>👥</span>Friends</div></nav></div>
 <script>let s=3512;setInterval(()=>{s=Math.max(0,s-1);let h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor(s%3600/60)).padStart(2,'0'),x=String(s%60).padStart(2,'0');document.getElementById('timer').textContent=`${h}:${m}:${x}`},1000)</script>
-</body></html>
+<style>button,.quick div,.nav div{cursor:pointer}</style><script>
+const tg=window.Telegram?.WebApp; if(tg){tg.ready();tg.expand();}
+const btn=document.getElementById('claimBtn');
+btn.onclick=()=>{if(!tg?.initData){alert('افتح التطبيق من داخل Telegram');return;}alert('تم تجهيز الاتصال بالمستخدم. يلزم Backend آمن لإضافة 1 LTF فعلياً.');};
+document.querySelectorAll('.quick div,.nav div').forEach(x=>x.onclick=()=>alert(x.innerText.trim()+' — القسم جاهز للربط'));
+</script></body></html>
