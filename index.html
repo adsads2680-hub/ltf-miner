@@ -3,8 +3,14 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>LTF Miner</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://julnowgcrkazepbfxkau.supabase.co";
+const SUPABASE_KEY = "sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>  
 <style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 *{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif}.app{max-width:430px;margin:auto;min-height:100vh;background:radial-gradient(circle at 50% 55%,rgba(180,115,10,.3),transparent 30%),radial-gradient(circle at 50% 50%,#211504 0,#090806 45%,#030303 78%);overflow:hidden}
 .top{height:105px;padding:17px 15px 7px;display:grid;grid-template-columns:100px 1fr 100px;align-items:center;gap:6px}.user{display:flex;align-items:center;gap:7px}.avatar{width:48px;height:48px;border:2px solid #b98920;border-radius:50%;display:grid;place-items:center;color:#f5c33d;font-size:25px}.user b{font-size:13px}.lvl{display:inline-block;border:1px solid #00dca0;border-radius:13px;padding:4px 8px;color:#00dfa1;font-size:10px;margin-top:4px}.brand{text-align:center}.brand b{font-size:44px;letter-spacing:2px;color:#f3b932}.brand small{display:block;letter-spacing:5px;font-size:8px;color:#aaa}.topBtns{display:flex;justify-content:flex-end;gap:5px}.topBtn{width:48px;height:66px;background:#11100d;border:1px solid #5a451b;border-radius:13px;text-align:center;padding-top:7px;font-size:9px}.topBtn span{display:block;font-size:21px;margin-bottom:4px}
 .assets{margin:0 16px 15px;padding:14px 5px;border:1px solid #51401d;border-radius:18px;background:linear-gradient(#171715,#0a0a09);display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center}.asset{border-right:1px solid #333}.asset:last-child{border:0}.asset label{font-size:10px;color:#ddd;line-height:1.35}.asset strong{display:block;font-size:23px;color:#00dfa0;margin:5px 0}.asset:nth-child(2) strong{color:#ffd13e}.asset small{color:#aaa;font-size:10px}
