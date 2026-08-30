@@ -25,6 +25,32 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 <style>button,.quick div,.nav div{cursor:pointer}</style><script>
 const tg=window.Telegram?.WebApp; if(tg){tg.ready();tg.expand();}
 const btn=document.getElementById('claimBtn');
-btn.onclick=()=>{if(!tg?.initData){alert('افتح التطبيق من داخل Telegram');return;}alert('تم تجهيز الاتصال بالمستخدم. يلزم Backend آمن لإضافة 1 LTF فعلياً.');};
+btn.onclick = async () => {
+  if (!tg?.initDataUnsafe?.user?.id) {
+    alert('افتح التطبيق من داخل Telegram');
+    return;
+  }
+
+  const user = tg.initDataUnsafe.user;
+
+  const { data, error } = await supabase.rpc('claim_ltf', {
+    p_telegram_user_id: Number(user.id),
+    p_username: user.username || null,
+    p_first_name: user.first_name || null
+  });
+
+  if (error) {
+    alert('حدث خطأ: ' + error.message);
+    return;
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+
+  if (result?.success) {
+    alert('تمت إضافة 1 LTF بنجاح ✅');
+  } else {
+    alert(result?.message || 'المطالبة غير متاحة حاليًا');
+  }
+};
 document.querySelectorAll('.quick div,.nav div').forEach(x=>x.onclick=()=>alert(x.innerText.trim()+' — القسم جاهز للربط'));
 </script></body></html>
