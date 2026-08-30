@@ -19,6 +19,7 @@
     body {
       margin: 0;
       padding: 0;
+      width: 100%;
       min-height: 100%;
       background: #000;
       color: #fff;
@@ -37,8 +38,13 @@
       width: 100%;
       max-width: 430px;
       min-height: 100vh;
-      margin: auto;
-      padding: 10px 12px 10px;
+      margin: 0 auto;
+
+      padding:
+        calc(8px + env(safe-area-inset-top))
+        12px
+        calc(8px + env(safe-area-inset-bottom));
+
       background:
         radial-gradient(
           circle at 50% 35%,
@@ -64,11 +70,13 @@
 
     .top {
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+
       min-height: 82px;
-      padding: 2px 2px 10px;
+
+      padding: 2px 2px 8px;
     }
 
     .profile-mini {
@@ -76,24 +84,28 @@
       align-items: center;
       gap: 7px;
       min-width: 0;
-      order: 3;
+      direction: ltr;
     }
 
     .avatar {
       width: 48px;
       height: 48px;
       flex: 0 0 48px;
+
       border-radius: 50%;
       border: 2px solid #9b701b;
+
       background:
         radial-gradient(
           circle at 35% 30%,
           #3b2a0b,
           #080706 70%
         );
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       color: #d6aa39;
       font-size: 22px;
       font-weight: bold;
@@ -101,15 +113,17 @@
 
     .profile-text {
       min-width: 0;
-      text-align: right;
+      text-align: left;
       direction: ltr;
     }
 
     .profile-name {
       max-width: 78px;
+
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+
       color: #bcbcbc;
       font-size: 12px;
       font-weight: bold;
@@ -117,10 +131,13 @@
 
     .level {
       display: inline-block;
-      margin-top: 5px;
+
+      margin-top: 4px;
       padding: 3px 8px;
+
       border: 1px solid #00a97d;
       border-radius: 20px;
+
       color: #00c995;
       font-size: 9px;
     }
@@ -128,8 +145,6 @@
     .brand {
       text-align: center;
       direction: ltr;
-      min-width: 0;
-      order: 2;
     }
 
     .brand-main {
@@ -142,6 +157,7 @@
 
     .brand-sub {
       margin-top: 7px;
+
       color: #777;
       font-size: 6px;
       letter-spacing: 3px;
@@ -150,25 +166,29 @@
 
     .top-actions {
       display: flex;
-      justify-content: flex-start;
+      justify-content: flex-end;
       gap: 5px;
       direction: ltr;
-      order: 1;
     }
 
     .top-action {
       width: 43px;
       height: 55px;
+
       border: 1px solid #3d3013;
       border-radius: 12px;
+
       background:
         linear-gradient(
           #14120e,
           #080807
         );
+
       color: #888;
+
       text-align: center;
       font-size: 8px;
+
       cursor: pointer;
     }
 
@@ -185,16 +205,20 @@
     .assets {
       display: grid;
       grid-template-columns: repeat(3,1fr);
+
       border: 1px solid #4a3815;
       border-radius: 20px;
+
       background:
         linear-gradient(
           180deg,
           rgba(23,22,19,.96),
           rgba(7,7,6,.96)
         );
-      padding: 13px 4px;
+
+      padding: 12px 4px;
       margin-bottom: 10px;
+
       box-shadow:
         inset 0 0 25px rgba(0,0,0,.35);
     }
@@ -202,6 +226,7 @@
     .asset {
       min-width: 0;
       text-align: center;
+
       border-left: 1px solid #292929;
     }
 
@@ -217,9 +242,11 @@
 
     .asset-value {
       margin: 4px 0 3px;
+
       color: #00d89d;
       font-size: 19px;
       font-weight: bold;
+
       direction: ltr;
       white-space: nowrap;
     }
@@ -235,16 +262,19 @@
     }
 
     /* =========================
-       MINING AREA
+       MINER AREA
     ========================= */
 
     .mine {
       position: relative;
       overflow: hidden;
+
       min-height: 0;
+
       border: 1px solid #503b12;
       border-radius: 24px;
-      padding: 12px 12px 14px;
+
+      padding: 16px 12px 12px;
 
       background:
         radial-gradient(
@@ -271,11 +301,15 @@
     .rings {
       position: absolute;
       z-index: 0;
-      width: 560px;
-      height: 560px;
+
+      width: 520px;
+      height: 520px;
+
       left: 50%;
-      top: 45px;
+      top: 20px;
+
       transform: translateX(-50%);
+
       border-radius: 50%;
 
       background:
@@ -301,7 +335,7 @@
       width: 235px;
       height: 235px;
 
-      margin: 58px auto 0;
+      margin: 28px auto 0;
 
       border-radius: 50%;
 
@@ -326,6 +360,8 @@
         0 0 55px rgba(188,120,8,.35),
         inset 0 0 25px rgba(255,224,121,.25),
         inset 0 0 40px rgba(0,0,0,.45);
+
+      flex-shrink: 0;
     }
 
     .coin-inner {
@@ -351,21 +387,29 @@
 
     .coin-logo {
       direction: ltr;
+
       color: #f7d878;
+
       font-size: 46px;
       font-weight: 900;
+
       letter-spacing: 2px;
-      line-height: 1;
+
       text-shadow:
         0 2px 0 #704600,
         0 0 12px rgba(255,220,100,.55);
+
+      line-height: 1;
     }
 
     .coin-logo small {
       display: block;
-      margin-top: 7px;
+
+      margin-top: 8px;
+
       font-size: 8px;
       letter-spacing: 3px;
+
       color: #f1d98d;
     }
 
@@ -376,7 +420,9 @@
     .claim-section {
       position: relative;
       z-index: 3;
-      margin-top: 55px;
+
+      margin-top: 48px;
+
       text-align: center;
     }
 
@@ -404,10 +450,20 @@
         0 0 18px rgba(0,210,145,.28);
 
       cursor: pointer;
+
+      transition:
+        transform .12s ease,
+        filter .12s ease;
+    }
+
+    .claim-btn:not(:disabled):active {
+      transform: scale(.98);
+      filter: brightness(1.12);
     }
 
     .claim-btn:disabled {
       color: #8e8e8e;
+
       border-color: #276b54;
 
       background:
@@ -417,27 +473,39 @@
         );
 
       box-shadow: none;
+
       cursor: not-allowed;
     }
 
     .timer-text {
-      margin-top: 10px;
+      margin-top: 9px;
+
       color: #777;
       font-size: 10px;
+
+      direction: ltr;
     }
 
     .timer {
       color: #00c995;
+
       font-size: 14px;
       font-weight: bold;
+
       direction: ltr;
+
       display: inline-block;
+
       min-width: 70px;
+
+      margin-right: 6px;
     }
 
     .status {
-      min-height: 17px;
-      margin-top: 5px;
+      min-height: 15px;
+
+      margin-top: 4px;
+
       color: #888;
       font-size: 9px;
     }
@@ -453,9 +521,9 @@
       display: grid;
       grid-template-columns: repeat(5,1fr);
 
-      gap: 6px;
+      gap: 5px;
 
-      margin-top: 14px;
+      margin-top: 13px;
     }
 
     .quick-item {
@@ -470,18 +538,26 @@
       color: #888;
 
       text-align: center;
+
       font-size: 8px;
 
-      padding-top: 8px;
+      padding-top: 7px;
 
       cursor: pointer;
     }
 
     .quick-item .icon {
       display: block;
-      margin-bottom: 5px;
+
+      margin-bottom: 4px;
+
       color: #c59729;
+
       font-size: 20px;
+    }
+
+    .quick-item:active {
+      background: rgba(30,25,15,.95);
     }
 
     /* =========================
@@ -495,9 +571,10 @@
       display: grid;
       grid-template-columns: repeat(4,1fr);
 
-      gap: 5px;
+      gap: 4px;
 
       margin-top: 10px;
+
       padding: 6px 4px;
 
       border: 1px solid #30250f;
@@ -508,15 +585,21 @@
 
     .bottom-item {
       color: #666;
+
       text-align: center;
+
       font-size: 9px;
+
       padding: 5px 2px;
+
       cursor: pointer;
     }
 
     .bottom-item .icon {
       display: block;
-      margin-bottom: 3px;
+
+      margin-bottom: 2px;
+
       font-size: 19px;
     }
 
@@ -531,6 +614,7 @@
     .message-overlay {
       position: fixed;
       z-index: 9999;
+
       inset: 0;
 
       display: none;
@@ -549,9 +633,11 @@
       max-width: 350px;
 
       border-radius: 22px;
+
       padding: 25px 20px;
 
       background: #151515;
+
       border: 1px solid #51401c;
 
       text-align: center;
@@ -559,15 +645,19 @@
 
     .message-title {
       margin-bottom: 12px;
+
       color: #e4b93f;
+
       font-size: 21px;
       font-weight: bold;
     }
 
     .message-text {
       color: #ddd;
+
       font-size: 15px;
       line-height: 1.7;
+
       white-space: pre-line;
     }
 
@@ -582,30 +672,26 @@
       border-radius: 20px;
 
       background: #168b66;
+
       color: white;
 
       font-weight: bold;
+
       cursor: pointer;
     }
 
     /* =========================
-       MOBILE
+       SMALL SCREENS
     ========================= */
 
-    @media (max-width: 380px) {
-
-      .app {
-        padding-left: 9px;
-        padding-right: 9px;
-      }
+    @media (max-width: 360px) {
 
       .brand-main {
-        font-size: 36px;
+        font-size: 34px;
       }
 
       .brand-sub {
         font-size: 5px;
-        letter-spacing: 2px;
       }
 
       .avatar {
@@ -614,40 +700,41 @@
         flex-basis: 43px;
       }
 
-      .profile-name {
-        max-width: 65px;
-      }
-
-      .top-action {
-        width: 40px;
-      }
-
       .coin-area {
-        width: 210px;
-        height: 210px;
-        margin-top: 48px;
+        width: 205px;
+        height: 205px;
       }
 
       .coin-inner {
-        width: 165px;
-        height: 165px;
-      }
-
-      .coin-logo {
-        font-size: 42px;
-      }
-
-      .claim-section {
-        margin-top: 48px;
+        width: 160px;
+        height: 160px;
       }
 
       .claim-btn {
-        height: 60px;
         font-size: 20px;
       }
 
-      .quick-item {
-        min-height: 60px;
+      .claim-section {
+        margin-top: 42px;
+      }
+    }
+
+    @media (max-height: 700px) {
+
+      .coin-area {
+        margin-top: 16px;
+      }
+
+      .claim-section {
+        margin-top: 30px;
+      }
+
+      .quick {
+        margin-top: 9px;
+      }
+
+      .bottom-nav {
+        margin-top: 7px;
       }
     }
   </style>
@@ -701,23 +788,19 @@
 
       <button
         class="top-action"
-        type="button"
         id="bonusBtn"
+        type="button"
       >
-        <span class="emoji">
-          🎁
-        </span>
+        <span class="emoji">🎁</span>
         Bonus
       </button>
 
       <button
         class="top-action"
-        type="button"
         id="notificationBtn"
+        type="button"
       >
-        <span class="emoji">
-          🔔
-        </span>
+        <span class="emoji">🔔</span>
         3
       </button>
 
@@ -798,15 +881,13 @@
 
 
   <!-- =========================
-       MINE
+       MINER
   ========================== -->
 
   <main class="mine">
 
     <div class="rings"></div>
 
-
-    <!-- COIN -->
 
     <div class="coin-area">
 
@@ -827,7 +908,9 @@
     </div>
 
 
-    <!-- CLAIM -->
+    <!-- =========================
+         CLAIM
+    ========================== -->
 
     <section class="claim-section">
 
@@ -843,13 +926,12 @@
 
       <div class="timer-text">
 
-        Next Claim in
-
-        <span
-          id="timer"
-          class="timer"
-        >
+        <span id="timer" class="timer">
           --:--:--
+        </span>
+
+        <span>
+          Next Claim in
         </span>
 
       </div>
@@ -863,46 +945,26 @@
     </section>
 
 
-    <!-- QUICK BUTTONS -->
+    <!-- =========================
+         QUICK BUTTONS
+    ========================== -->
 
     <div class="quick">
 
       <div
         class="quick-item"
-        data-page="miners"
+        id="profileQuick"
       >
         <span class="icon">
-          ⛏
+          👤
         </span>
-        Miners
+        Profile
       </div>
 
 
       <div
         class="quick-item"
-        data-page="tasks"
-      >
-        <span class="icon">
-          📋
-        </span>
-        Tasks
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="friends"
-      >
-        <span class="icon">
-          👥
-        </span>
-        Friends
-      </div>
-
-
-      <div
-        class="quick-item"
-        data-page="wallet"
+        id="walletQuick"
       >
         <span class="icon">
           👛
@@ -913,24 +975,7 @@
 
       <div
         class="quick-item"
-        data-page="profile"
-      >
-        <span class="icon">
-          👤
-        </span>
-        Profile
-      </div>
-
-    </div>
-
-
-    <!-- BOTTOM NAV -->
-
-    <nav class="bottom-nav">
-
-      <div
-        class="bottom-item"
-        data-page="friends"
+        id="friendsQuick"
       >
         <span class="icon">
           👥
@@ -940,8 +985,60 @@
 
 
       <div
+        class="quick-item"
+        id="tasksQuick"
+      >
+        <span class="icon">
+          📋
+        </span>
+        Tasks
+      </div>
+
+
+      <div
+        class="quick-item"
+        id="minersQuick"
+      >
+        <span class="icon">
+          ⛏
+        </span>
+        Miners
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         BOTTOM NAV
+    ========================== -->
+
+    <nav class="bottom-nav">
+
+      <div
+        class="bottom-item active"
+        id="mineNav"
+      >
+        <span class="icon">
+          ⛏
+        </span>
+        Mine
+      </div>
+
+
+      <div
         class="bottom-item"
-        data-page="tasks"
+        id="minersNav"
+      >
+        <span class="icon">
+          ⚡
+        </span>
+        Miners
+      </div>
+
+
+      <div
+        class="bottom-item"
+        id="tasksNav"
       >
         <span class="icon">
           📋
@@ -952,23 +1049,12 @@
 
       <div
         class="bottom-item"
-        data-page="miners"
+        id="friendsNav"
       >
         <span class="icon">
-          ⚡
+          👥
         </span>
-        Miners
-      </div>
-
-
-      <div
-        class="bottom-item active"
-        data-page="mine"
-      >
-        <span class="icon">
-          ⛏
-        </span>
-        Mine
+        Friends
       </div>
 
     </nav>
@@ -1015,8 +1101,7 @@
 
   /* =========================
      SUPABASE
-     لا تغيّر هذا القسم
-  ========================= */
+  ========================== */
 
   const SUPABASE_URL =
     "https://julnowgcrkazepbfxkau.supabase.co";
@@ -1034,7 +1119,7 @@
 
   /* =========================
      TELEGRAM
-  ========================= */
+  ========================== */
 
   const tg =
     window.Telegram &&
@@ -1049,12 +1134,18 @@
 
     tg.expand();
 
+    try {
+      tg.setHeaderColor("#050505");
+      tg.setBackgroundColor("#050505");
+    } catch (e) {
+      console.log(e);
+    }
   }
 
 
   /* =========================
      ELEMENTS
-  ========================= */
+  ========================== */
 
   const balanceEl =
     document.getElementById("balance");
@@ -1092,7 +1183,7 @@
 
   /* =========================
      STATE
-  ========================= */
+  ========================== */
 
   let telegramUser = null;
 
@@ -1105,12 +1196,11 @@
 
   /* =========================
      MESSAGE
-  ========================= */
+  ========================== */
 
   function showMessage(text) {
 
-    messageText.textContent =
-      text;
+    messageText.textContent = text;
 
     messageOverlay.style.display =
       "flex";
@@ -1132,7 +1222,7 @@
 
   /* =========================
      TELEGRAM USER
-  ========================= */
+  ========================== */
 
   function getTelegramUser() {
 
@@ -1141,9 +1231,7 @@
       !tg.initDataUnsafe ||
       !tg.initDataUnsafe.user
     ) {
-
       return null;
-
     }
 
     return tg.initDataUnsafe.user;
@@ -1152,7 +1240,7 @@
 
   /* =========================
      USER UI
-  ========================= */
+  ========================== */
 
   function updateUserUI() {
 
@@ -1181,8 +1269,7 @@
 
   /* =========================
      BALANCE
-     نفس المنطق السابق
-  ========================= */
+  ========================== */
 
   function setBalance(value) {
 
@@ -1224,14 +1311,32 @@
 
   /* =========================
      TIMER
-  ========================= */
+  ========================== */
+
+  function parseClaimTime(value) {
+
+    if (!value) {
+      return null;
+    }
+
+
+    const time =
+      new Date(value).getTime();
+
+
+    if (Number.isNaN(time)) {
+      return null;
+    }
+
+
+    return time;
+  }
+
 
   function formatRemaining(ms) {
 
     if (ms <= 0) {
-
       return "00:00:00";
-
     }
 
 
@@ -1256,49 +1361,58 @@
 
 
     return (
-      String(hours).padStart(2,"0")
+      String(hours).padStart(2, "0")
       + ":"
-      +
-      String(minutes).padStart(2,"0")
+      + String(minutes).padStart(2, "0")
       + ":"
-      +
-      String(seconds).padStart(2,"0")
+      + String(seconds).padStart(2, "0")
     );
   }
 
 
   function updateTimer() {
 
+    if (isClaiming) {
+
+      claimBtn.disabled = true;
+
+      return;
+    }
+
+
     /*
-      إذا لم يصل nextClaimAt من قاعدة البيانات،
-      لا نغيّر الرصيد ولا نخترع وقتًا.
+      لا يوجد وقت قادم من Supabase
+      => الزر يصبح جاهزًا.
     */
 
     if (!nextClaimAt) {
 
       timerEl.textContent =
-        "--:--:--";
+        "READY";
 
       claimBtn.disabled =
-        isClaiming;
+        false;
 
       return;
     }
 
 
     const target =
-      new Date(nextClaimAt).getTime();
+      parseClaimTime(nextClaimAt);
 
 
-    if (
-      Number.isNaN(target)
-    ) {
+    /*
+      إذا كانت قيمة الوقت غير صالحة
+      لا نوقف التطبيق.
+    */
+
+    if (!target) {
 
       timerEl.textContent =
-        "--:--:--";
+        "READY";
 
       claimBtn.disabled =
-        true;
+        false;
 
       return;
     }
@@ -1308,23 +1422,30 @@
       target - Date.now();
 
 
+    /*
+      انتهى وقت الانتظار
+    */
+
     if (remaining <= 0) {
 
       timerEl.textContent =
         "00:00:00";
 
       claimBtn.disabled =
-        isClaiming;
+        false;
 
       return;
     }
 
 
+    /*
+      ما زال وقت الانتظار قائمًا
+    */
+
     timerEl.textContent =
       formatRemaining(
         remaining
       );
-
 
     claimBtn.disabled =
       true;
@@ -1338,7 +1459,6 @@
       clearInterval(
         countdownInterval
       );
-
     }
 
 
@@ -1355,8 +1475,7 @@
 
   /* =========================
      LOAD STATUS
-     لا تغيير في RPC
-  ========================= */
+  ========================== */
 
   async function loadStatus() {
 
@@ -1365,8 +1484,10 @@
       statusEl.textContent =
         "افتح التطبيق من داخل Telegram";
 
-      claimBtn.disabled =
-        true;
+      claimBtn.disabled = true;
+
+      timerEl.textContent =
+        "--:--:--";
 
       return;
     }
@@ -1376,87 +1497,101 @@
       "جاري تحميل بياناتك...";
 
 
-    const {
-      data,
-      error
-    } = await supabase.rpc(
-      "get_ltf_status",
-      {
-        p_telegram_user_id:
-          Number(
-            telegramUser.id
-          )
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "get_ltf_status",
+        {
+          p_telegram_user_id:
+            Number(telegramUser.id)
+        }
+      );
+
+
+      if (error) {
+
+        console.error(
+          "get_ltf_status:",
+          error
+        );
+
+
+        statusEl.textContent =
+          "تعذر تحميل البيانات";
+
+
+        showMessage(
+          "تعذر تحميل بيانات الحساب.\n\n" +
+          error.message
+        );
+
+        return;
       }
-    );
 
 
-    if (error) {
+      const result =
+        Array.isArray(data)
+          ? data[0]
+          : data;
+
+
+      if (!result) {
+
+        setBalance(0);
+
+        nextClaimAt = null;
+
+        startTimer();
+
+        statusEl.textContent = "";
+
+        return;
+      }
+
+
+      /*
+        الرصيد يأتي من Supabase
+        ولا يتم تغييره هنا.
+      */
+
+      setBalance(
+        result.balance
+      );
+
+
+      /*
+        وقت المطالبة يأتي من Supabase
+      */
+
+      nextClaimAt =
+        result.next_claim_at || null;
+
+
+      startTimer();
+
+
+      statusEl.textContent = "";
+
+    } catch (error) {
 
       console.error(
-        "get_ltf_status:",
+        "loadStatus:",
         error
       );
 
 
       statusEl.textContent =
         "تعذر تحميل البيانات";
-
-
-      showMessage(
-        "تعذر تحميل بيانات الحساب.\n\n" +
-        error.message
-      );
-
-
-      return;
     }
-
-
-    const result =
-      Array.isArray(data)
-        ? data[0]
-        : data;
-
-
-    if (!result) {
-
-      setBalance(0);
-
-      nextClaimAt = null;
-
-      startTimer();
-
-      statusEl.textContent = "";
-
-      return;
-    }
-
-
-    /*
-      الرصيد يأتي من Supabase
-      ولا يوجد رصيد ثابت هنا.
-    */
-
-    setBalance(
-      result.balance
-    );
-
-
-    nextClaimAt =
-      result.next_claim_at ||
-      null;
-
-
-    startTimer();
-
-    statusEl.textContent = "";
   }
 
 
   /* =========================
      CLAIM
-     لا تغيير في RPC
-  ========================= */
+  ========================== */
 
   async function claimLTF() {
 
@@ -1475,28 +1610,38 @@
     }
 
 
-    if (
-      nextClaimAt &&
-      new Date(
-        nextClaimAt
-      ).getTime() >
-      Date.now()
-    ) {
+    /*
+      حماية إضافية:
+      إذا ما زال الوقت قائمًا،
+      لا نرسل claim إلى الخادم.
+    */
 
-      updateTimer();
+    if (nextClaimAt) {
 
-      return;
+      const target =
+        parseClaimTime(
+          nextClaimAt
+        );
+
+
+      if (
+        target &&
+        target > Date.now()
+      ) {
+
+        updateTimer();
+
+        return;
+      }
     }
 
 
     isClaiming = true;
 
-    claimBtn.disabled =
-      true;
+    claimBtn.disabled = true;
 
     claimBtn.textContent =
       "⏳ CLAIMING...";
-
 
     statusEl.textContent =
       "جاري تنفيذ المطالبة...";
@@ -1511,9 +1656,7 @@
         "claim_ltf",
         {
           p_telegram_user_id:
-            Number(
-              telegramUser.id
-            ),
+            Number(telegramUser.id),
 
           p_username:
             telegramUser.username ||
@@ -1565,12 +1708,25 @@
       }
 
 
+      /*
+        نجاح المطالبة
+      */
+
       if (result.success === true) {
+
+        /*
+          الرصيد الجديد يأتي من Supabase.
+          لا نضيف رقمًا من الواجهة.
+        */
 
         setBalance(
           result.new_balance
         );
 
+
+        /*
+          وقت المطالبة القادم يأتي من Supabase.
+        */
 
         nextClaimAt =
           result.next_claim_at ||
@@ -1589,7 +1745,6 @@
             .notificationOccurred(
               "success"
             );
-
         }
 
 
@@ -1607,20 +1762,23 @@
       }
 
 
+      /*
+        إذا رفض الخادم المطالبة
+        نستخدم الوقت الذي أعاده الخادم.
+      */
+
       nextClaimAt =
         result.next_claim_at ||
         null;
 
 
       if (
-        result.new_balance !==
-        undefined
+        result.new_balance !== undefined
       ) {
 
         setBalance(
           result.new_balance
         );
-
       }
 
 
@@ -1635,6 +1793,7 @@
     } catch (error) {
 
       console.error(
+        "claimLTF:",
         error
       );
 
@@ -1654,7 +1813,6 @@
       updateTimer();
 
       statusEl.textContent = "";
-
     }
   }
 
@@ -1666,79 +1824,23 @@
 
 
   /* =========================
-     NAVIGATION UI
-     واجهة فقط
-  ========================= */
+     BUTTONS
+  ========================== */
 
-  function handleNavigation(page) {
+  function simpleButtonMessage(name) {
 
-    if (page === "mine") {
-      return;
-    }
-
-
-    const names = {
-
-      profile: "Profile",
-
-      wallet: "Wallet",
-
-      friends: "Friends",
-
-      tasks: "Tasks",
-
-      miners: "Miners"
-
-    };
-
-
-    if (names[page]) {
-
-      showMessage(
-        names[page] +
-        "\n\nسيتم تجهيز هذه الصفحة لاحقًا."
-      );
-
-    }
+    showMessage(
+      name + "\n\nسيتم تفعيل هذه الصفحة لاحقًا."
+    );
   }
 
-
-  document
-    .querySelectorAll(
-      ".quick-item, .bottom-item"
-    )
-    .forEach(
-      item => {
-
-        item.addEventListener(
-          "click",
-          () => {
-
-            handleNavigation(
-              item.dataset.page
-            );
-
-          }
-        );
-
-      }
-    );
-
-
-  /* =========================
-     TOP BUTTONS
-  ========================= */
 
   document
     .getElementById("bonusBtn")
     .addEventListener(
       "click",
-      () => {
-
-        showMessage(
-          "Bonus 🎁\n\nسيتم تجهيز نظام البونص لاحقًا."
-        );
-
+      function () {
+        simpleButtonMessage("🎁 Bonus");
       }
     );
 
@@ -1747,19 +1849,134 @@
     .getElementById("notificationBtn")
     .addEventListener(
       "click",
-      () => {
+      function () {
+        simpleButtonMessage("🔔 Notifications");
+      }
+    );
 
-        showMessage(
-          "Notifications 🔔\n\nلا توجد إشعارات جديدة."
-        );
 
+  document
+    .getElementById("profileQuick")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("👤 Profile");
+      }
+    );
+
+
+  document
+    .getElementById("walletQuick")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("👛 Wallet");
+      }
+    );
+
+
+  document
+    .getElementById("friendsQuick")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("👥 Friends");
+      }
+    );
+
+
+  document
+    .getElementById("tasksQuick")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("📋 Tasks");
+      }
+    );
+
+
+  document
+    .getElementById("minersQuick")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("⛏ Miners");
+      }
+    );
+
+
+  document
+    .getElementById("minersNav")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("⚡ Miners");
+      }
+    );
+
+
+  document
+    .getElementById("tasksNav")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("📋 Tasks");
+      }
+    );
+
+
+  document
+    .getElementById("friendsNav")
+    .addEventListener(
+      "click",
+      function () {
+        simpleButtonMessage("👥 Friends");
+      }
+    );
+
+
+  document
+    .getElementById("mineNav")
+    .addEventListener(
+      "click",
+      function () {
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
       }
     );
 
 
   /* =========================
+     VISIBILITY
+  ========================== */
+
+  document.addEventListener(
+    "visibilitychange",
+    function () {
+
+      /*
+        عند الرجوع للتطبيق،
+        نعيد حساب العداد مباشرة
+        بدل الاعتماد على عدد مرات setInterval.
+      */
+
+      if (
+        document.visibilityState ===
+        "visible"
+      ) {
+
+        updateTimer();
+      }
+    }
+  );
+
+
+  /* =========================
      INIT
-  ========================= */
+  ========================== */
 
   async function init() {
 
@@ -1769,8 +1986,7 @@
 
     if (!telegramUser) {
 
-      claimBtn.disabled =
-        true;
+      claimBtn.disabled = true;
 
       timerEl.textContent =
         "--:--:--";
@@ -1784,8 +2000,8 @@
 
     updateUserUI();
 
-    await loadStatus();
 
+    await loadStatus();
   }
 
 
