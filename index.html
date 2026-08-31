@@ -334,34 +334,6 @@
       font-size: 9px;
     }
 
-    .quick {
-      position: relative;
-      z-index: 3;
-      display: grid;
-      grid-template-columns: repeat(5,1fr);
-      gap: 6px;
-      margin-top: 14px;
-    }
-
-    .quick-item {
-      min-height: 62px;
-      border: 1px solid #352a11;
-      border-radius: 12px;
-      background: rgba(13,12,10,.92);
-      color: #888;
-      text-align: center;
-      font-size: 8px;
-      padding-top: 8px;
-      cursor: pointer;
-    }
-
-    .quick-item .icon {
-      display: block;
-      margin-bottom: 5px;
-      color: #c59729;
-      font-size: 20px;
-    }
-
     .bottom-nav {
       display: grid;
       grid-template-columns: repeat(4,1fr);
@@ -598,40 +570,16 @@
 
     </section>
 
-    <div class="quick">
+    <nav class="bottom-nav">
 
-      <div class="quick-item">
-        <span class="icon">⛏</span>
-        Miners
-      </div>
-
-      <div class="quick-item">
-        <span class="icon">📋</span>
-        Tasks
-      </div>
-
-      <div class="quick-item">
+      <div class="bottom-item">
         <span class="icon">👥</span>
         Friends
       </div>
 
-      <div class="quick-item">
-        <span class="icon">👛</span>
-        Wallet
-      </div>
-
-      <div class="quick-item">
-        <span class="icon">👤</span>
-        Profile
-      </div>
-
-    </div>
-
-    <nav class="bottom-nav">
-
-      <div class="bottom-item active">
-        <span class="icon">⛏</span>
-        Mine
+      <div class="bottom-item">
+        <span class="icon">📋</span>
+        Tasks
       </div>
 
       <div class="bottom-item">
@@ -639,14 +587,9 @@
         Miners
       </div>
 
-      <div class="bottom-item">
-        <span class="icon">📋</span>
-        Tasks
-      </div>
-
-      <div class="bottom-item">
-        <span class="icon">👥</span>
-        Friends
+      <div class="bottom-item active">
+        <span class="icon">⛏</span>
+        Mine
       </div>
 
     </nav>
@@ -678,10 +621,6 @@
 </div>
 
 <script>
-  /* =========================
-     SUPABASE
-  ========================= */
-
   const SUPABASE_URL =
     "https://julnowgcrkazepbfxkau.supabase.co";
 
@@ -694,11 +633,6 @@
       SUPABASE_KEY
     );
 
-
-  /* =========================
-     TELEGRAM
-  ========================= */
-
   const tg =
     window.Telegram &&
     window.Telegram.WebApp
@@ -709,11 +643,6 @@
     tg.ready();
     tg.expand();
   }
-
-
-  /* =========================
-     ELEMENTS
-  ========================= */
 
   const balanceEl =
     document.getElementById("balance");
@@ -748,20 +677,10 @@
   const messageClose =
     document.getElementById("messageClose");
 
-
-  /* =========================
-     STATE
-  ========================= */
-
   let telegramUser = null;
   let nextClaimAt = null;
   let countdownInterval = null;
   let isClaiming = false;
-
-
-  /* =========================
-     MESSAGE
-  ========================= */
 
   function showMessage(text) {
     messageText.textContent = text;
@@ -777,13 +696,7 @@
     hideMessage
   );
 
-
-  /* =========================
-     TELEGRAM USER
-  ========================= */
-
   function getTelegramUser() {
-
     if (
       !tg ||
       !tg.initDataUnsafe ||
@@ -795,13 +708,7 @@
     return tg.initDataUnsafe.user;
   }
 
-
-  /* =========================
-     USER UI
-  ========================= */
-
   function updateUserUI() {
-
     if (!telegramUser) {
       return;
     }
@@ -810,9 +717,7 @@
       telegramUser.first_name || "LTF";
 
     avatarEl.textContent =
-      firstName
-        .charAt(0)
-        .toUpperCase();
+      firstName.charAt(0).toUpperCase();
 
     profileNameEl.textContent =
       telegramUser.username
@@ -820,13 +725,7 @@
         : firstName;
   }
 
-
-  /* =========================
-     BALANCE
-  ========================= */
-
   function setBalance(value) {
-
     const number =
       Number(value || 0);
 
@@ -859,13 +758,7 @@
       );
   }
 
-
-  /* =========================
-     TIMER
-  ========================= */
-
   function formatRemaining(ms) {
-
     if (ms <= 0) {
       return "00:00:00";
     }
@@ -874,9 +767,7 @@
       Math.ceil(ms / 1000);
 
     const hours =
-      Math.floor(
-        totalSeconds / 3600
-      );
+      Math.floor(totalSeconds / 3600);
 
     const minutes =
       Math.floor(
@@ -895,17 +786,10 @@
     );
   }
 
-
   function updateTimer() {
-
     if (!nextClaimAt) {
-
-      timerEl.textContent =
-        "READY";
-
-      claimBtn.disabled =
-        isClaiming;
-
+      timerEl.textContent = "READY";
+      claimBtn.disabled = isClaiming;
       return;
     }
 
@@ -916,15 +800,9 @@
       target - Date.now();
 
     if (remaining <= 0) {
-
       nextClaimAt = null;
-
-      timerEl.textContent =
-        "READY";
-
-      claimBtn.disabled =
-        isClaiming;
-
+      timerEl.textContent = "READY";
+      claimBtn.disabled = isClaiming;
       return;
     }
 
@@ -934,9 +812,7 @@
     claimBtn.disabled = true;
   }
 
-
   function startTimer() {
-
     if (countdownInterval) {
       clearInterval(countdownInterval);
     }
@@ -950,23 +826,13 @@
       );
   }
 
-
-  /* =========================
-     LOAD STATUS
-  ========================= */
-
   async function loadStatus() {
-
     if (!telegramUser) {
-
       statusEl.textContent =
         "افتح التطبيق من داخل Telegram";
 
       claimBtn.disabled = true;
-
-      timerEl.textContent =
-        "--:--:--";
-
+      timerEl.textContent = "--:--:--";
       return;
     }
 
@@ -974,7 +840,6 @@
       "جاري تحميل بياناتك...";
 
     try {
-
       const {
         data,
         error
@@ -987,7 +852,6 @@
       );
 
       if (error) {
-
         console.error(
           "get_ltf_status:",
           error
@@ -1001,17 +865,9 @@
           error.message
         );
 
-        /*
-          لا نعطل الزر نهائيًا بسبب فشل
-          تحميل الحالة.
-        */
         claimBtn.disabled = false;
-
         nextClaimAt = null;
-
-        timerEl.textContent =
-          "READY";
-
+        timerEl.textContent = "READY";
         return;
       }
 
@@ -1021,31 +877,22 @@
           : data;
 
       if (!result) {
-
         setBalance(0);
-
         nextClaimAt = null;
-
         startTimer();
-
         statusEl.textContent = "";
-
         return;
       }
 
-      setBalance(
-        result.balance
-      );
+      setBalance(result.balance);
 
       nextClaimAt =
         result.next_claim_at || null;
 
       startTimer();
-
       statusEl.textContent = "";
 
     } catch (error) {
-
       console.error(
         "loadStatus:",
         error
@@ -1055,61 +902,39 @@
         "تعذر تحميل البيانات";
 
       claimBtn.disabled = false;
-
       nextClaimAt = null;
-
-      timerEl.textContent =
-        "READY";
+      timerEl.textContent = "READY";
     }
   }
 
-
-  /* =========================
-     CLAIM
-  ========================= */
-
   async function claimLTF() {
-
     if (isClaiming) {
       return;
     }
 
     if (!telegramUser) {
-
       showMessage(
         "يجب فتح التطبيق من داخل Telegram."
       );
-
       return;
     }
 
-    /*
-      حماية إضافية في الواجهة.
-      قاعدة البيانات هي الحماية الأساسية.
-    */
     if (
       nextClaimAt &&
       new Date(nextClaimAt).getTime() >
       Date.now()
     ) {
-
       updateTimer();
-
       return;
     }
 
     isClaiming = true;
-
     claimBtn.disabled = true;
-
-    claimBtn.textContent =
-      "⏳ CLAIMING...";
-
+    claimBtn.textContent = "⏳ CLAIMING...";
     statusEl.textContent =
       "جاري تنفيذ المطالبة...";
 
     try {
-
       const {
         data,
         error
@@ -1134,7 +959,6 @@
       );
 
       if (error) {
-
         console.error(
           "claim_ltf:",
           error
@@ -1146,7 +970,6 @@
         );
 
         await loadStatus();
-
         return;
       }
 
@@ -1156,21 +979,15 @@
           : data;
 
       if (!result) {
-
         showMessage(
           "لم تصل نتيجة من الخادم."
         );
 
         await loadStatus();
-
         return;
       }
 
-      /*
-        المطالبة نجحت
-      */
       if (result.success === true) {
-
         setBalance(
           result.new_balance
         );
@@ -1184,7 +1001,6 @@
           tg &&
           tg.HapticFeedback
         ) {
-
           tg.HapticFeedback
             .notificationOccurred(
               "success"
@@ -1203,16 +1019,10 @@
         return;
       }
 
-      /*
-        المطالبة مرفوضة بسبب الوقت
-        أو أي سبب ترسله قاعدة البيانات
-      */
-
       if (
         result.new_balance !== undefined &&
         result.new_balance !== null
       ) {
-
         setBalance(
           result.new_balance
         );
@@ -1229,7 +1039,6 @@
       );
 
     } catch (error) {
-
       console.error(
         "claim exception:",
         error
@@ -1240,63 +1049,41 @@
         error.message
       );
 
-      /*
-        نعيد تحميل الحالة من Supabase
-        حتى لا يبقى العداد أو الرصيد
-        في حالة خاطئة.
-      */
       await loadStatus();
 
     } finally {
-
       isClaiming = false;
 
       claimBtn.textContent =
         "⚡ CLAIM LTF";
 
       updateTimer();
-
       statusEl.textContent = "";
     }
   }
-
 
   claimBtn.addEventListener(
     "click",
     claimLTF
   );
 
-
-  /* =========================
-     INIT
-  ========================= */
-
   async function init() {
-
     telegramUser =
       getTelegramUser();
 
     if (!telegramUser) {
-
       claimBtn.disabled = true;
-
-      timerEl.textContent =
-        "--:--:--";
-
+      timerEl.textContent = "--:--:--";
       statusEl.textContent =
         "افتح التطبيق من داخل Telegram";
-
       return;
     }
 
     updateUserUI();
-
     await loadStatus();
   }
 
-
   init();
-
 </script>
 
 </body>
