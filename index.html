@@ -312,20 +312,6 @@
       cursor: not-allowed;
     }
 
-    .claim-title {
-      display: block;
-    }
-
-    .claim-btn .timer {
-      display: block;
-      margin-top: 5px;
-      color: #d8fff1;
-      font-size: 14px;
-      font-weight: bold;
-      direction: ltr;
-      min-width: 0;
-    }
-
     .timer-text {
       margin-top: 10px;
       color: #777;
@@ -525,7 +511,6 @@
 
   </header>
 
-
   <section class="assets">
 
     <div class="asset">
@@ -575,7 +560,6 @@
 
   </section>
 
-
   <main class="mine">
 
     <div class="rings"></div>
@@ -593,23 +577,26 @@
 
     </div>
 
-
     <section class="claim-section">
 
       <button
         id="claimBtn"
         class="claim-btn"
         type="button"
-        disabled
       >
-        <span class="claim-title">⚡ CLAIM LTF</span>
-        <span id="timer" class="timer">+0.0000 LTF</span>
+        ⚡ CLAIM LTF
       </button>
+
+      <div class="timer-text">
+        Next Claim in
+        <span id="timer" class="timer">
+          --:--:--
+        </span>
+      </div>
 
       <div id="status" class="status"></div>
 
     </section>
-
 
     <div class="quick">
 
@@ -640,7 +627,6 @@
 
     </div>
 
-
     <nav class="bottom-nav">
 
       <div class="bottom-item active">
@@ -669,7 +655,6 @@
 
 </div>
 
-
 <div id="messageOverlay" class="message-overlay">
 
   <div class="message-box">
@@ -692,9 +677,7 @@
 
 </div>
 
-
 <script>
-
   /* =========================
      SUPABASE
   ========================= */
@@ -705,8 +688,7 @@
   const SUPABASE_KEY =
     "sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23";
 
-
-  const supabase =
+  const supabaseClient =
     window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
@@ -722,7 +704,6 @@
     window.Telegram.WebApp
       ? window.Telegram.WebApp
       : null;
-
 
   if (tg) {
     tg.ready();
@@ -773,11 +754,8 @@
   ========================= */
 
   let telegramUser = null;
-
   let nextClaimAt = null;
-
   let countdownInterval = null;
-
   let isClaiming = false;
 
 
@@ -786,18 +764,13 @@
   ========================= */
 
   function showMessage(text) {
-
     messageText.textContent = text;
-
     messageOverlay.style.display = "flex";
   }
 
-
   function hideMessage() {
-
     messageOverlay.style.display = "none";
   }
-
 
   messageClose.addEventListener(
     "click",
@@ -841,7 +814,6 @@
         .charAt(0)
         .toUpperCase();
 
-
     profileNameEl.textContent =
       telegramUser.username
         ? "@" + telegramUser.username
@@ -858,7 +830,6 @@
     const number =
       Number(value || 0);
 
-
     balanceEl.textContent =
       number.toLocaleString(
         "en-US",
@@ -868,7 +839,6 @@
         }
       );
 
-
     holdingEl.textContent =
       number.toLocaleString(
         "en-US",
@@ -877,7 +847,6 @@
           maximumFractionDigits: 2
         }
       );
-
 
     balanceUsdEl.textContent =
       "≈ $" +
@@ -895,73 +864,81 @@
      TIMER
   ========================= */
 
-  const miningDuration =
-    3 * 60 * 60 * 1000;
+  function formatRemaining(ms) {
 
-  const miningStartKey =
-    "ltf_mining_start";
-
-  let miningStart =
-    Number(
-      localStorage.getItem(
-        miningStartKey
-      )
-    );
-
-
-  function getMiningStart() {
-
-    if (
-      !miningStart ||
-      !Number.isFinite(miningStart)
-    ) {
-
-      miningStart =
-        Date.now();
-
-      localStorage.setItem(
-        miningStartKey,
-        String(miningStart)
-      );
+    if (ms <= 0) {
+      return "00:00:00";
     }
 
-    return miningStart;
+    const totalSeconds =
+      Math.ceil(ms / 1000);
+
+    const hours =
+      Math.floor(
+        totalSeconds / 3600
+      );
+
+    const minutes =
+      Math.floor(
+        (totalSeconds % 3600) / 60
+      );
+
+    const seconds =
+      totalSeconds % 60;
+
+    return (
+      String(hours).padStart(2, "0")
+      + ":" +
+      String(minutes).padStart(2, "0")
+      + ":" +
+      String(seconds).padStart(2, "0")
+    );
   }
 
 
   function updateTimer() {
 
-    const start =
-      getMiningStart();
+    if (!nextClaimAt) {
 
-    const elapsed =
-      Math.max(
-        0,
-        Date.now() - start
-      );
+      timerEl.textContent =
+        "READY";
 
-    const progress =
-      Math.min(
-        1,
-        elapsed / miningDuration
-      );
+      claimBtn.disabled =
+        isClaiming;
 
-    const amount =
-      progress * 3;
+      return;
+    }
+
+    const target =
+      new Date(nextClaimAt).getTime();
+
+    const remaining =
+      target - Date.now();
+
+    if (remaining <= 0) {
+
+      nextClaimAt = null;
+
+      timerEl.textContent =
+        "READY";
+
+      claimBtn.disabled =
+        isClaiming;
+
+      return;
+    }
 
     timerEl.textContent =
-      "+" +
-      amount.toFixed(4) +
-      " LTF";
+      formatRemaining(remaining);
+
+    claimBtn.disabled = true;
   }
 
 
   function startTimer() {
 
     if (countdownInterval) {
-      clearInterval(
-        countdownInterval
-      );
+      clearInterval(countdownInterval);
     }
 
     updateTimer();
@@ -987,78 +964,103 @@
 
       claimBtn.disabled = true;
 
+      timerEl.textContent =
+        "--:--:--";
+
       return;
     }
-
 
     statusEl.textContent =
       "جاري تحميل بياناتك...";
 
+    try {
 
-    const {
-      data,
-      error
-    } = await supabase.rpc(
-      "get_ltf_status",
-      {
-        p_telegram_user_id:
-          Number(telegramUser.id)
-      }
-    );
-
-
-    if (error) {
-
-      console.error(
-        "get_ltf_status:",
+      const {
+        data,
         error
+      } = await supabaseClient.rpc(
+        "get_ltf_status",
+        {
+          p_telegram_user_id:
+            Number(telegramUser.id)
+        }
       );
 
+      if (error) {
 
-      statusEl.textContent =
-        "تعذر تحميل البيانات";
+        console.error(
+          "get_ltf_status:",
+          error
+        );
 
-      showMessage(
-        "تعذر تحميل بيانات الحساب.\n\n" +
-        error.message
+        statusEl.textContent =
+          "تعذر تحميل البيانات";
+
+        showMessage(
+          "تعذر تحميل بيانات الحساب.\n\n" +
+          error.message
+        );
+
+        /*
+          لا نعطل الزر نهائيًا بسبب فشل
+          تحميل الحالة.
+        */
+        claimBtn.disabled = false;
+
+        nextClaimAt = null;
+
+        timerEl.textContent =
+          "READY";
+
+        return;
+      }
+
+      const result =
+        Array.isArray(data)
+          ? data[0]
+          : data;
+
+      if (!result) {
+
+        setBalance(0);
+
+        nextClaimAt = null;
+
+        startTimer();
+
+        statusEl.textContent = "";
+
+        return;
+      }
+
+      setBalance(
+        result.balance
       );
 
-      return;
-    }
-
-
-    const result =
-      Array.isArray(data)
-        ? data[0]
-        : data;
-
-
-    if (!result) {
-
-      setBalance(0);
-
-      nextClaimAt = null;
+      nextClaimAt =
+        result.next_claim_at || null;
 
       startTimer();
 
       statusEl.textContent = "";
 
-      return;
+    } catch (error) {
+
+      console.error(
+        "loadStatus:",
+        error
+      );
+
+      statusEl.textContent =
+        "تعذر تحميل البيانات";
+
+      claimBtn.disabled = false;
+
+      nextClaimAt = null;
+
+      timerEl.textContent =
+        "READY";
     }
-
-
-    setBalance(
-      result.balance
-    );
-
-
-    nextClaimAt =
-      result.next_claim_at || null;
-
-
-    startTimer();
-
-    statusEl.textContent = "";
   }
 
 
@@ -1072,7 +1074,6 @@
       return;
     }
 
-
     if (!telegramUser) {
 
       showMessage(
@@ -1082,18 +1083,20 @@
       return;
     }
 
-
+    /*
+      حماية إضافية في الواجهة.
+      قاعدة البيانات هي الحماية الأساسية.
+    */
     if (
       nextClaimAt &&
-      new Date(nextClaimAt).getTime()
-      > Date.now()
+      new Date(nextClaimAt).getTime() >
+      Date.now()
     ) {
 
       updateTimer();
 
       return;
     }
-
 
     isClaiming = true;
 
@@ -1105,13 +1108,12 @@
     statusEl.textContent =
       "جاري تنفيذ المطالبة...";
 
-
     try {
 
       const {
         data,
         error
-      } = await supabase.rpc(
+      } = await supabaseClient.rpc(
         "claim_ltf",
         {
           p_telegram_user_id:
@@ -1125,6 +1127,11 @@
         }
       );
 
+      console.log(
+        "claim_ltf result:",
+        data,
+        error
+      );
 
       if (error) {
 
@@ -1133,24 +1140,20 @@
           error
         );
 
-
         showMessage(
           "حدث خطأ أثناء المطالبة.\n\n" +
           error.message
         );
-
 
         await loadStatus();
 
         return;
       }
 
-
       const result =
         Array.isArray(data)
           ? data[0]
           : data;
-
 
       if (!result) {
 
@@ -1158,26 +1161,24 @@
           "لم تصل نتيجة من الخادم."
         );
 
-
         await loadStatus();
 
         return;
       }
 
-
+      /*
+        المطالبة نجحت
+      */
       if (result.success === true) {
 
         setBalance(
           result.new_balance
         );
 
-
         nextClaimAt =
           result.next_claim_at || null;
 
-
         startTimer();
-
 
         if (
           tg &&
@@ -1190,7 +1191,6 @@
             );
         }
 
-
         showMessage(
           "تمت إضافة 1 LTF بنجاح ✅\n\n" +
           "الرصيد الجديد: " +
@@ -1200,17 +1200,17 @@
           " LTF"
         );
 
-
         return;
       }
 
-
-      nextClaimAt =
-        result.next_claim_at || null;
-
+      /*
+        المطالبة مرفوضة بسبب الوقت
+        أو أي سبب ترسله قاعدة البيانات
+      */
 
       if (
-        result.new_balance !== undefined
+        result.new_balance !== undefined &&
+        result.new_balance !== null
       ) {
 
         setBalance(
@@ -1218,9 +1218,10 @@
         );
       }
 
+      nextClaimAt =
+        result.next_claim_at || null;
 
       startTimer();
-
 
       showMessage(
         result.message ||
@@ -1229,12 +1230,22 @@
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "claim exception:",
+        error
+      );
 
       showMessage(
         "حدث خطأ غير متوقع.\n\n" +
         error.message
       );
+
+      /*
+        نعيد تحميل الحالة من Supabase
+        حتى لا يبقى العداد أو الرصيد
+        في حالة خاطئة.
+      */
+      await loadStatus();
 
     } finally {
 
@@ -1265,7 +1276,6 @@
     telegramUser =
       getTelegramUser();
 
-
     if (!telegramUser) {
 
       claimBtn.disabled = true;
@@ -1279,10 +1289,7 @@
       return;
     }
 
-
     updateUserUI();
-
-    startTimer();
 
     await loadStatus();
   }
