@@ -39,6 +39,308 @@ body{overflow-x:hidden}button{font-family:inherit}
 .task-icon{width:52px;height:52px;font-size:24px;background:#0d0c09}.task-info{min-width:0;direction:rtl;text-align:right}.task-name{color:#eee;font-size:16px;font-weight:bold}.task-reward{margin-top:6px;color:#f1bd34;font-size:12px}.task-action{width:78px;min-height:46px;border:1px solid #00d49b;border-radius:16px;background:linear-gradient(180deg,#0cae7b,#08704f);color:#e0fff6;font-size:12px;font-weight:bold;cursor:pointer}.task-action:disabled{color:#777;border-color:#3a3a3a;background:#171715;cursor:not-allowed}.task-countdown{margin-top:5px;color:#00c995;font-size:11px;direction:ltr;text-align:center}
 .message-overlay{position:fixed;z-index:9999;inset:0;display:none;align-items:center;justify-content:center;padding:25px;background:rgba(0,0,0,.78)}.message-box{width:100%;max-width:350px;border-radius:22px;padding:25px 20px;background:#151515;border:1px solid #51401c;text-align:center}.message-title{margin-bottom:12px;color:#e4b93f;font-size:21px;font-weight:bold}.message-text{color:#ddd;font-size:15px;line-height:1.7;white-space:pre-line}.message-close{margin-top:20px;min-width:100px;padding:10px 20px;border:0;border-radius:20px;background:#168b66;color:white;font-weight:bold;cursor:pointer}
 @media(max-width:360px){.brand-main{font-size:34px}.brand-sub{font-size:5px}.avatar{width:43px;height:43px;flex-basis:43px}.coin-area{width:205px;height:205px}.coin-inner{width:160px;height:160px}.claim-btn{font-size:20px}.miner-card{grid-template-columns:68px 1fr 66px;gap:7px;padding:9px}.miner-level-circle{width:57px;height:57px}.miner-name{font-size:17px}.miner-detail{font-size:11px}.miner-buy{width:59px;height:47px}}
+
+/* ===== LTF LEGENDARY VISUAL LAYER ===== */
+
+body{
+  background:#000;
+}
+
+.app{
+  position:relative;
+  width:100%;
+  max-width:430px;
+  min-height:100vh;
+  margin:auto;
+  padding:12px 12px 24px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 18% 16%,rgba(255,190,45,.16),transparent 19%),
+    radial-gradient(circle at 88% 27%,rgba(255,178,25,.12),transparent 23%),
+    radial-gradient(circle at 50% 65%,rgba(197,126,9,.13),transparent 34%),
+    linear-gradient(145deg,#010101 0%,#090805 38%,#020202 100%);
+}
+
+.app::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.55;
+  background:
+    repeating-linear-gradient(118deg,transparent 0 78px,rgba(224,171,48,.10) 79px,transparent 81px 145px),
+    repeating-linear-gradient(28deg,transparent 0 115px,rgba(255,205,76,.055) 116px,transparent 118px 190px);
+  mask-image:linear-gradient(to bottom,black 0%,transparent 78%);
+}
+
+.app::after{
+  content:"";
+  position:absolute;
+  width:520px;
+  height:520px;
+  left:-45px;
+  top:320px;
+  border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle,transparent 0 37%,rgba(205,157,45,.09) 37.3% 37.8%,transparent 38.2% 51%,rgba(205,157,45,.07) 51.3% 51.7%,transparent 52.1%),
+    radial-gradient(circle at 50% 50%,rgba(255,198,55,.06),transparent 58%);
+  box-shadow:0 0 90px rgba(230,174,42,.07);
+}
+
+.top{
+  position:relative;
+  z-index:5;
+}
+
+.top-action{
+  border-color:#594514;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(237,190,64,.16),transparent 45%),
+    linear-gradient(180deg,#16130c,#050504);
+  box-shadow:inset 0 0 16px rgba(239,184,47,.05),0 0 18px rgba(204,148,23,.06);
+}
+
+.brand-main{
+  color:#f1c64e;
+  text-shadow:0 0 20px rgba(241,198,78,.18),0 2px 0 #5d400b;
+}
+
+.assets{
+  position:relative;
+  z-index:4;
+  border-color:#6a4c16;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(231,180,48,.09),transparent 38%),
+    linear-gradient(180deg,rgba(17,16,13,.98),rgba(4,4,4,.98));
+  box-shadow:
+    inset 0 0 35px rgba(0,0,0,.65),
+    0 0 25px rgba(204,149,28,.05);
+}
+
+.asset-value{
+  text-shadow:0 0 10px rgba(0,216,157,.16);
+}
+
+.mine{
+  position:relative;
+  z-index:3;
+  min-height:720px;
+  border:1px solid #6b4d17;
+  border-radius:28px;
+  padding:18px 14px 20px;
+  background:
+    radial-gradient(circle at 16% 24%,rgba(255,187,41,.22),transparent 15%),
+    radial-gradient(circle at 86% 22%,rgba(255,184,35,.18),transparent 14%),
+    radial-gradient(circle at 50% 36%,rgba(184,116,7,.30),transparent 25%),
+    radial-gradient(circle at 50% 84%,rgba(223,157,20,.12),transparent 28%),
+    linear-gradient(145deg,#030303 0%,#100c04 44%,#030303 100%);
+  box-shadow:
+    inset 0 0 75px rgba(0,0,0,.88),
+    0 0 32px rgba(210,154,29,.07);
+}
+
+.mine::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.75;
+  background:
+    radial-gradient(circle at 8% 13%,#f3c85a 0 1px,transparent 2px),
+    radial-gradient(circle at 92% 17%,#f3c85a 0 1px,transparent 2px),
+    radial-gradient(circle at 18% 46%,#f3c85a 0 1px,transparent 2px),
+    radial-gradient(circle at 83% 52%,#f3c85a 0 1px,transparent 2px),
+    radial-gradient(circle at 12% 78%,#f3c85a 0 1px,transparent 2px),
+    radial-gradient(circle at 90% 82%,#f3c85a 0 1px,transparent 2px);
+  filter:drop-shadow(0 0 7px rgba(255,202,69,.7));
+}
+
+.mine::after{
+  content:"LTF";
+  position:absolute;
+  z-index:0;
+  left:50%;
+  top:58%;
+  transform:translate(-50%,-50%);
+  font-size:180px;
+  font-weight:900;
+  letter-spacing:10px;
+  color:rgba(224,172,44,.025);
+  text-shadow:0 0 40px rgba(224,172,44,.06);
+  pointer-events:none;
+}
+
+.rings{
+  width:620px;
+  height:620px;
+  top:18px;
+  opacity:.9;
+  background:
+    repeating-radial-gradient(
+      circle,
+      transparent 0 50px,
+      rgba(190,139,30,.20) 51px 53px,
+      transparent 54px 88px
+    );
+}
+
+.coin-area{
+  width:250px;
+  height:250px;
+  margin-top:34px;
+  background:
+    radial-gradient(circle at 35% 26%,#ffe28a 0%,#f1bd35 13%,#bf8210 34%,#774900 62%,#241601 87%,#0b0700 100%);
+  border:7px double #efbb3d;
+  box-shadow:
+    0 0 20px rgba(248,192,61,.92),
+    0 0 65px rgba(208,137,13,.42),
+    0 0 120px rgba(207,139,16,.13),
+    inset 0 0 28px rgba(255,234,150,.25),
+    inset 0 0 48px rgba(0,0,0,.5);
+}
+
+.coin-inner{
+  width:196px;
+  height:196px;
+  border-color:rgba(255,225,119,.72);
+  background:
+    radial-gradient(circle at 45% 35%,rgba(255,220,91,.30),rgba(90,52,2,.58));
+  box-shadow:inset 0 0 28px rgba(255,224,117,.16);
+}
+
+.coin-logo{
+  color:#ffe68c;
+  font-size:50px;
+  text-shadow:
+    0 2px 0 #704600,
+    0 0 13px rgba(255,222,108,.75),
+    0 0 28px rgba(255,196,53,.28);
+}
+
+.claim-section{
+  margin-top:56px;
+}
+
+.claim-btn{
+  height:70px;
+  border:2px solid #08dba2;
+  border-radius:35px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,255,255,.13),transparent 42%),
+    linear-gradient(180deg,#12bd82,#08764f);
+  box-shadow:
+    0 0 20px rgba(0,218,160,.28),
+    0 0 45px rgba(0,194,139,.10),
+    inset 0 0 20px rgba(255,255,255,.05);
+}
+
+.claim-btn:disabled{
+  background:linear-gradient(180deg,#13543f,#082d22);
+}
+
+.timer-text{
+  margin-top:14px;
+  font-size:11px;
+}
+
+.timer{
+  text-shadow:0 0 10px rgba(0,220,165,.25);
+}
+
+.status{
+  font-size:10px;
+}
+
+.quick{
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:18px;
+}
+
+.quick-item{
+  min-height:70px;
+  border-color:#594313;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(228,175,48,.10),transparent 48%),
+    linear-gradient(180deg,rgba(17,15,10,.98),rgba(4,4,4,.98));
+  box-shadow:inset 0 0 18px rgba(221,166,37,.035);
+}
+
+.quick-item .icon{
+  color:#e2b53b;
+  text-shadow:0 0 10px rgba(229,180,52,.22);
+}
+
+.swap-icon{
+  width:34px;
+  height:34px;
+  margin:0 auto 2px;
+}
+
+.swap-icon svg{
+  width:34px;
+  height:34px;
+  filter:drop-shadow(0 0 7px rgba(246,198,70,.32));
+}
+
+.bottom-nav{
+  margin-top:14px;
+  border-color:#4e3a13;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(225,171,43,.07),transparent 45%),
+    #050504;
+}
+
+.bottom-item.active{
+  color:#f0c34a;
+  text-shadow:0 0 10px rgba(239,190,57,.18);
+}
+
+/* Premium task/miner overlays */
+.miners-overlay,.tasks-overlay{
+  background:
+    radial-gradient(circle at 50% 18%,rgba(213,155,29,.14),transparent 30%),
+    #000;
+}
+
+.miners-page,.tasks-page{
+  background:
+    radial-gradient(circle at 15% 18%,rgba(239,185,52,.08),transparent 24%),
+    radial-gradient(circle at 85% 25%,rgba(239,185,52,.07),transparent 24%),
+    linear-gradient(180deg,#020202,#0a0804 60%,#020202);
+}
+
+.miner-card,.task-card{
+  border-color:#5b4315;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(226,173,45,.07),transparent 48%),
+    linear-gradient(180deg,rgba(13,13,12,.98),rgba(4,4,4,.98));
+  box-shadow:inset 0 0 20px rgba(225,170,38,.025);
+}
+
+/* 4-button layout on small screens */
+@media(max-width:360px){
+  .quick{
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+  }
+  .quick-item{
+    min-height:66px;
+  }
+  .coin-area{
+    width:220px;
+    height:220px;
+  }
+  .coin-inner{
+    width:172px;
+    height:172px;
+  }
+  .claim-section{
+    margin-top:46px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -59,7 +361,7 @@ body{overflow-x:hidden}button{font-family:inherit}
 <div class="quick">
 <div class="quick-item" id="quickMiners"><span class="icon">⛏</span>Miners</div>
 <div class="quick-item" id="quickTasks"><span class="icon">📋</span>Tasks</div>
-<div class="quick-item"><span class="icon">👥</span>Friends</div><div class="quick-item"><span class="icon">👛</span>Wallet</div><div class="quick-item" id="quickSwap" role="button" tabindex="0">
+<div class="quick-item" id="quickFriends" role="button" tabindex="0"><span class="icon">👥</span>Friends</div><div class="quick-item" id="quickSwap" role="button" tabindex="0">
 <span class="swap-icon" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><linearGradient id="swapCore" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8d76a"/><stop offset="1" stop-color="#9a6812"/></linearGradient></defs><circle class="swap-core" cx="20" cy="20" r="6.5"/><path class="swap-arrow swap-gold" d="M8 15.5C10.5 10.2 16.2 7.5 22 9.1c3.2.9 5.8 3 7.3 5.7"/><path class="swap-arrow swap-gold" d="M29.3 10.7l1.2 5.8-5.8-1.2"/><path class="swap-arrow swap-green" d="M32 24.5c-2.5 5.3-8.2 8-14 6.4-3.2-.9-5.8-3-7.3-5.7"/><path class="swap-arrow swap-green" d="M10.7 29.3l-1.2-5.8 5.8 1.2"/><path class="swap-shine" d="M18 15.5l2-1.8 2 1.8"/></svg></span>SWAP</div>
 </div>
 <nav class="bottom-nav"><div class="bottom-item active"><span class="icon">⛏</span>Mine</div><div class="bottom-item" id="bottomMiners"><span class="icon">⚡</span>Miners</div><div class="bottom-item" id="bottomTasks"><span class="icon">📋</span>Tasks</div><div class="bottom-item"><span class="icon">👥</span>Friends</div></nav>
