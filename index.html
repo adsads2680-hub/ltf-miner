@@ -1,1098 +1,403 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#050505">
-  <title>LTF Miner</title>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      background: #000;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      overflow-x: hidden;
-    }
-
-    button {
-      font-family: inherit;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 430px;
-      min-height: 100vh;
-      margin: auto;
-      padding: 12px 12px 24px;
-      background:
-        radial-gradient(circle at 50% 35%, rgba(157,102,13,.32), transparent 27%),
-        radial-gradient(circle at 50% 75%, rgba(90,57,5,.18), transparent 32%),
-        linear-gradient(180deg,#030303 0%,#090806 55%,#020202 100%);
-    }
-
-    .top {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      gap: 8px;
-      min-height: 82px;
-      padding: 4px 2px 12px;
-    }
-
-    .profile-mini {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .avatar {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
-      border-radius: 50%;
-      border: 2px solid #9b701b;
-      background: radial-gradient(circle at 35% 30%,#3b2a0b,#080706 70%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #d6aa39;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .profile-text {
-      min-width: 0;
-      text-align: left;
-      direction: ltr;
-    }
-
-    .profile-name {
-      max-width: 80px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: #bcbcbc;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .level {
-      display: inline-block;
-      margin-top: 5px;
-      padding: 3px 8px;
-      border: 1px solid #00a97d;
-      border-radius: 20px;
-      color: #00c995;
-      font-size: 9px;
-    }
-
-    .brand {
-      text-align: center;
-      direction: ltr;
-    }
-
-    .brand-main {
-      color: #d4a52c;
-      font-size: 42px;
-      line-height: .85;
-      font-weight: 900;
-      letter-spacing: 3px;
-    }
-
-    .brand-sub {
-      margin-top: 7px;
-      color: #777;
-      font-size: 6px;
-      letter-spacing: 3px;
-      white-space: nowrap;
-    }
-
-    .top-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 5px;
-      direction: ltr;
-    }
-
-    .top-action {
-      width: 43px;
-      height: 55px;
-      border: 1px solid #3d3013;
-      border-radius: 12px;
-      background: linear-gradient(#14120e,#080807);
-      color: #888;
-      text-align: center;
-      font-size: 8px;
-      cursor: pointer;
-    }
-
-    .top-action .emoji {
-      display: block;
-      font-size: 19px;
-      margin: 5px 0 4px;
-    }
-
-    .assets {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      border: 1px solid #4a3815;
-      border-radius: 20px;
-      background: linear-gradient(180deg,rgba(23,22,19,.96),rgba(7,7,6,.96));
-      padding: 13px 4px;
-      margin-bottom: 12px;
-      box-shadow: inset 0 0 25px rgba(0,0,0,.35);
-    }
-
-    .asset {
-      min-width: 0;
-      text-align: center;
-      border-left: 1px solid #292929;
-    }
-
-    .asset:first-child {
-      border-left: 0;
-    }
-
-    .asset-title {
-      color: #aaa;
-      font-size: 9px;
-      line-height: 1.5;
-    }
-
-    .asset-value {
-      margin: 4px 0 3px;
-      color: #00d89d;
-      font-size: 19px;
-      font-weight: bold;
-      direction: ltr;
-      white-space: nowrap;
-    }
-
-    .asset:nth-child(2) .asset-value {
-      color: #f1bd34;
-    }
-
-    .asset-sub {
-      color: #777;
-      font-size: 8px;
-      direction: ltr;
-    }
-
-    .mine {
-      position: relative;
-      overflow: hidden;
-      min-height: 610px;
-      border: 1px solid #503b12;
-      border-radius: 24px;
-      padding: 18px 14px 20px;
-      background:
-        radial-gradient(circle at 50% 34%,rgba(143,91,7,.50),transparent 24%),
-        radial-gradient(circle at 50% 45%,rgba(72,43,3,.45),transparent 45%),
-        linear-gradient(180deg,#171006 0%,#090806 50%,#030303 100%);
-      box-shadow: inset 0 0 55px rgba(0,0,0,.75);
-    }
-
-    .rings {
-      position: absolute;
-      z-index: 0;
-      width: 520px;
-      height: 520px;
-      left: 50%;
-      top: 15px;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      background:
-        repeating-radial-gradient(
-          circle,
-          transparent 0 52px,
-          rgba(153,108,27,.25) 53px 55px,
-          transparent 56px 88px
-        );
-      opacity: .75;
-      pointer-events: none;
-    }
-
-    .coin-area {
-      position: relative;
-      z-index: 2;
-      width: 235px;
-      height: 235px;
-      margin: 22px auto 0;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(
-          circle at 35% 28%,
-          #f1c450 0%,
-          #bd8210 26%,
-          #805303 57%,
-          #3c2603 78%,
-          #1a1001 100%
-        );
-      border: 7px double #e0aa2f;
-      box-shadow:
-        0 0 18px rgba(242,181,45,.7),
-        0 0 55px rgba(188,120,8,.35),
-        inset 0 0 25px rgba(255,224,121,.25),
-        inset 0 0 40px rgba(0,0,0,.45);
-    }
-
-    .coin-inner {
-      width: 185px;
-      height: 185px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,213,92,.65);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background: radial-gradient(circle,rgba(255,211,76,.18),rgba(68,40,2,.55));
-    }
-
-    /* تم تعديل الرمز فقط */
-    .coin-logo {
-      direction: ltr;
-      color: #f7d878;
-      font-size: 46px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-align: center;
-      line-height: 1;
-      margin: 0;
-      transform: translate(0, 0);
-      text-shadow:
-        0 2px 0 #704600,
-        0 0 12px rgba(255,220,100,.55);
-    }
-
-    .coin-logo small {
-      display: block;
-      margin-top: 6px;
-      font-size: 8px;
-      line-height: 1;
-      letter-spacing: 3px;
-      color: #f1d98d;
-    }
-
-    .claim-section {
-      position: relative;
-      z-index: 3;
-      margin-top: 42px;
-      text-align: center;
-    }
-
-    .claim-btn {
-      width: 100%;
-      height: 64px;
-      border: 2px solid #00b47e;
-      border-radius: 32px;
-      background: linear-gradient(180deg,#12a66e,#08754d);
-      color: #d8fff1;
-      font-size: 23px;
-      font-weight: 900;
-      letter-spacing: .5px;
-      box-shadow: 0 0 18px rgba(0,210,145,.28);
-      cursor: pointer;
-    }
-
-    .claim-btn:disabled {
-      color: #8e8e8e;
-      border-color: #276b54;
-      background: linear-gradient(#14553e,#0a3426);
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    .timer-text {
-      margin-top: 10px;
-      color: #777;
-      font-size: 10px;
-    }
-
-    .timer {
-      color: #00c995;
-      font-size: 14px;
-      font-weight: bold;
-      direction: ltr;
-      display: inline-block;
-      min-width: 70px;
-    }
-
-    .status {
-      min-height: 17px;
-      margin-top: 5px;
-      color: #888;
-      font-size: 9px;
-    }
-
-    .bottom-nav {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 5px;
-      margin-top: 12px;
-      padding: 7px 4px;
-      border: 1px solid #30250f;
-      border-radius: 18px;
-      background: #080807;
-    }
-
-    .bottom-item {
-      color: #666;
-      text-align: center;
-      font-size: 9px;
-      padding: 6px 2px;
-      cursor: pointer;
-    }
-
-    .bottom-item .icon {
-      display: block;
-      margin-bottom: 3px;
-      font-size: 19px;
-    }
-
-    .bottom-item.active {
-      color: #e2b63b;
-    }
-
-    .message-overlay {
-      position: fixed;
-      z-index: 9999;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 25px;
-      background: rgba(0,0,0,.78);
-    }
-
-    .message-box {
-      width: 100%;
-      max-width: 350px;
-      border-radius: 22px;
-      padding: 25px 20px;
-      background: #151515;
-      border: 1px solid #51401c;
-      text-align: center;
-    }
-
-    .message-title {
-      margin-bottom: 12px;
-      color: #e4b93f;
-      font-size: 21px;
-      font-weight: bold;
-    }
-
-    .message-text {
-      color: #ddd;
-      font-size: 15px;
-      line-height: 1.7;
-      white-space: pre-line;
-    }
-
-    .message-close {
-      margin-top: 20px;
-      min-width: 100px;
-      padding: 10px 20px;
-      border: 0;
-      border-radius: 20px;
-      background: #168b66;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    @media (max-width:360px) {
-      .brand-main {
-        font-size: 34px;
-      }
-
-      .brand-sub {
-        font-size: 5px;
-      }
-
-      .avatar {
-        width: 43px;
-        height: 43px;
-        flex-basis: 43px;
-      }
-
-      .coin-area {
-        width: 205px;
-        height: 205px;
-      }
-
-      .coin-inner {
-        width: 160px;
-        height: 160px;
-      }
-
-      .claim-btn {
-        font-size: 20px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="app">
-
-  <header class="top">
-
-    <div class="profile-mini">
-      <div class="avatar" id="avatar">L</div>
-
-      <div class="profile-text">
-        <div class="profile-name" id="profileName">
-          LTF Miner
-        </div>
-
-        <div class="level">
-          Lvl 347
-        </div>
-      </div>
-    </div>
-
-    <div class="brand">
-      <div class="brand-main">LTF</div>
-      <div class="brand-sub">LET'S THE FUTURE</div>
-    </div>
-
-    <div class="top-actions">
-
-      <button class="top-action" type="button">
-        <span class="emoji">🎁</span>
-        Bonus
-      </button>
-
-      <button class="top-action" type="button">
-        <span class="emoji">🔔</span>
-        3
-      </button>
-
-    </div>
-
-  </header>
-
-  <section class="assets">
-
-    <div class="asset">
-      <div class="asset-title">
-        🪙<br>
-        LTF ASSETS
-      </div>
-
-      <div class="asset-value" id="balance">
-        0
-      </div>
-
-      <div class="asset-sub" id="balanceUsd">
-        ≈ $0.00
-      </div>
-    </div>
-
-    <div class="asset">
-      <div class="asset-title">
-        🔒<br>
-        HOLDING
-      </div>
-
-      <div class="asset-value" id="holding">
-        0.00
-      </div>
-
-      <div class="asset-sub">
-        ≈ $0.00
-      </div>
-    </div>
-
-    <div class="asset">
-      <div class="asset-title">
-        💳<br>
-        POOL WALLET
-      </div>
-
-      <div class="asset-value">
-        834.40
-      </div>
-
-      <div class="asset-sub">
-        ≈ $834.40
-      </div>
-    </div>
-
-  </section>
-
-  <main class="mine">
-
-    <div class="rings"></div>
-
-    <div class="coin-area">
-
-      <div class="coin-inner">
-
-        <div class="coin-logo">
-          LTF
-          <small>MINER</small>
-        </div>
-
-      </div>
-
-    </div>
-
-    <section class="claim-section">
-
-      <button
-        id="claimBtn"
-        class="claim-btn"
-        type="button"
-      >
-        ⚡ CLAIM LTF
-      </button>
-
-      <div class="timer-text">
-        Next Claim in
-        <span id="timer" class="timer">
-          --:--:--
-        </span>
-      </div>
-
-      <div id="status" class="status"></div>
-
-    </section>
-
-    <nav class="bottom-nav">
-
-      <div class="bottom-item">
-        <span class="icon">👥</span>
-        Friends
-      </div>
-
-      <div class="bottom-item">
-        <span class="icon">📋</span>
-        Tasks
-      </div>
-
-      <div class="bottom-item">
-        <span class="icon">⚡</span>
-        Miners
-      </div>
-
-      <div class="bottom-item active">
-        <span class="icon">⛏</span>
-        Mine
-      </div>
-
-    </nav>
-
-  </main>
-
-</div>
-
-<div id="messageOverlay" class="message-overlay">
-
-  <div class="message-box">
-
-    <div class="message-title">
-      LTF Miner
-    </div>
-
-    <div id="messageText" class="message-text"></div>
-
-    <button
-      id="messageClose"
-      class="message-close"
-      type="button"
-    >
-      حسنًا
-    </button>
-
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LTF Miner</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif}.app{max-width:430px;margin:auto;min-height:100vh;background:radial-gradient(circle at 50% 55%,rgba(180,115,10,.3),transparent 30%),radial-gradient(circle at 50% 50%,#211504 0,#090806 45%,#030303 78%);overflow:hidden}
+.top{height:105px;padding:17px 15px 7px;display:grid;grid-template-columns:100px 1fr 100px;align-items:center;gap:6px}.user{display:flex;align-items:center;gap:7px}.avatar{width:48px;height:48px;border:2px solid #b98920;border-radius:50%;display:grid;place-items:center;color:#f5c33d;font-size:25px}.user b{font-size:13px}.lvl{display:inline-block;border:1px solid #00dca0;border-radius:13px;padding:4px 8px;color:#00dfa1;font-size:10px;margin-top:4px}.brand{text-align:center}.brand b{font-size:44px;letter-spacing:2px;color:#f3b932}.brand small{display:block;letter-spacing:5px;font-size:8px;color:#aaa}.topBtns{display:flex;justify-content:flex-end;gap:5px}.topBtn{width:48px;height:66px;background:#11100d;border:1px solid #5a451b;border-radius:13px;text-align:center;padding-top:7px;font-size:9px}.topBtn span{display:block;font-size:21px;margin-bottom:4px}
+.assets{margin:0 16px 15px;padding:14px 5px;border:1px solid #51401d;border-radius:18px;background:linear-gradient(#171715,#0a0a09);display:grid;grid-template-columns:1fr 1fr 1fr;text-align:center}.asset{border-right:1px solid #333}.asset:last-child{border:0}.asset label{font-size:10px;color:#ddd;line-height:1.35}.asset strong{display:block;font-size:23px;color:#00dfa0;margin:5px 0}.asset:nth-child(2) strong{color:#ffd13e}.asset small{color:#aaa;font-size:10px}
+.mine{margin:0 16px;border:1px solid #5a4319;border-radius:23px;padding:17px 16px 18px;min-height:690px;position:relative;background:radial-gradient(circle at 50% 39%,#744c08 0,#241708 21%,#090806 60%,#050505 100%);display:flex;flex-direction:column;align-items:center}.rings{position:absolute;inset:25px -20px 115px;border-radius:50%;background:repeating-radial-gradient(circle at 50% 42%,transparent 0 50px,#8b6419 51px 53px,transparent 54px 88px);opacity:.65;pointer-events:none}.coin-wrap{position:relative;z-index:2;margin-top:35px;width:205px;height:205px;border-radius:50%;display:grid;place-items:center;background:#c88708;box-shadow:0 0 25px #f2b62d,0 0 75px rgba(210,142,15,.55);border:7px double #ffd45a;overflow:hidden}.coin-wrap img{width:100%;height:100%;object-fit:cover}
+.claim{position:relative;z-index:3;margin-top:48px;width:100%;border:2px solid #62ffc5;border-radius:28px;padding:13px;background:linear-gradient(#16e891,#00aa67);color:white;font-size:23px;font-weight:700;box-shadow:0 0 18px #00d07e}.next{position:relative;z-index:3;margin-top:8px;color:#aaa;font-size:11px}.next b{color:#00dfa0}.quick{position:relative;z-index:3;width:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:18px}.quick div{background:#11100d;border:1px solid #44361b;border-radius:13px;padding:10px 2px;text-align:center;font-size:9px}.quick span{display:block;font-size:22px;margin-bottom:5px;color:#f4c13a}.nav{margin:0 16px;border:1px solid #342a16;border-radius:25px 25px 0 0;background:#0b0b0a;display:grid;grid-template-columns:repeat(4,1fr);padding:11px 4px 14px;text-align:center}.nav div{font-size:10px;color:#999}.nav .active{color:#ffd23e}.nav span{display:block;font-size:23px;margin-bottom:3px}
+
+.miners-panel{
+  display:none;
+  width:100%;
+  margin-top:16px;
+  padding:14px;
+  border:1px solid #5a4319;
+  border-radius:20px;
+  background:linear-gradient(180deg,#15110a,#070706);
+  position:relative;
+  z-index:20;
+}
+.miners-panel.open{display:block}
+.miners-title{
+  text-align:center;
+  color:#ffd13e;
+  font-size:21px;
+  font-weight:900;
+  margin-bottom:4px;
+}
+.miners-sub{
+  text-align:center;
+  color:#888;
+  font-size:10px;
+  margin-bottom:12px;
+}
+.miner-list{
+  display:grid;
+  gap:8px;
+  max-height:430px;
+  overflow-y:auto;
+  padding-right:2px;
+}
+.miner-card{
+  display:grid;
+  grid-template-columns:42px 1fr auto;
+  align-items:center;
+  gap:9px;
+  padding:9px;
+  border:1px solid #3e3219;
+  border-radius:14px;
+  background:#0d0c0a;
+}
+.miner-level{
+  width:40px;height:40px;border-radius:50%;
+  display:grid;place-items:center;
+  border:1px solid #b98920;
+  color:#ffd13e;font-size:11px;font-weight:900;
+}
+.miner-info strong{
+  display:block;color:#eee;font-size:12px;margin-bottom:3px;
+}
+.miner-info span{
+  display:block;color:#888;font-size:9px;line-height:1.45;
+}
+.miner-buy{
+  border:1px solid #00c98f;
+  border-radius:11px;
+  padding:8px 7px;
+  background:linear-gradient(#14966b,#076345);
+  color:#dffff5;
+  font-size:9px;font-weight:900;
+}
+.miners-close{
+  width:100%;margin-top:10px;padding:10px;
+  border:1px solid #4a3a1a;border-radius:12px;
+  background:#11100d;color:#bbb;font-weight:bold;
+}
+
+</style></head><body><div class="app">
+<header class="top"><div class="user"><div class="avatar">L</div><div><b>LTF Miner</b><br><span class="lvl">Lvl 347</span></div></div><div class="brand"><b>LTF</b><small>LET'S THE FUTURE</small></div><div class="topBtns"><div class="topBtn"><span>🎁</span>Bonus</div><div class="topBtn"><span>🔔</span>3</div></div></header>
+<section class="assets"><div class="asset"><label>🪙<br>LTF ASSETS</label><strong>1.287 K</strong><small>≈ $1,287.00</small></div><div class="asset"><label>🔒<br>HOLDING</label><strong>452.60</strong><small>≈ $452.60</small></div><div class="asset"><label>💳<br>POOL WALLET</label><strong>834.40</strong><small>≈ $834.40</small></div></section>
+<main class="mine"><div class="rings"></div><div class="coin-wrap"><img src="ltf-coin-reference.jpg" alt="LTF gold coin"></div><button class="claim" id="claimBtn">⚡ CLAIM LTF</button><div class="next">◷ Next Claim in&nbsp; <b id="timer">00:58:32</b></div><div class="quick"><div id="quickMiners"><span>⛏</span>Miners</div><div><span>📋</span>Tasks</div><div><span>👥</span>Friends</div><div><span>👛</span>Wallet</div><div><span>👤</span>Profile</div></div></main>
+
+<section id="minersPanel" class="miners-panel">
+  <div class="miners-title">⛏ MINERS</div>
+  <div class="miners-sub">اختر مستوى التعدين المناسب لك</div>
+  <div class="miner-list">
+<div class="miner-card">
+  <div class="miner-level">L1</div>
+  <div class="miner-info">
+    <strong>Level 1</strong>
+    <span>السعر: 1,000 LTF</span>
+    <span>الإنتاج: 20 LTF / ساعة</span>
   </div>
-
+  <button class="miner-buy" type="button" data-level="1" data-price="1000" data-production="20">شراء</button>
 </div>
+<div class="miner-card">
+  <div class="miner-level">L2</div>
+  <div class="miner-info">
+    <strong>Level 2</strong>
+    <span>السعر: 2,000 LTF</span>
+    <span>الإنتاج: 42 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="2" data-price="2000" data-production="42">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L3</div>
+  <div class="miner-info">
+    <strong>Level 3</strong>
+    <span>السعر: 4,000 LTF</span>
+    <span>الإنتاج: 88 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="3" data-price="4000" data-production="88">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L4</div>
+  <div class="miner-info">
+    <strong>Level 4</strong>
+    <span>السعر: 8,000 LTF</span>
+    <span>الإنتاج: 185 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="4" data-price="8000" data-production="185">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L5</div>
+  <div class="miner-info">
+    <strong>Level 5</strong>
+    <span>السعر: 16,000 LTF</span>
+    <span>الإنتاج: 388 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="5" data-price="16000" data-production="388">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L6</div>
+  <div class="miner-info">
+    <strong>Level 6</strong>
+    <span>السعر: 32,000 LTF</span>
+    <span>الإنتاج: 815 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="6" data-price="32000" data-production="815">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L7</div>
+  <div class="miner-info">
+    <strong>Level 7</strong>
+    <span>السعر: 64,000 LTF</span>
+    <span>الإنتاج: 1,712 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="7" data-price="64000" data-production="1712">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L8</div>
+  <div class="miner-info">
+    <strong>Level 8</strong>
+    <span>السعر: 128,000 LTF</span>
+    <span>الإنتاج: 3,595 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="8" data-price="128000" data-production="3595">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L9</div>
+  <div class="miner-info">
+    <strong>Level 9</strong>
+    <span>السعر: 256,000 LTF</span>
+    <span>الإنتاج: 7,550 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="9" data-price="256000" data-production="7550">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L10</div>
+  <div class="miner-info">
+    <strong>Level 10</strong>
+    <span>السعر: 512,000 LTF</span>
+    <span>الإنتاج: 15,855 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="10" data-price="512000" data-production="15855">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L11</div>
+  <div class="miner-info">
+    <strong>Level 11</strong>
+    <span>السعر: 1,024,000 LTF</span>
+    <span>الإنتاج: 33,296 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="11" data-price="1024000" data-production="33296">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L12</div>
+  <div class="miner-info">
+    <strong>Level 12</strong>
+    <span>السعر: 2,048,000 LTF</span>
+    <span>الإنتاج: 69,922 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="12" data-price="2048000" data-production="69922">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L13</div>
+  <div class="miner-info">
+    <strong>Level 13</strong>
+    <span>السعر: 4,096,000 LTF</span>
+    <span>الإنتاج: 146,836 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="13" data-price="4096000" data-production="146836">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L14</div>
+  <div class="miner-info">
+    <strong>Level 14</strong>
+    <span>السعر: 8,192,000 LTF</span>
+    <span>الإنتاج: 308,356 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="14" data-price="8192000" data-production="308356">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L15</div>
+  <div class="miner-info">
+    <strong>Level 15</strong>
+    <span>السعر: 16,384,000 LTF</span>
+    <span>الإنتاج: 647,548 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="15" data-price="16384000" data-production="647548">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L16</div>
+  <div class="miner-info">
+    <strong>Level 16</strong>
+    <span>السعر: 32,768,000 LTF</span>
+    <span>الإنتاج: 1,359,851 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="16" data-price="32768000" data-production="1359851">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L17</div>
+  <div class="miner-info">
+    <strong>Level 17</strong>
+    <span>السعر: 65,536,000 LTF</span>
+    <span>الإنتاج: 2,855,687 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="17" data-price="65536000" data-production="2855687">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L18</div>
+  <div class="miner-info">
+    <strong>Level 18</strong>
+    <span>السعر: 131,072,000 LTF</span>
+    <span>الإنتاج: 5,996,943 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="18" data-price="131072000" data-production="5996943">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L19</div>
+  <div class="miner-info">
+    <strong>Level 19</strong>
+    <span>السعر: 262,144,000 LTF</span>
+    <span>الإنتاج: 12,593,580 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="19" data-price="262144000" data-production="12593580">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L20</div>
+  <div class="miner-info">
+    <strong>Level 20</strong>
+    <span>السعر: 524,288,000 LTF</span>
+    <span>الإنتاج: 26,446,518 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="20" data-price="524288000" data-production="26446518">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L21</div>
+  <div class="miner-info">
+    <strong>Level 21</strong>
+    <span>السعر: 1,048,576,000 LTF</span>
+    <span>الإنتاج: 55,537,688 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="21" data-price="1048576000" data-production="55537688">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L22</div>
+  <div class="miner-info">
+    <strong>Level 22</strong>
+    <span>السعر: 2,097,152,000 LTF</span>
+    <span>الإنتاج: 116,629,145 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="22" data-price="2097152000" data-production="116629145">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L23</div>
+  <div class="miner-info">
+    <strong>Level 23</strong>
+    <span>السعر: 4,194,304,000 LTF</span>
+    <span>الإنتاج: 244,921,204 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="23" data-price="4194304000" data-production="244921204">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L24</div>
+  <div class="miner-info">
+    <strong>Level 24</strong>
+    <span>السعر: 8,388,608,000 LTF</span>
+    <span>الإنتاج: 514,334,528 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="24" data-price="8388608000" data-production="514334528">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L25</div>
+  <div class="miner-info">
+    <strong>Level 25</strong>
+    <span>السعر: 16,777,216,000 LTF</span>
+    <span>الإنتاج: 1,080,102,509 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="25" data-price="16777216000" data-production="1080102509">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L26</div>
+  <div class="miner-info">
+    <strong>Level 26</strong>
+    <span>السعر: 33,554,432,000 LTF</span>
+    <span>الإنتاج: 2,268,215,269 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="26" data-price="33554432000" data-production="2268215269">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L27</div>
+  <div class="miner-info">
+    <strong>Level 27</strong>
+    <span>السعر: 67,108,864,000 LTF</span>
+    <span>الإنتاج: 4,763,252,065 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="27" data-price="67108864000" data-production="4763252065">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L28</div>
+  <div class="miner-info">
+    <strong>Level 28</strong>
+    <span>السعر: 134,217,728,000 LTF</span>
+    <span>الإنتاج: 10,002,829,336 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="28" data-price="134217728000" data-production="10002829336">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L29</div>
+  <div class="miner-info">
+    <strong>Level 29</strong>
+    <span>السعر: 268,435,456,000 LTF</span>
+    <span>الإنتاج: 21,005,941,606 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="29" data-price="268435456000" data-production="21005941606">شراء</button>
+</div>
+<div class="miner-card">
+  <div class="miner-level">L30</div>
+  <div class="miner-info">
+    <strong>Level 30</strong>
+    <span>السعر: 536,870,912,000 LTF</span>
+    <span>الإنتاج: 44,112,477,373 LTF / ساعة</span>
+  </div>
+  <button class="miner-buy" type="button" data-level="30" data-price="536870912000" data-production="44112477373">شراء</button>
+</div>
+  </div>
+  <button id="minersClose" class="miners-close" type="button">إغلاق</button>
+</section>
 
-<script>
-  const SUPABASE_URL =
-    "https://julnowgcrkazepbfxkau.supabase.co";
+<nav class="nav"><div class="active"><span>↥</span>Mine</div><div id="minersNav"><span>⚡</span>Miners</div><div><span>📋</span>Tasks</div><div><span>👥</span>Friends</div></nav></div>
+<script>let s=3512;setInterval(()=>{s=Math.max(0,s-1);let h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor(s%3600/60)).padStart(2,'0'),x=String(s%60).padStart(2,'0');document.getElementById('timer').textContent=`${h}:${m}:${x}`},1000)</script>
+<style>button,.quick div,.nav div{cursor:pointer}</style><script>
+const tg=window.Telegram?.WebApp; if(tg){tg.ready();tg.expand();}
+const btn=document.getElementById('claimBtn');
+btn.onclick=()=>{if(!tg?.initData){alert('افتح التطبيق من داخل Telegram');return;}alert('تم تجهيز الاتصال بالمستخدم. يلزم Backend آمن لإضافة 1 LTF فعلياً.');};
 
-  const SUPABASE_KEY =
-    "sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23";
+const minersPanel = document.getElementById('minersPanel');
+const minersNav = document.getElementById('minersNav');
+const quickMiners = document.getElementById('quickMiners');
+const minersClose = document.getElementById('minersClose');
 
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
+function openMiners(){
+  minersPanel.classList.add('open');
+  minersPanel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeMiners(){
+  minersPanel.classList.remove('open');
+}
+
+minersNav?.addEventListener('click',openMiners);
+quickMiners?.addEventListener('click',openMiners);
+minersClose?.addEventListener('click',closeMiners);
+
+document.querySelectorAll('.miner-buy').forEach(button=>{
+  button.addEventListener('click',()=>{
+    const level = Number(button.dataset.level);
+    const price = Number(button.dataset.price);
+    const production = Number(button.dataset.production);
+
+    alert(
+      'Level ' + level +
+      '\n\nالسعر: ' + price.toLocaleString('en-US') + ' LTF' +
+      '\nالإنتاج: ' + production.toLocaleString('en-US') + ' LTF / ساعة' +
+      '\n\nسيتم ربط الشراء بالرصيد في خطوة Backend التالية.'
     );
+  });
+});
 
-  const tg =
-    window.Telegram &&
-    window.Telegram.WebApp
-      ? window.Telegram.WebApp
-      : null;
-
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
-
-  const balanceEl =
-    document.getElementById("balance");
-
-  const balanceUsdEl =
-    document.getElementById("balanceUsd");
-
-  const holdingEl =
-    document.getElementById("holding");
-
-  const timerEl =
-    document.getElementById("timer");
-
-  const claimBtn =
-    document.getElementById("claimBtn");
-
-  const statusEl =
-    document.getElementById("status");
-
-  const avatarEl =
-    document.getElementById("avatar");
-
-  const profileNameEl =
-    document.getElementById("profileName");
-
-  const messageOverlay =
-    document.getElementById("messageOverlay");
-
-  const messageText =
-    document.getElementById("messageText");
-
-  const messageClose =
-    document.getElementById("messageClose");
-
-  let telegramUser = null;
-  let nextClaimAt = null;
-  let countdownInterval = null;
-  let isClaiming = false;
-
-  function showMessage(text) {
-    messageText.textContent = text;
-    messageOverlay.style.display = "flex";
-  }
-
-  function hideMessage() {
-    messageOverlay.style.display = "none";
-  }
-
-  messageClose.addEventListener(
-    "click",
-    hideMessage
-  );
-
-  function getTelegramUser() {
-    if (
-      !tg ||
-      !tg.initDataUnsafe ||
-      !tg.initDataUnsafe.user
-    ) {
-      return null;
-    }
-
-    return tg.initDataUnsafe.user;
-  }
-
-  function updateUserUI() {
-    if (!telegramUser) {
-      return;
-    }
-
-    const firstName =
-      telegramUser.first_name || "LTF";
-
-    avatarEl.textContent =
-      firstName.charAt(0).toUpperCase();
-
-    profileNameEl.textContent =
-      telegramUser.username
-        ? "@" + telegramUser.username
-        : firstName;
-  }
-
-  function setBalance(value) {
-    const number =
-      Number(value || 0);
-
-    balanceEl.textContent =
-      number.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2
-        }
-      );
-
-    holdingEl.textContent =
-      number.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
-
-    balanceUsdEl.textContent =
-      "≈ $" +
-      number.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
-  }
-
-  function formatRemaining(ms) {
-    if (ms <= 0) {
-      return "00:00:00";
-    }
-
-    const totalSeconds =
-      Math.ceil(ms / 1000);
-
-    const hours =
-      Math.floor(totalSeconds / 3600);
-
-    const minutes =
-      Math.floor(
-        (totalSeconds % 3600) / 60
-      );
-
-    const seconds =
-      totalSeconds % 60;
-
-    return (
-      String(hours).padStart(2, "0")
-      + ":" +
-      String(minutes).padStart(2, "0")
-      + ":" +
-      String(seconds).padStart(2, "0")
-    );
-  }
-
-  function updateTimer() {
-    if (!nextClaimAt) {
-      timerEl.textContent = "READY";
-      claimBtn.disabled = isClaiming;
-      return;
-    }
-
-    const target =
-      new Date(nextClaimAt).getTime();
-
-    const remaining =
-      target - Date.now();
-
-    if (remaining <= 0) {
-      nextClaimAt = null;
-      timerEl.textContent = "READY";
-      claimBtn.disabled = isClaiming;
-      return;
-    }
-
-    timerEl.textContent =
-      formatRemaining(remaining);
-
-    claimBtn.disabled = true;
-  }
-
-  function startTimer() {
-    if (countdownInterval) {
-      clearInterval(countdownInterval);
-    }
-
-    updateTimer();
-
-    countdownInterval =
-      setInterval(
-        updateTimer,
-        1000
-      );
-  }
-
-  async function loadStatus() {
-    if (!telegramUser) {
-      statusEl.textContent =
-        "افتح التطبيق من داخل Telegram";
-
-      claimBtn.disabled = true;
-      timerEl.textContent = "--:--:--";
-      return;
-    }
-
-    statusEl.textContent =
-      "جاري تحميل بياناتك...";
-
-    try {
-      const {
-        data,
-        error
-      } = await supabaseClient.rpc(
-        "get_ltf_status",
-        {
-          p_telegram_user_id:
-            Number(telegramUser.id)
-        }
-      );
-
-      if (error) {
-        console.error(
-          "get_ltf_status:",
-          error
-        );
-
-        statusEl.textContent =
-          "تعذر تحميل البيانات";
-
-        showMessage(
-          "تعذر تحميل بيانات الحساب.\n\n" +
-          error.message
-        );
-
-        claimBtn.disabled = false;
-        nextClaimAt = null;
-        timerEl.textContent = "READY";
-        return;
-      }
-
-      const result =
-        Array.isArray(data)
-          ? data[0]
-          : data;
-
-      if (!result) {
-        setBalance(0);
-        nextClaimAt = null;
-        startTimer();
-        statusEl.textContent = "";
-        return;
-      }
-
-      setBalance(result.balance);
-
-      nextClaimAt =
-        result.next_claim_at || null;
-
-      startTimer();
-      statusEl.textContent = "";
-
-    } catch (error) {
-      console.error(
-        "loadStatus:",
-        error
-      );
-
-      statusEl.textContent =
-        "تعذر تحميل البيانات";
-
-      claimBtn.disabled = false;
-      nextClaimAt = null;
-      timerEl.textContent = "READY";
-    }
-  }
-
-  async function claimLTF() {
-    if (isClaiming) {
-      return;
-    }
-
-    if (!telegramUser) {
-      showMessage(
-        "يجب فتح التطبيق من داخل Telegram."
-      );
-      return;
-    }
-
-    if (
-      nextClaimAt &&
-      new Date(nextClaimAt).getTime() >
-      Date.now()
-    ) {
-      updateTimer();
-      return;
-    }
-
-    isClaiming = true;
-    claimBtn.disabled = true;
-    claimBtn.textContent = "⏳ CLAIMING...";
-    statusEl.textContent =
-      "جاري تنفيذ المطالبة...";
-
-    try {
-      const {
-        data,
-        error
-      } = await supabaseClient.rpc(
-        "claim_ltf",
-        {
-          p_telegram_user_id:
-            Number(telegramUser.id),
-
-          p_username:
-            telegramUser.username || null,
-
-          p_first_name:
-            telegramUser.first_name || null
-        }
-      );
-
-      console.log(
-        "claim_ltf result:",
-        data,
-        error
-      );
-
-      if (error) {
-        console.error(
-          "claim_ltf:",
-          error
-        );
-
-        showMessage(
-          "حدث خطأ أثناء المطالبة.\n\n" +
-          error.message
-        );
-
-        await loadStatus();
-        return;
-      }
-
-      const result =
-        Array.isArray(data)
-          ? data[0]
-          : data;
-
-      if (!result) {
-        showMessage(
-          "لم تصل نتيجة من الخادم."
-        );
-
-        await loadStatus();
-        return;
-      }
-
-      if (result.success === true) {
-        setBalance(
-          result.new_balance
-        );
-
-        nextClaimAt =
-          result.next_claim_at || null;
-
-        startTimer();
-
-        if (
-          tg &&
-          tg.HapticFeedback
-        ) {
-          tg.HapticFeedback
-            .notificationOccurred(
-              "success"
-            );
-        }
-
-        showMessage(
-          "تمت إضافة 1 LTF بنجاح ✅\n\n" +
-          "الرصيد الجديد: " +
-          Number(
-            result.new_balance || 0
-          ).toFixed(2) +
-          " LTF"
-        );
-
-        return;
-      }
-
-      if (
-        result.new_balance !== undefined &&
-        result.new_balance !== null
-      ) {
-        setBalance(
-          result.new_balance
-        );
-      }
-
-      nextClaimAt =
-        result.next_claim_at || null;
-
-      startTimer();
-
-      showMessage(
-        result.message ||
-        "لم يحن وقت المطالبة بعد."
-      );
-
-    } catch (error) {
-      console.error(
-        "claim exception:",
-        error
-      );
-
-      showMessage(
-        "حدث خطأ غير متوقع.\n\n" +
-        error.message
-      );
-
-      await loadStatus();
-
-    } finally {
-      isClaiming = false;
-
-      claimBtn.textContent =
-        "⚡ CLAIM LTF";
-
-      updateTimer();
-      statusEl.textContent = "";
-    }
-  }
-
-  claimBtn.addEventListener(
-    "click",
-    claimLTF
-  );
-
-  async function init() {
-    telegramUser =
-      getTelegramUser();
-
-    if (!telegramUser) {
-      claimBtn.disabled = true;
-      timerEl.textContent = "--:--:--";
-      statusEl.textContent =
-        "افتح التطبيق من داخل Telegram";
-      return;
-    }
-
-    updateUserUI();
-    await loadStatus();
-  }
-
-  init();
-</script>
-
-</body>
-</html>
+</script></body></html>
