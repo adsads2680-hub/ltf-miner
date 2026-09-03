@@ -56,9 +56,9 @@
   white-space:nowrap!important;
   z-index:40!important;
   padding:0!important;
-  background:rgba(0,0,0,.88)!important;
-  border-radius:18px!important;
-  box-shadow:0 0 16px rgba(0,0,0,.9)!important;
+  background:transparent!important;
+  border-radius:0!important;
+  box-shadow:none!important;
 }
 #assetsBalance{left:7%!important;width:26%!important;font-size:clamp(17px,4.35vw,33px)!important}
 #assetsHolding{left:37%!important;width:26%!important;font-size:clamp(17px,4.35vw,33px)!important}
@@ -71,9 +71,9 @@
   z-index:41!important;
   text-align:center!important;
   white-space:nowrap!important;
-  background:rgba(0,0,0,.88)!important;
-  border-radius:12px!important;
-  box-shadow:0 0 12px rgba(0,0,0,.85)!important;
+  background:transparent!important;
+  border-radius:0!important;
+  box-shadow:none!important;
 }
 #assetLtf1{left:10%!important;width:20%!important}
 #assetLtf2{left:40%!important;width:20%!important}
@@ -155,6 +155,112 @@
   background:transparent!important;
   box-shadow:none!important;
 }
+</style>
+
+<style>
+/* V3 — remove all visual effects behind wallet numbers, without changing the artwork */
+#assetsBalance,#assetsHolding,#assetsPool{
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-radius:0!important;
+  filter:none!important;
+  text-shadow:none!important;
+  outline:none!important;
+  -webkit-text-stroke:0!important;
+}
+#assetLtf1,#assetLtf2,#assetLtf3{
+  display:none!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+  text-shadow:none!important;
+  filter:none!important;
+}
+.asset-number-cleaner{display:none!important}
+</style>
+
+<style id="ltf-v4-wallet-glow-fix">
+/* V4 — neutralize only the baked glow left behind the original wallet numbers.
+   Keep the live values and the artwork unchanged. */
+#assetsBalance,#assetsHolding,#assetsPool{
+  background:radial-gradient(ellipse at center,rgba(0,0,0,.96) 0%,rgba(0,0,0,.90) 38%,rgba(0,0,0,.62) 62%,rgba(0,0,0,0) 100%)!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-radius:0!important;
+  filter:none!important;
+  text-shadow:none!important;
+  outline:none!important;
+  -webkit-text-stroke:0!important;
+  z-index:40!important;
+  overflow:visible!important;
+}
+/* The artwork already contains the single LTF labels. */
+#assetLtf1,#assetLtf2,#assetLtf3{display:none!important;background:transparent!important;box-shadow:none!important;border:0!important}
+.asset-number-cleaner{display:none!important}
+</style>
+
+<style id="ltf-v5-wallet-glow-fix">
+/* V5 — remove the remaining baked glow behind the three wallet values.
+   This is a soft neutral cover over the artwork only; live numbers stay transparent. */
+.stage::before{
+  content:"";
+  position:absolute;
+  z-index:36;
+  left:0; top:19.0%; width:100%; height:7.0%;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 13% 70% at 18.5% 58%, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 48%, rgba(0,0,0,0) 78%),
+    radial-gradient(ellipse 13% 70% at 49.5% 58%, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 48%, rgba(0,0,0,0) 78%),
+    radial-gradient(ellipse 14% 70% at 79.5% 58%, rgba(0,0,0,.92) 0%, rgba(0,0,0,.78) 48%, rgba(0,0,0,0) 78%);
+  filter:blur(3px);
+}
+#assetsBalance,#assetsHolding,#assetsPool{
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-radius:0!important;
+  filter:none!important;
+  text-shadow:none!important;
+  outline:none!important;
+  -webkit-text-stroke:0!important;
+  z-index:40!important;
+}
+#assetLtf1,#assetLtf2,#assetLtf3{display:none!important;background:transparent!important;box-shadow:none!important;border:0!important}
+.asset-number-cleaner{display:none!important}
+</style>
+
+<style id="FINAL_WALLET_LAYOUT_FIX">
+/* FINAL: lift wallet numbers and keep LTF directly underneath */
+#assetsBalance,#assetsHolding,#assetsPool{
+  top:19.35%!important;
+  height:4.0%!important;
+  line-height:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:visible!important;
+}
+#assetLtf1,#assetLtf2,#assetLtf3{
+  display:block!important;
+  top:23.15%!important;
+  height:2.7%!important;
+  line-height:1!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-radius:0!important;
+  z-index:41!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+}
+#assetLtf1{left:7%!important;width:26%!important}
+#assetLtf2{left:37%!important;width:26%!important}
+#assetLtf3{left:66%!important;width:27%!important}
 </style>
 </head><body><div class="app"><div class="stage">
 <div id="avatar">L</div><div id="profileName" class="dyn">LTF Miner</div><div id="profileLevel" class="dyn">Lvl 37</div>
