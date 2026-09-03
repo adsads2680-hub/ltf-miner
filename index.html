@@ -142,6 +142,20 @@
 #assetLtf2{left:39.5%!important;width:21%!important}
 #assetLtf3{left:69.5%!important;width:21%!important}
 </style>
+
+<style id="ltf-duplicate-label-fix">
+/* The artwork already contains the single LTF label under each wallet value.
+   Hide the extra HTML LTF labels so they never stack or create dark blocks. */
+#assetLtf1,#assetLtf2,#assetLtf3{
+  display:none!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#assetsBalance,#assetsHolding,#assetsPool{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+</style>
 </head><body><div class="app"><div class="stage">
 <div id="avatar">L</div><div id="profileName" class="dyn">LTF Miner</div><div id="profileLevel" class="dyn">Lvl 37</div>
 <button id="quickSwap" class="hot" aria-label="Swap"></button><button id="menuHot" class="hot"></button>
@@ -151,7 +165,7 @@
 </div>
 <div id="assetsBalance" class="dyn">0</div><div id="assetsHolding" class="dyn">0</div><div id="assetsPool" class="dyn">408.8737</div>
 <div id="assetLtf1">LTF</div><div id="assetLtf2">LTF</div><div id="assetLtf3">LTF</div>
-<div id="totalLabel" class="dyn">◆ TOTAL MINED ◆</div><div id="totalMined" class="dyn">+1.2607</div>
+<div id="totalLabel" class="dyn">◆ TOTAL MINED ◆</div><div id="totalMined" class="dyn">+0.0000</div>
 
 <button id="claimBtn" class="hot" aria-label="Claim LTF"></button><div id="claimLabel" class="dyn">CLAIM LTF ⚡</div><div id="status" class="dyn"></div>
 <button id="bottomMine" class="hot"></button><button id="bottomTasks" class="hot"></button><button id="bottomMiners" class="hot"></button><button id="bottomFriends" class="hot"></button><button id="bottomProfile" class="hot"></button>
@@ -182,10 +196,10 @@ function getTelegramUser(){return tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?
 function updateUserUI(){if(!telegramUser)return;const f=telegramUser.first_name||"LTF";avatarEl.textContent="";profileNameEl.textContent=f}
 function setBalance(v){const n=Number(v||0);const a=document.getElementById("assetsBalance"),h=document.getElementById("assetsHolding");if(a)a.textContent=n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:4});if(h)h.textContent=n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:4})}
 function formatRemaining(ms){if(ms<=0)return"00:00:00";const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0")}
-function getAccruedAmount(){if(!lastClaimAt)return 0;const elapsed=Math.max(0,Date.now()-new Date(lastClaimAt).getTime());return Math.min(3,Math.floor((elapsed/3600000)*10000)/10000)}
-function updateMining(){const accrued=getAccruedAmount();claimBtn.disabled=isClaiming||accrued<0.01;totalMinedEl.textContent="+"+accrued.toFixed(4);statusEl.textContent=""}
+function getAccruedAmount(){if(!lastClaimAt)return 0;const t=new Date(lastClaimAt).getTime();if(!Number.isFinite(t))return 0;const elapsed=Math.max(0,Date.now()-t);return Math.min(3,Math.floor((elapsed/3600000)*10000)/10000)}
+function updateMining(){const accrued=getAccruedAmount();totalMinedEl.textContent="+"+accrued.toFixed(4);claimBtn.disabled=isClaiming||!telegramUser||accrued<0.01;statusEl.textContent=""}
 function startMiningTicker(){if(miningInterval)clearInterval(miningInterval);updateMining();miningInterval=setInterval(updateMining,1000)}
-async function loadStatus(){if(!telegramUser){statusEl.textContent="";claimBtn.disabled=true;return}try{const{data,error}=await supabaseClient.rpc("get_ltf_status",{p_telegram_user_id:Number(telegramUser.id)});if(error)throw error;const r=Array.isArray(data)?data[0]:data;if(!r){setBalance(0);nextClaimAt=null;startMiningTicker();statusEl.textContent="";return}setBalance(r.balance);lastClaimAt=r.last_claim_at||null;nextClaimAt=r.next_claim_at||null;startMiningTicker()}catch(e){console.error(e);statusEl.textContent="";claimBtn.disabled=false;nextClaimAt=null}}
+async function loadStatus(retry=0){if(!telegramUser){updateMining();return}try{const{data,error}=await supabaseClient.rpc("get_ltf_status",{p_telegram_user_id:Number(telegramUser.id)});if(error)throw error;const r=Array.isArray(data)?data[0]:data;if(!r){setBalance(0);lastClaimAt=new Date().toISOString();nextClaimAt=null;startMiningTicker();return}setBalance(r.balance);lastClaimAt=r.last_claim_at||null;nextClaimAt=r.next_claim_at||null;startMiningTicker()}catch(e){console.error("get_ltf_status failed:",e);setBalance(0);lastClaimAt=null;nextClaimAt=null;updateMining();if(retry<4){setTimeout(()=>loadStatus(retry+1),1500)}}}
 async function claimLTF(){if(isClaiming||!telegramUser)return;isClaiming=true;claimBtn.disabled=true;claimBtn.setAttribute("aria-busy","true");statusEl.textContent="";try{const{data,error}=await supabaseClient.rpc("claim_ltf",{p_telegram_user_id:Number(telegramUser.id),p_username:telegramUser.username||null,p_first_name:telegramUser.first_name||null});if(error)throw error;const r=Array.isArray(data)?data[0]:data;if(r&&r.success===true){setBalance(r.new_balance);lastClaimAt=r.claimed_at||new Date().toISOString();nextClaimAt=r.next_claim_at||null;startMiningTicker();showMessage("تم جمع "+Number(r.reward||0).toFixed(2)+" LTF بنجاح ✅\n\nالرصيد الجديد: "+Number(r.new_balance||0).toFixed(2)+" LTF")}else{lastClaimAt=r?.last_claim_at||lastClaimAt;nextClaimAt=r?.next_claim_at||nextClaimAt;startMiningTicker();showMessage(r?.message||"لم يتجمع رصيد كافٍ بعد.")}}catch(e){showMessage("حدث خطأ أثناء المطالبة.\n\n"+e.message)}finally{isClaiming=false;claimBtn.removeAttribute("aria-busy");updateMining()}}
 claimBtn.onclick=claimLTF;
 
@@ -200,7 +214,7 @@ async function claimTask(code){if(!telegramUser)return showMessage("يجب فت�
 telegramTaskBtn.onclick=()=>{window.open("https://t.me/LTFMiner","_blank");setTimeout(()=>claimTask("telegram_join"),500)}
 youtubeTaskBtn.onclick=()=>{window.open("https://youtube.com/@ltfminer","_blank");setTimeout(()=>claimTask("youtube_join"),500)}
 loginTaskBtn.onclick=()=>{if(loginTaskBtn.disabled)return;claimTask("login_2h")};
-async function init(){telegramUser=getTelegramUser();if(!telegramUser){claimBtn.disabled=true;statusEl.textContent="افتح التطبيق من داخل Telegram";return}updateUserUI();await loadStatus();await loadTasks()}
+async function init(){telegramUser=getTelegramUser();startMiningTicker();if(!telegramUser){claimBtn.disabled=true;statusEl.textContent="افتح التطبيق من داخل Telegram";return}updateUserUI();await loadStatus();await loadTasks()}
 init();
 </script>
 </body></html>
