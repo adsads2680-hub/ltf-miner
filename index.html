@@ -183,6 +183,26 @@ body{overscroll-behavior:none}
  #assetsPool{font-size:clamp(16px,5.0vw,28px)!important}
 }
 </style>
+
+<style>
+/* HOURLY TASK — use the original/baked reward panel; no new visible box */
+#hourlyTaskBox{
+ position:absolute!important;left:77.0%!important;top:64.7%!important;width:20.0%!important;height:9.2%!important;
+ z-index:70!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ gap:3%!important;text-align:center!important;direction:rtl!important;
+ background:rgba(0,0,0,.94)!important;border:0!important;border-radius:8px!important;box-shadow:none!important;
+ padding:1.5%!important;font-family:Arial,sans-serif!important;overflow:hidden!important;
+}
+/* Keep the original/baked frame and heading visible, while covering only its old timer text. */
+#hourlyTaskBox::before{content:"";position:absolute!important;inset:7%!important;background:rgba(0,0,0,.96)!important;border-radius:6px!important;z-index:0!important;pointer-events:none!important}
+#hourlyTaskTitle{display:none!important}
+#hourlyTaskReward,#hourlyTaskTimer{position:relative!important;z-index:1!important}
+#hourlyTaskReward{font-size:clamp(10px,2.7vw,19px)!important;color:#ffd21f!important;font-weight:900!important;line-height:1.1!important}
+#hourlyTaskTimer{font-size:clamp(13px,3.7vw,27px)!important;color:#ffd21f!important;font-weight:900!important;direction:ltr!important;line-height:1!important;text-shadow:0 0 8px rgba(255,190,30,.35)!important}
+#hourlyTaskBox.ready{cursor:pointer}
+#hourlyTaskBox.ready #hourlyTaskTimer{color:#00e5a8!important}
+@media(max-width:380px){#hourlyTaskBox::before{border-radius:5px!important}}
+</style>
 </head><body><div class="app"><div class="stage">
 <div id="avatar">L</div><div id="profileName" class="dyn">LTF Miner</div><div id="profileLevel" class="dyn">Lvl 1</div>
 <button id="quickSwap" class="hot" aria-label="Swap"></button><button id="menuHot" class="hot"></button>
@@ -194,7 +214,7 @@ body{overscroll-behavior:none}
 <div id="assetLtf1">LTF</div><div id="assetLtf2">LTF</div><div id="assetLtf3">LTF</div>
 <div id="totalLabel" class="dyn" data-i18n="totalMinedLabel">◆ TOTAL MINED ◆</div><div id="totalMined" class="dyn">+0.0000</div>
 
-<button id="claimBtn" class="hot" aria-label="Collect LTF"></button><div id="claimLabel" class="dyn">0.0000 LTF</div><div id="status" class="dyn"></div>
+<button id="claimBtn" class="hot" aria-label="Collect LTF"></button><div id="claimLabel" class="dyn">0.0000 LTF</div><div id="status" class="dyn"></div><div id="hourlyTaskBox" aria-label="مهمة كل ساعة"><div id="hourlyTaskTitle">مهمة كل ساعة</div><div id="hourlyTaskReward">+3 LTF</div><div id="hourlyTaskTimer">00:00:00</div></div>
 <button id="bottomMine" class="hot" aria-label="Mine"></button><button id="bottomTasks" class="hot" aria-label="Tasks"></button><button id="bottomMiners" class="hot" aria-label="Miners"></button><button id="bottomFriends" class="hot" aria-label="Friends"></button><button id="bottomProfile" class="hot" aria-label="Profile"></button>
 <div class="quick"><div id="quickMiners" aria-label="Miners"></div><div id="quickTasks" aria-label="Tasks"></div><div id="quickFriends" aria-label="Friends"></div></div>
 <nav class="bottom-nav"><div class="bottom-item active"></div><div class="bottom-item" id="bottomMinersDummy"></div><div class="bottom-item" id="bottomTasksDummy"></div><div class="bottom-item"></div></nav>
@@ -255,11 +275,11 @@ function detectAppLanguage(){
 const APP_LANG=detectAppLanguage();
 const I18N={
  ar:{
-  pageTitle:"LTF Miner",totalMinedLabel:"◆ TOTAL MINED ◆",mine:"تعدين",friends:"الأصدقاء",profile:"الملف الشخصي",collect:"جمع LTF",swap:"تبديل",miners:"⛏ MINERS",minersSub:"اختر مستوى التعدين المناسب لك",close:"إغلاق",tasks:"📋 TASKS",tasksSub:"أكمل المهام واحصل على 5 LTF",joinTelegram:"الانضمام إلى Telegram",joinYoutube:"الانضمام إلى YouTube",reward:"المكافأة: +5 LTF",open:"فتح",done:"تم ✓",login2h:"تسجيل الدخول كل ساعتين",ready:"جاهز",receive:"استلام",ok:"حسنًا",level:"المستوى",price:"السعر",production:"الإنتاج",perHour:"LTF / ساعة",buy:"شراء",buyReady:"زر الشراء جاهز، والخطوة التالية ربطه بالرصيد الحقيقي.",mustTelegram:"يجب فتح التطبيق من داخل Telegram.",taskSuccess:"تمت إضافة 5 LTF بنجاح ✅",taskFail:"لا يمكن استلام المكافأة الآن.",taskError:"تعذر تنفيذ المهمة.",notTelegram:"افتح التطبيق من داخل Telegram",swapTitle:"SWAP",swapSub:"تبديل العملة",claimSuccess:"تم جمع",cycle:"وبدأت دورة جديدة لمدة 3 ساعات ⛏️",balance:"الرصيد الجديد",claimError:"حدث خطأ أثناء المطالبة."},
+  pageTitle:"LTF Miner",totalMinedLabel:"◆ TOTAL MINED ◆",mine:"تعدين",friends:"الأصدقاء",profile:"الملف الشخصي",collect:"جمع LTF",swap:"تبديل",miners:"⛏ MINERS",minersSub:"اختر مستوى التعدين المناسب لك",close:"إغلاق",tasks:"📋 TASKS",tasksSub:"أكمل المهام واحصل على 5 LTF",joinTelegram:"الانضمام إلى Telegram",joinYoutube:"الانضمام إلى YouTube",reward:"المكافأة: +5 LTF",open:"فتح",done:"تم ✓",login2h:"تسجيل الدخول كل ساعتين",ready:"جاهز",receive:"استلام",ok:"حسنًا",level:"المستوى",price:"السعر",production:"الإنتاج",perHour:"LTF / ساعة",buy:"شراء",buyReady:"زر الشراء جاهز، والخطوة التالية ربطه بالرصيد الحقيقي.",mustTelegram:"يجب فتح التطبيق من داخل Telegram.",taskSuccess:"تمت إضافة 5 LTF بنجاح ✅",taskFail:"لا يمكن استلام المكافأة الآن.",taskError:"تعذر تنفيذ المهمة.",notTelegram:"افتح التطبيق من داخل Telegram",swapTitle:"SWAP",swapSub:"تبديل العملة",claimSuccess:"تم جمع",cycle:"وبدأت مهمة جديدة لمدة ساعة ⏱️",hourlyTask:"مهمة كل ساعة",hourlyReward:"+3 LTF",hourlyReady:"جاهزة — استلام 3 LTF",hourlyWaiting:"المهمة التالية بعد",balance:"الرصيد الجديد",claimError:"حدث خطأ أثناء المطالبة."},
  en:{
-  pageTitle:"LTF Miner",totalMinedLabel:"◆ TOTAL MINED ◆",mine:"Mine",friends:"Friends",profile:"Profile",collect:"Collect LTF",swap:"Swap",miners:"⛏ MINERS",minersSub:"Choose the mining level that suits you",close:"Close",tasks:"📋 TASKS",tasksSub:"Complete tasks and get 5 LTF",joinTelegram:"Join Telegram",joinYoutube:"Join YouTube",reward:"Reward: +5 LTF",open:"Open",done:"Done ✓",login2h:"Login every 2 hours",ready:"READY",receive:"Claim",ok:"OK",level:"Level",price:"Price",production:"Production",perHour:"LTF / hour",buy:"Buy",buyReady:"The buy button is ready. The next step is connecting it to the real balance.",mustTelegram:"You must open the app from Telegram.",taskSuccess:"5 LTF added successfully ✅",taskFail:"The reward cannot be claimed now.",taskError:"Could not complete the task.",notTelegram:"Open the app from Telegram",swapTitle:"SWAP",swapSub:"Currency exchange",claimSuccess:"Collected",cycle:"and started a new 3-hour cycle ⛏️",balance:"New balance",claimError:"An error occurred while collecting."},
+  pageTitle:"LTF Miner",totalMinedLabel:"◆ TOTAL MINED ◆",mine:"Mine",friends:"Friends",profile:"Profile",collect:"Collect LTF",swap:"Swap",miners:"⛏ MINERS",minersSub:"Choose the mining level that suits you",close:"Close",tasks:"📋 TASKS",tasksSub:"Complete tasks and get 5 LTF",joinTelegram:"Join Telegram",joinYoutube:"Join YouTube",reward:"Reward: +5 LTF",open:"Open",done:"Done ✓",login2h:"Login every 2 hours",ready:"READY",receive:"Claim",ok:"OK",level:"Level",price:"Price",production:"Production",perHour:"LTF / hour",buy:"Buy",buyReady:"The buy button is ready. The next step is connecting it to the real balance.",mustTelegram:"You must open the app from Telegram.",taskSuccess:"5 LTF added successfully ✅",taskFail:"The reward cannot be claimed now.",taskError:"Could not complete the task.",notTelegram:"Open the app from Telegram",swapTitle:"SWAP",swapSub:"Currency exchange",claimSuccess:"Collected",cycle:"and started a new 1-hour task ⏱️",hourlyTask:"Hourly Task",hourlyReward:"+3 LTF",hourlyReady:"Ready — Claim 3 LTF",hourlyWaiting:"Next task in",balance:"New balance",claimError:"An error occurred while collecting."},
  tr:{
-  pageTitle:"LTF Miner",totalMinedLabel:"◆ TOPLAM MADENCİLİK ◆",mine:"Madencilik",friends:"Arkadaşlar",profile:"Profil",collect:"LTF Topla",swap:"Takas",miners:"⛏ MADENCİLER",minersSub:"Size uygun madencilik seviyesini seçin",close:"Kapat",tasks:"📋 GÖREVLER",tasksSub:"Görevleri tamamlayın ve 5 LTF kazanın",joinTelegram:"Telegram'a katıl",joinYoutube:"YouTube'a katıl",reward:"Ödül: +5 LTF",open:"Aç",done:"Tamam ✓",login2h:"Her 2 saatte bir giriş",ready:"HAZIR",receive:"Al",ok:"Tamam",level:"Seviye",price:"Fiyat",production:"Üretim",perHour:"LTF / saat",buy:"Satın al",buyReady:"Satın alma düğmesi hazır. Sonraki adım gerçek bakiyeye bağlamaktır.",mustTelegram:"Uygulamayı Telegram üzerinden açmalısınız.",taskSuccess:"5 LTF başarıyla eklendi ✅",taskFail:"Ödül şu anda alınamıyor.",taskError:"Görev tamamlanamadı.",notTelegram:"Uygulamayı Telegram üzerinden açın",swapTitle:"SWAP",swapSub:"Para birimi takası",claimSuccess:"Toplandı",cycle:"ve yeni 3 saatlik döngü başladı ⛏️",balance:"Yeni bakiye",claimError:"Toplama sırasında bir hata oluştu."}
+  pageTitle:"LTF Miner",totalMinedLabel:"◆ TOPLAM MADENCİLİK ◆",mine:"Madencilik",friends:"Arkadaşlar",profile:"Profil",collect:"LTF Topla",swap:"Takas",miners:"⛏ MADENCİLER",minersSub:"Size uygun madencilik seviyesini seçin",close:"Kapat",tasks:"📋 GÖREVLER",tasksSub:"Görevleri tamamlayın ve 5 LTF kazanın",joinTelegram:"Telegram'a katıl",joinYoutube:"YouTube'a katıl",reward:"Ödül: +5 LTF",open:"Aç",done:"Tamam ✓",login2h:"Her 2 saatte bir giriş",ready:"HAZIR",receive:"Al",ok:"Tamam",level:"Seviye",price:"Fiyat",production:"Üretim",perHour:"LTF / saat",buy:"Satın al",buyReady:"Satın alma düğmesi hazır. Sonraki adım gerçek bakiyeye bağlamaktır.",mustTelegram:"Uygulamayı Telegram üzerinden açmalısınız.",taskSuccess:"5 LTF başarıyla eklendi ✅",taskFail:"Ödül şu anda alınamıyor.",taskError:"Görev tamamlanamadı.",notTelegram:"Uygulamayı Telegram üzerinden açın",swapTitle:"SWAP",swapSub:"Para birimi takası",claimSuccess:"Toplandı",cycle:"ve yeni 1 saatlik görev başladı ⏱️",hourlyTask:"Saatlik Görev",hourlyReward:"+3 LTF",hourlyReady:"Hazır — 3 LTF Al",hourlyWaiting:"Sonraki görev",balance:"Yeni bakiye",claimError:"Toplama sırasında bir hata oluştu."}
 };
 const T=I18N[APP_LANG];
 document.documentElement.lang=APP_LANG;
@@ -268,12 +288,36 @@ function getTelegramUser(){return tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?
 function updateUserUI(){if(!telegramUser)return;const f=telegramUser.first_name||"LTF";avatarEl.textContent="";profileNameEl.textContent=f}
 function setBalance(v){const n=Number(v||0);const a=document.getElementById("assetsBalance"),h=document.getElementById("assetsHolding");if(a)a.textContent=n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:4});if(h)h.textContent=n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:4})}
 function formatRemaining(ms){if(ms<=0)return"00:00:00";const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(x).padStart(2,"0")}
-function getAccruedAmount(){if(!lastClaimAt)return 0;const t=new Date(lastClaimAt).getTime();if(!Number.isFinite(t))return 0;const elapsed=Math.max(0,Date.now()-t);return Math.min(3,Math.floor((elapsed/3600000)*10000)/10000)}
-function updateMining(){const accrued=getAccruedAmount();totalMinedEl.textContent="+"+accrued.toFixed(4);claimLabel.textContent=accrued.toFixed(4)+" LTF";claimBtn.disabled=isClaiming||!telegramUser||accrued<0.01;statusEl.textContent=""}
+const HOURLY_MS=60*60*1000;
+const hourlyTaskBox=document.getElementById("hourlyTaskBox"),hourlyTaskTitle=document.getElementById("hourlyTaskTitle"),hourlyTaskReward=document.getElementById("hourlyTaskReward"),hourlyTaskTimer=document.getElementById("hourlyTaskTimer");
+function getHourlyRemaining(){if(!lastClaimAt)return 0;const t=new Date(lastClaimAt).getTime();if(!Number.isFinite(t))return HOURLY_MS;return Math.max(0,HOURLY_MS-(Date.now()-t))}
+function hourlyReady(){return !!lastClaimAt && getHourlyRemaining()<=0}
+function updateHourlyTask(){
+  if(hourlyTaskTitle)hourlyTaskTitle.textContent=T.hourlyTask||"مهمة كل ساعة";
+  if(hourlyTaskReward)hourlyTaskReward.textContent=T.hourlyReward||"+3 LTF";
+  const ready=hourlyReady();
+  if(ready){
+    hourlyTaskTimer.textContent="00:00:00";
+    hourlyTaskBox.classList.add("ready");
+  }else{
+    const remaining=lastClaimAt?getHourlyRemaining():HOURLY_MS;
+    hourlyTaskTimer.textContent=formatRemaining(remaining);
+    hourlyTaskBox.classList.remove("ready");
+  }
+}
+function getAccruedAmount(){return hourlyReady()?3:0}
+function updateMining(){
+  updateHourlyTask();
+  const ready=hourlyReady();
+  totalMinedEl.textContent=ready?"+3.0000":"+0.0000";
+  claimLabel.textContent=ready?"3.0000 LTF":"0.0000 LTF";
+  claimBtn.disabled=isClaiming||!telegramUser||!ready;
+  statusEl.textContent="";
+}
 function startMiningTicker(){if(miningInterval)clearInterval(miningInterval);updateMining();miningInterval=setInterval(updateMining,1000)}
 async function loadStatus(retry=0){if(!telegramUser){updateMining();return}try{const{data,error}=await supabaseClient.rpc("get_ltf_status",{p_telegram_user_id:Number(telegramUser.id)});if(error)throw error;const r=Array.isArray(data)?data[0]:data;if(!r){setBalance(0);lastClaimAt=new Date().toISOString();nextClaimAt=null;startMiningTicker();return}setBalance(r.balance);lastClaimAt=r.last_claim_at||null;nextClaimAt=r.next_claim_at||null;const lvl=Math.max(1,Number(r.miner_level||1));profileLevel.textContent=(APP_LANG==="ar"?"المستوى ":"Lvl ")+lvl;startMiningTicker()}catch(e){console.error("get_ltf_status failed:",e);setBalance(0);lastClaimAt=null;nextClaimAt=null;updateMining();if(retry<4){setTimeout(()=>loadStatus(retry+1),1500)}}}
 async function claimLTF(){if(isClaiming||!telegramUser)return;isClaiming=true;claimBtn.disabled=true;claimBtn.setAttribute("aria-busy","true");statusEl.textContent="";try{const{data,error}=await supabaseClient.rpc("claim_ltf",{p_telegram_user_id:Number(telegramUser.id),p_username:telegramUser.username||null,p_first_name:telegramUser.first_name||null});if(error)throw error;const r=Array.isArray(data)?data[0]:data;if(r&&r.success===true){setBalance(r.new_balance);lastClaimAt=r.claimed_at||new Date().toISOString();nextClaimAt=r.next_claim_at||null;startMiningTicker();showMessage(T.claimSuccess+" "+Number(r.reward||0).toFixed(4)+" LTF "+T.cycle+"\n\n"+T.balance+": "+Number(r.new_balance||0).toFixed(4)+" LTF")}else{lastClaimAt=r?.last_claim_at||lastClaimAt;nextClaimAt=r?.next_claim_at||nextClaimAt;startMiningTicker();showMessage(r?.message||(APP_LANG==="ar"?"لم يتجمع رصيد كافٍ بعد.":"Not enough LTF has accumulated yet."))}}catch(e){showMessage(T.claimError+"\n\n"+e.message)}finally{isClaiming=false;claimBtn.removeAttribute("aria-busy");updateMining()}}
-claimBtn.onclick=claimLTF;
+claimBtn.onclick=claimLTF;hourlyTaskBox.onclick=()=>{if(hourlyReady()&&!isClaiming)claimLTF()};
 
 function formatTaskTime(ms){return formatRemaining(ms)}
 function updateTaskTimer(){if(!taskState.login_next_available_at){loginTaskCountdown.textContent=T.ready;loginTaskBtn.disabled=false;return}const r=new Date(taskState.login_next_available_at).getTime()-Date.now();if(r<=0){taskState.login_next_available_at=null;loginTaskCountdown.textContent=T.ready;loginTaskBtn.disabled=false;return}loginTaskCountdown.textContent=formatTaskTime(r);loginTaskBtn.disabled=true}
