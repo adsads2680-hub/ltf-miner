@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -5,17 +6,38 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#020202">
 <title>LTF Miner</title>
+
 <style>
 :root{
-  --bg:#020202;--gold:#f4b72b;--gold2:#ffe58a;--gold3:#9a6410;
-  --text:#fff4c9;--muted:#d0c4a4;
+  --bg:#020202;
+  --gold:#f4b72b;
+  --gold2:#ffe58a;
+  --gold3:#9a6410;
+  --text:#fff4c9;
+  --muted:#d0c4a4;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:#020202;color:white;font-family:Arial,Helvetica,sans-serif}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent
+}
+
+html,body{
+  margin:0;
+  background:#020202;
+  color:white;
+  font-family:Arial,Helvetica,sans-serif
+}
+
 body{overflow-x:hidden}
 button{font:inherit;color:inherit}
+
 .app{
-  min-height:100svh;min-height:100dvh;padding:76px 8px 22px;display:flex;flex-direction:column;
+  min-height:100svh;
+  min-height:100dvh;
+  padding:76px 8px 22px;
+  display:flex;
+  flex-direction:column;
   background:
    radial-gradient(circle at 50% 32%,rgba(255,183,35,.13),transparent 25%),
    radial-gradient(circle at 50% 70%,rgba(255,180,30,.08),transparent 35%),
@@ -24,154 +46,369 @@ button{font:inherit;color:inherit}
 
 /* Header */
 .header{
-  height:80px;display:flex;align-items:center;direction:ltr;
-  padding:6px 12px;border:1.5px solid #c88b18;border-radius:24px;
+  height:80px;
+  display:flex;
+  align-items:center;
+  direction:ltr;
+  padding:6px 12px;
+  border:1.5px solid #c88b18;
+  border-radius:24px;
   background:linear-gradient(180deg,#0b0b0b,#030303);
-  box-shadow:0 0 22px rgba(255,185,40,.18),inset 0 0 20px rgba(255,210,90,.035);
+  box-shadow:
+    0 0 22px rgba(255,185,40,.18),
+    inset 0 0 20px rgba(255,210,90,.035);
   position:relative;
 }
+
 .header:before{
-  content:"";position:absolute;left:8%;right:8%;top:-1px;height:2px;
-  background:linear-gradient(90deg,transparent,#ffe58a,#d49420,transparent);
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  top:-1px;
+  height:2px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #ffe58a,
+    #d49420,
+    transparent
+  );
 }
+
 .hcoin{
-  width:67px;height:67px;border-radius:50%;display:grid;place-items:center;
+  width:67px;
+  height:67px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
   border:3px solid #dba52d;
-  background:radial-gradient(circle at 35% 25%,#fff2a9,#d49a23 52%,#191006 86%);
-  box-shadow:0 0 0 3px #4a3210,0 0 18px rgba(255,192,45,.4),inset 0 0 11px #fff0a0;
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      #fff2a9,
+      #d49a23 52%,
+      #191006 86%
+    );
+  box-shadow:
+    0 0 0 3px #4a3210,
+    0 0 18px rgba(255,192,45,.4),
+    inset 0 0 11px #fff0a0;
 }
-.hcoin span{font-size:20px;font-weight:900;letter-spacing:-2px;color:#151006;text-shadow:0 1px #fff1a2}
-.brand{margin-left:20px;line-height:1}
-.brand b{font-size:36px;letter-spacing:6px;color:#ffe080;text-shadow:0 2px #795515}
-.brand small{display:block;margin-top:7px;font-size:12px;letter-spacing:6px;color:#e5b846}
+
+.hcoin span{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:-2px;
+  color:#151006;
+  text-shadow:0 1px #fff1a2
+}
+
+.brand{
+  margin-left:20px;
+  line-height:1
+}
+
+.brand b{
+  font-size:36px;
+  letter-spacing:6px;
+  color:#ffe080;
+  text-shadow:0 2px #795515
+}
+
+.brand small{
+  display:block;
+  margin-top:7px;
+  font-size:12px;
+  letter-spacing:6px;
+  color:#e5b846
+}
+
 .grow{flex:1}
+
 .balance{
-  height:49px;min-width:164px;border:1px solid #c1881c;border-radius:28px;
-  display:flex;align-items:center;justify-content:center;gap:8px;direction:ltr;background:#030303;
+  height:49px;
+  min-width:164px;
+  border:1px solid #c1881c;
+  border-radius:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  direction:ltr;
+  background:#030303;
 }
-.bcoin{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
-  background:linear-gradient(145deg,#fff0a0,#b97812);border:2px solid #e0ad37;color:#171006;font-size:9px;font-weight:900}
-.balance b{font-size:18px;font-weight:500}
-.profile{width:51px;height:51px;margin-left:10px;border-radius:50%;border:1px solid #bd821b;background:#030303;color:#f4be38;font-size:25px}
+
+.bcoin{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#fff0a0,#b97812);
+  border:2px solid #e0ad37;
+  color:#171006;
+  font-size:9px;
+  font-weight:900
+}
+
+.balance b{
+  font-size:18px;
+  font-weight:500
+}
+
+.profile{
+  width:51px;
+  height:51px;
+  margin-left:10px;
+  border-radius:50%;
+  border:1px solid #bd821b;
+  background:#030303;
+  color:#f4be38;
+  font-size:25px
+}
 
 /* Hero */
-.hero{height:430px;position:relative;display:grid;place-items:center;overflow:hidden}
+.hero{
+  height:430px;
+  position:relative;
+  display:grid;
+  place-items:center;
+  overflow:hidden
+}
+
 .orbit{
-  position:absolute;border:1px solid rgba(242,181,48,.65);border-radius:50%;
+  position:absolute;
+  border:1px solid rgba(242,181,48,.65);
+  border-radius:50%;
   box-shadow:0 0 14px rgba(242,181,48,.13)
 }
-.o1{width:520px;height:185px;transform:rotate(-11deg);top:85px}
-.o2{width:490px;height:170px;transform:rotate(17deg);top:105px;opacity:.72}
-.o3{width:455px;height:155px;transform:rotate(-29deg);top:125px;opacity:.38}
+
+.o1{
+  width:520px;
+  height:185px;
+  transform:rotate(-11deg);
+  top:85px
+}
+
+.o2{
+  width:490px;
+  height:170px;
+  transform:rotate(17deg);
+  top:105px;
+  opacity:.72
+}
+
+.o3{
+  width:455px;
+  height:155px;
+  transform:rotate(-29deg);
+  top:125px;
+  opacity:.38
+}
+
 .orbit:after{
-  content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#ffe18a;
+  content:"";
+  position:absolute;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#ffe18a;
   box-shadow:0 0 12px 4px rgba(255,204,70,.7)
 }
-.o1:after{left:10%;top:48%}.o2:after{right:7%;top:53%}.o3:after{left:18%;top:29%}
+
+.o1:after{left:10%;top:48%}
+.o2:after{right:7%;top:53%}
+.o3:after{left:18%;top:29%}
 
 .coin{
-  position:relative;z-index:3;width:min(58vw,315px);height:min(58vw,315px);
-  border-radius:50%;display:grid;place-items:center;margin-top:6px;
-  background:radial-gradient(circle at 34% 22%,#fff0a3 0 3%,#e6b03d 16%,#a8731e 40%,#332613 64%,#070706 100%);
+  position:relative;
+  z-index:3;
+  width:min(58vw,315px);
+  height:min(58vw,315px);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  margin-top:6px;
+  background:
+    radial-gradient(
+      circle at 34% 22%,
+      #fff0a3 0 3%,
+      #e6b03d 16%,
+      #a8731e 40%,
+      #332613 64%,
+      #070706 100%
+    );
   border:9px solid #c9952b;
-  box-shadow:0 0 0 4px #493312,0 0 0 8px #dfa93a,0 0 0 11px #533a12,
-             0 0 45px rgba(245,183,43,.56),inset 0 0 32px rgba(255,238,154,.38);
+  box-shadow:
+    0 0 0 4px #493312,
+    0 0 0 8px #dfa93a,
+    0 0 0 11px #533a12,
+    0 0 45px rgba(245,183,43,.56),
+    inset 0 0 32px rgba(255,238,154,.38)
 }
+
 .coin:before{
-  content:"";position:absolute;inset:25px;border-radius:50%;
+  content:"";
+  position:absolute;
+  inset:25px;
+  border-radius:50%;
   border:2px solid rgba(242,198,91,.8);
-  box-shadow:0 0 0 8px rgba(63,45,16,.72),0 0 0 10px rgba(220,168,58,.66),
-             inset 0 0 32px #000;
+  box-shadow:
+    0 0 0 8px rgba(63,45,16,.72),
+    0 0 0 10px rgba(220,168,58,.66),
+    inset 0 0 32px #000
 }
+
 .coin:after{
-  content:"";position:absolute;inset:46px;border-radius:50%;
-  border:1px solid rgba(242,207,115,.3);background:radial-gradient(circle,#3c3325,#15130e 60%,#070706);
-  box-shadow:inset 0 0 30px #000;
+  content:"";
+  position:absolute;
+  inset:46px;
+  border-radius:50%;
+  border:1px solid rgba(242,207,115,.3);
+  background:
+    radial-gradient(
+      circle,
+      #3c3325,
+      #15130e 60%,
+      #070706
+    );
+  box-shadow:inset 0 0 30px #000
 }
+
 .ctext{
-  position:relative;z-index:8;direction:ltr;color:#f3ca62;
-  font-size:clamp(65px,17vw,108px);font-weight:900;letter-spacing:-5px;
-  text-shadow:0 1px #fff2ad,0 4px #86601c,0 7px #493514,0 0 18px rgba(245,201,90,.4);
+  position:relative;
+  z-index:8;
+  direction:ltr;
+  color:#f3ca62;
+  font-size:clamp(65px,17vw,108px);
+  font-weight:900;
+  letter-spacing:-5px;
+  text-shadow:
+    0 1px #fff2ad,
+    0 4px #86601c,
+    0 7px #493514,
+    0 0 18px rgba(245,201,90,.4)
 }
+
 .diamond{
-  position:absolute;z-index:9;width:38px;height:38px;transform:rotate(45deg);
-  border:2px solid #e6b74e;background:linear-gradient(135deg,#fff1aa,#d59c2d 58%,#704b0d);
-  box-shadow:0 0 15px rgba(255,211,90,.48),inset 0 0 5px #fff5bb
+  position:absolute;
+  z-index:9;
+  width:38px;
+  height:38px;
+  transform:rotate(45deg);
+  border:2px solid #e6b74e;
+  background:
+    linear-gradient(
+      135deg,
+      #fff1aa,
+      #d59c2d 58%,
+      #704b0d
+    );
+  box-shadow:
+    0 0 15px rgba(255,211,90,.48),
+    inset 0 0 5px #fff5bb
 }
-.diamond:after{content:"";position:absolute;inset:7px;border:1px solid rgba(255,241,170,.72)}
-.top{top:-11px;left:50%;margin-left:-19px}.bottom{bottom:-11px;left:50%;margin-left:-19px}
-.left{left:-11px;top:50%;margin-top:-19px}.right{right:-11px;top:50%;margin-top:-19px}
+
+.diamond:after{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border:1px solid rgba(255,241,170,.72)
+}
+
+.top{
+  top:-11px;
+  left:50%;
+  margin-left:-19px
+}
+
+.bottom{
+  bottom:-11px;
+  left:50%;
+  margin-left:-19px
+}
+
+.left{
+  left:-11px;
+  top:50%;
+  margin-top:-19px
+}
+
+.right{
+  right:-11px;
+  top:50%;
+  margin-top:-19px
+}
+
 .platform{
-  position:absolute;bottom:8px;width:min(88vw,560px);height:82px;border-radius:50%;
-  background:radial-gradient(ellipse,#d69a24 0 3%,#5a3d0f 22%,#090908 59%,transparent 72%);
+  position:absolute;
+  bottom:8px;
+  width:min(88vw,560px);
+  height:82px;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      ellipse,
+      #d69a24 0 3%,
+      #5a3d0f 22%,
+      #090908 59%,
+      transparent 72%
+    )
 }
-.platform:before{content:"";position:absolute;left:7%;right:7%;top:11px;height:49px;border-radius:50%;
- border:3px solid #b77c1a;box-shadow:0 0 16px rgba(242,181,45,.48),inset 0 0 17px rgba(230,171,42,.25)}
-.platform:after{content:"";position:absolute;left:16%;right:16%;top:23px;height:29px;border-radius:50%;border:1px solid rgba(255,218,105,.6)}
+
+.platform:before{
+  content:"";
+  position:absolute;
+  left:7%;
+  right:7%;
+  top:11px;
+  height:49px;
+  border-radius:50%;
+  border:3px solid #b77c1a;
+  box-shadow:
+    0 0 16px rgba(242,181,45,.48),
+    inset 0 0 17px rgba(230,171,42,.25)
+}
+
+.platform:after{
+  content:"";
+  position:absolute;
+  left:16%;
+  right:16%;
+  top:23px;
+  height:29px;
+  border-radius:50%;
+  border:1px solid rgba(255,218,105,.6)
+}
 
 /* Timer */
 .timer{
-  width:min(77vw,760px);min-height:104px;margin:0 auto;padding:10px 16px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border:1px solid #b77d1b;border-radius:24px;background:linear-gradient(180deg,#0b0b0b,#030303);
-  box-shadow:0 0 20px rgba(236,177,45,.13),inset 0 0 18px rgba(255,220,100,.025)
+  width:min(77vw,760px);
+  min-height:104px;
+  margin:0 auto;
+  padding:10px 16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #b77d1b;
+  border-radius:24px;
+  background:linear-gradient(180deg,#0b0b0b,#030303);
+  box-shadow:
+    0 0 20px rgba(236,177,45,.13),
+    inset 0 0 18px rgba(255,220,100,.025)
 }
-.timerrow{direction:ltr;display:flex;align-items:center;gap:24px}
-.clock{width:47px;height:47px;border:3px solid #efc24d;border-radius:50%;position:relative}
-.clock:before{content:"";position:absolute;width:3px;height:15px;left:20px;top:8px;background:#efc24d}
-.clock:after{content:"";position:absolute;width:11px;height:3px;left:20px;top:22px;background:#efc24d;transform:rotate(28deg);transform-origin:left}
-.time{font-size:clamp(42px,8vw,60px);font-weight:900;color:#f7d365;letter-spacing:2px}
-.timer p{margin:7px 0 0;font-size:13px;color:#eee7d6}
 
-/* Claim */
-.claim{
-  width:min(80vw,730px);height:88px;margin:13px auto 12px;position:relative;
-  display:flex;align-items:center;justify-content:center;gap:25px;
-  border:2px solid #dda73b;background:linear-gradient(180deg,#0d0c09,#030303);
-  clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);
-  box-shadow:0 0 26px rgba(246,187,49,.22);cursor:pointer
+.timerrow{
+  direction:ltr;
+  display:flex;
+  align-items:center;
+  gap:24px
 }
-.claim:before{content:"";position:absolute;inset:5px;border:1px solid #7f5817;clip-path:inherit}
-.stack{width:64px;height:55px;position:relative}
-.stack i{position:absolute;left:4px;width:53px;height:18px;border-radius:50%;border:2px solid #e7b33f;background:linear-gradient(#ffe78d,#aa7014)}
-.stack i:nth-child(1){top:0}.stack i:nth-child(2){top:15px}.stack i:nth-child(3){top:30px}
-.cinfo{text-align:center;direction:ltr}.reward{display:block;font-size:30px;font-weight:900;color:#ffe187}
-.clabel{display:inline-block;margin-top:5px;min-width:185px;padding:4px 24px;border:1px solid #c18b27;border-radius:20px;font-size:20px;font-weight:900}
-.arrow{font-size:30px;color:#e6b43e}
-.claim.disabled{opacity:.65;cursor:not-allowed}
 
-/* Bottom */
-.actions{width:min(95vw,850px);margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:1;align-items:stretch}
-.action{
-  min-height:116px;height:100%;border:1px solid #ae751c;background:linear-gradient(180deg,#0b0b0b,#030303);
-  clip-path:polygon(9% 0,91% 0,100% 12%,100% 88%,91% 100%,9% 100%,0 88%,0 12%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;
-  box-shadow:inset 0 0 20px rgba(244,184,45,.025);position:relative
-}
-.action:before{content:"";position:absolute;inset:4px;border:1px solid rgba(210,158,52,.42);clip-path:inherit}
-.icon{width:46px;height:46px;border:1px solid #d39a2a;border-radius:50%;display:grid;place-items:center;color:#ffd65a;font-size:29px;box-shadow:0 0 13px rgba(244,190,55,.15)}
-.action strong{font-size:14px;color:#fff0ad}.action span{font-size:11px;color:#c7beaa}
-.status{min-height:22px;text-align:center;color:#f3c650;font-size:12px;margin-top:10px}
-
-@media(max-width:600px){
- .app{padding:34px 6px 18px}
- .header{height:69px;padding:5px 7px}
- .hcoin{width:55px;height:55px;flex-basis:55px}.hcoin span{font-size:17px}
- .brand{margin-left:10px}.brand b{font-size:26px;letter-spacing:4px}.brand small{font-size:9px;letter-spacing:3px;margin-top:6px}
- .balance{min-width:106px;height:41px;padding:0 7px;gap:5px}.bcoin{width:23px;height:23px;font-size:7px}.balance b{font-size:13px}
- .profile{width:41px;height:41px;flex-basis:41px;margin-left:6px;font-size:20px}
- .hero{height:330px}.o1{width:360px;height:125px;top:35px}.o2{width:345px;height:118px;top:48px}.o3{width:315px;height:105px;top:61px}
- .coin{width:min(58vw,250px);height:min(58vw,250px);margin-top:0}.diamond{width:29px;height:29px}.top,.bottom{margin-left:-14.5px}.left,.right{margin-top:-14.5px}
- .top{top:-7px}.bottom{bottom:-7px}.left{left:-7px}.right{right:-7px}
- .platform{bottom:5px;height:62px}.platform:before{top:8px;height:38px}.platform:after{top:18px;height:23px}
- .timer{width:94vw;min-height:82px;padding:8px}.timerrow{gap:11px}.clock{width:32px;height:32px}.clock:before{left:16px;height:12px}.clock:after{left:16px;top:19px;width:9px}.time{font-size:31px}.timer p{font-size:10px;margin-top:5px}
- .claim{width:93vw;height:68px;margin-top:10px;margin-bottom:10px;gap:10px}.stack{width:44px;height:38px}.stack i{width:35px;height:11px}.stack i:nth-child(2){top:12px}.stack i:nth-child(3){top:24px}.reward{font-size:22px}.clabel{min-width:120px;font-size:13px;padding:3px 15px}.arrow{font-size:19px}
- .actions{width:97vw;gap:5px;flex:1}.action{min-height:91px;height:100%;padding:5px 2px;gap:4px}.icon{width:36px;height:36px;font-size:18px}.action strong{font-size:10px}.action span{font-size:8px}
-}
-</style>
-
-<style id="v12-clock-fix">
-.timerrow .clock{
+/* الساعة المصححة */
+.clock{
   width:30px;
   height:30px;
   min-width:30px;
@@ -182,140 +419,831 @@ button{font:inherit;color:inherit}
   color:#f7d365;
   background:transparent;
   border:0;
-  box-shadow:none;
+  box-shadow:none
 }
 
-.timerrow .clock svg{
+.clock svg{
   display:block;
   width:30px;
-  height:30px;
+  height:30px
 }
 
-.timerrow .clock svg circle{
+.clock svg circle{
   stroke:#efc24d;
-  stroke-width:1.45;
+  stroke-width:1.45
 }
 
-.timerrow .clock svg path{
+.clock svg path{
   stroke:#efc24d;
   stroke-width:1.35;
   stroke-linecap:round;
-  stroke-linejoin:round;
+  stroke-linejoin:round
+}
 
+.time{
+  font-size:clamp(42px,8vw,60px);
+  font-weight:900;
+  color:#f7d365;
+  letter-spacing:2px
+}
+
+.timer p{
+  margin:7px 0 0;
+  font-size:13px;
+  color:#eee7d6;
+  text-align:center
+}
+
+/* Claim */
+.claim{
+  width:min(80vw,730px);
+  height:88px;
+  margin:13px auto 12px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:25px;
+  border:2px solid #dda73b;
+  background:linear-gradient(180deg,#0d0c09,#030303);
+  clip-path:polygon(
+    5% 0,
+    95% 0,
+    100% 50%,
+    95% 100%,
+    5% 100%,
+    0 50%
+  );
+  box-shadow:0 0 26px rgba(246,187,49,.22);
+  cursor:pointer
+}
+
+.claim:before{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border:1px solid #7f5817;
+  clip-path:inherit
+}
+
+.stack{
+  width:64px;
+  height:55px;
+  position:relative
+}
+
+.stack i{
+  position:absolute;
+  left:4px;
+  width:53px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid #e7b33f;
+  background:linear-gradient(#ffe78d,#aa7014)
+}
+
+.stack i:nth-child(1){top:0}
+.stack i:nth-child(2){top:15px}
+.stack i:nth-child(3){top:30px}
+
+.cinfo{
+  text-align:center;
+  direction:ltr
+}
+
+.reward{
+  display:block;
+  font-size:30px;
+  font-weight:900;
+  color:#ffe187
+}
+
+.clabel{
+  display:inline-block;
+  margin-top:5px;
+  min-width:185px;
+  padding:4px 24px;
+  border:1px solid #c18b27;
+  border-radius:20px;
+  font-size:20px;
+  font-weight:900
+}
+
+.arrow{
+  font-size:30px;
+  color:#e6b43e
+}
+
+.claim.disabled{
+  opacity:.65;
+  cursor:not-allowed
+}
+
+/* Bottom */
+.actions{
+  width:min(95vw,850px);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  flex:1;
+  align-items:stretch
+}
+
+.action{
+  min-height:116px;
+  height:100%;
+  border:1px solid #ae751c;
+  background:linear-gradient(180deg,#0b0b0b,#030303);
+  clip-path:polygon(
+    9% 0,
+    91% 0,
+    100% 12%,
+    100% 88%,
+    91% 100%,
+    9% 100%,
+    0 88%,
+    0 12%
+  );
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  cursor:pointer;
+  box-shadow:inset 0 0 20px rgba(244,184,45,.025);
+  position:relative
+}
+
+.action:before{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border:1px solid rgba(210,158,52,.42);
+  clip-path:inherit
+}
+
+.icon{
+  width:46px;
+  height:46px;
+  border:1px solid #d39a2a;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  color:#ffd65a;
+  font-size:29px;
+  box-shadow:0 0 13px rgba(244,190,55,.15)
+}
+
+.action strong{
+  font-size:14px;
+  color:#fff0ad
+}
+
+.action span{
+  font-size:11px;
+  color:#c7beaa
+}
+
+.status{
+  min-height:22px;
+  text-align:center;
+  color:#f3c650;
+  font-size:12px;
+  margin-top:10px
+}
+
+@media(max-width:600px){
+
+ .app{
+   padding:34px 6px 18px
+ }
+
+ .header{
+   height:69px;
+   padding:5px 7px
+ }
+
+ .hcoin{
+   width:55px;
+   height:55px;
+   flex-basis:55px
+ }
+
+ .hcoin span{
+   font-size:17px
+ }
+
+ .brand{
+   margin-left:10px
+ }
+
+ .brand b{
+   font-size:26px;
+   letter-spacing:4px
+ }
+
+ .brand small{
+   font-size:9px;
+   letter-spacing:3px;
+   margin-top:6px
+ }
+
+ .balance{
+   min-width:106px;
+   height:41px;
+   padding:0 7px;
+   gap:5px
+ }
+
+ .bcoin{
+   width:23px;
+   height:23px;
+   font-size:7px
+ }
+
+ .balance b{
+   font-size:13px
+ }
+
+ .profile{
+   width:41px;
+   height:41px;
+   flex-basis:41px;
+   margin-left:6px;
+   font-size:20px
+ }
+
+ .hero{
+   height:330px
+ }
+
+ .o1{
+   width:360px;
+   height:125px;
+   top:35px
+ }
+
+ .o2{
+   width:345px;
+   height:118px;
+   top:48px
+ }
+
+ .o3{
+   width:315px;
+   height:105px;
+   top:61px
+ }
+
+ .coin{
+   width:min(58vw,250px);
+   height:min(58vw,250px);
+   margin-top:0
+ }
+
+ .diamond{
+   width:29px;
+   height:29px
+ }
+
+ .top,.bottom{
+   margin-left:-14.5px
+ }
+
+ .left,.right{
+   margin-top:-14.5px
+ }
+
+ .top{top:-7px}
+ .bottom{bottom:-7px}
+ .left{left:-7px}
+ .right{right:-7px}
+
+ .platform{
+   bottom:5px;
+   height:62px
+ }
+
+ .platform:before{
+   top:8px;
+   height:38px
+ }
+
+ .platform:after{
+   top:18px;
+   height:23px
+ }
+
+ .timer{
+   width:94vw;
+   min-height:82px;
+   padding:8px
+ }
+
+ .timerrow{
+   gap:11px
+ }
+
+ .clock{
+   width:30px;
+   height:30px;
+   min-width:30px
+ }
+
+ .clock svg{
+   width:30px;
+   height:30px
+ }
+
+ .time{
+   font-size:31px
+ }
+
+ .timer p{
+   font-size:10px;
+   margin-top:5px
+ }
+
+ .claim{
+   width:93vw;
+   height:68px;
+   margin-top:10px;
+   margin-bottom:10px;
+   gap:10px
+ }
+
+ .stack{
+   width:44px;
+   height:38px
+ }
+
+ .stack i{
+   width:35px;
+   height:11px
+ }
+
+ .stack i:nth-child(2){top:12px}
+ .stack i:nth-child(3){top:24px}
+
+ .reward{
+   font-size:22px
+ }
+
+ .clabel{
+   min-width:120px;
+   font-size:13px;
+   padding:3px 15px
+ }
+
+ .arrow{
+   font-size:19px
+ }
+
+ .actions{
+   width:97vw;
+   gap:5px;
+   flex:1
+ }
+
+ .action{
+   min-height:91px;
+   height:100%;
+   padding:5px 2px;
+   gap:4px
+ }
+
+ .icon{
+   width:36px;
+   height:36px;
+   font-size:18px
+ }
+
+ .action strong{
+   font-size:10px
+ }
+
+ .action span{
+   font-size:8px
+ }
+}
 </style>
-
 </head>
+
 <body>
+
 <div class="app">
 
 <header class="header">
-  <div class="hcoin"><span>LTF</span></div>
-  <div class="brand"><b>LTF</b><small>MINER</small></div>
+
+  <div class="hcoin">
+    <span>LTF</span>
+  </div>
+
+  <div class="brand">
+    <b>LTF</b>
+    <small>MINER</small>
+  </div>
+
   <div class="grow"></div>
-  <div class="balance"><div class="bcoin">LTF</div><b id="balance">0.000000</b><span>LTF</span></div>
-  <button class="profile">●</button>
+
+  <div class="balance">
+    <div class="bcoin">LTF</div>
+    <b id="balance">0.000000</b>
+    <span>LTF</span>
+  </div>
+
+  <button class="profile" type="button">●</button>
+
 </header>
 
 <section class="hero">
-  <div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
+
+  <div class="orbit o1"></div>
+  <div class="orbit o2"></div>
+  <div class="orbit o3"></div>
+
   <div class="coin">
-    <div class="diamond top"></div><div class="diamond bottom"></div><div class="diamond left"></div><div class="diamond right"></div>
+
+    <div class="diamond top"></div>
+    <div class="diamond bottom"></div>
+    <div class="diamond left"></div>
+    <div class="diamond right"></div>
+
     <div class="ctext">LTF</div>
+
   </div>
+
   <div class="platform"></div>
+
 </section>
 
 <section class="timer">
+
   <div class="timerrow">
+
     <div class="clock" aria-hidden="true">
-  <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
-       xmlns="http://www.w3.org/2000/svg">
-    <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/>
-    <path d="M12 7.4V12L15.1 14" stroke="currentColor" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</div>
-    <div class="time" id="timer">0.000000</div>
-    <span style="font-size:20px;font-weight:900;color:#f7d365">LTF</span>
+
+      <svg
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+
+        <circle
+          cx="12"
+          cy="12"
+          r="8.5"/>
+
+        <path
+          d="M12 7.4V12L15.1 14"/>
+
+      </svg>
+
+    </div>
+
+    <div class="time" id="timer">
+      0.000001
+    </div>
+
+    <span
+      style="
+        font-size:20px;
+        font-weight:900;
+        color:#f7d365
+      ">
+      LTF
+    </span>
+
   </div>
-  <p></p>
+
+  <p id="timerLabel">
+    التعدين مستمر — 3 LTF كل 3 ساعات
+  </p>
+
 </section>
 
-<button class="claim disabled" id="claim" disabled>
-  <div class="stack"><i></i><i></i><i></i></div>
-  <div class="cinfo"><span class="reward">CLAIM</span><span class="clabel">CLAIM</span></div>
-  <div class="arrow">»</div>
+<button
+  class="claim disabled"
+  id="claim"
+  type="button"
+  disabled>
+
+  <div class="stack">
+    <i></i>
+    <i></i>
+    <i></i>
+  </div>
+
+  <div class="cinfo">
+
+    <span class="reward">
+      CLAIM
+    </span>
+
+    <span class="clabel">
+      CLAIM
+    </span>
+
+  </div>
+
+  <div class="arrow">
+    »
+  </div>
+
 </button>
 
 <section class="actions">
- <button class="action" onclick="msg('سيتم تفعيل SWAP قريباً')"><div class="icon">⇄</div><strong>SWAP</strong><span>تبديل العملة</span></button>
- <button class="action" onclick="msg('المهام اليومية قيد التجهيز')"><div class="icon">✓</div><strong>المهام</strong><span>أكمل المهام اليومية</span></button>
- <button class="action" onclick="msg('رفع قوة التعدين قيد التجهيز')"><div class="icon">⛏</div><strong>ارفع قوة التعدين</strong><span>زد من سرعة التعدين</span></button>
+
+  <button
+    class="action"
+    type="button"
+    onclick="msg('سيتم تفعيل SWAP قريباً')">
+
+    <div class="icon">⇄</div>
+    <strong>SWAP</strong>
+    <span>تبديل العملة</span>
+
+  </button>
+
+  <button
+    class="action"
+    type="button"
+    onclick="msg('المهام اليومية قيد التجهيز')">
+
+    <div class="icon">✓</div>
+    <strong>المهام</strong>
+    <span>أكمل المهام اليومية</span>
+
+  </button>
+
+  <button
+    class="action"
+    type="button"
+    onclick="msg('رفع قوة التعدين قيد التجهيز')">
+
+    <div class="icon">⛏</div>
+    <strong>ارفع قوة التعدين</strong>
+    <span>زد من سرعة التعدين</span>
+
+  </button>
+
 </section>
-<div class="status" id="status"></div>
+
+<div
+  class="status"
+  id="status">
+</div>
+
 </div>
 
 <script>
-// التعدين الحقيقي: 3 LTF كل 3 ساعات، ويبدأ العرض من 0.000001
-const MINING_RATE_PER_MS = 3 / (3 * 60 * 60 * 1000);
+
+/*
+  LTF MINER
+
+  النظام:
+  3 LTF كل 3 ساعات.
+
+  كل دورة:
+  0 → 3 LTF
+
+  عند اكتمال 3 ساعات:
+  يظهر CLAIM
+  وعند الضغط:
+  يضاف 3 LTF إلى الرصيد
+  وتبدأ دورة جديدة.
+
+  البيانات محفوظة في localStorage.
+*/
+
+const MINING_DURATION_MS =
+  3 * 60 * 60 * 1000;
+
+const MINING_REWARD = 3;
+
 const DISPLAY_PRECISION = 6;
-const $ = id => document.getElementById(id);
 
-let balance = Number(localStorage.getItem('ltf_balance') || 0);
-let miningStart = Number(localStorage.getItem('ltf_mining_start') || 0);
+const $ = id =>
+  document.getElementById(id);
 
-if (!miningStart) {
+let balance =
+  Number(
+    localStorage.getItem('ltf_balance') || 0
+  );
+
+let miningStart =
+  Number(
+    localStorage.getItem('ltf_mining_start') || 0
+  );
+
+if(
+  !Number.isFinite(balance) ||
+  balance < 0
+){
+  balance = 0;
+}
+
+if(
+  !miningStart ||
+  !Number.isFinite(miningStart)
+){
+
   miningStart = Date.now();
-  localStorage.setItem('ltf_mining_start', String(miningStart));
+
+  localStorage.setItem(
+    'ltf_mining_start',
+    String(miningStart)
+  );
 }
 
-function minedNow() {
-  return Math.max(0, (Date.now() - miningStart) * MINING_RATE_PER_MS);
+function getElapsed(){
+
+  return Math.max(
+    0,
+    Date.now() - miningStart
+  );
+
 }
 
-function save() {
-  localStorage.setItem('ltf_balance', balance.toFixed(8));
-  localStorage.setItem('ltf_mining_start', String(miningStart));
+function getProgress(){
+
+  return Math.min(
+    getElapsed(),
+    MINING_DURATION_MS
+  );
+
 }
 
-function render() {
-  const mined = minedNow();
-  const total = balance + mined;
+function minedNow(){
 
-  // Main live counter: 0.01 → 0.02 → 0.03 → 0.04 ...
-  $('timer').textContent = mined.toFixed(DISPLAY_PRECISION);
-  $('balance').textContent = total.toFixed(DISPLAY_PRECISION);
+  return (
+    getProgress() /
+    MINING_DURATION_MS
+  ) * MINING_REWARD;
 
-  const canClaim = mined >= 0.01;
-  $('claim').disabled = !canClaim;
-  $('claim').classList.toggle('disabled', !canClaim);
-
-  $('status').textContent = canClaim
-    ? `جاهز للجمع: ${mined.toFixed(DISPLAY_PRECISION)} LTF`
-    : 'جاري التعدين...';
 }
 
-$('claim').onclick = () => {
-  const mined = minedNow();
-  if (mined < 0.01) return;
+function save(){
 
-  balance += mined;
-  miningStart = Date.now();
+  localStorage.setItem(
+    'ltf_balance',
+    balance.toFixed(8)
+  );
+
+  localStorage.setItem(
+    'ltf_mining_start',
+    String(miningStart)
+  );
+
+}
+
+function formatTime(ms){
+
+  const hours =
+    Math.floor(ms / 3600000);
+
+  const minutes =
+    Math.floor(
+      (ms % 3600000) / 60000
+    );
+
+  const seconds =
+    Math.floor(
+      (ms % 60000) / 1000
+    );
+
+  return (
+    String(hours).padStart(2,'0') +
+    ':' +
+    String(minutes).padStart(2,'0') +
+    ':' +
+    String(seconds).padStart(2,'0')
+  );
+
+}
+
+function render(){
+
+  const elapsed =
+    getProgress();
+
+  const mined =
+    minedNow();
+
+  const total =
+    balance + mined;
+
+  const canClaim =
+    elapsed >= MINING_DURATION_MS;
+
+  /*
+    لا نعرض 0 في أول لحظة،
+    بل يبدأ العداد بصرياً من 0.000001
+  */
+
+  const displayMined =
+    mined <= 0
+      ? 0.000001
+      : mined;
+
+  $('timer').textContent =
+    displayMined.toFixed(
+      DISPLAY_PRECISION
+    );
+
+  $('balance').textContent =
+    total.toFixed(
+      DISPLAY_PRECISION
+    );
+
+  $('claim').disabled =
+    !canClaim;
+
+  $('claim').classList.toggle(
+    'disabled',
+    !canClaim
+  );
+
+  if(canClaim){
+
+    $('timerLabel').textContent =
+      'اكتملت دورة التعدين — 3 LTF جاهزة للجمع';
+
+    $('status').textContent =
+      'جاهز للجمع: 3.000000 LTF';
+
+  }else{
+
+    const remaining =
+      MINING_DURATION_MS - elapsed;
+
+    $('timerLabel').textContent =
+      'متبقي ' +
+      formatTime(remaining) +
+      ' — 3 LTF كل 3 ساعات';
+
+    $('status').textContent =
+      'جاري التعدين...';
+
+  }
+
+}
+
+$('claim').onclick = function(){
+
+  if(
+    getProgress() <
+    MINING_DURATION_MS
+  ){
+    return;
+  }
+
+  balance +=
+    MINING_REWARD;
+
+  miningStart =
+    Date.now();
+
   save();
 
-  $('status').textContent = `تم جمع ${mined.toFixed(DISPLAY_PRECISION)} LTF`;
   render();
+
+  $('status').textContent =
+    'تم جمع 3.000000 LTF وبدأت دورة جديدة';
+
 };
 
-function msg(t) {
-  $('status').textContent = t;
-  setTimeout(() => {
-    if ($('status').textContent === t) $('status').textContent = '';
-  }, 2500);
+function msg(text){
+
+  $('status').textContent =
+    text;
+
+  setTimeout(
+    function(){
+
+      if(
+        $('status').textContent === text
+      ){
+        $('status').textContent = '';
+      }
+
+    },
+    2500
+  );
+
 }
 
 render();
-setInterval(render, 1000);
+
+setInterval(
+  render,
+  1000
+);
+
 </script>
+
 </body>
 </html>
+```
