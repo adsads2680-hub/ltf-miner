@@ -2016,15 +2016,7 @@ button{
       type="button">
       طلب السحب
     </button>
-
-    <button
-      id="telegramTestBtn"
-      type="button"
-      style="display:block;margin-top:10px;width:100%;">
-      اختبار إشعار Telegram
-    </button>
-
-  </div>
+</div>
 
 </div>
 
@@ -3517,49 +3509,6 @@ function isValidBep20Address(address){
 
 const WITHDRAW_FUNCTION_URL =
   "https://julnowgcrkazepbfxkau.supabase.co/functions/v1/ltf-withdraw";
-
-const telegramTestBtn = document.getElementById("telegramTestBtn");
-
-/* اختبار إشعار Telegram للإدارة فقط — لا ينشئ طلب سحب ولا يخصم رصيد */
-if(telegramTestBtn){
-  telegramTestBtn.addEventListener("click", async function(){
-    const initData =
-      tg && typeof tg.initData === "string"
-        ? tg.initData
-        : "";
-
-    if(!initData){
-      alert("افتح LTF Miner من داخل Telegram");
-      return;
-    }
-
-    telegramTestBtn.disabled = true;
-    telegramTestBtn.textContent = "جاري الاختبار...";
-
-    try{
-      const response = await fetch(WITHDRAW_FUNCTION_URL, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          test_admin_notification:true,
-          initData:initData
-        })
-      });
-
-      const data = await response.json();
-      if(!response.ok || !data || data.success !== true){
-        throw new Error(data && data.message ? data.message : "فشل اختبار الإشعار");
-      }
-
-      alert("تم إرسال رسالة الاختبار إلى حساب الإدارة على Telegram");
-    }catch(error){
-      alert(error && error.message ? error.message : "فشل اختبار الإشعار");
-    }finally{
-      telegramTestBtn.disabled = false;
-      telegramTestBtn.textContent = "اختبار إشعار Telegram";
-    }
-  });
-}
 
 let withdrawSubmitting = false;
 
