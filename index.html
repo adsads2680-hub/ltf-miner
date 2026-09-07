@@ -170,7 +170,7 @@ button{font:inherit;color:inherit}
 }
 </style>
 
-<style id="v11-clock-fix">
+<style id="v12-clock-fix">
 .timerrow .clock{
   width:34px;
   height:34px;
@@ -178,16 +178,30 @@ button{font:inherit;color:inherit}
   display:flex;
   align-items:center;
   justify-content:center;
+  position:relative;
   color:#f7d365;
   background:transparent;
   border:0;
   box-shadow:none;
 }
+
 .timerrow .clock svg{
   display:block;
-  width:26px;
-  height:26px;
+  width:30px;
+  height:30px;
 }
+
+.timerrow .clock svg circle{
+  stroke:#efc24d;
+  stroke-width:1.45;
+}
+
+.timerrow .clock svg path{
+  stroke:#efc24d;
+  stroke-width:1.35;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+
 </style>
 
 </head>
