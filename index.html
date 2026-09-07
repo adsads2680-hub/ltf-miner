@@ -1,3 +1,1878 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+
+<meta charset="utf-8">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="theme-color" content="#020202">
+
+<title>LTF Miner</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+
+:root{
+  --bg:#020202;
+  --panel:#090909;
+  --gold:#f5c84c;
+  --gold2:#ffe58a;
+  --gold3:#b98216;
+  --text:#fff;
+  --muted:#8d8d8d;
+  --line:rgba(245,200,76,.20);
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+  background:#020202;
+  color:#fff;
+  font-family:Arial,Tahoma,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 50% 29%,
+      rgba(245,200,76,.115) 0%,
+      rgba(245,200,76,.055) 18%,
+      rgba(245,200,76,.018) 34%,
+      transparent 56%),
+    radial-gradient(circle at 12% 8%,
+      rgba(255,214,91,.045),
+      transparent 30%),
+    radial-gradient(circle at 90% 74%,
+      rgba(189,132,25,.035),
+      transparent 32%),
+    linear-gradient(145deg,
+      #000000 0%,
+      #030303 28%,
+      #080704 50%,
+      #020202 72%,
+      #000000 100%);
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    repeating-radial-gradient(circle at 50% 30%,
+      transparent 0,
+      transparent 72px,
+      rgba(245,200,76,.018) 73px,
+      transparent 74px);
+  opacity:.75;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  width:430px;
+  height:430px;
+  left:50%;
+  top:31%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(circle,
+      rgba(255,220,110,.09) 0%,
+      rgba(245,200,76,.045) 25%,
+      rgba(245,200,76,.015) 46%,
+      transparent 70%);
+  filter:blur(8px);
+  animation:luxuryGlow 5s ease-in-out infinite;
+}
+
+@keyframes luxuryGlow{
+  0%,100%{
+    opacity:.72;
+    transform:translate(-50%,-50%) scale(.96);
+  }
+  50%{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1.06);
+  }
+}
+
+button,
+input{
+  font-family:inherit;
+}
+
+button{
+  -webkit-appearance:none;
+}
+
+.app{
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  margin:auto;
+  padding:
+    max(14px,env(safe-area-inset-top))
+    14px
+    max(22px,env(safe-area-inset-bottom));
+  position:relative;
+  overflow:hidden;
+  z-index:1;
+}
+
+.app::before{
+  content:"";
+  position:absolute;
+  top:80px;
+  left:-120px;
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  border:1px solid rgba(245,200,76,.035);
+  box-shadow:0 0 70px rgba(245,200,76,.025);
+  pointer-events:none;
+}
+
+.app::after{
+  content:"";
+  position:absolute;
+  right:-150px;
+  bottom:120px;
+  width:310px;
+  height:310px;
+  border-radius:50%;
+  border:1px solid rgba(245,200,76,.028);
+  pointer-events:none;
+}
+
+
+/* HEADER */
+
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+  position:relative;
+  z-index:10;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.brand-coin{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#090909;
+  font-size:15px;
+  font-weight:900;
+  background:
+    radial-gradient(circle at 35% 30%,
+      #fff4bd 0%,
+      #ffd965 20%,
+      #e5aa28 48%,
+      #8d5c0b 100%);
+  border:1px solid rgba(255,235,150,.7);
+  box-shadow:
+    0 0 12px rgba(245,200,76,.28),
+    0 0 25px rgba(245,200,76,.08),
+    inset 0 1px 2px rgba(255,255,255,.7);
+}
+
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+}
+
+.brand-main{
+  font-size:17px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.brand-sub{
+  margin-top:4px;
+  font-size:9px;
+  color:#858585;
+  letter-spacing:2px;
+}
+
+.balance{
+  min-width:92px;
+  padding:8px 11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.008));
+  box-shadow:
+    inset 0 0 15px rgba(245,200,76,.025),
+    0 0 18px rgba(0,0,0,.4);
+}
+
+.balance-number{
+  color:var(--gold2);
+  font-size:13px;
+  font-weight:800;
+}
+
+.balance-unit{
+  color:#858585;
+  font-size:10px;
+  font-weight:700;
+}
+
+
+/* HERO */
+
+.hero{
+  position:relative;
+  height:355px;
+  margin-top:2px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:48%;
+  width:270px;
+  height:270px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:
+    radial-gradient(circle,
+      rgba(245,200,76,.085),
+      rgba(245,200,76,.025) 42%,
+      transparent 70%);
+  filter:blur(10px);
+  pointer-events:none;
+}
+
+.orbit{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border:1px solid rgba(245,200,76,.22);
+  border-radius:50%;
+  pointer-events:none;
+  box-shadow:0 0 12px rgba(245,200,76,.025);
+}
+
+.orbit.one{
+  width:235px;
+  height:235px;
+  transform:
+    translate(-50%,-50%)
+    rotate(-18deg);
+}
+
+.orbit.two{
+  width:285px;
+  height:145px;
+  transform:
+    translate(-50%,-50%)
+    rotate(25deg);
+}
+
+.orbit.three{
+  width:320px;
+  height:190px;
+  transform:
+    translate(-50%,-50%)
+    rotate(-35deg);
+}
+
+.orbit::after{
+  content:"";
+  position:absolute;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--gold);
+  box-shadow:
+    0 0 7px var(--gold),
+    0 0 16px rgba(245,200,76,.45);
+}
+
+.orbit.one::after{
+  right:18%;
+  top:8%;
+}
+
+.orbit.two::after{
+  left:12%;
+  top:22%;
+}
+
+.orbit.three::after{
+  right:12%;
+  bottom:13%;
+}
+
+
+/* SIX GOLDEN MINING DOTS */
+
+.mining-dot{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:6px;
+  height:6px;
+  margin-left:-3px;
+  margin-top:-3px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%,
+      #fff5bb 0%,
+      #ffe070 25%,
+      #f5c84c 55%,
+      #b77a0f 100%);
+  box-shadow:
+    0 0 6px rgba(245,200,76,.95),
+    0 0 14px rgba(245,200,76,.55),
+    0 0 24px rgba(245,200,76,.20);
+  z-index:4;
+  pointer-events:none;
+  animation:miningDotPulse 2.4s ease-in-out infinite;
+}
+
+.mining-dot.d1{
+  transform:translate(0,-94px);
+}
+
+.mining-dot.d2{
+  transform:translate(81px,-47px);
+}
+
+.mining-dot.d3{
+  transform:translate(81px,47px);
+}
+
+.mining-dot.d4{
+  transform:translate(0,94px);
+}
+
+.mining-dot.d5{
+  transform:translate(-81px,47px);
+}
+
+.mining-dot.d6{
+  transform:translate(-81px,-47px);
+}
+
+.mining-dot.d2{animation-delay:.4s;}
+.mining-dot.d3{animation-delay:.8s;}
+.mining-dot.d4{animation-delay:1.2s;}
+.mining-dot.d5{animation-delay:1.6s;}
+.mining-dot.d6{animation-delay:2s;}
+
+@keyframes miningDotPulse{
+  0%,100%{
+    opacity:.65;
+    transform:translate(0,-94px) scale(.82);
+  }
+  50%{
+    opacity:1;
+    transform:translate(0,-94px) scale(1.15);
+  }
+}
+
+.mining-dot.d2{animation-name:miningDotPulse2;}
+.mining-dot.d3{animation-name:miningDotPulse3;}
+.mining-dot.d4{animation-name:miningDotPulse4;}
+.mining-dot.d5{animation-name:miningDotPulse5;}
+.mining-dot.d6{animation-name:miningDotPulse6;}
+
+@keyframes miningDotPulse2{
+  0%,100%{opacity:.65;transform:translate(81px,-47px) scale(.82);}
+  50%{opacity:1;transform:translate(81px,-47px) scale(1.15);}
+}
+
+@keyframes miningDotPulse3{
+  0%,100%{opacity:.65;transform:translate(81px,47px) scale(.82);}
+  50%{opacity:1;transform:translate(81px,47px) scale(1.15);}
+}
+
+@keyframes miningDotPulse4{
+  0%,100%{opacity:.65;transform:translate(0,94px) scale(.82);}
+  50%{opacity:1;transform:translate(0,94px) scale(1.15);}
+}
+
+@keyframes miningDotPulse5{
+  0%,100%{opacity:.65;transform:translate(-81px,47px) scale(.82);}
+  50%{opacity:1;transform:translate(-81px,47px) scale(1.15);}
+}
+
+@keyframes miningDotPulse6{
+  0%,100%{opacity:.65;transform:translate(-81px,-47px) scale(.82);}
+  50%{opacity:1;transform:translate(-81px,-47px) scale(1.15);}
+}
+
+
+/* ULTRA LUXURY 3D LTF COIN */
+
+.coin-wrap{
+  position:relative;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.coin{
+  width:145px;
+  height:145px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  background:
+    radial-gradient(circle at 31% 24%,
+      #fff9d8 0%,
+      #ffe98c 8%,
+      #f8cc50 20%,
+      #d99b20 42%,
+      #9b6510 67%,
+      #4c2b04 100%);
+  border:4px solid #dca82d;
+  box-shadow:
+    0 0 0 2px #6d4308,
+    0 0 0 6px rgba(255,218,105,.16),
+    0 0 20px rgba(245,200,76,.38),
+    0 0 55px rgba(245,200,76,.18),
+    0 16px 25px rgba(0,0,0,.65),
+    inset 0 4px 5px rgba(255,255,255,.78),
+    inset 0 -10px 16px rgba(48,25,0,.48);
+  overflow:hidden;
+  transform:
+    perspective(600px)
+    rotateX(4deg);
+  isolation:isolate;
+}
+
+.coin::before{
+  content:"";
+  position:absolute;
+  inset:9px;
+  border-radius:50%;
+  border:2px solid rgba(255,241,171,.55);
+  box-shadow:
+    inset 0 0 0 2px rgba(91,53,3,.32),
+    inset 0 0 15px rgba(255,230,130,.28),
+    0 0 8px rgba(255,221,105,.18);
+  z-index:1;
+}
+
+.coin::after{
+  content:"";
+  position:absolute;
+  width:190px;
+  height:38px;
+  left:-25px;
+  top:20px;
+  border-radius:50%;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255,255,255,.05),
+      rgba(255,255,255,.62),
+      rgba(255,255,255,.12),
+      transparent);
+  filter:blur(5px);
+  transform:rotate(-28deg);
+  z-index:4;
+  pointer-events:none;
+  animation:coinShine 4.5s ease-in-out infinite;
+}
+
+@keyframes coinShine{
+  0%{
+    transform:translateX(-80px) rotate(-28deg);
+    opacity:.15;
+  }
+  45%{opacity:.65;}
+  70%{
+    transform:translateX(80px) rotate(-28deg);
+    opacity:.08;
+  }
+  100%{
+    transform:translateX(120px) rotate(-28deg);
+    opacity:0;
+  }
+}
+
+.coin-wrap::before{
+  content:"✦  •  ✦  •  ✦  •  ✦  •  ✦";
+  position:absolute;
+  width:126px;
+  height:126px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:5px;
+  border-radius:50%;
+  color:rgba(255,241,169,.42);
+  font-size:5px;
+  letter-spacing:5px;
+  pointer-events:none;
+  z-index:3;
+}
+
+.coin-logo{
+  position:relative;
+  z-index:6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100px;
+  height:72px;
+  color:#6b4104;
+  font-size:43px;
+  font-weight:1000;
+  letter-spacing:-4px;
+  text-shadow:
+    0 1px 0 #fff0a5,
+    0 2px 0 #e1a72d,
+    0 3px 0 #9a620d,
+    0 5px 4px rgba(53,29,0,.48),
+    0 0 10px rgba(255,224,113,.22);
+  filter:drop-shadow(0 2px 2px rgba(48,25,0,.35));
+}
+
+.coin-logo::before{
+  content:"";
+  position:absolute;
+  width:91px;
+  height:61px;
+  border-radius:50%;
+  border:1px solid rgba(255,242,177,.28);
+  box-shadow:
+    inset 0 0 8px rgba(70,38,0,.22),
+    0 0 8px rgba(255,226,115,.12);
+  z-index:-1;
+}
+
+.coin-logo::after{
+  content:"";
+  position:absolute;
+  width:72px;
+  height:5px;
+  top:13px;
+  left:14px;
+  border-radius:50%;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255,250,205,.58),
+      transparent);
+  filter:blur(2px);
+  transform:rotate(-12deg);
+  pointer-events:none;
+}
+
+
+/* PLATFORM */
+
+.platform{
+  position:absolute;
+  z-index:2;
+  bottom:42px;
+  width:185px;
+  height:26px;
+  border-radius:50%;
+  background:
+    radial-gradient(ellipse,
+      rgba(245,200,76,.30),
+      rgba(245,200,76,.06) 58%,
+      transparent 72%);
+  border-bottom:1px solid rgba(245,200,76,.32);
+  filter:blur(.2px);
+  box-shadow:0 8px 25px rgba(245,200,76,.07);
+}
+
+
+/* TIMER */
+
+.timer-card{
+  position:relative;
+  width:100%;
+  padding:15px 14px 13px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.045),
+      rgba(255,255,255,.009));
+  box-shadow:
+    inset 0 0 22px rgba(245,200,76,.025),
+    0 12px 35px rgba(0,0,0,.30);
+  backdrop-filter:blur(8px);
+  z-index:5;
+}
+
+.timer-title{
+  text-align:center;
+  color:#777;
+  font-size:10px;
+  letter-spacing:1.5px;
+  margin-bottom:8px;
+}
+
+.timer-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+}
+
+.clock{
+  width:29px;
+  height:29px;
+  min-width:29px;
+  position:relative;
+  border:1.5px solid #e8b93f;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 30%,
+      rgba(255,230,130,.12),
+      rgba(0,0,0,.05));
+  box-shadow:
+    0 0 8px rgba(245,200,76,.14),
+    inset 0 0 5px rgba(245,200,76,.08);
+}
+
+.clock::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:2px;
+  width:2px;
+  height:3px;
+  transform:translateX(-50%);
+  border-radius:2px;
+  background:#efc34b;
+  box-shadow:0 20px 0 #efc34b;
+}
+
+.clock::after{
+  content:"";
+  position:absolute;
+  left:2px;
+  top:50%;
+  width:3px;
+  height:2px;
+  transform:translateY(-50%);
+  border-radius:2px;
+  background:#efc34b;
+  box-shadow:20px 0 0 #efc34b;
+}
+
+.clock-hand{
+  position:absolute;
+  left:50%;
+  bottom:50%;
+  transform-origin:50% 100%;
+  border-radius:5px;
+  background:#f7d365;
+  z-index:3;
+}
+
+.clock-hand.hour{
+  width:2px;
+  height:7px;
+  transform:
+    translateX(-50%)
+    rotate(35deg);
+}
+
+.clock-hand.minute{
+  width:1.5px;
+  height:10px;
+  transform:
+    translateX(-50%)
+    rotate(125deg);
+}
+
+.clock-dot{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:4px;
+  height:4px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:#ffe58a;
+  box-shadow:0 0 5px rgba(245,200,76,.45);
+  z-index:5;
+}
+
+.mined-number{
+  min-width:120px;
+  text-align:center;
+  color:#fff3b7;
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:.5px;
+}
+
+.mined-unit{
+  color:#a78330;
+  font-size:11px;
+  font-weight:800;
+}
+
+.timer-sub{
+  text-align:center;
+  color:#666;
+  font-size:9px;
+  margin-top:7px;
+}
+
+
+/* CLAIM */
+
+.claim-wrap{
+  margin-top:13px;
+  position:relative;
+  z-index:5;
+}
+
+.claim-btn{
+  width:100%;
+  height:57px;
+  border:1px solid rgba(255,219,105,.55);
+  border-radius:17px;
+  color:#171000;
+  font-size:16px;
+  font-weight:1000;
+  letter-spacing:2px;
+  background:
+    linear-gradient(180deg,
+      #ffe68b 0%,
+      #f6c84e 48%,
+      #c98c18 100%);
+  box-shadow:
+    0 8px 24px rgba(245,200,76,.16),
+    0 0 28px rgba(245,200,76,.06),
+    inset 0 1px 2px rgba(255,255,255,.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  transition:
+    transform .15s ease,
+    opacity .15s ease,
+    filter .15s ease;
+}
+
+.claim-btn:active{
+  transform:scale(.985);
+}
+
+.claim-icon{
+  font-size:18px;
+  line-height:1;
+}
+
+
+/* BOTTOM CARDS */
+
+.actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:12px;
+  position:relative;
+  z-index:5;
+}
+
+.action{
+  min-height:66px;
+  border:1px solid rgba(245,200,76,.15);
+  border-radius:15px;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.008));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  color:#999;
+  box-shadow:
+    inset 0 0 18px rgba(245,200,76,.012),
+    0 8px 20px rgba(0,0,0,.20);
+  backdrop-filter:blur(7px);
+  cursor:pointer;
+  transition:
+    transform .15s ease,
+    border-color .15s ease;
+}
+
+.action:active{
+  transform:scale(.97);
+}
+
+.action-icon{
+  color:#dcae37;
+  font-size:18px;
+  text-shadow:0 0 8px rgba(245,200,76,.16);
+}
+
+.action-title{
+  font-size:9px;
+  letter-spacing:.5px;
+}
+
+.action-value{
+  font-size:8px;
+  color:#555;
+}
+
+
+/* PANELS */
+
+.swap-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding:
+    0
+    12px
+    max(14px,env(safe-area-inset-bottom));
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(8px);
+}
+
+.swap-overlay.open{
+  display:flex;
+}
+
+.swap-panel{
+  width:100%;
+  max-width:520px;
+  max-height:92vh;
+  overflow-y:auto;
+  padding:18px 16px 16px;
+  border:1px solid rgba(245,200,76,.22);
+  border-radius:24px 24px 18px 18px;
+  background:
+    radial-gradient(circle at 50% 0%,
+      rgba(245,200,76,.10),
+      transparent 45%),
+    linear-gradient(180deg,
+      #0d0c09,
+      #050505 75%,
+      #020202);
+  box-shadow:
+    0 -15px 50px rgba(0,0,0,.7),
+    0 0 35px rgba(245,200,76,.08),
+    inset 0 1px 1px rgba(255,255,255,.06);
+  transform:translateY(25px);
+  opacity:0;
+  transition:
+    transform .22s ease,
+    opacity .22s ease;
+}
+
+.swap-overlay.open .swap-panel{
+  transform:translateY(0);
+  opacity:1;
+}
+
+.swap-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:17px;
+}
+
+.swap-heading{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.swap-title{
+  color:#ffe58a;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.swap-subtitle{
+  color:#666;
+  font-size:9px;
+}
+
+.swap-close{
+  width:34px;
+  height:34px;
+  border:1px solid rgba(245,200,76,.18);
+  border-radius:50%;
+  background:rgba(255,255,255,.025);
+  color:#aaa;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.swap-box{
+  padding:13px;
+  border:1px solid rgba(245,200,76,.13);
+  border-radius:17px;
+  background:rgba(255,255,255,.025);
+}
+
+.swap-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:#777;
+  font-size:9px;
+  margin-bottom:8px;
+}
+
+.swap-balance{
+  color:#b99843;
+}
+
+.swap-input-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.swap-input{
+  flex:1;
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff4bd;
+  font-size:24px;
+  font-weight:900;
+  direction:ltr;
+  text-align:left;
+}
+
+.swap-input::placeholder{
+  color:#444;
+}
+
+.swap-token{
+  min-width:64px;
+  padding:9px 10px;
+  border-radius:12px;
+  text-align:center;
+  color:#1b1403;
+  font-size:12px;
+  font-weight:900;
+  background:
+    linear-gradient(180deg,
+      #ffe68b,
+      #c88d1b);
+}
+
+.swap-arrow{
+  width:36px;
+  height:36px;
+  margin:10px auto;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#e9bd4a;
+  border:1px solid rgba(245,200,76,.18);
+  background:#080706;
+  font-size:17px;
+}
+
+.swap-output{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px;
+  border-radius:15px;
+  background:rgba(245,200,76,.035);
+  border:1px solid rgba(245,200,76,.09);
+}
+
+.swap-output-label{
+  color:#777;
+  font-size:9px;
+}
+
+.swap-output-value{
+  color:#ffe58a;
+  font-size:18px;
+  font-weight:900;
+  text-align:left;
+}
+
+.ton-live-price{
+  text-align:center;
+  margin-top:9px;
+  color:#777;
+  font-size:9px;
+  min-height:13px;
+}
+
+.swap-options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:13px;
+}
+
+.swap-option{
+  min-height:48px;
+  border:1px solid rgba(245,200,76,.12);
+  border-radius:14px;
+  background:rgba(255,255,255,.025);
+  color:#888;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.15s ease;
+}
+
+.swap-option.active{
+  color:#ffe58a;
+  border-color:rgba(245,200,76,.48);
+  background:
+    linear-gradient(180deg,
+      rgba(245,200,76,.12),
+      rgba(245,200,76,.035));
+  box-shadow:
+    0 0 18px rgba(245,200,76,.07);
+}
+
+.swap-confirm{
+  width:100%;
+  height:54px;
+  margin-top:13px;
+  border:1px solid rgba(255,219,105,.48);
+  border-radius:16px;
+  color:#171000;
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:1px;
+  background:
+    linear-gradient(180deg,
+      #ffe68b,
+      #f3c448 50%,
+      #bd8015);
+  box-shadow:
+    0 7px 24px rgba(245,200,76,.12),
+    inset 0 1px 2px rgba(255,255,255,.7);
+  cursor:pointer;
+}
+
+.swap-note{
+  text-align:center;
+  color:#555;
+  font-size:8px;
+  margin-top:9px;
+}
+
+
+/* WITHDRAW */
+
+.withdraw-box{
+  margin-top:13px;
+}
+
+.withdraw-label{
+  display:block;
+  color:#777;
+  font-size:9px;
+  margin-bottom:7px;
+}
+
+.withdraw-input{
+  width:100%;
+  height:48px;
+  padding:0 13px;
+  border:1px solid rgba(245,200,76,.13);
+  border-radius:14px;
+  outline:none;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.012));
+  color:#fff4bd;
+  font-size:14px;
+  direction:ltr;
+  text-align:left;
+}
+
+.withdraw-input::placeholder{
+  color:#444;
+}
+
+.withdraw-input:focus{
+  border-color:rgba(245,200,76,.45);
+  box-shadow:0 0 15px rgba(245,200,76,.06);
+}
+
+.withdraw-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:13px;
+}
+
+.withdraw-stat{
+  padding:10px;
+  border:1px solid rgba(245,200,76,.10);
+  border-radius:13px;
+  background:rgba(255,255,255,.018);
+  text-align:center;
+}
+
+.withdraw-stat-title{
+  color:#666;
+  font-size:8px;
+  margin-bottom:5px;
+}
+
+.withdraw-stat-value{
+  color:#ffe58a;
+  font-size:11px;
+  font-weight:900;
+}
+
+.withdraw-warning{
+  margin-top:10px;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid rgba(245,200,76,.10);
+  background:rgba(245,200,76,.025);
+  color:#777;
+  font-size:8px;
+  line-height:1.7;
+  text-align:center;
+}
+
+.withdraw-success{
+  display:none;
+  margin-top:10px;
+  padding:11px;
+  border-radius:13px;
+  border:1px solid rgba(245,200,76,.25);
+  background:rgba(245,200,76,.05);
+  color:#ffe58a;
+  font-size:9px;
+  line-height:1.6;
+  text-align:center;
+}
+
+.withdraw-success.show{
+  display:block;
+}
+
+.withdraw-network{
+  margin-top:13px;
+  padding:10px 12px;
+  border:1px solid rgba(245,200,76,.16);
+  border-radius:14px;
+  background:
+    linear-gradient(180deg,
+      rgba(245,200,76,.055),
+      rgba(255,255,255,.012));
+  color:#b99843;
+  font-size:9px;
+  text-align:center;
+}
+
+.withdraw-network strong{
+  color:#ffe58a;
+}
+
+.withdraw-confirm{
+  width:100%;
+  height:54px;
+  margin-top:13px;
+  border:1px solid rgba(255,219,105,.48);
+  border-radius:16px;
+  color:#171000;
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:1px;
+  background:
+    linear-gradient(180deg,
+      #ffe68b,
+      #f3c448 50%,
+      #bd8015);
+  box-shadow:
+    0 7px 24px rgba(245,200,76,.12),
+    inset 0 1px 2px rgba(255,255,255,.7);
+  cursor:pointer;
+}
+
+.withdraw-confirm:active{
+  transform:scale(.985);
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:390px){
+
+  .actions{
+    gap:6px;
+  }
+
+  .action{
+    min-height:63px;
+  }
+
+  .action-title{
+    font-size:8px;
+  }
+
+  .action-value{
+    font-size:7px;
+  }
+
+}
+
+@media(max-width:360px){
+
+  .hero{
+    height:325px;
+  }
+
+  .coin{
+    width:132px;
+    height:132px;
+  }
+
+  .coin-logo{
+    font-size:38px;
+  }
+
+  .orbit.one{
+    width:215px;
+    height:215px;
+  }
+
+  .orbit.two{
+    width:260px;
+    height:135px;
+  }
+
+  .orbit.three{
+    width:290px;
+    height:175px;
+  }
+
+  .mining-dot.d1{
+    transform:translate(0,-87px);
+  }
+
+  .mining-dot.d2{
+    transform:translate(75px,-43px);
+  }
+
+  .mining-dot.d3{
+    transform:translate(75px,43px);
+  }
+
+  .mining-dot.d4{
+    transform:translate(0,87px);
+  }
+
+  .mining-dot.d5{
+    transform:translate(-75px,43px);
+  }
+
+  .mining-dot.d6{
+    transform:translate(-75px,-43px);
+  }
+
+  .clock{
+    width:27px;
+    height:27px;
+    min-width:27px;
+  }
+
+  .mined-number{
+    font-size:21px;
+  }
+
+  .actions{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+  <header class="header">
+
+    <div class="brand">
+
+      <div class="brand-coin">
+        L
+      </div>
+
+      <div class="brand-text">
+
+        <div class="brand-main">
+          LTF
+        </div>
+
+        <div class="brand-sub">
+          MINER
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="balance">
+
+      <span
+        id="balanceValue"
+        class="balance-number">
+        0.000000
+      </span>
+
+      <span class="balance-unit">
+        LTF
+      </span>
+
+    </div>
+
+  </header>
+
+
+  <section class="hero">
+
+    <div class="orbit one"></div>
+    <div class="orbit two"></div>
+    <div class="orbit three"></div>
+
+    <span class="mining-dot d1"></span>
+    <span class="mining-dot d2"></span>
+    <span class="mining-dot d3"></span>
+    <span class="mining-dot d4"></span>
+    <span class="mining-dot d5"></span>
+    <span class="mining-dot d6"></span>
+
+    <div class="coin-wrap">
+
+      <div class="coin">
+
+        <div class="coin-logo">
+          LTF
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="platform"></div>
+
+  </section>
+
+
+  <section class="timer-card">
+
+    <div class="timer-title">
+      MINING
+    </div>
+
+    <div class="timer-row">
+
+      <div class="clock" aria-hidden="true">
+
+        <span class="clock-hand hour"></span>
+
+        <span class="clock-hand minute"></span>
+
+        <span class="clock-dot"></span>
+
+      </div>
+
+      <div
+        id="minedValue"
+        class="mined-number">
+        0.000000
+      </div>
+
+      <div class="mined-unit">
+        LTF
+      </div>
+
+    </div>
+
+    <div
+      id="timerText"
+      class="timer-sub">
+      التعدين مستمر
+    </div>
+
+  </section>
+
+
+  <div class="claim-wrap">
+
+    <button
+      id="claimBtn"
+      class="claim-btn"
+      type="button">
+
+      <span class="claim-icon">
+        ◈
+      </span>
+
+      <span>
+        CLAIM
+      </span>
+
+      <span class="claim-icon">
+        ›
+      </span>
+
+    </button>
+
+  </div>
+
+
+  <section class="actions">
+
+    <div
+      class="action"
+      id="swapAction">
+
+      <div class="action-icon">
+        ⇄
+      </div>
+
+      <div class="action-title">
+        SWAP
+      </div>
+
+      <div class="action-value">
+        LTF ↔ USDT / TON
+      </div>
+
+    </div>
+
+
+    <div
+      class="action"
+      id="withdrawAction">
+
+      <div class="action-icon">
+        ↑
+      </div>
+
+      <div class="action-title">
+        WITHDRAW
+      </div>
+
+      <div class="action-value">
+        USDT
+      </div>
+
+    </div>
+
+
+    <div class="action">
+
+      <div class="action-icon">
+        ✓
+      </div>
+
+      <div class="action-title">
+        TASKS
+      </div>
+
+      <div class="action-value">
+        SOON
+      </div>
+
+    </div>
+
+
+    <div class="action">
+
+      <div class="action-icon">
+        ⚡
+      </div>
+
+      <div class="action-title">
+        POWER
+      </div>
+
+      <div class="action-value">
+        ACTIVE
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- =========================
+     SWAP
+========================= -->
+
+<div
+  id="swapOverlay"
+  class="swap-overlay">
+
+  <div class="swap-panel">
+
+    <div class="swap-head">
+
+      <div class="swap-heading">
+
+        <div class="swap-title">
+          SWAP
+        </div>
+
+        <div class="swap-subtitle">
+          تبديل LTF إلى USDT أو TON
+        </div>
+
+      </div>
+
+      <button
+        id="swapClose"
+        class="swap-close"
+        type="button">
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="swap-box">
+
+      <div class="swap-label">
+
+        <span>
+          من
+        </span>
+
+        <span class="swap-balance">
+          الرصيد:
+          <b id="swapBalance">
+            0.000000
+          </b>
+          LTF
+        </span>
+
+      </div>
+
+
+      <div class="swap-input-row">
+
+        <input
+          id="swapAmount"
+          class="swap-input"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="0.000001"
+          placeholder="0.000000">
+
+        <div class="swap-token">
+          LTF
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="swap-arrow">
+      ↓
+    </div>
+
+
+    <div class="swap-output">
+
+      <div class="swap-output-label">
+        ستحصل على
+      </div>
+
+      <div
+        id="swapOutput"
+        class="swap-output-value">
+        0.000000 USDT
+      </div>
+
+    </div>
+
+
+    <div
+      id="tonLivePrice"
+      class="ton-live-price">
+      سعر TON (GRAM): جاري التحديث...
+    </div>
+
+
+    <div class="swap-options">
+
+      <button
+        id="usdtOption"
+        class="swap-option active"
+        type="button">
+        LTF → USDT
+      </button>
+
+      <button
+        id="tonOption"
+        class="swap-option"
+        type="button">
+        LTF → TON
+      </button>
+
+    </div>
+
+
+    <button
+      id="swapConfirm"
+      class="swap-confirm"
+      type="button">
+      SWAP
+    </button>
+
+
+    <div class="swap-note">
+      الحد الأدنى للتبديل 10 LTF — سعر TON (GRAM) مباشر
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     WITHDRAW
+========================= -->
+
+<div
+  id="withdrawOverlay"
+  class="swap-overlay">
+
+  <div class="swap-panel">
+
+    <div class="swap-head">
+
+      <div class="swap-heading">
+
+        <div class="swap-title">
+          WITHDRAW
+        </div>
+
+        <div class="swap-subtitle">
+          سحب USDT من رصيد LTF
+        </div>
+
+      </div>
+
+      <button
+        id="withdrawClose"
+        class="swap-close"
+        type="button">
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="swap-box">
+
+      <div class="swap-label">
+
+        <span>
+          رصيدك
+        </span>
+
+        <span class="swap-balance">
+          <b id="withdrawBalance">
+            0.000000
+          </b>
+          LTF
+        </span>
+
+      </div>
+
+
+      <div class="swap-input-row">
+
+        <input
+          id="withdrawAmount"
+          class="swap-input"
+          type="number"
+          inputmode="decimal"
+          min="200"
+          step="0.000001"
+          placeholder="200.000000">
+
+        <div class="swap-token">
+          LTF
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="withdraw-info">
+
+      <div class="withdraw-stat">
+
+        <div class="withdraw-stat-title">
+          الحد الأدنى
+        </div>
+
+        <div class="withdraw-stat-value">
+          200 LTF
+        </div>
+
+      </div>
+
+
+      <div class="withdraw-stat">
+
+        <div class="withdraw-stat-title">
+          رسوم السحب
+        </div>
+
+        <div class="withdraw-stat-value">
+          20 LTF
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="withdraw-network">
+      شبكة USDT:
+      <strong>BNB Smart Chain — BEP-20</strong>
+    </div>
+
+
+    <div class="withdraw-box">
+
+      <label class="withdraw-label">
+        عنوان المحفظة
+      </label>
+
+      <input
+        id="withdrawWallet"
+        class="withdraw-input"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="أدخل عنوان محفظة USDT">
+
+    </div>
+
+
+    <div class="withdraw-box">
+
+      <label class="withdraw-label">
+        عنوان شبكة BNB20
+      </label>
+
+      <input
+        id="withdrawNetworkAddress"
+        class="withdraw-input"
+        type="text"
+        inputmode="text"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="أدخل عنوان شبكة BNB20">
+
+    </div>
+
+
+    <div class="withdraw-warning">
+      الحد الأدنى للسحب 200 LTF، ويتم خصم 20 LTF رسوم من المبلغ المطلوب.
+      مثال: سحب 200 LTF = صافي 300 LTF.
+    </div>
+
+
+    <div
+      id="withdrawSuccess"
+      class="withdraw-success">
+    </div>
+
+
+    <button
+      id="withdrawConfirm"
+      class="withdraw-confirm"
+      type="button">
+      طلب السحب
+    </button>
+
+  </div>
+
+</div>
+
+
 <script>
 
 /* =========================================
@@ -11,8 +1886,14 @@ const tg =
     : null;
 
 if(tg){
-  try{ tg.ready(); }catch(e){}
-  try{ tg.expand(); }catch(e){}
+
+  try{
+    tg.ready();
+  }catch(e){}
+
+  try{
+    tg.expand();
+  }catch(e){}
 
   try{
     if(typeof tg.setHeaderColor === "function"){
@@ -25,6 +1906,7 @@ if(tg){
       tg.setBackgroundColor("#020202");
     }
   }catch(e){}
+
 }
 
 
@@ -40,15 +1922,17 @@ if(
   tg.initDataUnsafe.user &&
   tg.initDataUnsafe.user.id
 ){
+
   telegramUserId =
-    String(tg.initDataUnsafe.user.id);
+    String(
+      tg.initDataUnsafe.user.id
+    );
+
 }
 
 const USER_KEY =
-  telegramUserId.replace(
-    /[^a-zA-Z0-9_-]/g,
-    "_"
-  );
+  telegramUserId
+    .replace(/[^a-zA-Z0-9_-]/g,"_");
 
 
 /* =========================================
@@ -62,27 +1946,33 @@ const MINING_DURATION =
 const MINING_REWARD = 3;
 
 const BALANCE_KEY =
-  "ltf_balance_v13_" + USER_KEY;
+  "ltf_balance_v13_" +
+  USER_KEY;
 
 const START_KEY =
-  "ltf_mining_start_v13_" + USER_KEY;
+  "ltf_mining_start_v13_" +
+  USER_KEY;
 
-
-/* =========================================
-   ELEMENTS
-========================================= */
 
 const balanceEl =
-  document.getElementById("balanceValue");
+  document.getElementById(
+    "balanceValue"
+  );
 
 const minedEl =
-  document.getElementById("minedValue");
+  document.getElementById(
+    "minedValue"
+  );
 
 const timerTextEl =
-  document.getElementById("timerText");
+  document.getElementById(
+    "timerText"
+  );
 
 const claimBtn =
-  document.getElementById("claimBtn");
+  document.getElementById(
+    "claimBtn"
+  );
 
 
 /* =========================================
@@ -93,24 +1983,25 @@ function getBalance(){
 
   const value =
     parseFloat(
-      localStorage.getItem(BALANCE_KEY)
+      localStorage.getItem(
+        BALANCE_KEY
+      )
     );
 
   return Number.isFinite(value)
     ? value
     : 0;
+
 }
 
 
 function setBalance(value){
 
-  const safeValue =
-    Math.max(0, Number(value) || 0);
-
   localStorage.setItem(
     BALANCE_KEY,
-    safeValue.toFixed(6)
+    Number(value).toFixed(6)
   );
+
 }
 
 
@@ -122,21 +2013,26 @@ function getMiningStart(){
 
   let start =
     parseInt(
-      localStorage.getItem(START_KEY),
+      localStorage.getItem(
+        START_KEY
+      ),
       10
     );
 
-  if(!Number.isFinite(start) || start <= 0){
+  if(!Number.isFinite(start)){
 
-    start = Date.now();
+    start =
+      Date.now();
 
     localStorage.setItem(
       START_KEY,
       String(start)
     );
+
   }
 
   return start;
+
 }
 
 
@@ -146,8 +2042,9 @@ function getMiningStart(){
 
 function formatLTF(value){
 
-  return Number(value || 0)
+  return Number(value)
     .toFixed(6);
+
 }
 
 
@@ -160,7 +2057,9 @@ function formatTime(ms){
   const totalSeconds =
     Math.max(
       0,
-      Math.floor(ms / 1000)
+      Math.floor(
+        ms / 1000
+      )
     );
 
   const hours =
@@ -177,12 +2076,13 @@ function formatTime(ms){
     totalSeconds % 60;
 
   return (
-    String(hours).padStart(2,"0") +
-    ":" +
-    String(minutes).padStart(2,"0") +
-    ":" +
+    String(hours).padStart(2,"0")
+    + ":" +
+    String(minutes).padStart(2,"0")
+    + ":" +
     String(seconds).padStart(2,"0")
   );
+
 }
 
 
@@ -192,10 +2092,14 @@ function formatTime(ms){
 
 function getAccumulated(){
 
-  const start = getMiningStart();
-  const now = Date.now();
+  const start =
+    getMiningStart();
 
-  let elapsed = now - start;
+  const now =
+    Date.now();
+
+  let elapsed =
+    now - start;
 
   if(elapsed < 0){
     elapsed = 0;
@@ -207,7 +2111,11 @@ function getAccumulated(){
       1
     );
 
-  return MINING_REWARD * progress;
+  return (
+    MINING_REWARD *
+    progress
+  );
+
 }
 
 
@@ -217,77 +2125,68 @@ function getAccumulated(){
 
 function render(){
 
-  const balance = getBalance();
+  const balance =
+    getBalance();
 
-  const start = getMiningStart();
+  const start =
+    getMiningStart();
 
-  const now = Date.now();
+  const now =
+    Date.now();
 
-  let elapsed = now - start;
+  let elapsed =
+    now - start;
 
   if(elapsed < 0){
     elapsed = 0;
   }
 
-  const progress =
+  const mined =
     Math.min(
-      elapsed / MINING_DURATION,
-      1
+      MINING_REWARD *
+      (
+        elapsed /
+        MINING_DURATION
+      ),
+      MINING_REWARD
     );
 
-  const mined =
-    MINING_REWARD * progress;
-
-
   minedEl.textContent =
-    formatLTF(mined);
-
+    formatLTF(
+      mined
+    );
 
   if(elapsed >= MINING_DURATION){
 
     timerTextEl.textContent =
       "3 LTF جاهزة — اضغط CLAIM";
 
-    claimBtn.disabled = false;
-
-    claimBtn.style.opacity = "1";
-
   }else{
 
     const remaining =
-      MINING_DURATION - elapsed;
+      MINING_DURATION -
+      elapsed;
 
     timerTextEl.textContent =
       "متبقي " +
-      formatTime(remaining);
+      formatTime(
+        remaining
+      );
 
-    claimBtn.disabled = false;
-
-    claimBtn.style.opacity = "1";
   }
 
+  claimBtn.disabled =
+    false;
+
+  claimBtn.classList.remove(
+    "disabled"
+  );
 
   balanceEl.textContent =
-    formatLTF(balance);
+    formatLTF(
+      balance
+    );
 
-
-  /* تحديث أرصدة النوافذ إن كانت موجودة */
-
-  const swapBalanceEl =
-    document.getElementById("swapBalance");
-
-  if(swapBalanceEl){
-    swapBalanceEl.textContent =
-      formatLTF(balance);
-  }
-
-  const withdrawBalanceEl =
-    document.getElementById("withdrawBalance");
-
-  if(withdrawBalanceEl){
-    withdrawBalanceEl.textContent =
-      formatLTF(balance);
-  }
 }
 
 
@@ -304,14 +2203,11 @@ claimBtn.addEventListener(
 
     if(accumulated <= 0){
       render();
-
-      alert(
-        "التعدين لم يكتمل بعد"
-      );
-
       return;
     }
 
+    const currentBalance =
+      getBalance();
 
     const reward =
       Math.min(
@@ -319,30 +2215,22 @@ claimBtn.addEventListener(
         MINING_REWARD
       );
 
-
-    const currentBalance =
-      getBalance();
-
-
     const newBalance =
-      currentBalance + reward;
+      currentBalance +
+      reward;
 
-
-    setBalance(newBalance);
-
-
-    /*
-      إعادة تشغيل دورة التعدين
-    */
+    setBalance(
+      newBalance
+    );
 
     localStorage.setItem(
       START_KEY,
-      String(Date.now())
+      String(
+        Date.now()
+      )
     );
 
-
     render();
-
 
     if(
       tg &&
@@ -350,55 +2238,73 @@ claimBtn.addEventListener(
     ){
 
       try{
+
         tg.HapticFeedback
-          .notificationOccurred("success");
+          .notificationOccurred(
+            "success"
+          );
+
       }catch(e){}
+
     }
-
-
-    alert(
-      "تمت إضافة " +
-      formatLTF(reward) +
-      " LTF إلى رصيدك"
-    );
 
   }
 );
 
 
 /* =========================================
-   SWAP ELEMENTS
+   SWAP UI
 ========================================= */
 
 const swapAction =
-  document.getElementById("swapAction");
+  document.getElementById(
+    "swapAction"
+  );
 
 const swapOverlay =
-  document.getElementById("swapOverlay");
+  document.getElementById(
+    "swapOverlay"
+  );
 
 const swapClose =
-  document.getElementById("swapClose");
+  document.getElementById(
+    "swapClose"
+  );
 
 const swapAmount =
-  document.getElementById("swapAmount");
+  document.getElementById(
+    "swapAmount"
+  );
 
 const swapBalance =
-  document.getElementById("swapBalance");
+  document.getElementById(
+    "swapBalance"
+  );
 
 const swapOutput =
-  document.getElementById("swapOutput");
+  document.getElementById(
+    "swapOutput"
+  );
 
 const usdtOption =
-  document.getElementById("usdtOption");
+  document.getElementById(
+    "usdtOption"
+  );
 
 const tonOption =
-  document.getElementById("tonOption");
+  document.getElementById(
+    "tonOption"
+  );
 
 const swapConfirm =
-  document.getElementById("swapConfirm");
+  document.getElementById(
+    "swapConfirm"
+  );
 
 const tonLivePrice =
-  document.getElementById("tonLivePrice");
+  document.getElementById(
+    "tonLivePrice"
+  );
 
 
 let swapTarget = "USDT";
@@ -406,6 +2312,7 @@ let swapTarget = "USDT";
 
 /* =========================================
    SWAP LIMIT
+   20 LTF
 ========================================= */
 
 const MIN_SWAP_AMOUNT = 10;
@@ -421,7 +2328,8 @@ const LTF_USDT_PRICE =
 
 
 /* =========================================
-   TON PRICE
+   LIVE TON / GRAM PRICE
+   CoinMarketCap + CoinGecko fallback
 ========================================= */
 
 let tonUsdPrice = null;
@@ -432,7 +2340,6 @@ const TON_PRICE_KEY =
 
 const TON_PRICE_TIME_KEY =
   "ltf_live_gram_price_time";
-
 
 function loadCachedTonPrice(){
 
@@ -447,10 +2354,12 @@ function loadCachedTonPrice(){
     Number.isFinite(cached) &&
     cached > 0
   ){
-    tonUsdPrice = cached;
-  }
-}
 
+    tonUsdPrice = cached;
+
+  }
+
+}
 
 loadCachedTonPrice();
 
@@ -461,7 +2370,9 @@ function formatTonPrice(price){
     !Number.isFinite(price) ||
     price <= 0
   ){
+
     return "—";
+
   }
 
   if(price >= 100){
@@ -473,6 +2384,7 @@ function formatTonPrice(price){
   }
 
   return price.toFixed(4);
+
 }
 
 
@@ -496,12 +2408,16 @@ function saveTonPrice(price){
       "سعر TON (GRAM): $" +
       formatTonPrice(price) +
       " USDT";
+
   }
+
 }
 
 
 /* =========================================
-   FETCH TON PRICE
+   جلب السعر المباشر
+   1) CoinMarketCap
+   2) CoinGecko كبديل تلقائي
 ========================================= */
 
 async function fetchTonPrice(){
@@ -514,47 +2430,122 @@ async function fetchTonPrice(){
 
   let freshPrice = NaN;
 
-
   try{
 
+    /* CoinMarketCap */
     try{
 
       const response =
         await fetch(
-          "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
+          "https://pro-api.coinmarketcap.com/public-api/v2/simple/price?symbol=GRAM&convert=USD&skip_invalid=true",
           {
             method:"GET",
             cache:"no-store"
           }
         );
 
-
       if(!response.ok){
-        throw new Error(
-          "CoinGecko request failed"
-        );
+        throw new Error("CMC request failed");
       }
-
 
       const data =
         await response.json();
 
+      const assets =
+        data && Array.isArray(data.data)
+          ? data.data
+          : [];
+
+      let asset = null;
+
+      for(const item of assets){
+
+        const symbol =
+          item &&
+          item.symbol
+            ? String(item.symbol).toUpperCase()
+            : "";
+
+        if(symbol === "GRAM" || symbol === "TON"){
+
+          asset = item;
+          break;
+
+        }
+
+      }
+
+      if(!asset && assets.length){
+        asset = assets[0];
+      }
+
+      const usdQuote =
+        asset &&
+        Array.isArray(asset.quotes)
+          ? asset.quotes.find(
+              function(q){
+                return q &&
+                  String(q.symbol)
+                    .toUpperCase() === "USD";
+              }
+            )
+          : null;
 
       freshPrice =
-        data &&
-        data["the-open-network"]
-          ? parseFloat(
-              data["the-open-network"].usd
-            )
+        usdQuote
+          ? parseFloat(usdQuote.price)
           : NaN;
 
-
-    }catch(error){
+    }catch(cmcError){
 
       console.warn(
-        "TON price unavailable:",
-        error
+        "CoinMarketCap failed, trying CoinGecko:",
+        cmcError
       );
+
+    }
+
+
+    /* CoinGecko fallback */
+    if(
+      !Number.isFinite(freshPrice) ||
+      freshPrice <= 0
+    ){
+
+      try{
+
+        const response =
+          await fetch(
+            "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
+            {
+              method:"GET",
+              cache:"no-store"
+            }
+          );
+
+        if(!response.ok){
+          throw new Error("CoinGecko request failed");
+        }
+
+        const data =
+          await response.json();
+
+        freshPrice =
+          data &&
+          data["the-open-network"]
+            ? parseFloat(
+                data["the-open-network"].usd
+              )
+            : NaN;
+
+      }catch(geckoError){
+
+        console.warn(
+          "CoinGecko failed:",
+          geckoError
+        );
+
+      }
 
     }
 
@@ -577,6 +2568,7 @@ async function fetchTonPrice(){
           "آخر سعر TON (GRAM): $" +
           formatTonPrice(tonUsdPrice) +
           " USDT";
+
       }
 
     }else{
@@ -585,12 +2577,12 @@ async function fetchTonPrice(){
 
         tonLivePrice.textContent =
           "سعر TON غير متاح حالياً";
+
       }
+
     }
 
-
     updateSwapOutput();
-
 
   }catch(error){
 
@@ -599,11 +2591,35 @@ async function fetchTonPrice(){
       error
     );
 
+    if(tonLivePrice){
+
+      if(
+        Number.isFinite(tonUsdPrice) &&
+        tonUsdPrice > 0
+      ){
+
+        tonLivePrice.textContent =
+          "آخر سعر TON (GRAM): $" +
+          formatTonPrice(tonUsdPrice) +
+          " USDT";
+
+      }else{
+
+        tonLivePrice.textContent =
+          "سعر TON غير متاح حالياً";
+
+      }
+
+    }
+
+    updateSwapOutput();
+
   }finally{
 
     tonPriceLoading = false;
 
   }
+
 }
 
 
@@ -613,16 +2629,10 @@ async function fetchTonPrice(){
 
 function updateSwapOutput(){
 
-  if(!swapAmount || !swapOutput){
-    return;
-  }
-
-
   const amount =
     parseFloat(
       swapAmount.value
     );
-
 
   if(
     !Number.isFinite(amount) ||
@@ -634,169 +2644,191 @@ function updateSwapOutput(){
       swapTarget;
 
     return;
+
   }
 
 
-  if(swapTarget === "USDT"){
+  if(
+    swapTarget === "USDT"
+  ){
 
     const usdtAmount =
       amount *
       LTF_USDT_PRICE;
-
 
     swapOutput.textContent =
       usdtAmount.toFixed(6) +
       " USDT";
 
     return;
+
   }
 
 
   if(
-    !Number.isFinite(tonUsdPrice) ||
+    !Number.isFinite(
+      tonUsdPrice
+    ) ||
     tonUsdPrice <= 0
   ){
 
     swapOutput.textContent =
-      "جاري جلب سعر TON...";
+      "جاري جلب سعر GRAM...";
 
     return;
+
   }
 
 
-  /*
-    قيمة LTF بالدولار:
-    1 LTF = 1/300 USDT
-
-    عدد TON =
-    قيمة LTF بالدولار ÷ سعر TON
-  */
-
-  const usdValue =
-    amount *
+  const ltfPerTon =
+    tonUsdPrice /
     LTF_USDT_PRICE;
 
 
   const tonAmount =
-    usdValue /
-    tonUsdPrice;
+    amount /
+    ltfPerTon;
 
 
   swapOutput.textContent =
     tonAmount.toFixed(6) +
     " TON";
+
 }
 
 
 /* =========================================
-   OPEN SWAP
+   فتح SWAP
 ========================================= */
 
-if(swapAction){
-
-  swapAction.addEventListener(
-    "click",
-    function(){
-
-      swapBalance.textContent =
-        formatLTF(getBalance());
-
-      swapAmount.value = "";
-
-      updateSwapOutput();
-
-      swapOverlay.classList.add("open");
-
-      fetchTonPrice();
-
-
-      if(
-        tg &&
-        tg.HapticFeedback
-      ){
-
-        try{
-          tg.HapticFeedback
-            .impactOccurred("light");
-        }catch(e){}
-      }
-    }
-  );
-}
-
-
-/* =========================================
-   CLOSE SWAP
-========================================= */
-
-function closeSwap(){
-
-  swapOverlay.classList.remove("open");
-}
-
-
-if(swapClose){
-
-  swapClose.addEventListener(
-    "click",
-    closeSwap
-  );
-}
-
-
-swapOverlay.addEventListener(
+swapAction.addEventListener(
   "click",
-  function(e){
+  function(){
 
-    if(e.target === swapOverlay){
-      closeSwap();
+    swapBalance.textContent =
+      formatLTF(
+        getBalance()
+      );
+
+    swapAmount.value =
+      "";
+
+    updateSwapOutput();
+
+    swapOverlay.classList.add(
+      "open"
+    );
+
+    fetchTonPrice();
+
+    if(
+      tg &&
+      tg.HapticFeedback
+    ){
+
+      try{
+
+        tg.HapticFeedback
+          .impactOccurred(
+            "light"
+          );
+
+      }catch(e){}
+
     }
+
   }
 );
 
 
 /* =========================================
-   USDT
+   إغلاق SWAP
+========================================= */
+
+function closeSwap(){
+
+  swapOverlay.classList.remove(
+    "open"
+  );
+
+}
+
+swapClose.addEventListener(
+  "click",
+  closeSwap
+);
+
+swapOverlay.addEventListener(
+  "click",
+  function(e){
+
+    if(
+      e.target ===
+      swapOverlay
+    ){
+
+      closeSwap();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   اختيار USDT
 ========================================= */
 
 usdtOption.addEventListener(
   "click",
   function(){
 
-    swapTarget = "USDT";
+    swapTarget =
+      "USDT";
 
-    usdtOption.classList.add("active");
+    usdtOption.classList.add(
+      "active"
+    );
 
-    tonOption.classList.remove("active");
+    tonOption.classList.remove(
+      "active"
+    );
 
     updateSwapOutput();
+
   }
 );
 
 
 /* =========================================
-   TON
+   اختيار TON
 ========================================= */
 
 tonOption.addEventListener(
   "click",
   function(){
 
-    swapTarget = "TON";
+    swapTarget =
+      "TON";
 
-    tonOption.classList.add("active");
+    tonOption.classList.add(
+      "active"
+    );
 
-    usdtOption.classList.remove("active");
+    usdtOption.classList.remove(
+      "active"
+    );
 
     updateSwapOutput();
 
     fetchTonPrice();
+
   }
 );
 
 
 /* =========================================
-   SWAP INPUT
+   إدخال مبلغ SWAP
 ========================================= */
 
 swapAmount.addEventListener(
@@ -806,7 +2838,20 @@ swapAmount.addEventListener(
 
 
 /* =========================================
+   تحديث GRAM كل 60 ثانية
+========================================= */
+
+fetchTonPrice();
+
+setInterval(
+  fetchTonPrice,
+  60000
+);
+
+
+/* =========================================
    SWAP CONFIRM
+   الحد الأدنى 20 LTF
 ========================================= */
 
 swapConfirm.addEventListener(
@@ -832,51 +2877,42 @@ swapConfirm.addEventListener(
       );
 
       return;
+
     }
 
 
-    if(amount < MIN_SWAP_AMOUNT){
+    if(
+      amount < MIN_SWAP_AMOUNT
+    ){
 
       alert(
         "الحد الأدنى للتبديل هو 10 LTF"
       );
 
       return;
+
     }
 
 
-    if(amount > balance){
+    if(
+      amount > balance
+    ){
 
       alert(
         "رصيد LTF غير كافٍ"
       );
 
       return;
+
     }
 
 
     /*
-      لا يتم خصم الرصيد حالياً
-      لأن التحويل الحقيقي يحتاج
-      Backend ومحفظة وسيولة.
+      التنفيذ الحقيقي يحتاج:
+      Backend + محفظة + سيولة.
+
+      لا يتم خصم الرصيد هنا.
     */
-
-    const output =
-      swapOutput.textContent;
-
-
-    alert(
-      "تم تجهيز عملية SWAP\n\n" +
-      "المبلغ: " +
-      formatLTF(amount) +
-      " LTF\n" +
-      "تحويل إلى: " +
-      swapTarget +
-      "\n" +
-      "الناتج المتوقع: " +
-      output
-    );
-
 
     if(
       tg &&
@@ -884,9 +2920,14 @@ swapConfirm.addEventListener(
     ){
 
       try{
+
         tg.HapticFeedback
-          .notificationOccurred("success");
+          .notificationOccurred(
+            "warning"
+          );
+
       }catch(e){}
+
     }
 
   }
@@ -943,18 +2984,15 @@ const withdrawSuccess =
   );
 
 
-/* =========================================
-   WITHDRAW SETTINGS
-   مطابق للواجهة
-========================================= */
+const MIN_WITHDRAW_AMOUNT =
+  350;
 
-const MIN_WITHDRAW_AMOUNT = 200;
-
-const WITHDRAW_FEE = 20;
+const WITHDRAW_FEE =
+  50;
 
 
 /* =========================================
-   OPEN WITHDRAW
+   فتح WITHDRAW
 ========================================= */
 
 withdrawAction.addEventListener(
@@ -962,24 +3000,29 @@ withdrawAction.addEventListener(
   function(){
 
     withdrawBalance.textContent =
-      formatLTF(getBalance());
+      formatLTF(
+        getBalance()
+      );
 
-    withdrawAmount.value = "";
+    withdrawAmount.value =
+      "";
 
-    withdrawWallet.value = "";
+    withdrawWallet.value =
+      "";
 
-    withdrawNetworkAddress.value = "";
+    withdrawNetworkAddress.value =
+      "";
 
     withdrawSuccess.classList.remove(
       "show"
     );
 
-    withdrawSuccess.textContent = "";
+    withdrawSuccess.textContent =
+      "";
 
     withdrawOverlay.classList.add(
       "open"
     );
-
 
     if(
       tg &&
@@ -987,9 +3030,14 @@ withdrawAction.addEventListener(
     ){
 
       try{
+
         tg.HapticFeedback
-          .impactOccurred("light");
+          .impactOccurred(
+            "light"
+          );
+
       }catch(e){}
+
     }
 
   }
@@ -997,7 +3045,7 @@ withdrawAction.addEventListener(
 
 
 /* =========================================
-   CLOSE WITHDRAW
+   إغلاق WITHDRAW
 ========================================= */
 
 function closeWithdraw(){
@@ -1005,29 +3053,33 @@ function closeWithdraw(){
   withdrawOverlay.classList.remove(
     "open"
   );
-}
 
+}
 
 withdrawClose.addEventListener(
   "click",
   closeWithdraw
 );
 
-
 withdrawOverlay.addEventListener(
   "click",
   function(e){
 
-    if(e.target === withdrawOverlay){
+    if(
+      e.target ===
+      withdrawOverlay
+    ){
 
       closeWithdraw();
+
     }
+
   }
 );
 
 
 /* =========================================
-   BEP20 VALIDATION
+   فحص عنوان BNB
 ========================================= */
 
 function isValidBep20Address(address){
@@ -1035,11 +3087,12 @@ function isValidBep20Address(address){
   return /^0x[a-fA-F0-9]{40}$/.test(
     String(address).trim()
   );
+
 }
 
 
 /* =========================================
-   WITHDRAW REQUEST
+   إرسال طلب السحب
 ========================================= */
 
 withdrawConfirm.addEventListener(
@@ -1051,18 +3104,15 @@ withdrawConfirm.addEventListener(
         withdrawAmount.value
       );
 
-
     const wallet =
       String(
         withdrawWallet.value || ""
       ).trim();
 
-
     const networkAddress =
       String(
         withdrawNetworkAddress.value || ""
       ).trim();
-
 
     const balance =
       getBalance();
@@ -1080,6 +3130,7 @@ withdrawConfirm.addEventListener(
       );
 
       return;
+
     }
 
 
@@ -1094,24 +3145,30 @@ withdrawConfirm.addEventListener(
       );
 
       return;
+
     }
 
 
     /* الرصيد */
 
-    if(amount > balance){
+    if(
+      amount > balance
+    ){
 
       alert(
         "رصيد LTF غير كافٍ"
       );
 
       return;
+
     }
 
 
-    /* المحفظة */
+    /* عنوان المحفظة */
 
-    if(!wallet){
+    if(
+      !wallet
+    ){
 
       alert(
         "أدخل عنوان محفظة USDT"
@@ -1120,12 +3177,15 @@ withdrawConfirm.addEventListener(
       withdrawWallet.focus();
 
       return;
+
     }
 
 
     /* عنوان الشبكة */
 
-    if(!networkAddress){
+    if(
+      !networkAddress
+    ){
 
       alert(
         "أدخل عنوان شبكة BNB20"
@@ -1134,13 +3194,19 @@ withdrawConfirm.addEventListener(
       withdrawNetworkAddress.focus();
 
       return;
+
     }
 
 
-    /* تحقق العنوان */
+    /*
+      في هذه المرحلة نتحقق أيضاً
+      من أن العنوان بصيغة BNB / EVM.
+    */
 
     if(
-      !isValidBep20Address(wallet)
+      !isValidBep20Address(
+        wallet
+      )
     ){
 
       alert(
@@ -1150,6 +3216,7 @@ withdrawConfirm.addEventListener(
       withdrawWallet.focus();
 
       return;
+
     }
 
 
@@ -1166,37 +3233,43 @@ withdrawConfirm.addEventListener(
       withdrawNetworkAddress.focus();
 
       return;
+
     }
 
 
-    /* الرسوم */
+    /* حساب الرسوم والصافي */
 
     const netAmount =
       amount -
       WITHDRAW_FEE;
 
 
-    if(netAmount <= 0){
+    if(
+      netAmount <= 0
+    ){
 
       alert(
         "المبلغ غير صالح بعد خصم الرسوم"
       );
 
       return;
+
     }
 
 
-    /* =====================================
-       حفظ الطلب
-    ===================================== */
+    /*
+      حفظ طلب السحب محلياً.
+
+      لاحقاً عند ربط Backend:
+      سيتم نقل هذه البيانات إلى قاعدة البيانات
+      وتنفيذ السحب الحقيقي من المحفظة.
+    */
 
     const WITHDRAW_KEY =
       "ltf_withdraw_requests_v1_" +
       USER_KEY;
 
-
     let requests = [];
-
 
     try{
 
@@ -1207,14 +3280,19 @@ withdrawConfirm.addEventListener(
           ) || "[]"
         );
 
+      if(
+        Array.isArray(saved)
+      ){
 
-      if(Array.isArray(saved)){
-        requests = saved;
+        requests =
+          saved;
+
       }
 
     }catch(e){
 
       requests = [];
+
     }
 
 
@@ -1225,7 +3303,8 @@ withdrawConfirm.addEventListener(
         Date.now() +
         "-" +
         Math.floor(
-          Math.random() * 100000
+          Math.random() *
+          100000
         ),
 
       user_id:
@@ -1261,22 +3340,31 @@ withdrawConfirm.addEventListener(
 
       created_at:
         new Date().toISOString()
+
     };
 
 
-    requests.push(request);
+    requests.push(
+      request
+    );
 
 
     localStorage.setItem(
       WITHDRAW_KEY,
-      JSON.stringify(requests)
+      JSON.stringify(
+        requests
+      )
     );
 
 
-    /* خصم المبلغ */
+    /*
+      حالياً يتم خصم الرصيد
+      عند إنشاء طلب السحب.
+    */
 
     setBalance(
-      balance - amount
+      balance -
+      amount
     );
 
 
@@ -1284,17 +3372,18 @@ withdrawConfirm.addEventListener(
 
 
     withdrawBalance.textContent =
-      formatLTF(getBalance());
+      formatLTF(
+        getBalance()
+      );
 
 
     withdrawSuccess.textContent =
       "تم إنشاء طلب السحب بنجاح. " +
-      "المبلغ: " +
+      "المبلغ المطلوب: " +
       formatLTF(amount) +
-      " LTF — " +
-      "الرسوم: " +
-      formatLTF(WITHDRAW_FEE) +
-      " LTF — " +
+      " LTF — الرسوم: " +
+        formatLTF(WITHDRAW_FEE) +
+        " LTF — " +
       "الصافي: " +
       formatLTF(netAmount) +
       " LTF. " +
@@ -1307,11 +3396,14 @@ withdrawConfirm.addEventListener(
     );
 
 
-    withdrawAmount.value = "";
+    withdrawAmount.value =
+      "";
 
-    withdrawWallet.value = "";
+    withdrawWallet.value =
+      "";
 
-    withdrawNetworkAddress.value = "";
+    withdrawNetworkAddress.value =
+      "";
 
 
     if(
@@ -1320,84 +3412,18 @@ withdrawConfirm.addEventListener(
     ){
 
       try{
+
         tg.HapticFeedback
-          .notificationOccurred("success");
+          .notificationOccurred(
+            "success"
+          );
+
       }catch(e){}
+
     }
 
   }
 );
-
-
-/* =========================================
-   TASKS
-========================================= */
-
-const actionCards =
-  document.querySelectorAll(
-    ".action"
-  );
-
-
-if(actionCards.length >= 3){
-
-  actionCards[2].addEventListener(
-    "click",
-    function(){
-
-      alert(
-        "TASKS\n\n" +
-        "المهام ستكون متاحة قريباً."
-      );
-
-
-      if(
-        tg &&
-        tg.HapticFeedback
-      ){
-
-        try{
-          tg.HapticFeedback
-            .impactOccurred("light");
-        }catch(e){}
-      }
-
-    }
-  );
-}
-
-
-/* =========================================
-   POWER
-========================================= */
-
-if(actionCards.length >= 4){
-
-  actionCards[3].addEventListener(
-    "click",
-    function(){
-
-      alert(
-        "POWER\n\n" +
-        "نظام التعدين يعمل حالياً.\n" +
-        "المعدل الحالي: 3 LTF كل 3 ساعات."
-      );
-
-
-      if(
-        tg &&
-        tg.HapticFeedback
-      ){
-
-        try{
-          tg.HapticFeedback
-            .impactOccurred("light");
-        }catch(e){}
-      }
-
-    }
-  );
-}
 
 
 /* =========================================
@@ -1410,8 +3436,11 @@ if(
 ){
 
   try{
+
     tg.BackButton.hide();
+
   }catch(e){}
+
 }
 
 
@@ -1421,38 +3450,12 @@ if(
 
 render();
 
-
 setInterval(
   render,
   1000
 );
 
-
-/* تحديث سعر TON كل دقيقة */
-
-fetchTonPrice();
-
-
-setInterval(
-  fetchTonPrice,
-  60000
-);
-
-
-/* =========================================
-   حماية من أخطاء غير متوقعة
-========================================= */
-
-window.addEventListener(
-  "error",
-  function(event){
-
-    console.error(
-      "LTF Miner error:",
-      event.error || event.message
-    );
-
-  }
-);
-
 </script>
+
+</body>
+</html>
