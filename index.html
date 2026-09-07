@@ -3092,12 +3092,22 @@ function isValidBep20Address(address){
 
 
 /* =========================================
-   إرسال طلب السحب
+   إرسال طلب السحب — SECURE BACKEND
+   يتم التحقق والخصم من Supabase فقط.
 ========================================= */
+
+const WITHDRAW_FUNCTION_URL =
+  "https://julnowgcrkazepbfxkau.supabase.co/functions/v1/ltf-withdraw";
+
+let withdrawSubmitting = false;
 
 withdrawConfirm.addEventListener(
   "click",
-  function(){
+  async function(){
+
+    if(withdrawSubmitting){
+      return;
+    }
 
     const amount =
       parseFloat(
@@ -3119,306 +3129,240 @@ withdrawConfirm.addEventListener(
 
 
     /* الكمية */
-
     if(
       !Number.isFinite(amount) ||
       amount <= 0
     ){
-
-      alert(
-        "أدخل كمية السحب"
-      );
-
+      alert("أدخل كمية السحب");
       return;
-
     }
 
 
     /* الحد الأدنى */
-
     if(
       amount < MIN_WITHDRAW_AMOUNT
     ){
-
-      alert(
-        "الحد الأدنى للسحب هو 200 LTF"
-      );
-
+      alert("الحد الأدنى للسحب هو 200 LTF");
       return;
-
     }
 
 
-    /* الرصيد */
-
+    /* فحص محلي سريع فقط — القرار النهائي من الخادم */
     if(
       amount > balance
     ){
-
-      alert(
-        "رصيد LTF غير كافٍ"
-      );
-
+      alert("رصيد LTF غير كافٍ");
       return;
-
     }
 
 
     /* عنوان المحفظة */
-
-    if(
-      !wallet
-    ){
-
-      alert(
-        "أدخل عنوان محفظة USDT"
-      );
-
+    if(!wallet){
+      alert("أدخل عنوان محفظة USDT");
       withdrawWallet.focus();
-
       return;
-
     }
 
 
     /* عنوان الشبكة */
-
-    if(
-      !networkAddress
-    ){
-
-      alert(
-        "أدخل عنوان شبكة BNB20"
-      );
-
+    if(!networkAddress){
+      alert("أدخل عنوان شبكة BNB20");
       withdrawNetworkAddress.focus();
-
       return;
-
     }
 
 
-    /*
-      في هذه المرحلة نتحقق أيضاً
-      من أن العنوان بصيغة BNB / EVM.
-    */
+    /* يجب أن يكون العنوانان متطابقين */
+    if(wallet !== networkAddress){
+      alert("يجب أن يكون عنوان محفظة USDT وعنوان شبكة BNB20 متطابقين");
+      withdrawNetworkAddress.focus();
+      return;
+    }
 
+
+    /* صيغة BNB / EVM */
     if(
-      !isValidBep20Address(
-        wallet
-      )
+      !isValidBep20Address(wallet)
     ){
-
-      alert(
-        "عنوان محفظة USDT غير صحيح لشبكة BNB20"
-      );
-
+      alert("عنوان محفظة USDT غير صحيح لشبكة BNB20");
       withdrawWallet.focus();
-
       return;
-
     }
 
 
-    if(
-      !isValidBep20Address(
-        networkAddress
-      )
-    ){
+    /* يجب تشغيل التطبيق من Telegram للحصول على initData الموقّع */
+    const initData =
+      tg &&
+      typeof tg.initData === "string"
+        ? tg.initData
+        : "";
 
-      alert(
-        "عنوان شبكة BNB20 غير صحيح"
-      );
-
-      withdrawNetworkAddress.focus();
-
+    if(!initData){
+      alert("افتح LTF Miner من داخل Telegram لإرسال طلب السحب");
       return;
-
     }
 
-
-    /* حساب الرسوم والصافي */
 
     const netAmount =
-      amount -
-      WITHDRAW_FEE;
+      amount - WITHDRAW_FEE;
 
 
-    if(
-      netAmount <= 0
-    ){
-
-      alert(
-        "المبلغ غير صالح بعد خصم الرسوم"
-      );
-
+    if(netAmount <= 0){
+      alert("المبلغ غير صالح بعد خصم الرسوم");
       return;
-
     }
 
 
-    /*
-      حفظ طلب السحب محلياً.
+    /* قفل الزر لمنع إرسال الطلب مرتين */
+    withdrawSubmitting = true;
+    withdrawConfirm.disabled = true;
+    withdrawConfirm.textContent = "جاري إرسال الطلب...";
 
-      لاحقاً عند ربط Backend:
-      سيتم نقل هذه البيانات إلى قاعدة البيانات
-      وتنفيذ السحب الحقيقي من المحفظة.
-    */
-
-    const WITHDRAW_KEY =
-      "ltf_withdraw_requests_v1_" +
-      USER_KEY;
-
-    let requests = [];
 
     try{
 
-      const saved =
-        JSON.parse(
-          localStorage.getItem(
-            WITHDRAW_KEY
-          ) || "[]"
+      const response =
+        await fetch(
+          WITHDRAW_FUNCTION_URL,
+          {
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+              initData:initData,
+              amount:Number(
+                amount.toFixed(6)
+              ),
+              wallet_address:wallet,
+              network:"BSC BEP-20"
+            })
+          }
         );
 
-      if(
-        Array.isArray(saved)
-      ){
 
-        requests =
-          saved;
-
-      }
-
-    }catch(e){
-
-      requests = [];
-
-    }
-
-
-    const request = {
-
-      id:
-        "LTF-" +
-        Date.now() +
-        "-" +
-        Math.floor(
-          Math.random() *
-          100000
-        ),
-
-      user_id:
-        telegramUserId,
-
-      amount:
-        Number(
-          amount.toFixed(6)
-        ),
-
-      fee:
-        WITHDRAW_FEE,
-
-      net_amount:
-        Number(
-          netAmount.toFixed(6)
-        ),
-
-      token:
-        "USDT",
-
-      network:
-        "BNB Smart Chain (BEP-20)",
-
-      wallet_address:
-        wallet,
-
-      network_address:
-        networkAddress,
-
-      status:
-        "pending",
-
-      created_at:
-        new Date().toISOString()
-
-    };
-
-
-    requests.push(
-      request
-    );
-
-
-    localStorage.setItem(
-      WITHDRAW_KEY,
-      JSON.stringify(
-        requests
-      )
-    );
-
-
-    /*
-      حالياً يتم خصم الرصيد
-      عند إنشاء طلب السحب.
-    */
-
-    setBalance(
-      balance -
-      amount
-    );
-
-
-    render();
-
-
-    withdrawBalance.textContent =
-      formatLTF(
-        getBalance()
-      );
-
-
-    withdrawSuccess.textContent =
-      "تم إنشاء طلب السحب بنجاح. " +
-      "المبلغ المطلوب: " +
-      formatLTF(amount) +
-      " LTF — الرسوم: " +
-        formatLTF(WITHDRAW_FEE) +
-        " LTF — " +
-      "الصافي: " +
-      formatLTF(netAmount) +
-      " LTF. " +
-      "رقم الطلب: " +
-      request.id;
-
-
-    withdrawSuccess.classList.add(
-      "show"
-    );
-
-
-    withdrawAmount.value =
-      "";
-
-    withdrawWallet.value =
-      "";
-
-    withdrawNetworkAddress.value =
-      "";
-
-
-    if(
-      tg &&
-      tg.HapticFeedback
-    ){
+      let data = null;
 
       try{
+        data = await response.json();
+      }catch(e){
+        data = null;
+      }
 
+
+      if(
+        !response.ok ||
+        !data ||
+        data.success !== true
+      ){
+
+        const message =
+          data && data.message
+            ? String(data.message)
+            : "تعذر إنشاء طلب السحب حالياً";
+
+        throw new Error(message);
+      }
+
+
+      /*
+        الخادم هو المصدر الموثوق للرصيد.
+        بعد نجاح العملية نستخدم new_balance
+        الذي أعاده Supabase ولا نحسب الرصيد محلياً.
+      */
+      if(
+        data.new_balance !== undefined &&
+        Number.isFinite(
+          Number(data.new_balance)
+        )
+      ){
+        setBalance(
+          Number(data.new_balance)
+        );
+      }else{
+        /* fallback آمن في حال لم يرجع الخادم الرصيد */
+        setBalance(
+          Math.max(
+            0,
+            balance - amount
+          )
+        );
+      }
+
+      render();
+
+      withdrawBalance.textContent =
+        formatLTF(
+          getBalance()
+        );
+
+
+      const serverAmount =
+        Number.isFinite(Number(data.amount))
+          ? Number(data.amount)
+          : amount;
+
+      const serverFee =
+        Number.isFinite(Number(data.fee))
+          ? Number(data.fee)
+          : WITHDRAW_FEE;
+
+      const serverNet =
+        Number.isFinite(Number(data.net_amount))
+          ? Number(data.net_amount)
+          : serverAmount - serverFee;
+
+      const requestId =
+        data.request_id !== undefined
+          ? String(data.request_id)
+          : "—";
+
+
+      withdrawSuccess.textContent =
+        "تم إنشاء طلب السحب بنجاح. " +
+        "المبلغ المطلوب: " +
+        formatLTF(serverAmount) +
+        " LTF — الرسوم: " +
+        formatLTF(serverFee) +
+        " LTF — الصافي: " +
+        formatLTF(serverNet) +
+        " LTF. رقم الطلب: " +
+        requestId;
+
+      withdrawSuccess.classList.add("show");
+
+      withdrawAmount.value = "";
+      withdrawWallet.value = "";
+      withdrawNetworkAddress.value = "";
+
+
+      if(
+        tg &&
         tg.HapticFeedback
-          .notificationOccurred(
-            "success"
-          );
+      ){
+        try{
+          tg.HapticFeedback.notificationOccurred("success");
+        }catch(e){}
+      }
 
-      }catch(e){}
+    }catch(error){
+
+      console.error(
+        "LTF withdrawal error:",
+        error
+      );
+
+      alert(
+        error && error.message
+          ? error.message
+          : "حدث خطأ أثناء إرسال طلب السحب"
+      );
+
+    }finally{
+
+      withdrawSubmitting = false;
+      withdrawConfirm.disabled = false;
+      withdrawConfirm.textContent = "طلب السحب";
 
     }
 
