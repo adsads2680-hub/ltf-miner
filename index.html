@@ -3192,11 +3192,66 @@ swapConfirm.addEventListener(
 
 
     /*
-      التنفيذ الحقيقي يحتاج:
-      Backend + محفظة + سيولة.
+      SWAP LTF -> USDT
+      السعر الحالي الثابت داخل التطبيق:
+      300 LTF = 1 USDT
 
-      لا يتم خصم الرصيد هنا.
+      يتم خصم LTF فعلياً من رصيد التطبيق
+      وتسجيل USDT الناتج كرصد داخلي.
     */
+
+    if(swapTarget !== "USDT"){
+
+      alert(
+        "تبديل TON يحتاج تنفيذ الشبكة والمحفظة. اختر USDT حالياً."
+      );
+
+      return;
+
+    }
+
+
+    const usdtAmount =
+      amount * LTF_USDT_PRICE;
+
+    const newBalance =
+      balance - amount;
+
+    const usdtKey =
+      "ltf_usdt_balance_v1_" +
+      USER_KEY;
+
+    const currentUsdt =
+      parseFloat(
+        localStorage.getItem(
+          usdtKey
+        )
+      ) || 0;
+
+    const newUsdt =
+      currentUsdt + usdtAmount;
+
+    setBalance(
+      Math.max(0, newBalance)
+    );
+
+    localStorage.setItem(
+      usdtKey,
+      String(newUsdt)
+    );
+
+    render();
+
+    swapBalance.textContent =
+      formatLTF(
+        Math.max(0, newBalance)
+      );
+
+    swapAmount.value =
+      "";
+
+    swapOutput.textContent =
+      "0.000000 USDT";
 
     if(
       tg &&
@@ -3207,12 +3262,22 @@ swapConfirm.addEventListener(
 
         tg.HapticFeedback
           .notificationOccurred(
-            "warning"
+            "success"
           );
 
       }catch(e){}
 
     }
+
+    alert(
+      "تم التبديل بنجاح" +
+      "\n-" +
+      formatLTF(amount) +
+      " LTF" +
+      "\n+" +
+      usdtAmount.toFixed(6) +
+      " USDT"
+    );
 
   }
 );
