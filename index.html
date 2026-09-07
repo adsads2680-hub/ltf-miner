@@ -169,6 +169,27 @@ button{font:inherit;color:inherit}
  .actions{width:97vw;gap:5px;flex:1}.action{min-height:91px;height:100%;padding:5px 2px;gap:4px}.icon{width:36px;height:36px;font-size:18px}.action strong{font-size:10px}.action span{font-size:8px}
 }
 </style>
+
+<style id="v11-clock-fix">
+.timerrow .clock{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#f7d365;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+.timerrow .clock svg{
+  display:block;
+  width:26px;
+  height:26px;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -177,7 +198,7 @@ button{font:inherit;color:inherit}
   <div class="hcoin"><span>LTF</span></div>
   <div class="brand"><b>LTF</b><small>MINER</small></div>
   <div class="grow"></div>
-  <div class="balance"><div class="bcoin">LTF</div><b id="balance">0.000</b><span>LTF</span></div>
+  <div class="balance"><div class="bcoin">LTF</div><b id="balance">0.000000</b><span>LTF</span></div>
   <button class="profile">●</button>
 </header>
 
@@ -191,13 +212,24 @@ button{font:inherit;color:inherit}
 </section>
 
 <section class="timer">
-  <div class="timerrow"><div class="clock"></div><div class="time" id="timer">01:00:00</div></div>
-  <p>الوقت المتبقي حتى يمكنك الحصول على مكافأتك</p>
+  <div class="timerrow">
+    <div class="clock" aria-hidden="true">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none"
+       xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/>
+    <path d="M12 7.4V12L15.1 14" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</div>
+    <div class="time" id="timer">0.000000</div>
+    <span style="font-size:20px;font-weight:900;color:#f7d365">LTF</span>
+  </div>
+  <p></p>
 </section>
 
 <button class="claim disabled" id="claim" disabled>
   <div class="stack"><i></i><i></i><i></i></div>
-  <div class="cinfo"><span class="reward">+1 LTF</span><span class="clabel">CLAIM</span></div>
+  <div class="cinfo"><span class="reward">CLAIM</span><span class="clabel">CLAIM</span></div>
   <div class="arrow">»</div>
 </button>
 
@@ -210,34 +242,66 @@ button{font:inherit;color:inherit}
 </div>
 
 <script>
-const interval=60*60*1000;
-let balance=Number(localStorage.getItem('ltf_balance')||0);
-let next=Number(localStorage.getItem('ltf_next')||0);
-const $=id=>document.getElementById(id);
+// التعدين الحقيقي: 3 LTF كل 3 ساعات، ويبدأ العرض من 0.000001
+const MINING_RATE_PER_MS = 3 / (3 * 60 * 60 * 1000);
+const DISPLAY_PRECISION = 6;
+const $ = id => document.getElementById(id);
 
-function save(){
- localStorage.setItem('ltf_balance',balance.toFixed(3));
- localStorage.setItem('ltf_next',String(next));
+let balance = Number(localStorage.getItem('ltf_balance') || 0);
+let miningStart = Number(localStorage.getItem('ltf_mining_start') || 0);
+
+if (!miningStart) {
+  miningStart = Date.now();
+  localStorage.setItem('ltf_mining_start', String(miningStart));
 }
-function render(){
- $('balance').textContent=balance.toFixed(3);
- let left=Math.max(0,next-Date.now());
- if(!left){
-   $('timer').textContent='00:00:00';
-   $('claim').disabled=false;$('claim').classList.remove('disabled');return;
- }
- let t=Math.floor(left/1000),h=String(Math.floor(t/3600)).padStart(2,'0'),
- m=String(Math.floor(t%3600/60)).padStart(2,'0'),s=String(t%60).padStart(2,'0');
- $('timer').textContent=`${h}:${m}:${s}`;
- $('claim').disabled=true;$('claim').classList.add('disabled');
+
+function minedNow() {
+  return Math.max(0, (Date.now() - miningStart) * MINING_RATE_PER_MS);
 }
-$('claim').onclick=()=>{
- if(next>Date.now())return;
- balance+=1;next=Date.now()+interval;save();
- $('status').textContent='تمت إضافة 1 LTF إلى رصيدك';render();
+
+function save() {
+  localStorage.setItem('ltf_balance', balance.toFixed(8));
+  localStorage.setItem('ltf_mining_start', String(miningStart));
+}
+
+function render() {
+  const mined = minedNow();
+  const total = balance + mined;
+
+  // Main live counter: 0.01 → 0.02 → 0.03 → 0.04 ...
+  $('timer').textContent = mined.toFixed(DISPLAY_PRECISION);
+  $('balance').textContent = total.toFixed(DISPLAY_PRECISION);
+
+  const canClaim = mined >= 0.01;
+  $('claim').disabled = !canClaim;
+  $('claim').classList.toggle('disabled', !canClaim);
+
+  $('status').textContent = canClaim
+    ? `جاهز للجمع: ${mined.toFixed(DISPLAY_PRECISION)} LTF`
+    : 'جاري التعدين...';
+}
+
+$('claim').onclick = () => {
+  const mined = minedNow();
+  if (mined < 0.01) return;
+
+  balance += mined;
+  miningStart = Date.now();
+  save();
+
+  $('status').textContent = `تم جمع ${mined.toFixed(DISPLAY_PRECISION)} LTF`;
+  render();
 };
-function msg(t){$('status').textContent=t;setTimeout(()=>{$('status').textContent=''},2500)}
-render();setInterval(render,1000);
+
+function msg(t) {
+  $('status').textContent = t;
+  setTimeout(() => {
+    if ($('status').textContent === t) $('status').textContent = '';
+  }, 2500);
+}
+
+render();
+setInterval(render, 1000);
 </script>
 </body>
 </html>
