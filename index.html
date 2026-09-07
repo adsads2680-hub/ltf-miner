@@ -1665,7 +1665,7 @@ button{
     <div
       id="tonLivePrice"
       class="ton-live-price">
-      سعر GRAM (TON): جاري التحديث...
+      سعر TON (GRAM): جاري التحديث...
     </div>
 
 
@@ -1697,7 +1697,7 @@ button{
 
 
     <div class="swap-note">
-      الحد الأدنى للتبديل 50 LTF — سعر GRAM (TON) من CoinMarketCap
+      الحد الأدنى للتبديل 10 LTF — سعر TON (GRAM) مباشر
     </div>
 
   </div>
@@ -1764,9 +1764,9 @@ button{
           class="swap-input"
           type="number"
           inputmode="decimal"
-          min="350"
+          min="200"
           step="0.000001"
-          placeholder="350.000000">
+          placeholder="200.000000">
 
         <div class="swap-token">
           LTF
@@ -1786,7 +1786,7 @@ button{
         </div>
 
         <div class="withdraw-stat-value">
-          350 LTF
+          200 LTF
         </div>
 
       </div>
@@ -1799,7 +1799,7 @@ button{
         </div>
 
         <div class="withdraw-stat-value">
-          50 LTF
+          20 LTF
         </div>
 
       </div>
@@ -1850,8 +1850,8 @@ button{
 
 
     <div class="withdraw-warning">
-      الحد الأدنى للسحب 350 LTF، ويتم خصم 50 LTF رسوم من المبلغ المطلوب.
-      مثال: سحب 350 LTF = صافي 300 LTF.
+      الحد الأدنى للسحب 200 LTF، ويتم خصم 20 LTF رسوم من المبلغ المطلوب.
+      مثال: سحب 200 LTF = صافي 300 LTF.
     </div>
 
 
@@ -2312,10 +2312,10 @@ let swapTarget = "USDT";
 
 /* =========================================
    SWAP LIMIT
-   50 LTF
+   20 LTF
 ========================================= */
 
-const MIN_SWAP_AMOUNT = 50;
+const MIN_SWAP_AMOUNT = 10;
 
 
 /* =========================================
@@ -2327,13 +2327,12 @@ const LTF_USDT_PRICE =
   1 / 300;
 
 
-/* =========================================
-   LIVE GRAM PRICE
-   CoinMarketCap
+/* ========/* =========================================
+   LIVE TON / GRAM PRICE
+   CoinMarketCap + CoinGecko fallback
 ========================================= */
 
 let tonUsdPrice = null;
-
 let tonPriceLoading = false;
 
 const TON_PRICE_KEY =
@@ -2341,7 +2340,6 @@ const TON_PRICE_KEY =
 
 const TON_PRICE_TIME_KEY =
   "ltf_live_gram_price_time";
-
 
 function loadCachedTonPrice(){
 
@@ -2352,25 +2350,14 @@ function loadCachedTonPrice(){
       )
     );
 
-  const cachedTime =
-    parseInt(
-      localStorage.getItem(
-        TON_PRICE_TIME_KEY
-      ),
-      10
-    );
-
   if(
     Number.isFinite(cached) &&
     cached > 0
   ){
 
-    tonUsdPrice =
-      cached;
+    tonUsdPrice = cached;
 
   }
-
-  return cachedTime;
 
 }
 
@@ -2401,8 +2388,36 @@ function formatTonPrice(price){
 }
 
 
+function saveTonPrice(price){
+
+  tonUsdPrice = price;
+
+  localStorage.setItem(
+    TON_PRICE_KEY,
+    String(price)
+  );
+
+  localStorage.setItem(
+    TON_PRICE_TIME_KEY,
+    String(Date.now())
+  );
+
+  if(tonLivePrice){
+
+    tonLivePrice.textContent =
+      "سعر TON (GRAM): $" +
+      formatTonPrice(price) +
+      " USDT";
+
+  }
+
+}
+
+
 /* =========================================
-   جلب GRAM من CoinMarketCap
+   جلب السعر المباشر
+   1) CoinMarketCap
+   2) CoinGecko كبديل تلقائي
 ========================================= */
 
 async function fetchTonPrice(){
@@ -2413,85 +2428,157 @@ async function fetchTonPrice(){
 
   tonPriceLoading = true;
 
+  let freshPrice = NaN;
+
   try{
 
-    const response =
-      await fetch(
-        "https://pro-api.coinmarketcap.com/public-api/v2/simple/price?symbol=GRAM&convert=USD&skip_invalid=true",
-        {
-          method:"GET",
-          cache:"no-store"
+    /* CoinMarketCap */
+    try{
+
+      const response =
+        await fetch(
+          "https://pro-api.coinmarketcap.com/public-api/v2/simple/price?symbol=GRAM&convert=USD&skip_invalid=true",
+          {
+            method:"GET",
+            cache:"no-store"
+          }
+        );
+
+      if(!response.ok){
+        throw new Error("CMC request failed");
+      }
+
+      const data =
+        await response.json();
+
+      const assets =
+        data && Array.isArray(data.data)
+          ? data.data
+          : [];
+
+      let asset = null;
+
+      for(const item of assets){
+
+        const symbol =
+          item &&
+          item.symbol
+            ? String(item.symbol).toUpperCase()
+            : "";
+
+        if(symbol === "GRAM" || symbol === "TON"){
+
+          asset = item;
+          break;
+
         }
-      );
 
-    if(!response.ok){
+      }
 
-      throw new Error(
-        "GRAM price request failed"
+      if(!asset && assets.length){
+        asset = assets[0];
+      }
+
+      const usdQuote =
+        asset &&
+        Array.isArray(asset.quotes)
+          ? asset.quotes.find(
+              function(q){
+                return q &&
+                  String(q.symbol)
+                    .toUpperCase() === "USD";
+              }
+            )
+          : null;
+
+      freshPrice =
+        usdQuote
+          ? parseFloat(usdQuote.price)
+          : NaN;
+
+    }catch(cmcError){
+
+      console.warn(
+        "CoinMarketCap failed, trying CoinGecko:",
+        cmcError
       );
 
     }
 
-    const data =
-      await response.json();
 
-    const asset =
-      data &&
-      Array.isArray(data.data)
-        ? data.data[0]
-        : null;
-
-    const usdQuote =
-      asset &&
-      Array.isArray(asset.quotes)
-        ? asset.quotes.find(
-            function(q){
-              return q &&
-                String(q.symbol)
-                  .toUpperCase() === "USD";
-            }
-          )
-        : null;
-
-    const price =
-      usdQuote
-        ? parseFloat(
-            usdQuote.price
-          )
-        : NaN;
-
+    /* CoinGecko fallback */
     if(
-      !Number.isFinite(price) ||
-      price <= 0
+      !Number.isFinite(freshPrice) ||
+      freshPrice <= 0
     ){
 
-      throw new Error(
-        "Invalid GRAM price"
-      );
+      try{
+
+        const response =
+          await fetch(
+            "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
+            {
+              method:"GET",
+              cache:"no-store"
+            }
+          );
+
+        if(!response.ok){
+          throw new Error("CoinGecko request failed");
+        }
+
+        const data =
+          await response.json();
+
+        freshPrice =
+          data &&
+          data["the-open-network"]
+            ? parseFloat(
+                data["the-open-network"].usd
+              )
+            : NaN;
+
+      }catch(geckoError){
+
+        console.warn(
+          "CoinGecko failed:",
+          geckoError
+        );
+
+      }
 
     }
 
-    tonUsdPrice =
-      price;
 
-    localStorage.setItem(
-      TON_PRICE_KEY,
-      String(price)
-    );
+    if(
+      Number.isFinite(freshPrice) &&
+      freshPrice > 0
+    ){
 
-    localStorage.setItem(
-      TON_PRICE_TIME_KEY,
-      String(Date.now())
-    );
+      saveTonPrice(freshPrice);
 
-    if(tonLivePrice){
+    }else if(
+      Number.isFinite(tonUsdPrice) &&
+      tonUsdPrice > 0
+    ){
 
-      tonLivePrice.textContent =
-        "سعر GRAM (TON): $" +
-        formatTonPrice(
-          tonUsdPrice
-        ) +
-        " USDT";
+      if(tonLivePrice){
+
+        tonLivePrice.textContent =
+          "آخر سعر TON (GRAM): $" +
+          formatTonPrice(tonUsdPrice) +
+          " USDT";
+
+      }
+
+    }else{
+
+      if(tonLivePrice){
+
+        tonLivePrice.textContent =
+          "سعر TON غير متاح حالياً";
+
+      }
 
     }
 
@@ -2500,29 +2587,26 @@ async function fetchTonPrice(){
   }catch(error){
 
     console.warn(
-      "GRAM live price error:",
+      "TON price error:",
       error
     );
 
     if(tonLivePrice){
 
       if(
-        Number.isFinite(
-          tonUsdPrice
-        ) &&
+        Number.isFinite(tonUsdPrice) &&
         tonUsdPrice > 0
       ){
 
         tonLivePrice.textContent =
-          "آخر سعر GRAM: $" +
-          formatTonPrice(
-            tonUsdPrice
-          );
+          "آخر سعر TON (GRAM): $" +
+          formatTonPrice(tonUsdPrice) +
+          " USDT";
 
       }else{
 
         tonLivePrice.textContent =
-          "تعذر تحديث سعر GRAM";
+          "سعر TON غير متاح حالياً";
 
       }
 
@@ -2532,15 +2616,14 @@ async function fetchTonPrice(){
 
   }finally{
 
-    tonPriceLoading =
-      false;
+    tonPriceLoading = false;
 
   }
 
 }
 
 
-/* =========================================
+=================================
    SWAP CALCULATION
 ========================================= */
 
@@ -2768,7 +2851,7 @@ setInterval(
 
 /* =========================================
    SWAP CONFIRM
-   الحد الأدنى 50 LTF
+   الحد الأدنى 20 LTF
 ========================================= */
 
 swapConfirm.addEventListener(
@@ -2803,7 +2886,7 @@ swapConfirm.addEventListener(
     ){
 
       alert(
-        "الحد الأدنى للتبديل هو 50 LTF"
+        "الحد الأدنى للتبديل هو 10 LTF"
       );
 
       return;
@@ -3058,7 +3141,7 @@ withdrawConfirm.addEventListener(
     ){
 
       alert(
-        "الحد الأدنى للسحب هو 350 LTF"
+        "الحد الأدنى للسحب هو 200 LTF"
       );
 
       return;
@@ -3298,7 +3381,9 @@ withdrawConfirm.addEventListener(
       "تم إنشاء طلب السحب بنجاح. " +
       "المبلغ المطلوب: " +
       formatLTF(amount) +
-      " LTF — الرسوم: 50 LTF — " +
+      " LTF — الرسوم: " +
+        formatLTF(WITHDRAW_FEE) +
+        " LTF — " +
       "الصافي: " +
       formatLTF(netAmount) +
       " LTF. " +
