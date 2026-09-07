@@ -47,31 +47,23 @@ body{
   overflow-x:hidden;
 
   background:
-    radial-gradient(
-      circle at 50% 29%,
+    radial-gradient(circle at 50% 29%,
       rgba(245,200,76,.115) 0%,
       rgba(245,200,76,.055) 18%,
       rgba(245,200,76,.018) 34%,
-      transparent 56%
-    ),
-    radial-gradient(
-      circle at 12% 8%,
+      transparent 56%),
+    radial-gradient(circle at 12% 8%,
       rgba(255,214,91,.045),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 90% 74%,
+      transparent 30%),
+    radial-gradient(circle at 90% 74%,
       rgba(189,132,25,.035),
-      transparent 32%
-    ),
-    linear-gradient(
-      145deg,
+      transparent 32%),
+    linear-gradient(145deg,
       #000000 0%,
       #030303 28%,
       #080704 50%,
       #020202 72%,
-      #000000 100%
-    );
+      #000000 100%);
 
   position:relative;
 }
@@ -84,13 +76,11 @@ body::before{
   z-index:0;
 
   background:
-    repeating-radial-gradient(
-      circle at 50% 30%,
+    repeating-radial-gradient(circle at 50% 30%,
       transparent 0,
       transparent 72px,
       rgba(245,200,76,.018) 73px,
-      transparent 74px
-    );
+      transparent 74px);
 
   opacity:.75;
 }
@@ -113,37 +103,27 @@ body::after{
   z-index:0;
 
   background:
-    radial-gradient(
-      circle,
+    radial-gradient(circle,
       rgba(255,220,110,.09) 0%,
       rgba(245,200,76,.045) 25%,
       rgba(245,200,76,.015) 46%,
-      transparent 70%
-    );
+      transparent 70%);
 
   filter:blur(8px);
 
-  animation:
-    luxuryGlow 5s ease-in-out infinite;
+  animation:luxuryGlow 5s ease-in-out infinite;
 }
 
 @keyframes luxuryGlow{
-
-  0%,
-  100%{
+  0%,100%{
     opacity:.72;
-    transform:
-      translate(-50%,-50%)
-      scale(.96);
+    transform:translate(-50%,-50%) scale(.96);
   }
 
   50%{
     opacity:1;
-    transform:
-      translate(-50%,-50%)
-      scale(1.06);
+    transform:translate(-50%,-50%) scale(1.06);
   }
-
 }
 
 button{
@@ -180,8 +160,7 @@ button{
 
   border:1px solid rgba(245,200,76,.035);
 
-  box-shadow:
-    0 0 70px rgba(245,200,76,.025);
+  box-shadow:0 0 70px rgba(245,200,76,.025);
 
   pointer-events:none;
 }
@@ -204,9 +183,7 @@ button{
 }
 
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 .header{
   display:flex;
@@ -239,13 +216,11 @@ button{
   font-weight:900;
 
   background:
-    radial-gradient(
-      circle at 35% 30%,
+    radial-gradient(circle at 35% 30%,
       #fff4bd 0%,
       #ffd965 20%,
       #e5aa28 48%,
-      #8d5c0b 100%
-    );
+      #8d5c0b 100%);
 
   border:1px solid rgba(255,235,150,.7);
 
@@ -287,11 +262,9 @@ button{
   border-radius:14px;
 
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       rgba(255,255,255,.045),
-      rgba(255,255,255,.008)
-    );
+      rgba(255,255,255,.008));
 
   box-shadow:
     inset 0 0 15px rgba(245,200,76,.025),
@@ -311,9 +284,7 @@ button{
 }
 
 
-/* =========================
-   HERO
-========================= */
+/* HERO */
 
 .hero{
   position:relative;
@@ -342,12 +313,10 @@ button{
   border-radius:50%;
 
   background:
-    radial-gradient(
-      circle,
+    radial-gradient(circle,
       rgba(245,200,76,.085),
       rgba(245,200,76,.025) 42%,
-      transparent 70%
-    );
+      transparent 70%);
 
   filter:blur(10px);
 
@@ -361,15 +330,13 @@ button{
 
   transform:translate(-50%,-50%);
 
-  border:
-    1px solid rgba(245,200,76,.22);
+  border:1px solid rgba(245,200,76,.22);
 
   border-radius:50%;
 
   pointer-events:none;
 
-  box-shadow:
-    0 0 12px rgba(245,200,76,.025);
+  box-shadow:0 0 12px rgba(245,200,76,.025);
 }
 
 .orbit.one{
@@ -432,9 +399,7 @@ button{
 }
 
 
-/* =========================
-   SIX GOLDEN MINING DOTS
-========================= */
+/* SIX GOLDEN MINING DOTS */
 
 .mining-dot{
   position:absolute;
@@ -451,13 +416,11 @@ button{
   border-radius:50%;
 
   background:
-    radial-gradient(
-      circle at 35% 30%,
+    radial-gradient(circle at 35% 30%,
       #fff5bb 0%,
       #ffe070 25%,
       #f5c84c 55%,
-      #b77a0f 100%
-    );
+      #b77a0f 100%);
 
   box-shadow:
     0 0 6px rgba(245,200,76,.95),
@@ -468,160 +431,84 @@ button{
 
   pointer-events:none;
 
-  animation:
-    miningDotPulse 2.4s ease-in-out infinite;
+  animation:miningDotPulse 2.4s ease-in-out infinite;
 }
 
 .mining-dot.d1{
-  transform:
-    translate(0,-94px);
+  transform:translate(0,-94px);
 }
 
 .mining-dot.d2{
-  transform:
-    translate(81px,-47px);
+  transform:translate(81px,-47px);
 }
 
 .mining-dot.d3{
-  transform:
-    translate(81px,47px);
+  transform:translate(81px,47px);
 }
 
 .mining-dot.d4{
-  transform:
-    translate(0,94px);
+  transform:translate(0,94px);
 }
 
 .mining-dot.d5{
-  transform:
-    translate(-81px,47px);
+  transform:translate(-81px,47px);
 }
 
 .mining-dot.d6{
-  transform:
-    translate(-81px,-47px);
+  transform:translate(-81px,-47px);
 }
 
-.mining-dot.d2{
-  animation-delay:.4s;
-}
-
-.mining-dot.d3{
-  animation-delay:.8s;
-}
-
-.mining-dot.d4{
-  animation-delay:1.2s;
-}
-
-.mining-dot.d5{
-  animation-delay:1.6s;
-}
-
-.mining-dot.d6{
-  animation-delay:2s;
-}
+.mining-dot.d2{animation-delay:.4s;}
+.mining-dot.d3{animation-delay:.8s;}
+.mining-dot.d4{animation-delay:1.2s;}
+.mining-dot.d5{animation-delay:1.6s;}
+.mining-dot.d6{animation-delay:2s;}
 
 @keyframes miningDotPulse{
-
-  0%,
-  100%{
-    opacity:.65;
-    transform:
-      translate(0,-94px)
-      scale(.82);
-  }
-
-  50%{
-    opacity:1;
-    transform:
-      translate(0,-94px)
-      scale(1.15);
-  }
-
-}
-
-/* تثبيت أماكن النقاط أثناء النبض */
-
-.mining-dot.d2{
-  animation-name:miningDotPulse2;
-}
-
-.mining-dot.d3{
-  animation-name:miningDotPulse3;
-}
-
-.mining-dot.d4{
-  animation-name:miningDotPulse4;
-}
-
-.mining-dot.d5{
-  animation-name:miningDotPulse5;
-}
-
-.mining-dot.d6{
-  animation-name:miningDotPulse6;
-}
-
-@keyframes miningDotPulse2{
   0%,100%{
     opacity:.65;
-    transform:translate(81px,-47px) scale(.82);
+    transform:translate(0,-94px) scale(.82);
   }
+
   50%{
     opacity:1;
-    transform:translate(81px,-47px) scale(1.15);
+    transform:translate(0,-94px) scale(1.15);
   }
+}
+
+.mining-dot.d2{animation-name:miningDotPulse2;}
+.mining-dot.d3{animation-name:miningDotPulse3;}
+.mining-dot.d4{animation-name:miningDotPulse4;}
+.mining-dot.d5{animation-name:miningDotPulse5;}
+.mining-dot.d6{animation-name:miningDotPulse6;}
+
+@keyframes miningDotPulse2{
+  0%,100%{opacity:.65;transform:translate(81px,-47px) scale(.82);}
+  50%{opacity:1;transform:translate(81px,-47px) scale(1.15);}
 }
 
 @keyframes miningDotPulse3{
-  0%,100%{
-    opacity:.65;
-    transform:translate(81px,47px) scale(.82);
-  }
-  50%{
-    opacity:1;
-    transform:translate(81px,47px) scale(1.15);
-  }
+  0%,100%{opacity:.65;transform:translate(81px,47px) scale(.82);}
+  50%{opacity:1;transform:translate(81px,47px) scale(1.15);}
 }
 
 @keyframes miningDotPulse4{
-  0%,100%{
-    opacity:.65;
-    transform:translate(0,94px) scale(.82);
-  }
-  50%{
-    opacity:1;
-    transform:translate(0,94px) scale(1.15);
-  }
+  0%,100%{opacity:.65;transform:translate(0,94px) scale(.82);}
+  50%{opacity:1;transform:translate(0,94px) scale(1.15);}
 }
 
 @keyframes miningDotPulse5{
-  0%,100%{
-    opacity:.65;
-    transform:translate(-81px,47px) scale(.82);
-  }
-  50%{
-    opacity:1;
-    transform:translate(-81px,47px) scale(1.15);
-  }
+  0%,100%{opacity:.65;transform:translate(-81px,47px) scale(.82);}
+  50%{opacity:1;transform:translate(-81px,47px) scale(1.15);}
 }
 
 @keyframes miningDotPulse6{
-  0%,100%{
-    opacity:.65;
-    transform:translate(-81px,-47px) scale(.82);
-  }
-  50%{
-    opacity:1;
-    transform:translate(-81px,-47px) scale(1.15);
-  }
+  0%,100%{opacity:.65;transform:translate(-81px,-47px) scale(.82);}
+  50%{opacity:1;transform:translate(-81px,-47px) scale(1.15);}
 }
 
 
-/* =========================
-   ULTRA LUXURY 3D LTF COIN
-========================= */
+/* ULTRA LUXURY 3D LTF COIN */
 
 .coin-wrap{
   position:relative;
@@ -645,15 +532,13 @@ button{
   position:relative;
 
   background:
-    radial-gradient(
-      circle at 31% 24%,
+    radial-gradient(circle at 31% 24%,
       #fff9d8 0%,
       #ffe98c 8%,
       #f8cc50 20%,
       #d99b20 42%,
       #9b6510 67%,
-      #4c2b04 100%
-    );
+      #4c2b04 100%);
 
   border:4px solid #dca82d;
 
@@ -683,8 +568,7 @@ button{
 
   border-radius:50%;
 
-  border:
-    2px solid rgba(255,241,171,.55);
+  border:2px solid rgba(255,241,171,.55);
 
   box-shadow:
     inset 0 0 0 2px rgba(91,53,3,.32),
@@ -708,14 +592,12 @@ button{
   border-radius:50%;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       transparent,
       rgba(255,255,255,.05),
       rgba(255,255,255,.62),
       rgba(255,255,255,.12),
-      transparent
-    );
+      transparent);
 
   filter:blur(5px);
 
@@ -725,41 +607,27 @@ button{
 
   pointer-events:none;
 
-  animation:
-    coinShine 4.5s ease-in-out infinite;
+  animation:coinShine 4.5s ease-in-out infinite;
 }
 
 @keyframes coinShine{
-
   0%{
-    transform:
-      translateX(-80px)
-      rotate(-28deg);
+    transform:translateX(-80px) rotate(-28deg);
     opacity:.15;
   }
 
-  45%{
-    opacity:.65;
-  }
+  45%{opacity:.65;}
 
   70%{
-    transform:
-      translateX(80px)
-      rotate(-28deg);
+    transform:translateX(80px) rotate(-28deg);
     opacity:.08;
   }
 
   100%{
-    transform:
-      translateX(120px)
-      rotate(-28deg);
+    transform:translateX(120px) rotate(-28deg);
     opacity:0;
   }
-
 }
-
-
-/* نقوش حول العملة */
 
 .coin-wrap::before{
   content:"✦  •  ✦  •  ✦  •  ✦  •  ✦";
@@ -787,9 +655,6 @@ button{
   z-index:3;
 }
 
-
-/* LTF بارز داخل العملة */
-
 .coin-logo{
   position:relative;
   z-index:6;
@@ -815,10 +680,7 @@ button{
     0 5px 4px rgba(53,29,0,.48),
     0 0 10px rgba(255,224,113,.22);
 
-  filter:
-    drop-shadow(
-      0 2px 2px rgba(48,25,0,.35)
-    );
+  filter:drop-shadow(0 2px 2px rgba(48,25,0,.35));
 }
 
 .coin-logo::before{
@@ -831,8 +693,7 @@ button{
 
   border-radius:50%;
 
-  border:
-    1px solid rgba(255,242,177,.28);
+  border:1px solid rgba(255,242,177,.28);
 
   box-shadow:
     inset 0 0 8px rgba(70,38,0,.22),
@@ -855,12 +716,10 @@ button{
   border-radius:50%;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       transparent,
       rgba(255,250,205,.58),
-      transparent
-    );
+      transparent);
 
   filter:blur(2px);
 
@@ -870,9 +729,7 @@ button{
 }
 
 
-/* =========================
-   PLATFORM
-========================= */
+/* PLATFORM */
 
 .platform{
   position:absolute;
@@ -886,53 +743,42 @@ button{
   border-radius:50%;
 
   background:
-    radial-gradient(
-      ellipse,
+    radial-gradient(ellipse,
       rgba(245,200,76,.30),
       rgba(245,200,76,.06) 58%,
-      transparent 72%
-    );
+      transparent 72%);
 
-  border-bottom:
-    1px solid rgba(245,200,76,.32);
+  border-bottom:1px solid rgba(245,200,76,.32);
 
   filter:blur(.2px);
 
-  box-shadow:
-    0 8px 25px rgba(245,200,76,.07);
+  box-shadow:0 8px 25px rgba(245,200,76,.07);
 }
 
 
-/* =========================
-   TIMER AREA
-========================= */
+/* TIMER */
 
 .timer-card{
   position:relative;
 
   width:100%;
 
-  padding:
-    15px 14px 13px;
+  padding:15px 14px 13px;
 
-  border:
-    1px solid var(--line);
+  border:1px solid var(--line);
 
   border-radius:18px;
 
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       rgba(255,255,255,.045),
-      rgba(255,255,255,.009)
-    );
+      rgba(255,255,255,.009));
 
   box-shadow:
     inset 0 0 22px rgba(245,200,76,.025),
     0 12px 35px rgba(0,0,0,.30);
 
-  backdrop-filter:
-    blur(8px);
+  backdrop-filter:blur(8px);
 
   z-index:5;
 }
@@ -958,11 +804,6 @@ button{
   gap:9px;
 }
 
-
-/* =========================
-   CLOCK
-========================= */
-
 .clock{
   width:29px;
   height:29px;
@@ -971,17 +812,14 @@ button{
 
   position:relative;
 
-  border:
-    1.5px solid #e8b93f;
+  border:1.5px solid #e8b93f;
 
   border-radius:50%;
 
   background:
-    radial-gradient(
-      circle at 35% 30%,
+    radial-gradient(circle at 35% 30%,
       rgba(255,230,130,.12),
-      rgba(0,0,0,.05)
-    );
+      rgba(0,0,0,.05));
 
   box-shadow:
     0 0 8px rgba(245,200,76,.14),
@@ -1005,8 +843,7 @@ button{
 
   background:#efc34b;
 
-  box-shadow:
-    0 20px 0 #efc34b;
+  box-shadow:0 20px 0 #efc34b;
 }
 
 .clock::after{
@@ -1026,8 +863,7 @@ button{
 
   background:#efc34b;
 
-  box-shadow:
-    20px 0 0 #efc34b;
+  box-shadow:20px 0 0 #efc34b;
 }
 
 .clock-hand{
@@ -1072,15 +908,13 @@ button{
   width:4px;
   height:4px;
 
-  transform:
-    translate(-50%,-50%);
+  transform:translate(-50%,-50%);
 
   border-radius:50%;
 
   background:#ffe58a;
 
-  box-shadow:
-    0 0 5px rgba(245,200,76,.45);
+  box-shadow:0 0 5px rgba(245,200,76,.45);
 
   z-index:5;
 }
@@ -1116,9 +950,7 @@ button{
 }
 
 
-/* =========================
-   CLAIM
-========================= */
+/* CLAIM */
 
 .claim-wrap{
   margin-top:13px;
@@ -1131,8 +963,7 @@ button{
   width:100%;
   height:57px;
 
-  border:
-    1px solid rgba(255,219,105,.55);
+  border:1px solid rgba(255,219,105,.55);
 
   border-radius:17px;
 
@@ -1144,12 +975,10 @@ button{
   letter-spacing:2px;
 
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       #ffe68b 0%,
       #f6c84e 48%,
-      #c98c18 100%
-    );
+      #c98c18 100%);
 
   box-shadow:
     0 8px 24px rgba(245,200,76,.16),
@@ -1175,13 +1004,9 @@ button{
   transform:scale(.985);
 }
 
-/* الزر لا يصبح معطلاً */
-
 .claim-btn.disabled{
   opacity:1;
-
   filter:none;
-
   cursor:pointer;
 }
 
@@ -1191,15 +1016,12 @@ button{
 }
 
 
-/* =========================
-   BOTTOM CARDS
-========================= */
+/* BOTTOM CARDS */
 
 .actions{
   display:grid;
 
-  grid-template-columns:
-    repeat(3,1fr);
+  grid-template-columns:repeat(3,1fr);
 
   gap:9px;
 
@@ -1212,17 +1034,14 @@ button{
 .action{
   min-height:66px;
 
-  border:
-    1px solid rgba(245,200,76,.15);
+  border:1px solid rgba(245,200,76,.15);
 
   border-radius:15px;
 
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       rgba(255,255,255,.035),
-      rgba(255,255,255,.008)
-    );
+      rgba(255,255,255,.008));
 
   display:flex;
 
@@ -1239,16 +1058,24 @@ button{
     inset 0 0 18px rgba(245,200,76,.012),
     0 8px 20px rgba(0,0,0,.20);
 
-  backdrop-filter:
-    blur(7px);
+  backdrop-filter:blur(7px);
+
+  cursor:pointer;
+
+  transition:
+    transform .15s ease,
+    border-color .15s ease;
+}
+
+.action:active{
+  transform:scale(.97);
 }
 
 .action-icon{
   color:#dcae37;
   font-size:18px;
 
-  text-shadow:
-    0 0 8px rgba(245,200,76,.16);
+  text-shadow:0 0 8px rgba(245,200,76,.16);
 }
 
 .action-title{
@@ -1263,8 +1090,324 @@ button{
 
 
 /* =========================
-   RESPONSIVE
+   SWAP PANEL
 ========================= */
+
+.swap-overlay{
+  position:fixed;
+  inset:0;
+
+  z-index:100;
+
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+
+  padding:
+    0
+    12px
+    max(14px,env(safe-area-inset-bottom));
+
+  background:rgba(0,0,0,.72);
+
+  backdrop-filter:blur(8px);
+}
+
+.swap-overlay.open{
+  display:flex;
+}
+
+.swap-panel{
+  width:100%;
+  max-width:520px;
+
+  padding:18px 16px 16px;
+
+  border:1px solid rgba(245,200,76,.22);
+
+  border-radius:24px 24px 18px 18px;
+
+  background:
+    radial-gradient(circle at 50% 0%,
+      rgba(245,200,76,.10),
+      transparent 45%),
+    linear-gradient(180deg,
+      #0d0c09,
+      #050505 75%,
+      #020202);
+
+  box-shadow:
+    0 -15px 50px rgba(0,0,0,.7),
+    0 0 35px rgba(245,200,76,.08),
+    inset 0 1px 1px rgba(255,255,255,.06);
+
+  transform:translateY(25px);
+  opacity:0;
+
+  transition:
+    transform .22s ease,
+    opacity .22s ease;
+}
+
+.swap-overlay.open .swap-panel{
+  transform:translateY(0);
+  opacity:1;
+}
+
+.swap-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  margin-bottom:17px;
+}
+
+.swap-heading{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.swap-title{
+  color:#ffe58a;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.swap-subtitle{
+  color:#666;
+  font-size:9px;
+}
+
+.swap-close{
+  width:34px;
+  height:34px;
+
+  border:1px solid rgba(245,200,76,.18);
+  border-radius:50%;
+
+  background:rgba(255,255,255,.025);
+
+  color:#aaa;
+
+  font-size:18px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+}
+
+.swap-box{
+  padding:13px;
+
+  border:1px solid rgba(245,200,76,.13);
+  border-radius:17px;
+
+  background:rgba(255,255,255,.025);
+}
+
+.swap-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  color:#777;
+  font-size:9px;
+
+  margin-bottom:8px;
+}
+
+.swap-balance{
+  color:#b99843;
+}
+
+.swap-input-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.swap-input{
+  flex:1;
+
+  width:100%;
+
+  border:0;
+  outline:0;
+
+  background:transparent;
+
+  color:#fff4bd;
+
+  font-size:24px;
+  font-weight:900;
+
+  direction:ltr;
+  text-align:left;
+}
+
+.swap-input::placeholder{
+  color:#444;
+}
+
+.swap-token{
+  min-width:64px;
+
+  padding:9px 10px;
+
+  border-radius:12px;
+
+  text-align:center;
+
+  color:#1b1403;
+
+  font-size:12px;
+  font-weight:900;
+
+  background:
+    linear-gradient(180deg,
+      #ffe68b,
+      #c88d1b);
+}
+
+.swap-arrow{
+  width:36px;
+  height:36px;
+
+  margin:10px auto;
+
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  color:#e9bd4a;
+
+  border:1px solid rgba(245,200,76,.18);
+
+  background:#080706;
+
+  font-size:17px;
+}
+
+.swap-output{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:14px;
+
+  border-radius:15px;
+
+  background:rgba(245,200,76,.035);
+
+  border:1px solid rgba(245,200,76,.09);
+}
+
+.swap-output-label{
+  color:#777;
+  font-size:9px;
+}
+
+.swap-output-value{
+  color:#ffe58a;
+  font-size:18px;
+  font-weight:900;
+}
+
+.swap-options{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:9px;
+
+  margin-top:13px;
+}
+
+.swap-option{
+  min-height:48px;
+
+  border:1px solid rgba(245,200,76,.12);
+
+  border-radius:14px;
+
+  background:rgba(255,255,255,.025);
+
+  color:#888;
+
+  font-size:11px;
+  font-weight:800;
+
+  cursor:pointer;
+
+  transition:.15s ease;
+}
+
+.swap-option.active{
+  color:#ffe58a;
+
+  border-color:rgba(245,200,76,.48);
+
+  background:
+    linear-gradient(180deg,
+      rgba(245,200,76,.12),
+      rgba(245,200,76,.035));
+
+  box-shadow:
+    0 0 18px rgba(245,200,76,.07);
+}
+
+.swap-confirm{
+  width:100%;
+  height:54px;
+
+  margin-top:13px;
+
+  border:1px solid rgba(255,219,105,.48);
+
+  border-radius:16px;
+
+  color:#171000;
+
+  font-size:14px;
+  font-weight:1000;
+
+  letter-spacing:1px;
+
+  background:
+    linear-gradient(180deg,
+      #ffe68b,
+      #f3c448 50%,
+      #bd8015);
+
+  box-shadow:
+    0 7px 24px rgba(245,200,76,.12),
+    inset 0 1px 2px rgba(255,255,255,.7);
+
+  cursor:pointer;
+}
+
+.swap-confirm:active{
+  transform:scale(.985);
+}
+
+.swap-note{
+  text-align:center;
+
+  color:#555;
+
+  font-size:8px;
+
+  margin-top:9px;
+}
+
+
+/* RESPONSIVE */
 
 @media(max-width:360px){
 
@@ -1332,37 +1475,14 @@ button{
 
 }
 
-
-/* =========================
-   MOBILE DOT ANIMATION FIX
-========================= */
-
 @media(max-width:360px){
 
-  .mining-dot.d1{
-    animation-name:dotSmall1;
-  }
-
-  .mining-dot.d2{
-    animation-name:dotSmall2;
-  }
-
-  .mining-dot.d3{
-    animation-name:dotSmall3;
-  }
-
-  .mining-dot.d4{
-    animation-name:dotSmall4;
-  }
-
-  .mining-dot.d5{
-    animation-name:dotSmall5;
-  }
-
-  .mining-dot.d6{
-    animation-name:dotSmall6;
-  }
-
+  .mining-dot.d1{animation-name:dotSmall1;}
+  .mining-dot.d2{animation-name:dotSmall2;}
+  .mining-dot.d3{animation-name:dotSmall3;}
+  .mining-dot.d4{animation-name:dotSmall4;}
+  .mining-dot.d5{animation-name:dotSmall5;}
+  .mining-dot.d6{animation-name:dotSmall6;}
 }
 
 @keyframes dotSmall1{
@@ -1448,16 +1568,12 @@ button{
     <div class="orbit two"></div>
     <div class="orbit three"></div>
 
-
-    <!-- 6 نقاط ذهبية موزعة حول العملة -->
-
     <span class="mining-dot d1"></span>
     <span class="mining-dot d2"></span>
     <span class="mining-dot d3"></span>
     <span class="mining-dot d4"></span>
     <span class="mining-dot d5"></span>
     <span class="mining-dot d6"></span>
-
 
     <div class="coin-wrap">
 
@@ -1471,7 +1587,6 @@ button{
 
     </div>
 
-
     <div class="platform"></div>
 
   </section>
@@ -1483,12 +1598,9 @@ button{
       MINING
     </div>
 
-
     <div class="timer-row">
 
-      <div
-        class="clock"
-        aria-hidden="true">
+      <div class="clock" aria-hidden="true">
 
         <span class="clock-hand hour"></span>
 
@@ -1498,20 +1610,17 @@ button{
 
       </div>
 
-
       <div
         id="minedValue"
         class="mined-number">
         0.000000
       </div>
 
-
       <div class="mined-unit">
         LTF
       </div>
 
     </div>
-
 
     <div
       id="timerText"
@@ -1550,7 +1659,9 @@ button{
 
   <section class="actions">
 
-    <div class="action">
+    <div
+      class="action"
+      id="swapAction">
 
       <div class="action-icon">
         ⇄
@@ -1561,7 +1672,7 @@ button{
       </div>
 
       <div class="action-value">
-        SOON
+        LTF ↔ USDT / TON
       </div>
 
     </div>
@@ -1605,6 +1716,137 @@ button{
 </div>
 
 
+<!-- =========================
+     SWAP
+========================= -->
+
+<div
+  id="swapOverlay"
+  class="swap-overlay">
+
+  <div class="swap-panel">
+
+    <div class="swap-head">
+
+      <div class="swap-heading">
+
+        <div class="swap-title">
+          SWAP
+        </div>
+
+        <div class="swap-subtitle">
+          تبديل LTF إلى USDT أو TON
+        </div>
+
+      </div>
+
+      <button
+        id="swapClose"
+        class="swap-close"
+        type="button">
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="swap-box">
+
+      <div class="swap-label">
+
+        <span>
+          من
+        </span>
+
+        <span class="swap-balance">
+          الرصيد:
+          <b id="swapBalance">
+            0.000000
+          </b>
+          LTF
+        </span>
+
+      </div>
+
+
+      <div class="swap-input-row">
+
+        <input
+          id="swapAmount"
+          class="swap-input"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="0.000001"
+          placeholder="0.000000">
+
+        <div class="swap-token">
+          LTF
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="swap-arrow">
+      ↓
+    </div>
+
+
+    <div class="swap-output">
+
+      <div class="swap-output-label">
+        ستحصل على
+      </div>
+
+      <div
+        id="swapOutput"
+        class="swap-output-value">
+        0.000000 USDT
+      </div>
+
+    </div>
+
+
+    <div class="swap-options">
+
+      <button
+        id="usdtOption"
+        class="swap-option active"
+        type="button">
+        LTF → USDT
+      </button>
+
+      <button
+        id="tonOption"
+        class="swap-option"
+        type="button">
+        LTF → TON
+      </button>
+
+    </div>
+
+
+    <button
+      id="swapConfirm"
+      class="swap-confirm"
+      type="button">
+
+      SWAP
+
+    </button>
+
+
+    <div class="swap-note">
+      سعر التحويل والتنفيذ الحقيقي سيتم ربطهما لاحقاً
+    </div>
+
+  </div>
+
+</div>
+
+
 <script>
 
 /* =========================================
@@ -1616,7 +1858,6 @@ const tg =
   window.Telegram.WebApp
     ? window.Telegram.WebApp
     : null;
-
 
 if(tg){
 
@@ -1663,7 +1904,6 @@ if(
 
 }
 
-
 const USER_KEY =
   telegramUserId
     .replace(/[^a-zA-Z0-9_-]/g,"_");
@@ -1678,7 +1918,6 @@ const MINING_DURATION =
   3 * 60 * 60 * 1000;
 
 const MINING_REWARD = 3;
-
 
 const BALANCE_KEY =
   "ltf_balance_v13_" +
@@ -1754,7 +1993,6 @@ function getMiningStart(){
       10
     );
 
-
   if(!Number.isFinite(start)){
 
     start =
@@ -1766,7 +2004,6 @@ function getMiningStart(){
     );
 
   }
-
 
   return start;
 
@@ -1799,22 +2036,18 @@ function formatTime(ms){
       )
     );
 
-
   const hours =
     Math.floor(
       totalSeconds / 3600
     );
-
 
   const minutes =
     Math.floor(
       (totalSeconds % 3600) / 60
     );
 
-
   const seconds =
     totalSeconds % 60;
-
 
   return (
     String(hours).padStart(2,"0")
@@ -1828,7 +2061,7 @@ function formatTime(ms){
 
 
 /* =========================================
-   CALCULATE ACCUMULATED MINING
+   ACCUMULATED
 ========================================= */
 
 function getAccumulated(){
@@ -1842,25 +2075,15 @@ function getAccumulated(){
   let elapsed =
     now - start;
 
-
   if(elapsed < 0){
     elapsed = 0;
   }
-
-
-  /*
-    التعدين خطي:
-    0 → 3 LTF خلال 3 ساعات
-
-    والحد الأقصى دائماً 3 LTF
-  */
 
   const progress =
     Math.min(
       elapsed / MINING_DURATION,
       1
     );
-
 
   return (
     MINING_REWARD *
@@ -1879,23 +2102,18 @@ function render(){
   const balance =
     getBalance();
 
-
   const start =
     getMiningStart();
-
 
   const now =
     Date.now();
 
-
   let elapsed =
     now - start;
-
 
   if(elapsed < 0){
     elapsed = 0;
   }
-
 
   const mined =
     Math.min(
@@ -1907,12 +2125,10 @@ function render(){
       MINING_REWARD
     );
 
-
   minedEl.textContent =
     formatLTF(
       mined
     );
-
 
   if(elapsed >= MINING_DURATION){
 
@@ -1925,7 +2141,6 @@ function render(){
       MINING_DURATION -
       elapsed;
 
-
     timerTextEl.textContent =
       "متبقي " +
       formatTime(
@@ -1934,19 +2149,12 @@ function render(){
 
   }
 
-
-  /*
-    CLAIM يبقى فعال دائماً
-    حتى قبل اكتمال 3 ساعات
-  */
-
   claimBtn.disabled =
     false;
 
   claimBtn.classList.remove(
     "disabled"
   );
-
 
   balanceEl.textContent =
     formatLTF(
@@ -1964,34 +2172,16 @@ claimBtn.addEventListener(
   "click",
   function(){
 
-    /*
-      نحسب الكمية المتراكمة
-      لحظة الضغط مباشرة
-    */
-
     const accumulated =
       getAccumulated();
-
-
-    /*
-      إذا لم يتراكم شيء تقريباً
-      لا نضيف شيئاً، لكن الزر يبقى شغال
-    */
 
     if(accumulated <= 0){
       render();
       return;
     }
 
-
     const currentBalance =
       getBalance();
-
-
-    /*
-      إضافة المتراكم فقط
-      والحد الأعلى للدورة = 3 LTF
-    */
 
     const reward =
       Math.min(
@@ -1999,21 +2189,13 @@ claimBtn.addEventListener(
         MINING_REWARD
       );
 
-
     const newBalance =
       currentBalance +
       reward;
 
-
     setBalance(
       newBalance
     );
-
-
-    /*
-      بعد الجمع تبدأ دورة تعدين جديدة
-      من لحظة الضغط
-    */
 
     localStorage.setItem(
       START_KEY,
@@ -2022,9 +2204,7 @@ claimBtn.addEventListener(
       )
     );
 
-
     render();
-
 
     if(
       tg &&
@@ -2038,6 +2218,299 @@ claimBtn.addEventListener(
             "success"
           );
 
+      }catch(e){}
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   SWAP UI
+   فقط واجهة التبديل
+========================================= */
+
+const swapAction =
+  document.getElementById(
+    "swapAction"
+  );
+
+const swapOverlay =
+  document.getElementById(
+    "swapOverlay"
+  );
+
+const swapClose =
+  document.getElementById(
+    "swapClose"
+  );
+
+const swapAmount =
+  document.getElementById(
+    "swapAmount"
+  );
+
+const swapBalance =
+  document.getElementById(
+    "swapBalance"
+  );
+
+const swapOutput =
+  document.getElementById(
+    "swapOutput"
+  );
+
+const usdtOption =
+  document.getElementById(
+    "usdtOption"
+  );
+
+const tonOption =
+  document.getElementById(
+    "tonOption"
+  );
+
+const swapConfirm =
+  document.getElementById(
+    "swapConfirm"
+  );
+
+
+let swapTarget = "USDT";
+
+
+/* أسعار التحويل غير مفعلة حالياً */
+
+const SWAP_RATES = {
+  USDT: null,
+  TON: null
+};
+
+
+/* فتح SWAP */
+
+swapAction.addEventListener(
+  "click",
+  function(){
+
+    swapBalance.textContent =
+      formatLTF(
+        getBalance()
+      );
+
+    swapAmount.value = "";
+
+    updateSwapOutput();
+
+    swapOverlay.classList.add(
+      "open"
+    );
+
+    if(tg && tg.HapticFeedback){
+
+      try{
+        tg.HapticFeedback
+          .impactOccurred("light");
+      }catch(e){}
+
+    }
+
+  }
+);
+
+
+/* إغلاق */
+
+function closeSwap(){
+
+  swapOverlay.classList.remove(
+    "open"
+  );
+
+}
+
+swapClose.addEventListener(
+  "click",
+  closeSwap
+);
+
+
+/* إغلاق عند الضغط خارج النافذة */
+
+swapOverlay.addEventListener(
+  "click",
+  function(e){
+
+    if(e.target === swapOverlay){
+      closeSwap();
+    }
+
+  }
+);
+
+
+/* اختيار USDT */
+
+usdtOption.addEventListener(
+  "click",
+  function(){
+
+    swapTarget = "USDT";
+
+    usdtOption.classList.add(
+      "active"
+    );
+
+    tonOption.classList.remove(
+      "active"
+    );
+
+    updateSwapOutput();
+
+  }
+);
+
+
+/* اختيار TON */
+
+tonOption.addEventListener(
+  "click",
+  function(){
+
+    swapTarget = "TON";
+
+    tonOption.classList.add(
+      "active"
+    );
+
+    usdtOption.classList.remove(
+      "active"
+    );
+
+    updateSwapOutput();
+
+  }
+);
+
+
+/* تحديث الناتج */
+
+function updateSwapOutput(){
+
+  const amount =
+    parseFloat(
+      swapAmount.value
+    );
+
+  if(
+    !Number.isFinite(amount) ||
+    amount <= 0
+  ){
+
+    swapOutput.textContent =
+      "0.000000 " +
+      swapTarget;
+
+    return;
+
+  }
+
+
+  const rate =
+    SWAP_RATES[
+      swapTarget
+    ];
+
+
+  /*
+    لا نعرض نتيجة وهمية
+    قبل تحديد سعر LTF الحقيقي
+  */
+
+  if(
+    !Number.isFinite(rate)
+  ){
+
+    swapOutput.textContent =
+      "— " +
+      swapTarget;
+
+    return;
+
+  }
+
+
+  swapOutput.textContent =
+    Number(
+      amount * rate
+    ).toFixed(6)
+    + " "
+    + swapTarget;
+
+}
+
+
+swapAmount.addEventListener(
+  "input",
+  updateSwapOutput
+);
+
+
+/* =========================================
+   SWAP CONFIRM
+========================================= */
+
+swapConfirm.addEventListener(
+  "click",
+  function(){
+
+    const amount =
+      parseFloat(
+        swapAmount.value
+      );
+
+    const balance =
+      getBalance();
+
+
+    if(
+      !Number.isFinite(amount) ||
+      amount <= 0
+    ){
+
+      return;
+
+    }
+
+
+    if(amount > balance){
+
+      swapAmount.value =
+        "";
+
+      updateSwapOutput();
+
+      return;
+
+    }
+
+
+    /*
+      التبديل الحقيقي غير مفعّل بعد
+      لأن السعر والتنفيذ لم يتم ربطهما.
+    */
+
+    if(
+      tg &&
+      tg.HapticFeedback
+    ){
+
+      try{
+        tg.HapticFeedback
+          .notificationOccurred(
+            "warning"
+          );
       }catch(e){}
 
     }
