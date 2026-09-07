@@ -15,7 +15,7 @@ html,body{margin:0;background:#020202;color:white;font-family:Arial,Helvetica,sa
 body{overflow-x:hidden}
 button{font:inherit;color:inherit}
 .app{
-  min-height:100svh;padding:76px 8px 22px;
+  min-height:100svh;min-height:100dvh;padding:76px 8px 22px;display:flex;flex-direction:column;
   background:
    radial-gradient(circle at 50% 32%,rgba(255,183,35,.13),transparent 25%),
    radial-gradient(circle at 50% 70%,rgba(255,180,30,.08),transparent 35%),
@@ -141,9 +141,9 @@ button{font:inherit;color:inherit}
 .claim.disabled{opacity:.65;cursor:not-allowed}
 
 /* Bottom */
-.actions{width:min(95vw,850px);margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.actions{width:min(95vw,850px);margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:1;align-items:stretch}
 .action{
-  min-height:116px;border:1px solid #ae751c;background:linear-gradient(180deg,#0b0b0b,#030303);
+  min-height:116px;height:100%;border:1px solid #ae751c;background:linear-gradient(180deg,#0b0b0b,#030303);
   clip-path:polygon(9% 0,91% 0,100% 12%,100% 88%,91% 100%,9% 100%,0 88%,0 12%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;
   box-shadow:inset 0 0 20px rgba(244,184,45,.025);position:relative
@@ -166,7 +166,7 @@ button{font:inherit;color:inherit}
  .platform{bottom:5px;height:62px}.platform:before{top:8px;height:38px}.platform:after{top:18px;height:23px}
  .timer{width:94vw;min-height:82px;padding:8px}.timerrow{gap:11px}.clock{width:32px;height:32px}.clock:before{left:16px;height:12px}.clock:after{left:16px;top:19px;width:9px}.time{font-size:31px}.timer p{font-size:10px;margin-top:5px}
  .claim{width:93vw;height:68px;margin-top:10px;margin-bottom:10px;gap:10px}.stack{width:44px;height:38px}.stack i{width:35px;height:11px}.stack i:nth-child(2){top:12px}.stack i:nth-child(3){top:24px}.reward{font-size:22px}.clabel{min-width:120px;font-size:13px;padding:3px 15px}.arrow{font-size:19px}
- .actions{width:97vw;gap:5px}.action{min-height:91px;padding:5px 2px;gap:4px}.icon{width:36px;height:36px;font-size:18px}.action strong{font-size:10px}.action span{font-size:8px}
+ .actions{width:97vw;gap:5px;flex:1}.action{min-height:91px;height:100%;padding:5px 2px;gap:4px}.icon{width:36px;height:36px;font-size:18px}.action strong{font-size:10px}.action span{font-size:8px}
 }
 </style>
 </head>
