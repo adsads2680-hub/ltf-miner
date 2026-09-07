@@ -1053,6 +1053,26 @@ button{
   text-align:left;
 }
 
+.swap-usdt-balance{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:10px;
+  padding:11px 14px;
+  border-radius:14px;
+  background:rgba(245,200,76,.025);
+  border:1px solid rgba(245,200,76,.07);
+  color:#777;
+  font-size:9px;
+}
+
+.swap-usdt-balance b{
+  color:#e8c75e;
+  font-size:12px;
+  font-weight:900;
+}
+
 .ton-live-price{
   text-align:center;
   margin-top:9px;
@@ -1775,6 +1795,18 @@ button{
         class="swap-output-value">
         0.000000 USDT
       </div>
+
+    </div>
+
+
+    <div
+      class="swap-usdt-balance">
+
+      <span>رصيد USDT المحول</span>
+
+      <b id="swapUsdtBalance">
+        0.000000 USDT
+      </b>
 
     </div>
 
@@ -2570,6 +2602,11 @@ const swapOutput =
     "swapOutput"
   );
 
+const swapUsdtBalance =
+  document.getElementById(
+    "swapUsdtBalance"
+  );
+
 const usdtOption =
   document.getElementById(
     "usdtOption"
@@ -2609,6 +2646,37 @@ const MIN_SWAP_AMOUNT = 10;
 
 const LTF_USDT_PRICE =
   1 / 300;
+
+const USDT_BALANCE_KEY =
+  "ltf_usdt_balance_v1_" +
+  USER_KEY;
+
+function getUsdtBalance(){
+
+  const value =
+    parseFloat(
+      localStorage.getItem(
+        USDT_BALANCE_KEY
+      )
+    );
+
+  return Number.isFinite(value) && value > 0
+    ? value
+    : 0;
+
+}
+
+function renderUsdtBalance(){
+
+  if(!swapUsdtBalance){
+    return;
+  }
+
+  swapUsdtBalance.textContent =
+    getUsdtBalance().toFixed(6) +
+    " USDT";
+
+}
 
 
 /* =========================================
@@ -2998,6 +3066,7 @@ swapAction.addEventListener(
       "";
 
     updateSwapOutput();
+    renderUsdtBalance();
 
     swapOverlay.classList.add(
       "open"
@@ -3217,16 +3286,8 @@ swapConfirm.addEventListener(
     const newBalance =
       balance - amount;
 
-    const usdtKey =
-      "ltf_usdt_balance_v1_" +
-      USER_KEY;
-
     const currentUsdt =
-      parseFloat(
-        localStorage.getItem(
-          usdtKey
-        )
-      ) || 0;
+      getUsdtBalance();
 
     const newUsdt =
       currentUsdt + usdtAmount;
@@ -3236,11 +3297,12 @@ swapConfirm.addEventListener(
     );
 
     localStorage.setItem(
-      usdtKey,
+      USDT_BALANCE_KEY,
       String(newUsdt)
     );
 
     render();
+    renderUsdtBalance();
 
     swapBalance.textContent =
       formatLTF(
@@ -3269,15 +3331,16 @@ swapConfirm.addEventListener(
 
     }
 
-    alert(
-      "تم التبديل بنجاح" +
-      "\n-" +
-      formatLTF(amount) +
-      " LTF" +
-      "\n+" +
+    /*
+      لا نستخدم alert هنا حتى لا يظهر مربع Telegram فارغاً.
+      النتيجة تظهر مباشرة داخل واجهة SWAP،
+      ورصيد USDT المحول يبقى محفوظاً محلياً.
+    */
+
+    swapOutput.textContent =
+      "+" +
       usdtAmount.toFixed(6) +
-      " USDT"
-    );
+      " USDT";
 
   }
 );
