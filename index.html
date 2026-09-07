@@ -1259,6 +1259,121 @@ button{
 }
 
 
+
+
+/* =========================
+   TASKS
+========================= */
+
+.task-card{
+  margin-top:11px;
+  padding:13px;
+  border:1px solid rgba(245,200,76,.13);
+  border-radius:17px;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.008));
+  box-shadow:
+    inset 0 0 18px rgba(245,200,76,.015),
+    0 8px 20px rgba(0,0,0,.20);
+}
+
+.task-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.task-icon{
+  width:42px;
+  height:42px;
+  min-width:42px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#171000;
+  font-size:10px;
+  font-weight:1000;
+  background:
+    linear-gradient(180deg,
+      #ffe68b,
+      #f3c448 55%,
+      #bd8015);
+  box-shadow:
+    0 0 14px rgba(245,200,76,.10),
+    inset 0 1px 2px rgba(255,255,255,.7);
+}
+
+.task-info{
+  flex:1;
+  min-width:0;
+}
+
+.task-name{
+  color:#ffe58a;
+  font-size:12px;
+  font-weight:900;
+}
+
+.task-desc{
+  margin-top:4px;
+  color:#666;
+  font-size:8px;
+}
+
+.task-reward{
+  color:#ffe58a;
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.task-status{
+  margin-top:10px;
+  min-height:14px;
+  text-align:center;
+  color:#777;
+  font-size:8px;
+}
+
+.task-btn{
+  width:100%;
+  height:43px;
+  margin-top:8px;
+  border:1px solid rgba(245,200,76,.30);
+  border-radius:13px;
+  color:#ffe58a;
+  background:
+    linear-gradient(180deg,
+      rgba(245,200,76,.10),
+      rgba(245,200,76,.025));
+  font-size:10px;
+  font-weight:900;
+  cursor:pointer;
+  transition:
+    transform .15s ease,
+    opacity .15s ease,
+    border-color .15s ease;
+}
+
+.task-btn:active{
+  transform:scale(.985);
+}
+
+.task-btn:disabled{
+  opacity:.42;
+  cursor:default;
+}
+
+.task-note{
+  margin-top:12px;
+  text-align:center;
+  color:#555;
+  font-size:8px;
+}
+
 /* RESPONSIVE */
 
 @media(max-width:390px){
@@ -1531,7 +1646,9 @@ button{
     </div>
 
 
-    <div class="action">
+    <div
+      class="action"
+      id="tasksAction">
 
       <div class="action-icon">
         ✓
@@ -1542,7 +1659,7 @@ button{
       </div>
 
       <div class="action-value">
-        SOON
+        OPEN
       </div>
 
     </div>
@@ -1867,6 +1984,173 @@ button{
       type="button">
       طلب السحب
     </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     TASKS
+========================= -->
+
+<div id="tasksOverlay" class="swap-overlay">
+
+  <div class="swap-panel">
+
+    <div class="swap-head">
+
+      <div class="swap-heading">
+
+        <div class="swap-title">
+          TASKS
+        </div>
+
+        <div class="swap-subtitle">
+          أكمل المهام واحصل على مكافآت LTF
+        </div>
+
+      </div>
+
+      <button
+        id="tasksClose"
+        class="swap-close"
+        type="button">
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="task-card">
+
+      <div class="task-top">
+
+        <div class="task-icon">
+          TG
+        </div>
+
+        <div class="task-info">
+
+          <div class="task-name">
+            Telegram Channel
+          </div>
+
+          <div class="task-desc">
+            ادخل قناة LTF الرسمية
+          </div>
+
+        </div>
+
+        <div class="task-reward">
+          +2 LTF
+        </div>
+
+      </div>
+
+      <div
+        id="telegramTaskStatus"
+        class="task-status">
+        جاهزة للحصول على +2 LTF
+      </div>
+
+      <button
+        id="telegramTaskBtn"
+        class="task-btn"
+        type="button">
+        دخول القناة
+      </button>
+
+    </div>
+
+
+    <div class="task-card">
+
+      <div class="task-top">
+
+        <div class="task-icon">
+          YT
+        </div>
+
+        <div class="task-info">
+
+          <div class="task-name">
+            YouTube Channel
+          </div>
+
+          <div class="task-desc">
+            اشترك في قناة LTF
+          </div>
+
+        </div>
+
+        <div class="task-reward">
+          +5 LTF
+        </div>
+
+      </div>
+
+      <div
+        id="youtubeTaskStatus"
+        class="task-status">
+        جاهزة للحصول على +5 LTF
+      </div>
+
+      <button
+        id="youtubeTaskBtn"
+        class="task-btn"
+        type="button">
+        فتح YouTube
+      </button>
+
+    </div>
+
+
+    <div class="task-card">
+
+      <div class="task-top">
+
+        <div class="task-icon">
+          AD
+        </div>
+
+        <div class="task-info">
+
+          <div class="task-name">
+            Watch Ad
+          </div>
+
+          <div class="task-desc">
+            شاهد الإعلان لمدة دقيقة
+          </div>
+
+        </div>
+
+        <div class="task-reward">
+          +0.25 LTF
+        </div>
+
+      </div>
+
+      <div
+        id="adTaskStatus"
+        class="task-status">
+        جاهزة للحصول على +0.25 LTF
+      </div>
+
+      <button
+        id="adTaskBtn"
+        class="task-btn"
+        type="button">
+        مشاهدة الإعلان
+      </button>
+
+    </div>
+
+
+    <div class="task-note">
+      المكافآت محددة لكل مستخدم حسب وقت المهمة.
+    </div>
 
   </div>
 
@@ -3368,6 +3652,789 @@ withdrawConfirm.addEventListener(
 
   }
 );
+
+
+/* =========================================
+   TASKS
+========================================= */
+
+const tasksAction =
+  document.getElementById(
+    "tasksAction"
+  );
+
+const tasksOverlay =
+  document.getElementById(
+    "tasksOverlay"
+  );
+
+const tasksClose =
+  document.getElementById(
+    "tasksClose"
+  );
+
+const telegramTaskBtn =
+  document.getElementById(
+    "telegramTaskBtn"
+  );
+
+const youtubeTaskBtn =
+  document.getElementById(
+    "youtubeTaskBtn"
+  );
+
+const adTaskBtn =
+  document.getElementById(
+    "adTaskBtn"
+  );
+
+const telegramTaskStatus =
+  document.getElementById(
+    "telegramTaskStatus"
+  );
+
+const youtubeTaskStatus =
+  document.getElementById(
+    "youtubeTaskStatus"
+  );
+
+const adTaskStatus =
+  document.getElementById(
+    "adTaskStatus"
+  );
+
+
+const TASK_TG_REWARD =
+  2;
+
+const TASK_TG_COOLDOWN =
+  2 * 60 * 60 * 1000;
+
+const TASK_YT_REWARD =
+  5;
+
+const TASK_YT_COOLDOWN =
+  24 * 60 * 60 * 1000;
+
+const TASK_AD_REWARD =
+  0.25;
+
+const TASK_AD_COOLDOWN =
+  60 * 1000;
+
+const TASK_AD_DURATION =
+  60 * 1000;
+
+
+const TELEGRAM_TASK_URL =
+  "https://t.me/LTFMiner";
+
+const YOUTUBE_TASK_URL =
+  "https://youtube.com/@ltfminer?si=PD_PlqmkPIOx30W0";
+
+
+const TASK_TG_KEY =
+  "ltf_task_telegram_v1_" +
+  USER_KEY;
+
+const TASK_YT_KEY =
+  "ltf_task_youtube_v1_" +
+  USER_KEY;
+
+const TASK_AD_KEY =
+  "ltf_task_ad_v1_" +
+  USER_KEY;
+
+
+let adTaskRunning =
+  false;
+
+let adTaskInterval =
+  null;
+
+let adTaskEnd =
+  0;
+
+
+function formatTaskTime(ms){
+
+  const totalSeconds =
+    Math.max(
+      0,
+      Math.ceil(
+        ms / 1000
+      )
+    );
+
+  const hours =
+    Math.floor(
+      totalSeconds / 3600
+    );
+
+  const minutes =
+    Math.floor(
+      (totalSeconds % 3600) / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+
+  if(hours > 0){
+
+    return (
+      String(hours).padStart(2,"0")
+      + ":" +
+      String(minutes).padStart(2,"0")
+      + ":" +
+      String(seconds).padStart(2,"0")
+    );
+
+  }
+
+
+  return (
+    String(minutes).padStart(2,"0")
+    + ":" +
+    String(seconds).padStart(2,"0")
+  );
+
+}
+
+
+function addTaskReward(
+  reward,
+  message
+){
+
+  const balance =
+    getBalance();
+
+  setBalance(
+    balance + reward
+  );
+
+  render();
+
+
+  if(
+    tg &&
+    tg.HapticFeedback
+  ){
+
+    try{
+
+      tg.HapticFeedback
+        .notificationOccurred(
+          "success"
+        );
+
+    }catch(e){}
+
+  }
+
+
+  alert(
+    message +
+    "\n+" +
+    formatLTF(reward) +
+    " LTF"
+  );
+
+}
+
+
+tasksAction.addEventListener(
+  "click",
+  function(){
+
+    renderTasks();
+
+    tasksOverlay.classList.add(
+      "open"
+    );
+
+
+    if(
+      tg &&
+      tg.HapticFeedback
+    ){
+
+      try{
+
+        tg.HapticFeedback
+          .impactOccurred(
+            "light"
+          );
+
+      }catch(e){}
+
+    }
+
+  }
+);
+
+
+function closeTasks(){
+
+  tasksOverlay.classList.remove(
+    "open"
+  );
+
+}
+
+
+tasksClose.addEventListener(
+  "click",
+  closeTasks
+);
+
+
+tasksOverlay.addEventListener(
+  "click",
+  function(e){
+
+    if(
+      e.target ===
+      tasksOverlay
+    ){
+
+      closeTasks();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   TELEGRAM TASK
+========================================= */
+
+function renderTelegramTask(){
+
+  const last =
+    parseInt(
+      localStorage.getItem(
+        TASK_TG_KEY
+      ),
+      10
+    );
+
+
+  if(!Number.isFinite(last)){
+
+    telegramTaskStatus.textContent =
+      "جاهزة للحصول على +2 LTF";
+
+    telegramTaskBtn.disabled =
+      false;
+
+    telegramTaskBtn.textContent =
+      "دخول القناة";
+
+    return;
+
+  }
+
+
+  const remaining =
+    TASK_TG_COOLDOWN -
+    (
+      Date.now() -
+      last
+    );
+
+
+  if(remaining <= 0){
+
+    telegramTaskStatus.textContent =
+      "جاهزة للحصول على +2 LTF";
+
+    telegramTaskBtn.disabled =
+      false;
+
+    telegramTaskBtn.textContent =
+      "دخول القناة";
+
+  }else{
+
+    telegramTaskStatus.textContent =
+      "المهمة التالية بعد " +
+      formatTaskTime(
+        remaining
+      );
+
+    telegramTaskBtn.disabled =
+      true;
+
+    telegramTaskBtn.textContent =
+      "انتظر";
+
+  }
+
+}
+
+
+/* =========================================
+   YOUTUBE TASK
+========================================= */
+
+function renderYoutubeTask(){
+
+  const last =
+    parseInt(
+      localStorage.getItem(
+        TASK_YT_KEY
+      ),
+      10
+    );
+
+
+  if(!Number.isFinite(last)){
+
+    youtubeTaskStatus.textContent =
+      "جاهزة للحصول على +5 LTF";
+
+    youtubeTaskBtn.disabled =
+      false;
+
+    youtubeTaskBtn.textContent =
+      "فتح YouTube";
+
+    return;
+
+  }
+
+
+  const remaining =
+    TASK_YT_COOLDOWN -
+    (
+      Date.now() -
+      last
+    );
+
+
+  if(remaining <= 0){
+
+    youtubeTaskStatus.textContent =
+      "جاهزة للحصول على +5 LTF";
+
+    youtubeTaskBtn.disabled =
+      false;
+
+    youtubeTaskBtn.textContent =
+      "فتح YouTube";
+
+  }else{
+
+    youtubeTaskStatus.textContent =
+      "المهمة التالية بعد " +
+      formatTaskTime(
+        remaining
+      );
+
+    youtubeTaskBtn.disabled =
+      true;
+
+    youtubeTaskBtn.textContent =
+      "انتظر";
+
+  }
+
+}
+
+
+/* =========================================
+   AD TASK
+========================================= */
+
+function renderAdTask(){
+
+  if(adTaskRunning){
+
+    adTaskBtn.disabled =
+      true;
+
+    return;
+
+  }
+
+
+  const last =
+    parseInt(
+      localStorage.getItem(
+        TASK_AD_KEY
+      ),
+      10
+    );
+
+
+  if(!Number.isFinite(last)){
+
+    adTaskStatus.textContent =
+      "جاهزة للحصول على +0.25 LTF";
+
+    adTaskBtn.disabled =
+      false;
+
+    adTaskBtn.textContent =
+      "مشاهدة الإعلان";
+
+    return;
+
+  }
+
+
+  const remaining =
+    TASK_AD_COOLDOWN -
+    (
+      Date.now() -
+      last
+    );
+
+
+  if(remaining <= 0){
+
+    adTaskStatus.textContent =
+      "جاهزة للحصول على +0.25 LTF";
+
+    adTaskBtn.disabled =
+      false;
+
+    adTaskBtn.textContent =
+      "مشاهدة الإعلان";
+
+  }else{
+
+    adTaskStatus.textContent =
+      "المهمة التالية بعد " +
+      formatTaskTime(
+        remaining
+      );
+
+    adTaskBtn.disabled =
+      true;
+
+    adTaskBtn.textContent =
+      "انتظر";
+
+  }
+
+}
+
+
+/* =========================================
+   TASKS RENDER
+========================================= */
+
+function renderTasks(){
+
+  renderTelegramTask();
+
+  renderYoutubeTask();
+
+  renderAdTask();
+
+}
+
+
+/* =========================================
+   TELEGRAM TASK ACTION
+========================================= */
+
+telegramTaskBtn.addEventListener(
+  "click",
+  function(){
+
+    const last =
+      parseInt(
+        localStorage.getItem(
+          TASK_TG_KEY
+        ),
+        10
+      );
+
+
+    if(
+      Number.isFinite(last) &&
+      Date.now() - last <
+        TASK_TG_COOLDOWN
+    ){
+
+      renderTelegramTask();
+      return;
+
+    }
+
+
+    if(
+      tg &&
+      typeof tg.openTelegramLink ===
+        "function"
+    ){
+
+      try{
+
+        tg.openTelegramLink(
+          TELEGRAM_TASK_URL
+        );
+
+      }catch(e){
+
+        window.open(
+          TELEGRAM_TASK_URL,
+          "_blank"
+        );
+
+      }
+
+    }else{
+
+      window.open(
+        TELEGRAM_TASK_URL,
+        "_blank"
+      );
+
+    }
+
+
+    telegramTaskBtn.disabled =
+      true;
+
+    telegramTaskBtn.textContent =
+      "جارٍ تسجيل المهمة...";
+
+
+    setTimeout(
+      function(){
+
+        localStorage.setItem(
+          TASK_TG_KEY,
+          String(
+            Date.now()
+          )
+        );
+
+        addTaskReward(
+          TASK_TG_REWARD,
+          "تم تسجيل مهمة Telegram"
+        );
+
+        renderTasks();
+
+      },
+      1500
+    );
+
+  }
+);
+
+
+/* =========================================
+   YOUTUBE TASK ACTION
+========================================= */
+
+youtubeTaskBtn.addEventListener(
+  "click",
+  function(){
+
+    const last =
+      parseInt(
+        localStorage.getItem(
+          TASK_YT_KEY
+        ),
+        10
+      );
+
+
+    if(
+      Number.isFinite(last) &&
+      Date.now() - last <
+        TASK_YT_COOLDOWN
+    ){
+
+      renderYoutubeTask();
+      return;
+
+    }
+
+
+    window.open(
+      YOUTUBE_TASK_URL,
+      "_blank"
+    );
+
+
+    youtubeTaskBtn.disabled =
+      true;
+
+    youtubeTaskBtn.textContent =
+      "جارٍ تسجيل المهمة...";
+
+
+    setTimeout(
+      function(){
+
+        localStorage.setItem(
+          TASK_YT_KEY,
+          String(
+            Date.now()
+          )
+        );
+
+        addTaskReward(
+          TASK_YT_REWARD,
+          "تم تسجيل مهمة YouTube"
+        );
+
+        renderTasks();
+
+      },
+      2000
+    );
+
+  }
+);
+
+
+/* =========================================
+   AD TASK ACTION
+========================================= */
+
+adTaskBtn.addEventListener(
+  "click",
+  function(){
+
+    if(adTaskRunning){
+      return;
+    }
+
+
+    const last =
+      parseInt(
+        localStorage.getItem(
+          TASK_AD_KEY
+        ),
+        10
+      );
+
+
+    if(
+      Number.isFinite(last) &&
+      Date.now() - last <
+        TASK_AD_COOLDOWN
+    ){
+
+      renderAdTask();
+      return;
+
+    }
+
+
+    adTaskRunning =
+      true;
+
+    adTaskEnd =
+      Date.now() +
+      TASK_AD_DURATION;
+
+    adTaskBtn.disabled =
+      true;
+
+
+    function updateAdTimer(){
+
+      const remaining =
+        adTaskEnd -
+        Date.now();
+
+
+      if(remaining <= 0){
+
+        clearInterval(
+          adTaskInterval
+        );
+
+        adTaskInterval =
+          null;
+
+        adTaskRunning =
+          false;
+
+
+        localStorage.setItem(
+          TASK_AD_KEY,
+          String(
+            Date.now()
+          )
+        );
+
+
+        adTaskStatus.textContent =
+          "تمت مشاهدة المهمة";
+
+        adTaskBtn.textContent =
+          "تم الاستلام";
+
+
+        addTaskReward(
+          TASK_AD_REWARD,
+          "تم استلام مكافأة الإعلان"
+        );
+
+
+        renderTasks();
+
+        return;
+
+      }
+
+
+      adTaskStatus.textContent =
+        "متبقي " +
+        formatTaskTime(
+          remaining
+        );
+
+      adTaskBtn.textContent =
+        "جاري المشاهدة...";
+
+    }
+
+
+    updateAdTimer();
+
+
+    adTaskInterval =
+      setInterval(
+        updateAdTimer,
+        250
+      );
+
+  }
+);
+
+
+/* تحديث حالة المهام كل ثانية عند فتحها */
+
+setInterval(
+  function(){
+
+    if(
+      tasksOverlay.classList.contains(
+        "open"
+      )
+    ){
+
+      renderTasks();
+
+    }
+
+  },
+  1000
+);
+
 
 
 /* =========================================
