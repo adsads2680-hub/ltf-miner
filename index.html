@@ -433,6 +433,193 @@ button{
 
 
 /* =========================
+   SIX GOLDEN MINING DOTS
+========================= */
+
+.mining-dot{
+  position:absolute;
+
+  left:50%;
+  top:50%;
+
+  width:6px;
+  height:6px;
+
+  margin-left:-3px;
+  margin-top:-3px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #fff5bb 0%,
+      #ffe070 25%,
+      #f5c84c 55%,
+      #b77a0f 100%
+    );
+
+  box-shadow:
+    0 0 6px rgba(245,200,76,.95),
+    0 0 14px rgba(245,200,76,.55),
+    0 0 24px rgba(245,200,76,.20);
+
+  z-index:4;
+
+  pointer-events:none;
+
+  animation:
+    miningDotPulse 2.4s ease-in-out infinite;
+}
+
+.mining-dot.d1{
+  transform:
+    translate(0,-94px);
+}
+
+.mining-dot.d2{
+  transform:
+    translate(81px,-47px);
+}
+
+.mining-dot.d3{
+  transform:
+    translate(81px,47px);
+}
+
+.mining-dot.d4{
+  transform:
+    translate(0,94px);
+}
+
+.mining-dot.d5{
+  transform:
+    translate(-81px,47px);
+}
+
+.mining-dot.d6{
+  transform:
+    translate(-81px,-47px);
+}
+
+.mining-dot.d2{
+  animation-delay:.4s;
+}
+
+.mining-dot.d3{
+  animation-delay:.8s;
+}
+
+.mining-dot.d4{
+  animation-delay:1.2s;
+}
+
+.mining-dot.d5{
+  animation-delay:1.6s;
+}
+
+.mining-dot.d6{
+  animation-delay:2s;
+}
+
+@keyframes miningDotPulse{
+
+  0%,
+  100%{
+    opacity:.65;
+    transform:
+      translate(0,-94px)
+      scale(.82);
+  }
+
+  50%{
+    opacity:1;
+    transform:
+      translate(0,-94px)
+      scale(1.15);
+  }
+
+}
+
+/* تثبيت أماكن النقاط أثناء النبض */
+
+.mining-dot.d2{
+  animation-name:miningDotPulse2;
+}
+
+.mining-dot.d3{
+  animation-name:miningDotPulse3;
+}
+
+.mining-dot.d4{
+  animation-name:miningDotPulse4;
+}
+
+.mining-dot.d5{
+  animation-name:miningDotPulse5;
+}
+
+.mining-dot.d6{
+  animation-name:miningDotPulse6;
+}
+
+@keyframes miningDotPulse2{
+  0%,100%{
+    opacity:.65;
+    transform:translate(81px,-47px) scale(.82);
+  }
+  50%{
+    opacity:1;
+    transform:translate(81px,-47px) scale(1.15);
+  }
+}
+
+@keyframes miningDotPulse3{
+  0%,100%{
+    opacity:.65;
+    transform:translate(81px,47px) scale(.82);
+  }
+  50%{
+    opacity:1;
+    transform:translate(81px,47px) scale(1.15);
+  }
+}
+
+@keyframes miningDotPulse4{
+  0%,100%{
+    opacity:.65;
+    transform:translate(0,94px) scale(.82);
+  }
+  50%{
+    opacity:1;
+    transform:translate(0,94px) scale(1.15);
+  }
+}
+
+@keyframes miningDotPulse5{
+  0%,100%{
+    opacity:.65;
+    transform:translate(-81px,47px) scale(.82);
+  }
+  50%{
+    opacity:1;
+    transform:translate(-81px,47px) scale(1.15);
+  }
+}
+
+@keyframes miningDotPulse6{
+  0%,100%{
+    opacity:.65;
+    transform:translate(-81px,-47px) scale(.82);
+  }
+  50%{
+    opacity:1;
+    transform:translate(-81px,-47px) scale(1.15);
+  }
+}
+
+
+/* =========================
    ULTRA LUXURY 3D LTF COIN
 ========================= */
 
@@ -488,8 +675,6 @@ button{
   isolation:isolate;
 }
 
-
-/* الحافة الداخلية */
 .coin::before{
   content:"";
 
@@ -509,8 +694,6 @@ button{
   z-index:1;
 }
 
-
-/* اللمعة المعدنية */
 .coin::after{
   content:"";
 
@@ -577,6 +760,7 @@ button{
 
 
 /* نقوش حول العملة */
+
 .coin-wrap::before{
   content:"✦  •  ✦  •  ✦  •  ✦  •  ✦";
 
@@ -600,11 +784,12 @@ button{
 
   pointer-events:none;
 
-  z-index:7;
+  z-index:3;
 }
 
 
 /* LTF بارز داخل العملة */
+
 .coin-logo{
   position:relative;
   z-index:6;
@@ -636,8 +821,6 @@ button{
     );
 }
 
-
-/* إطار داخلي حول LTF */
 .coin-logo::before{
   content:"";
 
@@ -658,8 +841,6 @@ button{
   z-index:-1;
 }
 
-
-/* انعكاس خفيف على LTF */
 .coin-logo::after{
   content:"";
 
@@ -994,12 +1175,14 @@ button{
   transform:scale(.985);
 }
 
+/* الزر لا يصبح معطلاً */
+
 .claim-btn.disabled{
-  opacity:.42;
+  opacity:1;
 
-  filter:grayscale(.25);
+  filter:none;
 
-  cursor:not-allowed;
+  cursor:pointer;
 }
 
 .claim-icon{
@@ -1113,6 +1296,30 @@ button{
     height:175px;
   }
 
+  .mining-dot.d1{
+    transform:translate(0,-87px);
+  }
+
+  .mining-dot.d2{
+    transform:translate(75px,-43px);
+  }
+
+  .mining-dot.d3{
+    transform:translate(75px,43px);
+  }
+
+  .mining-dot.d4{
+    transform:translate(0,87px);
+  }
+
+  .mining-dot.d5{
+    transform:translate(-75px,43px);
+  }
+
+  .mining-dot.d6{
+    transform:translate(-75px,-43px);
+  }
+
   .clock{
     width:27px;
     height:27px;
@@ -1123,6 +1330,69 @@ button{
     font-size:21px;
   }
 
+}
+
+
+/* =========================
+   MOBILE DOT ANIMATION FIX
+========================= */
+
+@media(max-width:360px){
+
+  .mining-dot.d1{
+    animation-name:dotSmall1;
+  }
+
+  .mining-dot.d2{
+    animation-name:dotSmall2;
+  }
+
+  .mining-dot.d3{
+    animation-name:dotSmall3;
+  }
+
+  .mining-dot.d4{
+    animation-name:dotSmall4;
+  }
+
+  .mining-dot.d5{
+    animation-name:dotSmall5;
+  }
+
+  .mining-dot.d6{
+    animation-name:dotSmall6;
+  }
+
+}
+
+@keyframes dotSmall1{
+  0%,100%{opacity:.65;transform:translate(0,-87px) scale(.82);}
+  50%{opacity:1;transform:translate(0,-87px) scale(1.15);}
+}
+
+@keyframes dotSmall2{
+  0%,100%{opacity:.65;transform:translate(75px,-43px) scale(.82);}
+  50%{opacity:1;transform:translate(75px,-43px) scale(1.15);}
+}
+
+@keyframes dotSmall3{
+  0%,100%{opacity:.65;transform:translate(75px,43px) scale(.82);}
+  50%{opacity:1;transform:translate(75px,43px) scale(1.15);}
+}
+
+@keyframes dotSmall4{
+  0%,100%{opacity:.65;transform:translate(0,87px) scale(.82);}
+  50%{opacity:1;transform:translate(0,87px) scale(1.15);}
+}
+
+@keyframes dotSmall5{
+  0%,100%{opacity:.65;transform:translate(-75px,43px) scale(.82);}
+  50%{opacity:1;transform:translate(-75px,43px) scale(1.15);}
+}
+
+@keyframes dotSmall6{
+  0%,100%{opacity:.65;transform:translate(-75px,-43px) scale(.82);}
+  50%{opacity:1;transform:translate(-75px,-43px) scale(1.15);}
 }
 
 </style>
@@ -1155,7 +1425,6 @@ button{
 
     </div>
 
-
     <div class="balance">
 
       <span
@@ -1176,10 +1445,18 @@ button{
   <section class="hero">
 
     <div class="orbit one"></div>
-
     <div class="orbit two"></div>
-
     <div class="orbit three"></div>
+
+
+    <!-- 6 نقاط ذهبية موزعة حول العملة -->
+
+    <span class="mining-dot d1"></span>
+    <span class="mining-dot d2"></span>
+    <span class="mining-dot d3"></span>
+    <span class="mining-dot d4"></span>
+    <span class="mining-dot d5"></span>
+    <span class="mining-dot d6"></span>
 
 
     <div class="coin-wrap">
@@ -1251,9 +1528,8 @@ button{
 
     <button
       id="claimBtn"
-      class="claim-btn disabled"
-      type="button"
-      disabled>
+      class="claim-btn"
+      type="button">
 
       <span class="claim-icon">
         ◈
@@ -1552,6 +1828,49 @@ function formatTime(ms){
 
 
 /* =========================================
+   CALCULATE ACCUMULATED MINING
+========================================= */
+
+function getAccumulated(){
+
+  const start =
+    getMiningStart();
+
+  const now =
+    Date.now();
+
+  let elapsed =
+    now - start;
+
+
+  if(elapsed < 0){
+    elapsed = 0;
+  }
+
+
+  /*
+    التعدين خطي:
+    0 → 3 LTF خلال 3 ساعات
+
+    والحد الأقصى دائماً 3 LTF
+  */
+
+  const progress =
+    Math.min(
+      elapsed / MINING_DURATION,
+      1
+    );
+
+
+  return (
+    MINING_REWARD *
+    progress
+  );
+
+}
+
+
+/* =========================================
    RENDER
 ========================================= */
 
@@ -1578,44 +1897,29 @@ function render(){
   }
 
 
-  if(elapsed >= MINING_DURATION){
-
-    minedEl.textContent =
-      formatLTF(
-        MINING_REWARD
-      );
-
-
-    timerTextEl.textContent =
-      "التعدين مكتمل — اضغط CLAIM";
-
-
-    claimBtn.disabled =
-      false;
-
-
-    claimBtn.classList.remove(
-      "disabled"
+  const mined =
+    Math.min(
+      MINING_REWARD *
+      (
+        elapsed /
+        MINING_DURATION
+      ),
+      MINING_REWARD
     );
 
 
+  minedEl.textContent =
+    formatLTF(
+      mined
+    );
+
+
+  if(elapsed >= MINING_DURATION){
+
+    timerTextEl.textContent =
+      "3 LTF جاهزة — اضغط CLAIM";
+
   }else{
-
-    const progress =
-      elapsed /
-      MINING_DURATION;
-
-
-    const mined =
-      MINING_REWARD *
-      progress;
-
-
-    minedEl.textContent =
-      formatLTF(
-        mined
-      );
-
 
     const remaining =
       MINING_DURATION -
@@ -1628,16 +1932,20 @@ function render(){
         remaining
       );
 
-
-    claimBtn.disabled =
-      true;
-
-
-    claimBtn.classList.add(
-      "disabled"
-    );
-
   }
+
+
+  /*
+    CLAIM يبقى فعال دائماً
+    حتى قبل اكتمال 3 ساعات
+  */
+
+  claimBtn.disabled =
+    false;
+
+  claimBtn.classList.remove(
+    "disabled"
+  );
 
 
   balanceEl.textContent =
@@ -1656,9 +1964,22 @@ claimBtn.addEventListener(
   "click",
   function(){
 
-    if(
-      claimBtn.disabled
-    ){
+    /*
+      نحسب الكمية المتراكمة
+      لحظة الضغط مباشرة
+    */
+
+    const accumulated =
+      getAccumulated();
+
+
+    /*
+      إذا لم يتراكم شيء تقريباً
+      لا نضيف شيئاً، لكن الزر يبقى شغال
+    */
+
+    if(accumulated <= 0){
+      render();
       return;
     }
 
@@ -1667,15 +1988,32 @@ claimBtn.addEventListener(
       getBalance();
 
 
+    /*
+      إضافة المتراكم فقط
+      والحد الأعلى للدورة = 3 LTF
+    */
+
+    const reward =
+      Math.min(
+        accumulated,
+        MINING_REWARD
+      );
+
+
     const newBalance =
       currentBalance +
-      MINING_REWARD;
+      reward;
 
 
     setBalance(
       newBalance
     );
 
+
+    /*
+      بعد الجمع تبدأ دورة تعدين جديدة
+      من لحظة الضغط
+    */
 
     localStorage.setItem(
       START_KEY,
