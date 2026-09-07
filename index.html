@@ -1,831 +1,668 @@
-```html
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
+
 <meta name="theme-color" content="#020202">
+
 <title>LTF Miner</title>
 
 <style>
 :root{
   --bg:#020202;
-  --gold:#f4b72b;
+  --panel:#090909;
+  --gold:#f5c84c;
   --gold2:#ffe58a;
-  --gold3:#9a6410;
-  --text:#fff4c9;
-  --muted:#d0c4a4;
+  --gold3:#b98216;
+  --text:#fff;
+  --muted:#8d8d8d;
+  --line:rgba(245,200,76,.20);
 }
 
 *{
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent
+  -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
   margin:0;
+  width:100%;
+  min-height:100%;
   background:#020202;
-  color:white;
-  font-family:Arial,Helvetica,sans-serif
+  color:#fff;
+  font-family:
+    Arial,
+    Tahoma,
+    sans-serif;
 }
 
-body{overflow-x:hidden}
-button{font:inherit;color:inherit}
+body{
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+button{
+  font-family:inherit;
+}
 
 .app{
-  min-height:100svh;
-  min-height:100dvh;
-  padding:76px 8px 22px;
-  display:flex;
-  flex-direction:column;
-  background:
-   radial-gradient(circle at 50% 32%,rgba(255,183,35,.13),transparent 25%),
-   radial-gradient(circle at 50% 70%,rgba(255,180,30,.08),transparent 35%),
-   #020202;
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  margin:auto;
+  padding:
+    max(14px,env(safe-area-inset-top))
+    14px
+    max(22px,env(safe-area-inset-bottom));
+  position:relative;
+  overflow:hidden;
 }
 
-/* Header */
+/* =========================
+   HEADER
+========================= */
+
 .header{
-  height:80px;
   display:flex;
   align-items:center;
-  direction:ltr;
-  padding:6px 12px;
-  border:1.5px solid #c88b18;
-  border-radius:24px;
-  background:linear-gradient(180deg,#0b0b0b,#030303);
-  box-shadow:
-    0 0 22px rgba(255,185,40,.18),
-    inset 0 0 20px rgba(255,210,90,.035);
-  position:relative;
-}
-
-.header:before{
-  content:"";
-  position:absolute;
-  left:8%;
-  right:8%;
-  top:-1px;
-  height:2px;
-  background:linear-gradient(
-    90deg,
-    transparent,
-    #ffe58a,
-    #d49420,
-    transparent
-  );
-}
-
-.hcoin{
-  width:67px;
-  height:67px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  border:3px solid #dba52d;
-  background:
-    radial-gradient(
-      circle at 35% 25%,
-      #fff2a9,
-      #d49a23 52%,
-      #191006 86%
-    );
-  box-shadow:
-    0 0 0 3px #4a3210,
-    0 0 18px rgba(255,192,45,.4),
-    inset 0 0 11px #fff0a0;
-}
-
-.hcoin span{
-  font-size:20px;
-  font-weight:900;
-  letter-spacing:-2px;
-  color:#151006;
-  text-shadow:0 1px #fff1a2
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
 }
 
 .brand{
-  margin-left:20px;
-  line-height:1
+  display:flex;
+  align-items:center;
+  gap:9px;
 }
 
-.brand b{
-  font-size:36px;
-  letter-spacing:6px;
-  color:#ffe080;
-  text-shadow:0 2px #795515
-}
-
-.brand small{
-  display:block;
-  margin-top:7px;
-  font-size:12px;
-  letter-spacing:6px;
-  color:#e5b846
-}
-
-.grow{flex:1}
-
-.balance{
-  height:49px;
-  min-width:164px;
-  border:1px solid #c1881c;
-  border-radius:28px;
+.brand-coin{
+  width:38px;
+  height:38px;
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
-  direction:ltr;
-  background:#030303;
+
+  color:#090909;
+  font-size:15px;
+  font-weight:900;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #fff4bd 0%,
+      #ffd965 20%,
+      #e5aa28 48%,
+      #8d5c0b 100%
+    );
+
+  border:1px solid rgba(255,235,150,.7);
+
+  box-shadow:
+    0 0 12px rgba(245,200,76,.28),
+    inset 0 1px 2px rgba(255,255,255,.7);
 }
 
-.bcoin{
-  width:30px;
-  height:30px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(145deg,#fff0a0,#b97812);
-  border:2px solid #e0ad37;
-  color:#171006;
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+}
+
+.brand-main{
+  font-size:17px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.brand-sub{
+  margin-top:4px;
   font-size:9px;
-  font-weight:900
+  color:#858585;
+  letter-spacing:2px;
 }
 
-.balance b{
-  font-size:18px;
-  font-weight:500
+.balance{
+  min-width:92px;
+  padding:8px 11px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+
+  border:1px solid var(--line);
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.01)
+    );
+
+  box-shadow:
+    inset 0 0 15px rgba(245,200,76,.025);
 }
 
-.profile{
-  width:51px;
-  height:51px;
-  margin-left:10px;
-  border-radius:50%;
-  border:1px solid #bd821b;
-  background:#030303;
-  color:#f4be38;
-  font-size:25px
+.balance-number{
+  color:var(--gold2);
+  font-size:13px;
+  font-weight:800;
 }
 
-/* Hero */
+.balance-unit{
+  color:#858585;
+  font-size:10px;
+  font-weight:700;
+}
+
+/* =========================
+   HERO
+========================= */
+
 .hero{
-  height:430px;
   position:relative;
-  display:grid;
-  place-items:center;
-  overflow:hidden
+  height:355px;
+  margin-top:2px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .orbit{
   position:absolute;
-  border:1px solid rgba(242,181,48,.65);
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border:1px solid rgba(245,200,76,.22);
   border-radius:50%;
-  box-shadow:0 0 14px rgba(242,181,48,.13)
+  pointer-events:none;
 }
 
-.o1{
-  width:520px;
-  height:185px;
-  transform:rotate(-11deg);
-  top:85px
+.orbit.one{
+  width:235px;
+  height:235px;
+  transform:
+    translate(-50%,-50%)
+    rotate(-18deg);
 }
 
-.o2{
-  width:490px;
-  height:170px;
-  transform:rotate(17deg);
-  top:105px;
-  opacity:.72
+.orbit.two{
+  width:285px;
+  height:145px;
+  transform:
+    translate(-50%,-50%)
+    rotate(25deg);
 }
 
-.o3{
-  width:455px;
-  height:155px;
-  transform:rotate(-29deg);
-  top:125px;
-  opacity:.38
+.orbit.three{
+  width:320px;
+  height:190px;
+  transform:
+    translate(-50%,-50%)
+    rotate(-35deg);
 }
 
-.orbit:after{
+.orbit::after{
   content:"";
   position:absolute;
   width:5px;
   height:5px;
   border-radius:50%;
-  background:#ffe18a;
-  box-shadow:0 0 12px 4px rgba(255,204,70,.7)
+  background:var(--gold);
+  box-shadow:0 0 9px var(--gold);
 }
 
-.o1:after{left:10%;top:48%}
-.o2:after{right:7%;top:53%}
-.o3:after{left:18%;top:29%}
+.orbit.one::after{
+  right:18%;
+  top:8%;
+}
+
+.orbit.two::after{
+  left:12%;
+  top:22%;
+}
+
+.orbit.three::after{
+  right:12%;
+  bottom:13%;
+}
+
+/* =========================
+   COIN
+========================= */
+
+.coin-wrap{
+  position:relative;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
 .coin{
-  position:relative;
-  z-index:3;
-  width:min(58vw,315px);
-  height:min(58vw,315px);
+  width:145px;
+  height:145px;
   border-radius:50%;
-  display:grid;
-  place-items:center;
-  margin-top:6px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  position:relative;
+
   background:
     radial-gradient(
-      circle at 34% 22%,
-      #fff0a3 0 3%,
-      #e6b03d 16%,
-      #a8731e 40%,
-      #332613 64%,
-      #070706 100%
+      circle at 35% 28%,
+      #fff6c9 0%,
+      #ffe17a 14%,
+      #f1bc3d 38%,
+      #c88a18 64%,
+      #70450b 100%
     );
-  border:9px solid #c9952b;
+
+  border:4px solid #d9a62e;
+
   box-shadow:
-    0 0 0 4px #493312,
-    0 0 0 8px #dfa93a,
-    0 0 0 11px #533a12,
-    0 0 45px rgba(245,183,43,.56),
-    inset 0 0 32px rgba(255,238,154,.38)
+    0 0 0 7px rgba(245,200,76,.05),
+    0 0 28px rgba(245,200,76,.28),
+    inset 0 3px 5px rgba(255,255,255,.7),
+    inset 0 -8px 14px rgba(65,35,0,.28);
 }
 
-.coin:before{
+.coin::before{
   content:"";
   position:absolute;
-  inset:25px;
+  inset:10px;
   border-radius:50%;
-  border:2px solid rgba(242,198,91,.8);
-  box-shadow:
-    0 0 0 8px rgba(63,45,16,.72),
-    0 0 0 10px rgba(220,168,58,.66),
-    inset 0 0 32px #000
+  border:1px solid rgba(255,246,194,.48);
 }
 
-.coin:after{
+.coin::after{
   content:"";
   position:absolute;
-  inset:46px;
+  width:78px;
+  height:18px;
+  left:30px;
+  top:16px;
   border-radius:50%;
-  border:1px solid rgba(242,207,115,.3);
-  background:
-    radial-gradient(
-      circle,
-      #3c3325,
-      #15130e 60%,
-      #070706
-    );
-  box-shadow:inset 0 0 30px #000
+  background:rgba(255,255,255,.16);
+  filter:blur(7px);
+  transform:rotate(-18deg);
 }
 
-.ctext{
+.coin-logo{
   position:relative;
-  z-index:8;
-  direction:ltr;
-  color:#f3ca62;
-  font-size:clamp(65px,17vw,108px);
-  font-weight:900;
-  letter-spacing:-5px;
+  z-index:2;
+  color:#4a2b00;
+  font-size:42px;
+  font-weight:1000;
+  letter-spacing:-3px;
   text-shadow:
-    0 1px #fff2ad,
-    0 4px #86601c,
-    0 7px #493514,
-    0 0 18px rgba(245,201,90,.4)
+    0 1px 0 rgba(255,244,180,.65);
 }
 
-.diamond{
-  position:absolute;
-  z-index:9;
-  width:38px;
-  height:38px;
-  transform:rotate(45deg);
-  border:2px solid #e6b74e;
-  background:
-    linear-gradient(
-      135deg,
-      #fff1aa,
-      #d59c2d 58%,
-      #704b0d
-    );
-  box-shadow:
-    0 0 15px rgba(255,211,90,.48),
-    inset 0 0 5px #fff5bb
-}
-
-.diamond:after{
-  content:"";
-  position:absolute;
-  inset:7px;
-  border:1px solid rgba(255,241,170,.72)
-}
-
-.top{
-  top:-11px;
-  left:50%;
-  margin-left:-19px
-}
-
-.bottom{
-  bottom:-11px;
-  left:50%;
-  margin-left:-19px
-}
-
-.left{
-  left:-11px;
-  top:50%;
-  margin-top:-19px
-}
-
-.right{
-  right:-11px;
-  top:50%;
-  margin-top:-19px
-}
+/* =========================
+   PLATFORM
+========================= */
 
 .platform{
   position:absolute;
-  bottom:8px;
-  width:min(88vw,560px);
-  height:82px;
+  z-index:2;
+  bottom:42px;
+  width:185px;
+  height:26px;
   border-radius:50%;
+
   background:
     radial-gradient(
       ellipse,
-      #d69a24 0 3%,
-      #5a3d0f 22%,
-      #090908 59%,
+      rgba(245,200,76,.26),
+      rgba(245,200,76,.04) 58%,
       transparent 72%
-    )
+    );
+
+  border-bottom:1px solid rgba(245,200,76,.32);
+
+  filter:blur(.2px);
 }
 
-.platform:before{
-  content:"";
-  position:absolute;
-  left:7%;
-  right:7%;
-  top:11px;
-  height:49px;
-  border-radius:50%;
-  border:3px solid #b77c1a;
-  box-shadow:
-    0 0 16px rgba(242,181,45,.48),
-    inset 0 0 17px rgba(230,171,42,.25)
-}
+/* =========================
+   TIMER AREA
+========================= */
 
-.platform:after{
-  content:"";
-  position:absolute;
-  left:16%;
-  right:16%;
-  top:23px;
-  height:29px;
-  border-radius:50%;
-  border:1px solid rgba(255,218,105,.6)
-}
-
-/* Timer */
-.timer{
-  width:min(77vw,760px);
-  min-height:104px;
-  margin:0 auto;
-  padding:10px 16px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  border:1px solid #b77d1b;
-  border-radius:24px;
-  background:linear-gradient(180deg,#0b0b0b,#030303);
-  box-shadow:
-    0 0 20px rgba(236,177,45,.13),
-    inset 0 0 18px rgba(255,220,100,.025)
-}
-
-.timerrow{
-  direction:ltr;
-  display:flex;
-  align-items:center;
-  gap:24px
-}
-
-/* الساعة المصححة */
-.clock{
-  width:30px;
-  height:30px;
-  min-width:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.timer-card{
   position:relative;
-  color:#f7d365;
-  background:transparent;
-  border:0;
-  box-shadow:none
+
+  width:100%;
+  padding:15px 14px 13px;
+
+  border:1px solid var(--line);
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.035),
+      rgba(255,255,255,.012)
+    );
+
+  box-shadow:
+    inset 0 0 22px rgba(245,200,76,.025);
 }
 
-.clock svg{
-  display:block;
-  width:30px;
-  height:30px
-}
-
-.clock svg circle{
-  stroke:#efc24d;
-  stroke-width:1.45
-}
-
-.clock svg path{
-  stroke:#efc24d;
-  stroke-width:1.35;
-  stroke-linecap:round;
-  stroke-linejoin:round
-}
-
-.time{
-  font-size:clamp(42px,8vw,60px);
-  font-weight:900;
-  color:#f7d365;
-  letter-spacing:2px
-}
-
-.timer p{
-  margin:7px 0 0;
-  font-size:13px;
-  color:#eee7d6;
-  text-align:center
-}
-
-/* Claim */
-.claim{
-  width:min(80vw,730px);
-  height:88px;
-  margin:13px auto 12px;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:25px;
-  border:2px solid #dda73b;
-  background:linear-gradient(180deg,#0d0c09,#030303);
-  clip-path:polygon(
-    5% 0,
-    95% 0,
-    100% 50%,
-    95% 100%,
-    5% 100%,
-    0 50%
-  );
-  box-shadow:0 0 26px rgba(246,187,49,.22);
-  cursor:pointer
-}
-
-.claim:before{
-  content:"";
-  position:absolute;
-  inset:5px;
-  border:1px solid #7f5817;
-  clip-path:inherit
-}
-
-.stack{
-  width:64px;
-  height:55px;
-  position:relative
-}
-
-.stack i{
-  position:absolute;
-  left:4px;
-  width:53px;
-  height:18px;
-  border-radius:50%;
-  border:2px solid #e7b33f;
-  background:linear-gradient(#ffe78d,#aa7014)
-}
-
-.stack i:nth-child(1){top:0}
-.stack i:nth-child(2){top:15px}
-.stack i:nth-child(3){top:30px}
-
-.cinfo{
+.timer-title{
   text-align:center;
-  direction:ltr
+  color:#777;
+  font-size:10px;
+  letter-spacing:1.5px;
+  margin-bottom:8px;
 }
 
-.reward{
-  display:block;
-  font-size:30px;
+.timer-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+}
+
+/* =========================
+   CLOCK
+   CSS ONLY
+========================= */
+
+.clock{
+  width:29px;
+  height:29px;
+  min-width:29px;
+
+  position:relative;
+
+  border:1.5px solid #e8b93f;
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      rgba(255,230,130,.12),
+      rgba(0,0,0,.05)
+    );
+
+  box-shadow:
+    0 0 8px rgba(245,200,76,.14),
+    inset 0 0 5px rgba(245,200,76,.08);
+}
+
+/* نقاط صغيرة 12 - 3 - 6 - 9 */
+.clock::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:2px;
+
+  width:2px;
+  height:3px;
+
+  transform:translateX(-50%);
+
+  border-radius:2px;
+  background:#efc34b;
+
+  box-shadow:
+    0 20px 0 #efc34b;
+}
+
+.clock::after{
+  content:"";
+  position:absolute;
+  left:2px;
+  top:50%;
+
+  width:3px;
+  height:2px;
+
+  transform:translateY(-50%);
+
+  border-radius:2px;
+  background:#efc34b;
+
+  box-shadow:
+    20px 0 0 #efc34b;
+}
+
+/* العقارب */
+.clock-hand{
+  position:absolute;
+  left:50%;
+  bottom:50%;
+
+  transform-origin:50% 100%;
+
+  border-radius:5px;
+
+  background:#f7d365;
+
+  z-index:3;
+}
+
+/* عقرب الساعة أقصر */
+.clock-hand.hour{
+  width:2px;
+  height:7px;
+  transform:
+    translateX(-50%)
+    rotate(35deg);
+}
+
+/* عقرب الدقائق أطول */
+.clock-hand.minute{
+  width:1.5px;
+  height:10px;
+  transform:
+    translateX(-50%)
+    rotate(125deg);
+}
+
+/* نقطة الوسط */
+.clock-dot{
+  position:absolute;
+  left:50%;
+  top:50%;
+
+  width:4px;
+  height:4px;
+
+  transform:translate(-50%,-50%);
+
+  border-radius:50%;
+  background:#ffe58a;
+
+  box-shadow:
+    0 0 5px rgba(245,200,76,.45);
+
+  z-index:5;
+}
+
+.mined-number{
+  min-width:120px;
+  text-align:center;
+
+  color:#fff3b7;
+  font-size:24px;
   font-weight:900;
-  color:#ffe187
+  letter-spacing:.5px;
 }
 
-.clabel{
-  display:inline-block;
-  margin-top:5px;
-  min-width:185px;
-  padding:4px 24px;
-  border:1px solid #c18b27;
-  border-radius:20px;
-  font-size:20px;
-  font-weight:900
+.mined-unit{
+  color:#a78330;
+  font-size:11px;
+  font-weight:800;
 }
 
-.arrow{
-  font-size:30px;
-  color:#e6b43e
+.timer-sub{
+  text-align:center;
+  color:#666;
+  font-size:9px;
+  margin-top:7px;
 }
 
-.claim.disabled{
-  opacity:.65;
-  cursor:not-allowed
+/* =========================
+   CLAIM
+========================= */
+
+.claim-wrap{
+  margin-top:13px;
 }
 
-/* Bottom */
+.claim-btn{
+  width:100%;
+  height:57px;
+
+  border:1px solid rgba(255,219,105,.55);
+  border-radius:17px;
+
+  color:#171000;
+
+  font-size:16px;
+  font-weight:1000;
+  letter-spacing:2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffe68b 0%,
+      #f6c84e 48%,
+      #c98c18 100%
+    );
+
+  box-shadow:
+    0 8px 24px rgba(245,200,76,.16),
+    inset 0 1px 2px rgba(255,255,255,.75);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s ease,
+    opacity .15s ease,
+    filter .15s ease;
+}
+
+.claim-btn:active{
+  transform:scale(.985);
+}
+
+.claim-btn.disabled{
+  opacity:.42;
+  filter:grayscale(.25);
+  cursor:not-allowed;
+}
+
+.claim-icon{
+  font-size:18px;
+  line-height:1;
+}
+
+/* =========================
+   BOTTOM CARDS
+========================= */
+
 .actions{
-  width:min(95vw,850px);
-  margin:0 auto;
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  flex:1;
-  align-items:stretch
+  gap:9px;
+  margin-top:12px;
 }
 
 .action{
-  min-height:116px;
-  height:100%;
-  border:1px solid #ae751c;
-  background:linear-gradient(180deg,#0b0b0b,#030303);
-  clip-path:polygon(
-    9% 0,
-    91% 0,
-    100% 12%,
-    100% 88%,
-    91% 100%,
-    9% 100%,
-    0 88%,
-    0 12%
-  );
+  min-height:66px;
+
+  border:1px solid rgba(245,200,76,.15);
+  border-radius:15px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.03),
+      rgba(255,255,255,.01)
+    );
+
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:8px;
-  cursor:pointer;
-  box-shadow:inset 0 0 20px rgba(244,184,45,.025);
-  position:relative
+  gap:6px;
+
+  color:#999;
 }
 
-.action:before{
-  content:"";
-  position:absolute;
-  inset:4px;
-  border:1px solid rgba(210,158,52,.42);
-  clip-path:inherit
+.action-icon{
+  color:#dcae37;
+  font-size:18px;
 }
 
-.icon{
-  width:46px;
-  height:46px;
-  border:1px solid #d39a2a;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  color:#ffd65a;
-  font-size:29px;
-  box-shadow:0 0 13px rgba(244,190,55,.15)
+.action-title{
+  font-size:9px;
+  letter-spacing:.5px;
 }
 
-.action strong{
-  font-size:14px;
-  color:#fff0ad
+.action-value{
+  font-size:8px;
+  color:#555;
 }
 
-.action span{
-  font-size:11px;
-  color:#c7beaa
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
-.status{
-  min-height:22px;
-  text-align:center;
-  color:#f3c650;
-  font-size:12px;
-  margin-top:10px
-}
+@media(max-width:360px){
 
-@media(max-width:600px){
+  .hero{
+    height:325px;
+  }
 
- .app{
-   padding:34px 6px 18px
- }
+  .coin{
+    width:132px;
+    height:132px;
+  }
 
- .header{
-   height:69px;
-   padding:5px 7px
- }
+  .coin-logo{
+    font-size:38px;
+  }
 
- .hcoin{
-   width:55px;
-   height:55px;
-   flex-basis:55px
- }
+  .orbit.one{
+    width:215px;
+    height:215px;
+  }
 
- .hcoin span{
-   font-size:17px
- }
+  .orbit.two{
+    width:260px;
+    height:135px;
+  }
 
- .brand{
-   margin-left:10px
- }
+  .orbit.three{
+    width:290px;
+    height:175px;
+  }
 
- .brand b{
-   font-size:26px;
-   letter-spacing:4px
- }
+  .clock{
+    width:27px;
+    height:27px;
+    min-width:27px;
+  }
 
- .brand small{
-   font-size:9px;
-   letter-spacing:3px;
-   margin-top:6px
- }
-
- .balance{
-   min-width:106px;
-   height:41px;
-   padding:0 7px;
-   gap:5px
- }
-
- .bcoin{
-   width:23px;
-   height:23px;
-   font-size:7px
- }
-
- .balance b{
-   font-size:13px
- }
-
- .profile{
-   width:41px;
-   height:41px;
-   flex-basis:41px;
-   margin-left:6px;
-   font-size:20px
- }
-
- .hero{
-   height:330px
- }
-
- .o1{
-   width:360px;
-   height:125px;
-   top:35px
- }
-
- .o2{
-   width:345px;
-   height:118px;
-   top:48px
- }
-
- .o3{
-   width:315px;
-   height:105px;
-   top:61px
- }
-
- .coin{
-   width:min(58vw,250px);
-   height:min(58vw,250px);
-   margin-top:0
- }
-
- .diamond{
-   width:29px;
-   height:29px
- }
-
- .top,.bottom{
-   margin-left:-14.5px
- }
-
- .left,.right{
-   margin-top:-14.5px
- }
-
- .top{top:-7px}
- .bottom{bottom:-7px}
- .left{left:-7px}
- .right{right:-7px}
-
- .platform{
-   bottom:5px;
-   height:62px
- }
-
- .platform:before{
-   top:8px;
-   height:38px
- }
-
- .platform:after{
-   top:18px;
-   height:23px
- }
-
- .timer{
-   width:94vw;
-   min-height:82px;
-   padding:8px
- }
-
- .timerrow{
-   gap:11px
- }
-
- .clock{
-   width:30px;
-   height:30px;
-   min-width:30px
- }
-
- .clock svg{
-   width:30px;
-   height:30px
- }
-
- .time{
-   font-size:31px
- }
-
- .timer p{
-   font-size:10px;
-   margin-top:5px
- }
-
- .claim{
-   width:93vw;
-   height:68px;
-   margin-top:10px;
-   margin-bottom:10px;
-   gap:10px
- }
-
- .stack{
-   width:44px;
-   height:38px
- }
-
- .stack i{
-   width:35px;
-   height:11px
- }
-
- .stack i:nth-child(2){top:12px}
- .stack i:nth-child(3){top:24px}
-
- .reward{
-   font-size:22px
- }
-
- .clabel{
-   min-width:120px;
-   font-size:13px;
-   padding:3px 15px
- }
-
- .arrow{
-   font-size:19px
- }
-
- .actions{
-   width:97vw;
-   gap:5px;
-   flex:1
- }
-
- .action{
-   min-height:91px;
-   height:100%;
-   padding:5px 2px;
-   gap:4px
- }
-
- .icon{
-   width:36px;
-   height:36px;
-   font-size:18px
- }
-
- .action strong{
-   font-size:10px
- }
-
- .action span{
-   font-size:8px
- }
+  .mined-number{
+    font-size:21px;
+  }
 }
 </style>
 </head>
@@ -834,406 +671,400 @@ button{font:inherit;color:inherit}
 
 <div class="app">
 
-<header class="header">
+  <!-- HEADER -->
+  <header class="header">
 
-  <div class="hcoin">
-    <span>LTF</span>
-  </div>
+    <div class="brand">
 
-  <div class="brand">
-    <b>LTF</b>
-    <small>MINER</small>
-  </div>
+      <div class="brand-coin">
+        L
+      </div>
 
-  <div class="grow"></div>
-
-  <div class="balance">
-    <div class="bcoin">LTF</div>
-    <b id="balance">0.000000</b>
-    <span>LTF</span>
-  </div>
-
-  <button class="profile" type="button">●</button>
-
-</header>
-
-<section class="hero">
-
-  <div class="orbit o1"></div>
-  <div class="orbit o2"></div>
-  <div class="orbit o3"></div>
-
-  <div class="coin">
-
-    <div class="diamond top"></div>
-    <div class="diamond bottom"></div>
-    <div class="diamond left"></div>
-    <div class="diamond right"></div>
-
-    <div class="ctext">LTF</div>
-
-  </div>
-
-  <div class="platform"></div>
-
-</section>
-
-<section class="timer">
-
-  <div class="timerrow">
-
-    <div class="clock" aria-hidden="true">
-
-      <svg
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-
-        <circle
-          cx="12"
-          cy="12"
-          r="8.5"/>
-
-        <path
-          d="M12 7.4V12L15.1 14"/>
-
-      </svg>
+      <div class="brand-text">
+        <div class="brand-main">LTF</div>
+        <div class="brand-sub">MINER</div>
+      </div>
 
     </div>
 
-    <div class="time" id="timer">
-      0.000001
+    <div class="balance">
+      <span id="balanceValue"
+            class="balance-number">
+        0.000000
+      </span>
+
+      <span class="balance-unit">
+        LTF
+      </span>
     </div>
 
-    <span
-      style="
-        font-size:20px;
-        font-weight:900;
-        color:#f7d365
-      ">
-      LTF
-    </span>
+  </header>
+
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="orbit one"></div>
+    <div class="orbit two"></div>
+    <div class="orbit three"></div>
+
+    <div class="coin-wrap">
+
+      <div class="coin">
+        <div class="coin-logo">LTF</div>
+      </div>
+
+    </div>
+
+    <div class="platform"></div>
+
+  </section>
+
+
+  <!-- TIMER -->
+  <section class="timer-card">
+
+    <div class="timer-title">
+      MINING
+    </div>
+
+    <div class="timer-row">
+
+      <!-- ساعة CSS -->
+      <div class="clock"
+           aria-hidden="true">
+
+        <span class="clock-hand hour"></span>
+
+        <span class="clock-hand minute"></span>
+
+        <span class="clock-dot"></span>
+
+      </div>
+
+      <div id="minedValue"
+           class="mined-number">
+        0.000000
+      </div>
+
+      <div class="mined-unit">
+        LTF
+      </div>
+
+    </div>
+
+    <div id="timerText"
+         class="timer-sub">
+      التعدين مستمر
+    </div>
+
+  </section>
+
+
+  <!-- CLAIM -->
+  <div class="claim-wrap">
+
+    <button id="claimBtn"
+            class="claim-btn disabled"
+            type="button"
+            disabled>
+
+      <span class="claim-icon">◈</span>
+
+      <span>CLAIM</span>
+
+      <span class="claim-icon">›</span>
+
+    </button>
 
   </div>
 
-  <p id="timerLabel">
-    التعدين مستمر — 3 LTF كل 3 ساعات
-  </p>
 
-</section>
+  <!-- ACTIONS -->
+  <section class="actions">
 
-<button
-  class="claim disabled"
-  id="claim"
-  type="button"
-  disabled>
+    <div class="action">
 
-  <div class="stack">
-    <i></i>
-    <i></i>
-    <i></i>
-  </div>
+      <div class="action-icon">⇄</div>
 
-  <div class="cinfo">
+      <div class="action-title">
+        SWAP
+      </div>
 
-    <span class="reward">
-      CLAIM
-    </span>
+      <div class="action-value">
+        SOON
+      </div>
 
-    <span class="clabel">
-      CLAIM
-    </span>
+    </div>
 
-  </div>
+    <div class="action">
 
-  <div class="arrow">
-    »
-  </div>
+      <div class="action-icon">✓</div>
 
-</button>
+      <div class="action-title">
+        TASKS
+      </div>
 
-<section class="actions">
+      <div class="action-value">
+        SOON
+      </div>
 
-  <button
-    class="action"
-    type="button"
-    onclick="msg('سيتم تفعيل SWAP قريباً')">
+    </div>
 
-    <div class="icon">⇄</div>
-    <strong>SWAP</strong>
-    <span>تبديل العملة</span>
+    <div class="action">
 
-  </button>
+      <div class="action-icon">⚡</div>
 
-  <button
-    class="action"
-    type="button"
-    onclick="msg('المهام اليومية قيد التجهيز')">
+      <div class="action-title">
+        POWER
+      </div>
 
-    <div class="icon">✓</div>
-    <strong>المهام</strong>
-    <span>أكمل المهام اليومية</span>
+      <div class="action-value">
+        ACTIVE
+      </div>
 
-  </button>
+    </div>
 
-  <button
-    class="action"
-    type="button"
-    onclick="msg('رفع قوة التعدين قيد التجهيز')">
+  </section>
 
-    <div class="icon">⛏</div>
-    <strong>ارفع قوة التعدين</strong>
-    <span>زد من سرعة التعدين</span>
-
-  </button>
-
-</section>
-
-<div
-  class="status"
-  id="status">
 </div>
 
-</div>
 
 <script>
+/* =========================================
+   LTF MINER
+   3 LTF كل 3 ساعات
+========================================= */
 
-/*
-  LTF MINER
-
-  النظام:
-  3 LTF كل 3 ساعات.
-
-  كل دورة:
-  0 → 3 LTF
-
-  عند اكتمال 3 ساعات:
-  يظهر CLAIM
-  وعند الضغط:
-  يضاف 3 LTF إلى الرصيد
-  وتبدأ دورة جديدة.
-
-  البيانات محفوظة في localStorage.
-*/
-
-const MINING_DURATION_MS =
+const MINING_DURATION =
   3 * 60 * 60 * 1000;
 
 const MINING_REWARD = 3;
 
-const DISPLAY_PRECISION = 6;
+const BALANCE_KEY =
+  "ltf_balance_v13";
 
-const $ = id =>
-  document.getElementById(id);
+const START_KEY =
+  "ltf_mining_start_v13";
 
-let balance =
-  Number(
-    localStorage.getItem('ltf_balance') || 0
-  );
 
-let miningStart =
-  Number(
-    localStorage.getItem('ltf_mining_start') || 0
-  );
+const balanceEl =
+  document.getElementById("balanceValue");
 
-if(
-  !Number.isFinite(balance) ||
-  balance < 0
-){
-  balance = 0;
-}
+const minedEl =
+  document.getElementById("minedValue");
 
-if(
-  !miningStart ||
-  !Number.isFinite(miningStart)
-){
+const timerTextEl =
+  document.getElementById("timerText");
 
-  miningStart = Date.now();
+const claimBtn =
+  document.getElementById("claimBtn");
 
-  localStorage.setItem(
-    'ltf_mining_start',
-    String(miningStart)
-  );
-}
 
-function getElapsed(){
+/* =========================
+   SAFE NUMBER
+========================= */
 
-  return Math.max(
-    0,
-    Date.now() - miningStart
-  );
+function getBalance(){
 
-}
-
-function getProgress(){
-
-  return Math.min(
-    getElapsed(),
-    MINING_DURATION_MS
-  );
-
-}
-
-function minedNow(){
-
-  return (
-    getProgress() /
-    MINING_DURATION_MS
-  ) * MINING_REWARD;
-
-}
-
-function save(){
-
-  localStorage.setItem(
-    'ltf_balance',
-    balance.toFixed(8)
-  );
-
-  localStorage.setItem(
-    'ltf_mining_start',
-    String(miningStart)
-  );
-
-}
-
-function formatTime(ms){
-
-  const hours =
-    Math.floor(ms / 3600000);
-
-  const minutes =
-    Math.floor(
-      (ms % 3600000) / 60000
+  const value =
+    parseFloat(
+      localStorage.getItem(BALANCE_KEY)
     );
 
-  const seconds =
-    Math.floor(
-      (ms % 60000) / 1000
-    );
+  return Number.isFinite(value)
+    ? value
+    : 0;
+}
 
-  return (
-    String(hours).padStart(2,'0') +
-    ':' +
-    String(minutes).padStart(2,'0') +
-    ':' +
-    String(seconds).padStart(2,'0')
+
+function setBalance(value){
+
+  localStorage.setItem(
+    BALANCE_KEY,
+    value.toFixed(6)
   );
 
 }
+
+
+/* =========================
+   MINING START
+========================= */
+
+function getMiningStart(){
+
+  let start =
+    parseInt(
+      localStorage.getItem(START_KEY),
+      10
+    );
+
+  if(!Number.isFinite(start)){
+
+    start = Date.now();
+
+    localStorage.setItem(
+      START_KEY,
+      String(start)
+    );
+
+  }
+
+  return start;
+}
+
+
+/* =========================
+   FORMAT
+========================= */
+
+function formatLTF(value){
+
+  return Number(value)
+    .toFixed(6);
+}
+
+
+/* =========================
+   RENDER
+========================= */
 
 function render(){
 
-  const elapsed =
-    getProgress();
+  const balance =
+    getBalance();
 
-  const mined =
-    minedNow();
+  const start =
+    getMiningStart();
 
-  const total =
-    balance + mined;
+  const now =
+    Date.now();
 
-  const canClaim =
-    elapsed >= MINING_DURATION_MS;
+  let elapsed =
+    now - start;
 
-  /*
-    لا نعرض 0 في أول لحظة،
-    بل يبدأ العداد بصرياً من 0.000001
-  */
+  if(elapsed < 0){
+    elapsed = 0;
+  }
 
-  const displayMined =
-    mined <= 0
-      ? 0.000001
-      : mined;
+  if(elapsed >= MINING_DURATION){
 
-  $('timer').textContent =
-    displayMined.toFixed(
-      DISPLAY_PRECISION
+    minedEl.textContent =
+      formatLTF(MINING_REWARD);
+
+    timerTextEl.textContent =
+      "التعدين مكتمل — اضغط CLAIM";
+
+    claimBtn.disabled = false;
+
+    claimBtn.classList.remove(
+      "disabled"
     );
-
-  $('balance').textContent =
-    total.toFixed(
-      DISPLAY_PRECISION
-    );
-
-  $('claim').disabled =
-    !canClaim;
-
-  $('claim').classList.toggle(
-    'disabled',
-    !canClaim
-  );
-
-  if(canClaim){
-
-    $('timerLabel').textContent =
-      'اكتملت دورة التعدين — 3 LTF جاهزة للجمع';
-
-    $('status').textContent =
-      'جاهز للجمع: 3.000000 LTF';
 
   }else{
 
+    const progress =
+      elapsed / MINING_DURATION;
+
+    const mined =
+      MINING_REWARD * progress;
+
+    minedEl.textContent =
+      formatLTF(mined);
+
     const remaining =
-      MINING_DURATION_MS - elapsed;
+      MINING_DURATION - elapsed;
 
-    $('timerLabel').textContent =
-      'متبقي ' +
-      formatTime(remaining) +
-      ' — 3 LTF كل 3 ساعات';
+    timerTextEl.textContent =
+      "متبقي " +
+      formatTime(remaining);
 
-    $('status').textContent =
-      'جاري التعدين...';
+    claimBtn.disabled = true;
+
+    claimBtn.classList.add(
+      "disabled"
+    );
 
   }
+
+  balanceEl.textContent =
+    formatLTF(balance);
 
 }
 
-$('claim').onclick = function(){
 
-  if(
-    getProgress() <
-    MINING_DURATION_MS
-  ){
-    return;
-  }
+/* =========================
+   TIME
+========================= */
 
-  balance +=
-    MINING_REWARD;
+function formatTime(ms){
 
-  miningStart =
-    Date.now();
+  const totalSeconds =
+    Math.max(
+      0,
+      Math.floor(ms / 1000)
+    );
 
-  save();
+  const hours =
+    Math.floor(
+      totalSeconds / 3600
+    );
 
-  render();
+  const minutes =
+    Math.floor(
+      (totalSeconds % 3600) / 60
+    );
 
-  $('status').textContent =
-    'تم جمع 3.000000 LTF وبدأت دورة جديدة';
+  const seconds =
+    totalSeconds % 60;
 
-};
-
-function msg(text){
-
-  $('status').textContent =
-    text;
-
-  setTimeout(
-    function(){
-
-      if(
-        $('status').textContent === text
-      ){
-        $('status').textContent = '';
-      }
-
-    },
-    2500
+  return (
+    String(hours).padStart(2,"0")
+    + ":" +
+    String(minutes).padStart(2,"0")
+    + ":" +
+    String(seconds).padStart(2,"0")
   );
 
 }
+
+
+/* =========================
+   CLAIM
+========================= */
+
+claimBtn.addEventListener(
+  "click",
+  function(){
+
+    if(claimBtn.disabled){
+      return;
+    }
+
+    const currentBalance =
+      getBalance();
+
+    const newBalance =
+      currentBalance +
+      MINING_REWARD;
+
+    setBalance(newBalance);
+
+    localStorage.setItem(
+      START_KEY,
+      String(Date.now())
+    );
+
+    render();
+
+  }
+);
+
+
+/* =========================
+   START
+========================= */
 
 render();
 
@@ -1246,4 +1077,3 @@ setInterval(
 
 </body>
 </html>
-```
