@@ -1910,6 +1910,18 @@ const USER_KEY =
     .replace(/[^a-zA-Z0-9_-]/g,"_");
 
 /* =========================================
+   MINING UI + CORE CONSTANTS
+========================================= */
+
+const balanceEl = document.getElementById("balanceValue");
+const minedEl = document.getElementById("minedValue");
+const timerTextEl = document.getElementById("timerText");
+const claimBtn = document.getElementById("claimBtn");
+
+const MINING_DURATION = 3 * 60 * 60 * 1000;
+const MINING_REWARD = 3;
+
+/* =========================================
    SECURE LTF BACKEND
    الرصيد و Claim والسحب من Supabase فقط
 ========================================= */
@@ -2996,11 +3008,6 @@ if(
 ========================================= */
 
 render();
-
-setInterval(
-  render,
-  1000
-);
 
 </script>
 
