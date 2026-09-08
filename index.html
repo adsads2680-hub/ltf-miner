@@ -813,6 +813,14 @@ button{
 }
 
 
+/* DISABLED BUTTONS */
+.claim-btn.disabled,
+.withdraw-confirm.disabled{
+  opacity:.45;
+  filter:grayscale(.25);
+  cursor:not-allowed;
+}
+
 /* BOTTOM CARDS */
 
 .actions{
@@ -1479,8 +1487,8 @@ button{
         ◈
       </span>
 
-      <span>
-        CLAIM
+      <span id="claimBtnText">
+        CONNECT TON
       </span>
 
       <span class="claim-icon">
@@ -1990,6 +1998,8 @@ function getMiningStart(){
 
 let tonConnectUI = null;
 let tonWallet = null;
+let walletConnected = false;
+let walletReady = false;
 
 try{
   if(window.TON_CONNECT_UI?.TonConnectUI){
@@ -1999,17 +2009,42 @@ try{
       restoreConnection: true
     });
 
-    tonConnectUI.onStatusChange(function(wallet){
+    tonConnectUI.onStatusChange(async function(wallet){
       tonWallet = wallet || null;
+      walletConnected = !!tonWallet?.account?.address;
+      walletReady = true;
+
       const addressEl = document.getElementById("tonWalletAddress");
+      const claimBtnText = document.getElementById("claimBtnText");
 
       if(addressEl){
-        if(tonWallet?.account?.address){
+        if(walletConnected){
           addressEl.textContent = tonWallet.account.address;
         }else{
           addressEl.textContent = "لم يتم ربط محفظة TON بعد";
         }
       }
+
+      if(claimBtnText){
+        claimBtnText.textContent = walletConnected ? "CLAIM" : "CONNECT TON";
+      }
+
+      if(walletConnected){
+        claimBtn.classList.remove("disabled");
+        await syncStatus();
+      }else{
+        claimBtn.disabled = false;
+        claimBtn.classList.remove("disabled");
+        statusLoaded = false;
+        miningStartAt = null;
+        nextClaimAt = null;
+        remainingSeconds = 0;
+        minedEl.textContent = "0.000000";
+        timerTextEl.textContent = "اربط محفظة TON لبدء التعدين";
+        claimBtnText.textContent = "CONNECT TON";
+      }
+
+      render();
     });
   }
 }catch(e){
@@ -2060,16 +2095,35 @@ function applyStatus(data){
 }
 
 async function syncStatus(){
+
+  if(!walletConnected){
+    statusLoaded = false;
+    minedEl.textContent = "0.000000";
+    timerTextEl.textContent = "اربط محفظة TON لبدء التعدين";
+    render();
+    return;
+  }
+
   try{
+
     let data = await ltfApi("status");
 
     if(data && data.exists === false){
-      await ltfApi("claim");
-      data = await ltfApi("status");
+      const startData = await ltfApi("claim");
+
+      if(startData?.success === false &&
+         Number(startData?.reward || 0) === 0 &&
+         startData?.next_claim_at){
+        data = startData;
+      }else{
+        data = await ltfApi("status");
+      }
     }
 
     applyStatus(data);
+
   }catch(error){
+
     console.error(error);
     statusLoaded = false;
     timerTextEl.textContent = error?.message || "تعذر تحميل الرصيد";
@@ -2084,8 +2138,25 @@ async function syncStatus(){
 
 function render(){
 
+  const claimBtnText = document.getElementById("claimBtnText");
+
+  if(!walletConnected){
+    minedEl.textContent = "0.000000";
+    timerTextEl.textContent = "اربط محفظة TON لبدء التعدين";
+    if(claimBtnText){
+      claimBtnText.textContent = "CONNECT TON";
+    }
+    claimBtn.disabled = !walletReady;
+    claimBtn.classList.toggle("disabled",!walletReady);
+    balanceEl.textContent = formatLTF(serverBalance);
+    return;
+  }
+
   if(!statusLoaded){
     balanceEl.textContent = formatLTF(serverBalance);
+    if(claimBtnText){
+      claimBtnText.textContent = "CLAIM";
+    }
     return;
   }
 
@@ -2094,20 +2165,23 @@ function render(){
   remainingSeconds = Math.ceil(remainingMs/1000);
 
   const elapsedMs = Math.max(0,MINING_DURATION-remainingMs);
-  const mined = Math.min(
-    MINING_REWARD,
-    MINING_REWARD*(elapsedMs/MINING_DURATION)
-  );
+  const mined = Math.min(MINING_REWARD,MINING_REWARD*(elapsedMs/MINING_DURATION));
 
   minedEl.textContent = formatLTF(mined);
   balanceEl.textContent = formatLTF(serverBalance);
 
   if(remainingMs <= 0){
     timerTextEl.textContent = "3 LTF جاهزة — اضغط CLAIM";
+    if(claimBtnText){
+      claimBtnText.textContent = "CLAIM";
+    }
     claimBtn.disabled = claimBusy;
     claimBtn.classList.toggle("disabled",claimBusy);
   }else{
     timerTextEl.textContent = "متبقي " + formatTime(remainingMs);
+    if(claimBtnText){
+      claimBtnText.textContent = "CLAIM";
+    }
     claimBtn.disabled = true;
     claimBtn.classList.add("disabled");
   }
@@ -2119,8 +2193,20 @@ function render(){
 
 claimBtn.addEventListener("click",async function(){
 
-  const liveRemaining = Math.max(0, (nextClaimAt?.getTime() || Date.now()) - Date.now());
+  if(!walletConnected){
+    if(tonConnectUI){
+      try{
+        await tonConnectUI.openModal();
+      }catch(error){
+        console.error("TON Connect modal error:",error);
+      }
+    }else{
+      alert("تعذر تشغيل TON Connect حالياً");
+    }
+    return;
+  }
 
+  const liveRemaining = Math.max(0,(nextClaimAt?.getTime() || Date.now())-Date.now());
   if(claimBusy || liveRemaining > 250) return;
 
   claimBusy = true;
@@ -2151,7 +2237,19 @@ claimBtn.addEventListener("click",async function(){
 
 /* تحديث واجهة التعدين كل ثانية بدون تغيير الرصيد المحلي */
 setInterval(render,1000);
-syncStatus();
+
+/* لا نبدأ التعدين عند فتح التطبيق. ننتظر TON Connect أولاً. */
+walletReady = !!(tonConnectUI && tonWallet?.account?.address);
+walletConnected = walletReady;
+
+if(walletConnected){
+  syncStatus();
+}else{
+  timerTextEl.textContent = "اربط محفظة TON لبدء التعدين";
+  claimBtn.disabled = true;
+  claimBtn.classList.add("disabled");
+  render();
+}
 
 /* =========================================
    SWAP UI
