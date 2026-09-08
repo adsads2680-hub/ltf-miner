@@ -2119,7 +2119,9 @@ function render(){
 
 claimBtn.addEventListener("click",async function(){
 
-  if(claimBusy || remainingSeconds > 0) return;
+  const liveRemaining = Math.max(0, (nextClaimAt?.getTime() || Date.now()) - Date.now());
+
+  if(claimBusy || liveRemaining > 250) return;
 
   claimBusy = true;
   claimBtn.disabled = true;
