@@ -1909,190 +1909,162 @@ const USER_KEY =
   telegramUserId
     .replace(/[^a-zA-Z0-9_-]/g,"_");
 
-
 /* =========================================
-   LTF MINER
-   3 LTF كل 3 ساعات
+   SECURE LTF BACKEND
+   الرصيد و Claim والسحب من Supabase فقط
 ========================================= */
 
-const MINING_DURATION =
-  3 * 60 * 60 * 1000;
+const LTF_API_URL =
+  "https://julnowgcrkazepbfxkau.supabase.co/functions/v1/ltf-secure-api";
 
-const MINING_REWARD = 3;
+let serverBalance = 0;
+let miningStartAt = null;
+let nextClaimAt = null;
+let remainingSeconds = 0;
+let statusLoaded = false;
+let claimBusy = false;
 
-const BALANCE_KEY =
-  "ltf_balance_v13_" +
-  USER_KEY;
+async function ltfApi(action, payload = {}){
 
-const START_KEY =
-  "ltf_mining_start_v13_" +
-  USER_KEY;
-
-
-const balanceEl =
-  document.getElementById(
-    "balanceValue"
-  );
-
-const minedEl =
-  document.getElementById(
-    "minedValue"
-  );
-
-const timerTextEl =
-  document.getElementById(
-    "timerText"
-  );
-
-const claimBtn =
-  document.getElementById(
-    "claimBtn"
-  );
-
-
-/* =========================================
-   BALANCE
-========================================= */
-
-function getBalance(){
-
-  const value =
-    parseFloat(
-      localStorage.getItem(
-        BALANCE_KEY
-      )
-    );
-
-  return Number.isFinite(value)
-    ? value
-    : 0;
-
-}
-
-
-function setBalance(value){
-
-  localStorage.setItem(
-    BALANCE_KEY,
-    Number(value).toFixed(6)
-  );
-
-}
-
-
-/* =========================================
-   MINING START
-========================================= */
-
-function getMiningStart(){
-
-  let start =
-    parseInt(
-      localStorage.getItem(
-        START_KEY
-      ),
-      10
-    );
-
-  if(!Number.isFinite(start)){
-
-    start =
-      Date.now();
-
-    localStorage.setItem(
-      START_KEY,
-      String(start)
-    );
-
+  if(!tg || !tg.initData){
+    throw new Error("افتح LTF Miner من داخل Telegram");
   }
 
-  return start;
+  const response = await fetch(LTF_API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      action,
+      initData:tg.initData,
+      ...payload
+    })
+  });
 
+  let data = null;
+  try{
+    data = await response.json();
+  }catch(e){
+    throw new Error("استجابة الخادم غير صالحة");
+  }
+
+  if(!response.ok || data?.success === false && action === "status"){
+    throw new Error(data?.message || "تعذر الاتصال بخادم LTF");
+  }
+
+  return data;
 }
 
+function getBalance(){
+  return Number.isFinite(Number(serverBalance))
+    ? Number(serverBalance)
+    : 0;
+}
+
+function setBalance(value){
+  serverBalance = Number(value) || 0;
+  balanceEl.textContent = formatLTF(serverBalance);
+}
+
+function getMiningStart(){
+  if(nextClaimAt){
+    return nextClaimAt.getTime() - MINING_DURATION;
+  }
+  return Date.now();
+}
+
+/* =========================================
+   TON CONNECT
+========================================= */
+
+let tonConnectUI = null;
+let tonWallet = null;
+
+try{
+  if(window.TON_CONNECT_UI?.TonConnectUI){
+    tonConnectUI = new window.TON_CONNECT_UI.TonConnectUI({
+      manifestUrl: window.location.origin + "/tonconnect-manifest.json",
+      buttonRootId: "ton-connect-withdraw",
+      restoreConnection: true
+    });
+
+    tonConnectUI.onStatusChange(function(wallet){
+      tonWallet = wallet || null;
+      const addressEl = document.getElementById("tonWalletAddress");
+
+      if(addressEl){
+        if(tonWallet?.account?.address){
+          addressEl.textContent = tonWallet.account.address;
+        }else{
+          addressEl.textContent = "لم يتم ربط محفظة TON بعد";
+        }
+      }
+    });
+  }
+}catch(e){
+  console.error("TON Connect initialization failed",e);
+}
 
 /* =========================================
    FORMAT
 ========================================= */
 
 function formatLTF(value){
-
-  return Number(value)
-    .toFixed(6);
-
+  return Number(value).toFixed(6);
 }
-
-
-/* =========================================
-   TIME
-========================================= */
 
 function formatTime(ms){
+  const totalSeconds = Math.max(0,Math.floor(ms/1000));
+  const hours = Math.floor(totalSeconds/3600);
+  const minutes = Math.floor((totalSeconds%3600)/60);
+  const seconds = totalSeconds%60;
 
-  const totalSeconds =
-    Math.max(
-      0,
-      Math.floor(
-        ms / 1000
-      )
-    );
-
-  const hours =
-    Math.floor(
-      totalSeconds / 3600
-    );
-
-  const minutes =
-    Math.floor(
-      (totalSeconds % 3600) / 60
-    );
-
-  const seconds =
-    totalSeconds % 60;
-
-  return (
-    String(hours).padStart(2,"0")
-    + ":" +
-    String(minutes).padStart(2,"0")
-    + ":" +
-    String(seconds).padStart(2,"0")
-  );
-
+  return String(hours).padStart(2,"0") + ":" +
+         String(minutes).padStart(2,"0") + ":" +
+         String(seconds).padStart(2,"0");
 }
-
 
 /* =========================================
-   ACCUMULATED
+   SERVER STATUS
 ========================================= */
 
-function getAccumulated(){
+function applyStatus(data){
+  serverBalance = Number(data?.balance || 0);
+  remainingSeconds = Math.max(0,Number(data?.remaining_seconds || 0));
 
-  const start =
-    getMiningStart();
-
-  const now =
-    Date.now();
-
-  let elapsed =
-    now - start;
-
-  if(elapsed < 0){
-    elapsed = 0;
+  if(data?.last_claim_at){
+    miningStartAt = new Date(data.last_claim_at);
+  }else{
+    miningStartAt = new Date();
   }
 
-  const progress =
-    Math.min(
-      elapsed / MINING_DURATION,
-      1
-    );
+  if(data?.next_claim_at){
+    nextClaimAt = new Date(data.next_claim_at);
+  }else{
+    nextClaimAt = new Date(Date.now() + remainingSeconds*1000);
+  }
 
-  return (
-    MINING_REWARD *
-    progress
-  );
-
+  statusLoaded = true;
+  render();
 }
 
+async function syncStatus(){
+  try{
+    let data = await ltfApi("status");
+
+    if(data && data.exists === false){
+      await ltfApi("claim");
+      data = await ltfApi("status");
+    }
+
+    applyStatus(data);
+  }catch(error){
+    console.error(error);
+    statusLoaded = false;
+    timerTextEl.textContent = error?.message || "تعذر تحميل الرصيد";
+    claimBtn.disabled = true;
+    claimBtn.classList.add("disabled");
+  }
+}
 
 /* =========================================
    RENDER
@@ -2100,132 +2072,72 @@ function getAccumulated(){
 
 function render(){
 
-  const balance =
-    getBalance();
-
-  const start =
-    getMiningStart();
-
-  const now =
-    Date.now();
-
-  let elapsed =
-    now - start;
-
-  if(elapsed < 0){
-    elapsed = 0;
+  if(!statusLoaded){
+    balanceEl.textContent = formatLTF(serverBalance);
+    return;
   }
 
-  const mined =
-    Math.min(
-      MINING_REWARD *
-      (
-        elapsed /
-        MINING_DURATION
-      ),
-      MINING_REWARD
-    );
+  const now = Date.now();
+  const remainingMs = Math.max(0,(nextClaimAt?.getTime() || now)-now);
+  remainingSeconds = Math.ceil(remainingMs/1000);
 
-  minedEl.textContent =
-    formatLTF(
-      mined
-    );
-
-  if(elapsed >= MINING_DURATION){
-
-    timerTextEl.textContent =
-      "3 LTF جاهزة — اضغط CLAIM";
-
-  }else{
-
-    const remaining =
-      MINING_DURATION -
-      elapsed;
-
-    timerTextEl.textContent =
-      "متبقي " +
-      formatTime(
-        remaining
-      );
-
-  }
-
-  claimBtn.disabled =
-    false;
-
-  claimBtn.classList.remove(
-    "disabled"
+  const elapsedMs = Math.max(0,MINING_DURATION-remainingMs);
+  const mined = Math.min(
+    MINING_REWARD,
+    MINING_REWARD*(elapsedMs/MINING_DURATION)
   );
 
-  balanceEl.textContent =
-    formatLTF(
-      balance
-    );
+  minedEl.textContent = formatLTF(mined);
+  balanceEl.textContent = formatLTF(serverBalance);
 
+  if(remainingMs <= 0){
+    timerTextEl.textContent = "3 LTF جاهزة — اضغط CLAIM";
+    claimBtn.disabled = claimBusy;
+    claimBtn.classList.toggle("disabled",claimBusy);
+  }else{
+    timerTextEl.textContent = "متبقي " + formatTime(remainingMs);
+    claimBtn.disabled = true;
+    claimBtn.classList.add("disabled");
+  }
 }
 
-
 /* =========================================
-   CLAIM
+   CLAIM — SERVER ONLY
 ========================================= */
 
-claimBtn.addEventListener(
-  "click",
-  function(){
+claimBtn.addEventListener("click",async function(){
 
-    const accumulated =
-      getAccumulated();
+  if(claimBusy || remainingSeconds > 0) return;
 
-    if(accumulated <= 0){
-      render();
+  claimBusy = true;
+  claimBtn.disabled = true;
+  claimBtn.classList.add("disabled");
+
+  try{
+    const data = await ltfApi("claim");
+
+    if(!data?.success){
+      alert(data?.message || "لم يكتمل التعدين بعد");
+      await syncStatus();
       return;
     }
 
-    const currentBalance =
-      getBalance();
+    applyStatus(data);
 
-    const reward =
-      Math.min(
-        accumulated,
-        MINING_REWARD
-      );
-
-    const newBalance =
-      currentBalance +
-      reward;
-
-    setBalance(
-      newBalance
-    );
-
-    localStorage.setItem(
-      START_KEY,
-      String(
-        Date.now()
-      )
-    );
-
-    render();
-
-    if(
-      tg &&
-      tg.HapticFeedback
-    ){
-
-      try{
-
-        tg.HapticFeedback
-          .notificationOccurred(
-            "success"
-          );
-
-      }catch(e){}
-
+    if(tg?.HapticFeedback){
+      try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}
     }
-
+  }catch(error){
+    alert(error?.message || "تعذر تنفيذ Claim");
+  }finally{
+    claimBusy = false;
+    render();
   }
-);
+});
 
+/* تحديث واجهة التعدين كل ثانية بدون تغيير الرصيد المحلي */
+setInterval(render,1000);
+syncStatus();
 
 /* =========================================
    SWAP UI
@@ -2987,16 +2899,13 @@ withdrawOverlay.addEventListener(
   }
 );
 
-/* إرسال طلب السحب — TON فقط */
+/* إرسال طلب السحب — TON + Supabase */
 withdrawConfirm.addEventListener(
   "click",
-  function(){
+  async function(){
     const amount = parseFloat(withdrawAmount.value);
     const balance = getBalance();
-    const wallet =
-      tonWallet && tonWallet.account
-        ? tonWallet.account.address
-        : "";
+    const wallet = tonWallet?.account?.address || "";
 
     if(!Number.isFinite(amount) || amount <= 0){
       alert("أدخل كمية السحب");
@@ -3019,24 +2928,46 @@ withdrawConfirm.addEventListener(
     }
 
     const netAmount = amount - WITHDRAW_FEE;
-
     if(netAmount <= 0){
       alert("المبلغ غير صالح بعد خصم الرسوم");
       return;
     }
 
-    /*
-      مهم: لا ندّعي تنفيذ سحب on-chain من المتصفح.
-      حتى يتم ربط Supabase/Edge Function بخدمة السحب،
-      لا يتم خصم الرصيد ولا إنشاء طلب مزيف محلياً.
-    */
-    withdrawSuccess.textContent =
-      "تم التحقق من محفظة TON. طلب السحب يحتاج الآن إلى خادم LTF الآمن لإرساله فعلياً. " +
-      "200 LTF = 20 LTF رسوم + 180 LTF صافي.";
-    withdrawSuccess.classList.add("show");
+    withdrawConfirm.disabled = true;
+    withdrawConfirm.classList.add("disabled");
+    withdrawSuccess.classList.remove("show");
 
-    if(tg && tg.HapticFeedback){
-      try{ tg.HapticFeedback.notificationOccurred("success"); }catch(e){}
+    try{
+      const data = await ltfApi("withdraw",{
+        amount:Number(amount.toFixed(6)),
+        walletAddress:wallet
+      });
+
+      if(!data?.success){
+        throw new Error(data?.message || "تعذر إنشاء طلب السحب");
+      }
+
+      serverBalance = Number(data.new_balance ?? (balance-amount));
+      balanceEl.textContent = formatLTF(serverBalance);
+      withdrawBalance.textContent = formatLTF(serverBalance);
+
+      withdrawSuccess.textContent =
+        "تم إنشاء طلب السحب بنجاح. " +
+        "المبلغ: " + formatLTF(data.amount) + " LTF — " +
+        "الرسوم: 20 LTF — " +
+        "الصافي: " + formatLTF(data.net_amount) + " LTF — " +
+        "رقم الطلب: #" + data.request_id;
+      withdrawSuccess.classList.add("show");
+
+      if(tg?.HapticFeedback){
+        try{tg.HapticFeedback.notificationOccurred("success");}catch(e){}
+      }
+    }catch(error){
+      alert(error?.message || "تعذر إنشاء طلب السحب");
+      await syncStatus();
+    }finally{
+      withdrawConfirm.disabled = false;
+      withdrawConfirm.classList.remove("disabled");
     }
   }
 );
