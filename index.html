@@ -59,7 +59,7 @@ border:8px solid #ffd45a;
 box-shadow:0 0 18px #ffc52f99,0 0 60px #ffad2548,inset 0 0 25px #fff2a866;
 animation:coinFloat 3.1s ease-in-out infinite}
 .coin:before{content:"";position:absolute;inset:10px;border-radius:50%;border:2px solid #ffe18a88;box-shadow:inset 0 0 0 5px #7b470077}
-.coin:after{content:"";position:absolute;inset:-27px;border-radius:50%;border:1px solid #ffc83f66;animation:orbit 4.5s linear infinite}
+.coin:after{display:none;content:"";position:absolute;inset:-27px;border-radius:50%;border:1px solid #ffc83f66;animation:orbit 4.5s linear infinite}
 .coinMark{font-size:64px;font-weight:1000;color:#4b2c00;text-shadow:2px 4px 0 #ffd85d;line-height:1}.coinName{position:absolute;bottom:35px;font-size:15px;font-weight:900;color:#4b2c00;letter-spacing:2px}
 .ring{position:absolute;left:50%;top:92px;width:250px;height:70px;transform:translateX(-50%) rotate(-9deg);border:2px solid rgba(255,199,68,.8);border-radius:50%;box-shadow:0 0 12px rgba(255,187,39,.3);animation:orbit 4s linear infinite}
 .ring.blue{border-color:rgba(33,177,255,.65);transform:translateX(-50%) rotate(12deg);animation-duration:5.5s}
@@ -83,9 +83,23 @@ box-shadow:0 10px 35px rgba(255,178,22,.28);transition:.18s}
 .balance{display:flex;align-items:center;gap:12px}.miniCoin{width:55px;height:55px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#ffe78c,#d99100);border:3px solid #ffd76a;color:#704200;font-size:23px;font-weight:1000;box-shadow:0 0 20px #ffb00033}.balance small{color:var(--muted)}.balance strong{font-size:25px;display:block;margin-top:3px}
 .primary{width:100%;padding:13px;border-radius:13px;background:linear-gradient(100deg,#078fff,#1dbaff);font-weight:bold;margin-top:12px}.danger{background:linear-gradient(100deg,#7d1720,#d93342)!important}
 .animal{display:flex;gap:14px;align-items:center}.pet{width:100px;height:100px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,#0b4261,#061827);font-size:62px;border:1px solid #176183}
-.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,460px);padding:8px 8px 11px;background:rgba(2,8,14,.94);backdrop-filter:blur(18px);border-top:1px solid #193b4e;display:grid;grid-template-columns:repeat(6,1fr);z-index:40}.nav{background:transparent;color:#718da2;font-size:9px;padding:3px 1px}.nav b{display:block;font-size:18px;margin-bottom:3px}.nav.active{color:#ffd15c}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,460px);padding:8px 8px 11px;background:rgba(2,8,14,.94);backdrop-filter:blur(18px);border-top:1px solid #193b4e;display:grid;grid-template-columns:repeat(6,1fr);z-index:40}.nav{background:transparent;color:#718da2;font-size:9px;padding:3px 1px;outline:none!important;box-shadow:none!important;border-radius:0;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none}.nav:focus,.nav:focus-visible,.nav:active{outline:none!important;box-shadow:none!important;background:transparent!important}.nav b{display:block;font-size:18px;margin-bottom:3px;line-height:1}.nav.active{color:#ffd15c}
 .toast{position:fixed;top:76px;left:50%;transform:translateX(-50%) translateY(-20px);opacity:0;background:#08263c;border:1px solid #176488;padding:11px 17px;border-radius:12px;z-index:60;font-size:11px;transition:.25s;pointer-events:none;white-space:nowrap}.toast.show{opacity:1;transform:translateX(-50%)}
 @media(min-width:700px){body{padding:20px}.app{border:1px solid #17384d;border-radius:25px;box-shadow:0 25px 90px #000}.topbar{border-radius:25px 25px 0 0}}
+
+/* إزالة دائرة/حلقة التركيز من أزرار التنقل السفلية */
+.bottom .nav,
+.bottom .nav:focus,
+.bottom .nav:focus-visible,
+.bottom .nav:active,
+.bottom .nav::-moz-focus-inner{
+  outline: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  background: transparent !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
 </style>
 </head>
 <body>
@@ -102,7 +116,7 @@ box-shadow:0 10px 35px rgba(255,178,22,.28);transition:.18s}
     <div class="heroHead"><strong>مرحباً بك في منظومة</strong><h1>MIMA</h1><small>MINING • EARN • GROW</small></div>
     <div class="balanceRow">
       <div class="balanceCard"><small>رصيدك الحالي</small><b id="heroBalance">2,458.75 MIMA</b><span>≈ 18.45 USDT</span></div>
-      <div class="balanceCard"><small>معدل التعدين</small><b>1.25 MIMA/ساعة</b><span class="green">● نشط</span></div>
+      <div class="balanceCard"><small>معدل التعدين</small><b>1.00 MIMA/ساعة</b><span class="green">● نشط</span></div>
     </div>
     <div class="miningScene">
       <div class="miningStatus"><b id="mineState">التعدين غير نشط</b><small id="mineStateSub">اضغط للبدء</small></div>
@@ -114,7 +128,7 @@ box-shadow:0 10px 35px rgba(255,178,22,.28);transition:.18s}
     </div>
     <button id="startMining" class="start" type="button">⛏ ابدأ التعدين الآن</button>
     <div class="progressWrap">
-      <div class="progressTop"><span>الجولة الحالية</span><span id="timer">00:00:00</span></div>
+      <div class="progressTop"><span>المكتسب في الجولة</span><span id="timer">0.000000 MIMA</span></div>
       <div class="progress"><i id="mineProgress"></i></div>
     </div>
     <div class="quick">
@@ -130,7 +144,7 @@ box-shadow:0 10px 35px rgba(255,178,22,.28);transition:.18s}
   <p class="sub">تابع التعدين وراقب نمو رصيدك.</p>
   <div class="card center">
     <div class="timer" id="mineTimerLarge">00:00:00</div>
-    <small class="gold">+1.25 MIMA / ساعة</small>
+    <small class="gold">+1.00 MIMA / ساعة</small>
     <button class="primary" onclick="toggleMining()">⛏ التعدين</button>
   </div>
   <div class="statgrid"><div class="stat"><small>الإجمالي المكتسب</small><b id="earned">0.00 MIMA</b></div><div class="stat"><small>حالة التعدين</small><b class="green" id="mineLabel">متوقف</b></div></div>
@@ -198,45 +212,221 @@ box-shadow:0 10px 35px rgba(255,178,22,.28);transition:.18s}
 </div>
 
 <script>
-let bal=2458.75, running=false, elapsed=0, lastTick=Date.now(), earned=0;
-const screens=[...document.querySelectorAll('.screen')], navs=[...document.querySelectorAll('.nav')];
-const $=id=>document.getElementById(id);
-function go(id,el){
-  screens.forEach(s=>s.classList.toggle('active',s.id===id));
-  if(el){navs.forEach(n=>n.classList.remove('active'));el.classList.add('active')}
-  else navs.forEach(n=>n.classList.toggle('active',n.getAttribute('onclick')?.includes("'"+id+"'")));
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900)}
-function render(){
-  const v=bal.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6});
-  $('heroBalance').textContent=v+' MIMA';$('walletBalance').textContent=v;
-  const h=String(Math.floor(elapsed/3600)).padStart(2,'0'),m=String(Math.floor(elapsed%3600/60)).padStart(2,'0'),s=String(elapsed%60).padStart(2,'0');
-  $('timer').textContent=`${h}:${m}:${s}`;$('mineTimerLarge').textContent=`${h}:${m}:${s}`;
-  $('earned').textContent=earned.toFixed(4)+' MIMA';
-}
-function setMining(on){
-  running=on;
-  $('mainCoin').style.animationDuration=on?'1.15s':'3.1s';
-  $('startMining').classList.toggle('running',on);
-  $('startMining').textContent=on?'⚡ التعدين يعمل الآن':'⛏ ابدأ التعدين الآن';
-  $('mineState').textContent=on?'التعدين نشط':'التعدين غير نشط';
-  $('mineStateSub').textContent=on?'استمر في التعدين...':'اضغط للبدء';
-  $('mineLabel').textContent=on?'يعمل':'متوقف';
-  $('mineLabel').className=on?'green':'';
-  if(on) toast('⚡ بدأ التعدين — MIMA ينمو الآن');
-}
-function toggleMining(){setMining(!running)}
-$('startMining').addEventListener('click',toggleMining);
-function claim(btn,reward){if(btn.dataset.done)return;btn.dataset.done='1';btn.textContent='✓';btn.classList.add('check');bal+=reward;toast('🎁 تمت إضافة '+reward+' MIMA');render()}
-function buy(price){if(bal<price)return toast('الرصيد غير كافٍ');bal-=price;render();toast('✅ تمت عملية الشراء')}
-function copyLink(){toast('🔗 تم تجهيز رابط الإحالة للمشاركة')}
-setInterval(()=>{
-  const now=Date.now(), dt=Math.min(3,(now-lastTick)/1000);lastTick=now;
-  if(running){elapsed+=dt;const add=1.25*dt/3600;bal+=add;earned+=add;const pct=Math.min(100,(elapsed%14400)/14400*100);$('mineProgress').style.width=pct+'%'}
+  const ROUND_MAX = 24;
+  const RATE_PER_HOUR = 1;
+  const STORAGE_KEY = 'mima_mining_24h_v1';
+
+  let bal = 2458.75;
+  let running = false;
+  let elapsed = 0;
+  let earned = 0;
+  let miningStart = null;
+  let lastTick = Date.now();
+
+  const screens = [...document.querySelectorAll('.screen')];
+  const navs = [...document.querySelectorAll('.nav')];
+  const $ = id => document.getElementById(id);
+
+  function saveState(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      bal,
+      running,
+      elapsed,
+      earned,
+      miningStart
+    }));
+  }
+
+  function loadState(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if(!saved) return;
+
+      if(Number.isFinite(saved.bal)) bal = saved.bal;
+      if(Number.isFinite(saved.elapsed)) elapsed = Math.max(0, Math.min(86400, saved.elapsed));
+      if(Number.isFinite(saved.earned)) earned = Math.max(0, Math.min(ROUND_MAX, saved.earned));
+      running = saved.running === true;
+      miningStart = Number.isFinite(saved.miningStart) ? saved.miningStart : null;
+
+      // Continue the round while the user is away.
+      if(running && miningStart){
+        const awaySeconds = Math.max(0, (Date.now() - miningStart) / 1000);
+        const newElapsed = Math.min(86400, awaySeconds);
+        elapsed = newElapsed;
+        earned = Math.min(ROUND_MAX, RATE_PER_HOUR * elapsed / 3600);
+
+        if(earned >= ROUND_MAX){
+          earned = ROUND_MAX;
+          elapsed = 86400;
+          running = false;
+          miningStart = null;
+          toast('🎉 اكتملت جولة التعدين — تم جمع 24 MIMA');
+        }
+      }
+    }catch(e){
+      // Keep safe defaults if stored data is invalid.
+    }
+  }
+
+  function go(id,el){
+    screens.forEach(s=>s.classList.toggle('active',s.id===id));
+    if(el){
+      navs.forEach(n=>n.classList.remove('active'));
+      el.classList.add('active');
+    }else{
+      navs.forEach(n=>n.classList.toggle('active',n.getAttribute('onclick')?.includes("'"+id+"'")));
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function toast(msg){
+    const t=$('toast');
+    t.textContent=msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1900);
+  }
+
+  function formatMima(value){
+    return Number(value || 0).toLocaleString('en-US',{
+      minimumFractionDigits:6,
+      maximumFractionDigits:6
+    });
+  }
+
+  function render(){
+    const v=bal.toLocaleString('en-US',{
+      minimumFractionDigits:2,
+      maximumFractionDigits:6
+    });
+
+    $('heroBalance').textContent=v+' MIMA';
+    $('walletBalance').textContent=v;
+
+    const roundText = formatMima(earned) + ' MIMA';
+    $('timer').textContent = roundText;
+    $('mineTimerLarge').textContent = roundText;
+    $('earned').textContent = roundText;
+
+    const pct = Math.min(100, (earned / ROUND_MAX) * 100);
+    $('mineProgress').style.width = pct + '%';
+
+    if(earned >= ROUND_MAX){
+      $('startMining').classList.remove('running');
+      $('startMining').textContent = '⛏ بدء جولة جديدة';
+      $('mineState').textContent = 'الجولة مكتملة';
+      $('mineStateSub').textContent = 'تم جمع 24 MIMA';
+      $('mineLabel').textContent = 'مكتمل';
+      $('mineLabel').className = 'gold';
+    }else{
+      $('startMining').classList.toggle('running',running);
+      $('startMining').textContent = running ? '⚡ التعدين يعمل الآن' : '⛏ ابدأ التعدين الآن';
+      $('mineState').textContent = running ? 'التعدين نشط' : 'التعدين غير نشط';
+      $('mineStateSub').textContent = running ? 'MIMA يتجمع الآن...' : 'اضغط للبدء';
+      $('mineLabel').textContent = running ? 'يعمل' : 'متوقف';
+      $('mineLabel').className = running ? 'green' : '';
+    }
+  }
+
+  function setMining(on){
+    if(on && earned >= ROUND_MAX){
+      // Start a fresh 24-hour round.
+      earned = 0;
+      elapsed = 0;
+    }
+
+    running = !!on;
+    miningStart = running ? Date.now() - (elapsed * 1000) : null;
+
+    $('mainCoin').style.animationDuration = running ? '1.15s' : '3.1s';
+
+    if(running){
+      toast('⚡ بدأ التعدين — MIMA يتجمع الآن');
+    }
+
+    saveState();
+    render();
+  }
+
+  function toggleMining(){
+    if(earned >= ROUND_MAX){
+      setMining(true);
+      return;
+    }
+
+    if(running){
+      setMining(false);
+    }else{
+      setMining(true);
+    }
+  }
+
+  $('startMining').addEventListener('click',toggleMining);
+
+  function claim(btn,reward){
+    if(btn.dataset.done)return;
+    btn.dataset.done='1';
+    btn.textContent='✓';
+    btn.classList.add('check');
+    bal+=reward;
+    saveState();
+    toast('🎁 تمت إضافة '+reward+' MIMA');
+    render();
+  }
+
+  function buy(price){
+    if(bal<price)return toast('الرصيد غير كافٍ');
+    bal-=price;
+    saveState();
+    render();
+    toast('✅ تمت عملية الشراء');
+  }
+
+  function copyLink(){
+    toast('🔗 تم تجهيز رابط الإحالة للمشاركة');
+  }
+
+  loadState();
+  lastTick = Date.now();
   render();
-},1000);
-render();
+
+  setInterval(()=>{
+    const now = Date.now();
+
+    if(running){
+      if(!miningStart) miningStart = now - (elapsed * 1000);
+
+      const newElapsed = Math.max(0, Math.min(86400, (now - miningStart) / 1000));
+      const oldEarned = earned;
+
+      elapsed = newElapsed;
+      earned = Math.min(ROUND_MAX, RATE_PER_HOUR * elapsed / 3600);
+
+      // Add only the newly mined amount to the balance.
+      bal += Math.max(0, earned - oldEarned);
+
+      if(earned >= ROUND_MAX){
+        earned = ROUND_MAX;
+        elapsed = 86400;
+        running = false;
+        miningStart = null;
+        toast('🎉 اكتملت الجولة — جمعت 24 MIMA');
+      }
+
+      saveState();
+    }
+
+    lastTick = now;
+    render();
+  },1000);
 </script>
+
+<script>
+document.querySelectorAll('.bottom .nav').forEach(function(btn){
+  btn.addEventListener('pointerdown', function(e){ this.blur(); }, {passive:true});
+  btn.addEventListener('touchend', function(){ this.blur(); }, {passive:true});
+  btn.addEventListener('click', function(){ this.blur(); }, {passive:true});
+});
+</script>
+
 </body>
 </html>
