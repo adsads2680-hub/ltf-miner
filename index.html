@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
 :root{
   --bg:#02060b;--panel:#07131f;--panel2:#0a1d2c;--line:#1a4259;
@@ -541,6 +542,17 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
+    <div class="item" id="adsgramRewardTaskItem">
+      <span class="ico">🎬</span>
+      <main>
+        <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
+        <small id="adsgramRewardTaskInfo">+1 MIMA • إعلان اختياري</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="adsgramRewardTaskBtn" class="taskJoinBtn" type="button" onclick="showAdsgramRewardAd()">شاهد</button>
+      </div>
+    </div>
+
     
   </div>
 </section>
@@ -804,6 +816,13 @@ html[dir="ltr"] input{text-align:left}
 
   let taskNextAvailableAt = 0;
   let task2NextAvailableAt = 0;
+
+  const ADSGRAM_BLOCK_ID = '51578';
+  let adsgramController = null;
+  let adsgramRewardBusy = false;
+  let adsgramRewardWatched = 0;
+  let adsgramRewardRemaining = 10;
+  let adsgramRewardResetAt = 0;
 
   let serverTimeOffset = 0;
   let serverReady = false;
@@ -1160,6 +1179,10 @@ html[dir="ltr"] input{text-align:left}
 
     if(id === 'home'){
       loadPublicPayouts();
+    }
+
+    if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
+      refreshAdsgramRewardStatus(false).catch(()=>{});
     }
   }
 
@@ -1847,6 +1870,138 @@ html[dir="ltr"] input{text-align:left}
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo');
     renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo');
   }
+
+  function renderAdTask(){
+    const title = $('adsgramRewardTaskTitle');
+    const info = $('adsgramRewardTaskInfo');
+    const btn = $('adsgramRewardTaskBtn');
+    if(!title || !info || !btn) return;
+
+    title.textContent = tx('شاهد إعلان','Watch an ad');
+
+    if(!serverMode){
+      btn.disabled = true;
+      btn.textContent = tx('افتح داخل Telegram','Open in Telegram');
+      info.textContent = tx('+1 MIMA • إعلان اختياري','+1 MIMA • optional ad');
+      return;
+    }
+
+    if(adsgramRewardRemaining <= 0){
+      btn.disabled = true;
+      btn.textContent = tx('مكتمل','Completed');
+      const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
+      info.textContent = left > 0
+        ? tx('+1 MIMA • تتجدد بعد ','+1 MIMA • refreshes in ') + formatCountdown(left)
+        : tx('+1 MIMA • تتجدد قريباً','+1 MIMA • refreshes soon');
+      return;
+    }
+
+    btn.disabled = adsgramRewardBusy;
+    btn.textContent = adsgramRewardBusy ? '⏳' : tx('شاهد','Watch');
+    info.textContent =
+      tx('+1 MIMA • إعلان اختياري • المتبقي ','+1 MIMA • optional ad • remaining ') +
+      adsgramRewardRemaining + '/10';
+  }
+
+  async function refreshAdsgramRewardStatus(showError=false){
+    if(!serverMode){
+      renderAdTask();
+      return false;
+    }
+
+    try{
+      const data = await apiCall('ad_status');
+      if(data?.success !== true){
+        throw new Error(localizeServerMessage(data?.message) || tx('تعذر تحميل حالة الإعلان','Could not load ad status'));
+      }
+
+      adsgramRewardWatched = Math.max(0,Number(data.watched || 0));
+      adsgramRewardRemaining = Math.max(0,Number(data.remaining ?? 0));
+
+      const resetTs = Date.parse(data.reset_at || '');
+      adsgramRewardResetAt = Number.isFinite(resetTs) ? resetTs : 0;
+
+      renderAdTask();
+      return true;
+    }catch(err){
+      renderAdTask();
+      if(showError){
+        toast('⚠️ ' + (err.message || tx('تعذر تحميل حالة الإعلان','Could not load ad status')));
+      }
+      return false;
+    }
+  }
+
+  function getAdsgramController(){
+    if(adsgramController) return adsgramController;
+    if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
+    adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+    return adsgramController;
+  }
+
+  async function waitForAdsgramReward(beforeCount){
+    for(let i=0;i<12;i++){
+      await new Promise(resolve=>setTimeout(resolve,800));
+      await refreshAdsgramRewardStatus(false);
+      if(adsgramRewardWatched > beforeCount){
+        await syncServerStatus(false,true);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+    if(adsgramRewardBusy) return;
+
+    if(!serverMode){
+      toast(tx('⚠️ افتح MIMA من داخل Telegram لمشاهدة الإعلان','⚠️ Open MIMA inside Telegram to watch the ad'));
+      return;
+    }
+
+    await refreshAdsgramRewardStatus(false);
+
+    if(adsgramRewardRemaining <= 0){
+      renderAdTask();
+      toast(tx('⏳ أكملت إعلانات هذه الدورة','⏳ You completed the ads for this cycle'));
+      return;
+    }
+
+    const controller = getAdsgramController();
+    if(!controller){
+      toast(tx('⏳ خدمة الإعلان لم تجهز بعد، حاول مرة أخرى','⏳ Ad service is not ready yet. Try again'));
+      return;
+    }
+
+    adsgramRewardBusy = true;
+    renderAdTask();
+    const beforeCount = adsgramRewardWatched;
+
+    try{
+      await controller.show();
+
+      toast(tx('✅ تمت المشاهدة، جاري تأكيد المكافأة','✅ Ad completed, confirming reward'));
+      const confirmed = await waitForAdsgramReward(beforeCount);
+
+      if(confirmed){
+        toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
+      }else{
+        toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
+        setTimeout(async()=>{
+          await refreshAdsgramRewardStatus(false);
+          await syncServerStatus(false,true);
+        },4000);
+      }
+    }catch(err){
+      const desc = String(err?.description || err?.message || '');
+      if(!/skip|close|cancel/i.test(desc)){
+        toast(tx('⚠️ الإعلان غير متاح حالياً','⚠️ Ad is currently unavailable'));
+      }
+    }finally{
+      adsgramRewardBusy = false;
+      renderAdTask();
+    }
+  };
   function render(){
     const balanceText = formatMima(bal);
     const usdValue = usdFromMima(bal);
@@ -5247,6 +5402,26 @@ body.privacyModalOpen{overflow:hidden!important}
   margin-bottom:10px !important;
   border-bottom:1px solid rgba(53,115,151,.42) !important;
 }
+</style>
+
+<style id="mima-adsgram-reward-style">
+#adsgramRewardTaskItem{
+  border-top:1px solid rgba(255,195,61,.14);
+  margin-top:10px;
+  padding-top:13px!important;
+}
+#adsgramRewardTaskBtn{
+  min-width:88px!important;
+  min-height:46px!important;
+  padding:10px 16px!important;
+  border:1.5px solid #d99a24!important;
+  border-radius:14px!important;
+  color:#ffe7a0!important;
+  font-weight:900!important;
+  background:linear-gradient(180deg,#171005 0%,#090704 50%,#120c04 100%)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,235,164,.14),0 0 12px rgba(238,164,30,.12)!important;
+}
+#adsgramRewardTaskBtn:disabled{opacity:.62!important}
 </style>
 </body>
 </html>
