@@ -5994,3 +5994,53 @@ input[type="submit"]:focus-visible{
   }
 }
 </style>
+
+
+<style id="mima-final-no-blue-press">
+/* Final override: prevent Telegram/Android WebView rectangular blue press/focus layer. */
+#tasks .taskActionGroup,
+#tasks .taskActionGroup:focus,
+#tasks .taskActionGroup:active{
+  background:transparent !important;
+  outline:none !important;
+  box-shadow:none !important;
+  -webkit-tap-highlight-color:transparent !important;
+}
+
+#tasks .taskActionGroup button,
+#tasks .taskActionGroup button:focus,
+#tasks .taskActionGroup button:focus-visible,
+#tasks .taskActionGroup button:active,
+#adsgramRewardTaskBtn,
+#adsgramRewardTaskBtn:focus,
+#adsgramRewardTaskBtn:focus-visible,
+#adsgramRewardTaskBtn:active{
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  -webkit-tap-highlight-color:transparent !important;
+  -webkit-touch-callout:none !important;
+  outline:none !important;
+  background-clip:padding-box !important;
+}
+
+#adsgramRewardTaskBtn,
+#adsgramRewardTaskBtn:focus,
+#adsgramRewardTaskBtn:focus-visible,
+#adsgramRewardTaskBtn:active{
+  background:
+    radial-gradient(circle at 50% 15%, rgba(255,217,105,.12), transparent 34%),
+    linear-gradient(180deg,#171005 0%,#090704 50%,#120c04 100%) !important;
+  border:1.5px solid #d99a24 !important;
+  border-radius:14px !important;
+  color:#ffe7a0 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,235,164,.14),
+    inset 0 0 14px rgba(255,177,30,.08),
+    0 0 12px rgba(238,164,30,.12) !important;
+}
+
+#adsgramRewardTaskBtn::-moz-focus-inner{
+  border:0 !important;
+  padding:0 !important;
+}
+</style>
