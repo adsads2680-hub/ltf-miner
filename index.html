@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script id="monetagSdk" src="https://libtl.com/sdk.js" data-zone="11916820" data-sdk="show_11916820"></script>
 <style>
 :root{
   --bg:#02060b;--panel:#07131f;--panel2:#0a1d2c;--line:#1a4259;
@@ -533,7 +532,7 @@ html[dir="ltr"] input{text-align:left}
     <div class="item" id="victorsPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
-        <b>اشترك معنا وابدأ بالأرباح</b>
+        <b>انضم إلى شريك MIMA</b>
         <small id="victorsPartnerTaskInfo">+5 MIMA • مكافأة لمرة واحدة</small>
       </main>
       <div class="taskActionGroup">
@@ -542,18 +541,7 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item adRewardItem">
-      <span class="ico">🎬</span>
-      <main>
-        <b>شاهد إعلان واربح</b>
-        <small id="rewardAdTaskInfo">+1 MIMA • 15 إعلان • إعلان كل دقيقتين • Monetag</small>
-        <div class="adRewardProgress">
-          <span id="rewardAdTaskCount">0 / 15</span>
-          <span id="rewardAdTaskReset">متاح الآن</span>
-        </div>
-      </main>
-      <button id="rewardAdTaskBtn" class="rewardAdBtn" type="button" onclick="showRewardAd()">شاهد</button>
-    </div>
+    
   </div>
 </section>
 
@@ -684,22 +672,7 @@ html[dir="ltr"] input{text-align:left}
             onclick="confirmExchange()" disabled>
       إرسال طلب التبادل
     </button>
-
-    <button id="exchangeTestBtn" class="exchangeTestBtn" type="button"
-            onclick="sendTestExchangeRequest()" style="display:none">
-      🧪 إرسال طلب تجريبي بدون خصم
-    </button>
-  </div>
-</section>
-
-<section id="shop" class="screen">
-  <h2 class="title">🏪 المتجر</h2>
-  <div class="card list">
-    <div class="item"><span class="ico">⚡</span><main><b>تعزيز سرعة التعدين</b><small>200 MIMA • 24 ساعة</small></main><button onclick="buy(200)">شراء</button></div>
-    <div class="item"><span class="ico">⛏️</span><main><b>زيادة قوة التعدين</b><small>500 MIMA • 3 أيام</small></main><button onclick="buy(500)">شراء</button></div>
-    <div class="item"><span class="ico">🛡️</span><main><b>حماية الحساب</b><small>300 MIMA</small></main><button onclick="buy(300)">شراء</button></div>
-    <div class="item"><span class="ico">👑</span><main><b>VIP</b><small>1,000 MIMA</small></main><button onclick="buy(1000)">شراء</button></div>
-  </div>
+</div>
 </section>
 
 
@@ -707,11 +680,8 @@ html[dir="ltr"] input{text-align:left}
   <h2 class="title">⚙️ الإعدادات</h2>
   <div class="card list">
     <div class="item" id="languageSetting" role="button" tabindex="0" onclick="toggleLanguage()" style="cursor:pointer"><span class="ico">🌐</span><main><b>اللغة</b><small id="languageValue">العربية</small></main><span>›</span></div>
-    <div class="item"><span class="ico">🔔</span><main><b>الإشعارات</b><small>مفعلة</small></main><span>›</span></div>
-    <div class="item"><span class="ico">🛡️</span><main><b>الأمان</b><small>إعدادات الحساب</small></main><span>›</span></div>
     <div class="item" role="button" tabindex="0" onclick="openPrivacyModal()" style="cursor:pointer"><span class="ico">🔐</span><main><b>سياسة الخصوصية</b><small>كيف نستخدم ونحمي بياناتك</small></main><span>›</span></div>
   </div>
-  <button class="primary danger" onclick="toast(tx('تم تسجيل الخروج','Logged out'))">تسجيل الخروج</button>
 </section>
 
 <nav class="bottom">
@@ -794,12 +764,6 @@ html[dir="ltr"] input{text-align:left}
   const TASK_REWARD = 10;
   const TASK_COOLDOWN_MS = 3 * 60 * 60 * 1000;
 
-  const MONETAG_ZONE_ID = '11916820';
-  const MONETAG_TAP_INTERVAL = 50;
-  const MONETAG_REWARD_LIMIT = 15;
-  const MONETAG_REWARD_MIMA = 1;
-  const MONETAG_REWARD_INTERVAL_MS = 2 * 60 * 1000;
-
   const STORAGE_KEY = 'mima_preview_state_v29';
   const SUPABASE_URL = 'https://julnowgcrkazepbfxkau.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23';
@@ -840,14 +804,6 @@ html[dir="ltr"] input{text-align:left}
 
   let taskNextAvailableAt = 0;
   let task2NextAvailableAt = 0;
-
-  let adRewardWatched = 0;
-  let adRewardRemaining = MONETAG_REWARD_LIMIT;
-  let adRewardResetAt = 0;
-  let adRewardNextAvailableAt = 0;
-  let adRewardBusy = false;
-  let tapInterstitialBusy = false;
-  let tapInterstitialMilestone = null;
 
   let serverTimeOffset = 0;
   let serverReady = false;
@@ -996,7 +952,7 @@ html[dir="ltr"] input{text-align:left}
     ['انضم إلى قناة MIMA','Join the MIMA channel'],
     ['+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify'],
     ['انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel'],
-    ['اشترك معنا وابدأ بالأرباح','Join us and start earning'],
+    ['انضم إلى شريك MIMA','Join a MIMA partner'],
     ['+5 MIMA • مكافأة لمرة واحدة','+5 MIMA • one-time reward'],
     ['اشترك','Join'],
     ['استلم','Claim'],
@@ -1417,7 +1373,6 @@ html[dir="ltr"] input{text-align:left}
     const labels = {
       tap_reward: tx('نقرات','Taps'),
       mining_claim: tx('تعدين','Mining'),
-      monetag_reward: tx('إعلان Monetag','Monetag ad'),
       task_reward: tx('مهمة','Task'),
       referral_reward: tx('إحالة','Referral'),
       mima_to_gram_exchange: tx('تبادل','Exchange'),
@@ -1757,18 +1712,6 @@ html[dir="ltr"] input{text-align:left}
     earned = Math.max(0,Math.min(roundMax,Number(data.accrued || 0)));
     miningPoints = Math.max(0,Number(data.mining_points || 0));
 
-    if(tapInterstitialMilestone === null){
-      tapInterstitialMilestone = Math.floor(miningPoints / MONETAG_TAP_INTERVAL);
-    }
-
-    if(Number.isFinite(Number(data.ad_reward_watched))){
-      adRewardWatched = Math.max(0,Math.min(MONETAG_REWARD_LIMIT,Number(data.ad_reward_watched)));
-      adRewardRemaining = Math.max(0,MONETAG_REWARD_LIMIT-adRewardWatched);
-    }
-
-    const adResetTs = Date.parse(data.ad_reward_reset_at || '');
-    adRewardResetAt = Number.isFinite(adResetTs) ? adResetTs : 0;
-
     if(Number.isFinite(Number(data.tap_energy))){
       tapEnergy = Math.max(0,Math.min(MAX_TAP_ENERGY,Number(data.tap_energy)));
     }
@@ -1904,296 +1847,6 @@ html[dir="ltr"] input{text-align:left}
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo');
     renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo');
   }
-
-  function renderAdTask(){
-    const btn = $('rewardAdTaskBtn');
-    const info = $('rewardAdTaskInfo');
-    const count = $('rewardAdTaskCount');
-    const reset = $('rewardAdTaskReset');
-
-    if(!btn || !info || !count || !reset) return;
-
-    if(adRewardResetAt && adRewardResetAt <= nowMs()){
-      adRewardWatched = 0;
-      adRewardRemaining = MONETAG_REWARD_LIMIT;
-      adRewardResetAt = 0;
-      adRewardNextAvailableAt = 0;
-    }
-
-    adRewardRemaining = Math.max(
-      0,
-      MONETAG_REWARD_LIMIT - adRewardWatched
-    );
-
-    count.textContent = adRewardWatched + ' / ' + MONETAG_REWARD_LIMIT;
-    info.textContent = '+' + MONETAG_REWARD_MIMA +
-      tx(' MIMA لكل إعلان • المتبقي ',' MIMA per ad • remaining ') + adRewardRemaining;
-
-    if(adRewardBusy){
-      btn.disabled = true;
-      btn.textContent = '⏳';
-      reset.textContent = tx('جاري تشغيل الإعلان','Starting ad…');
-      return;
-    }
-
-    if(adRewardRemaining <= 0){
-      btn.disabled = true;
-      btn.textContent = tx('مكتمل','Completed');
-
-      const remaining = adRewardResetAt
-        ? Math.max(0,adRewardResetAt-nowMs())
-        : 0;
-
-      reset.textContent = remaining > 0
-        ? (tx('تتجدد بعد ','Refreshes in ') + formatCountdown(remaining))
-        : tx('تتجدد قريباً','Refreshes soon');
-      return;
-    }
-
-    const nextRemaining = adRewardNextAvailableAt
-      ? Math.max(0, adRewardNextAvailableAt - nowMs())
-      : 0;
-
-    if(nextRemaining > 0){
-      btn.disabled = true;
-      btn.textContent = formatCountdown(nextRemaining);
-      reset.textContent = tx('الإعلان التالي بعد ','Next ad in ') + formatCountdown(nextRemaining);
-      return;
-    }
-
-    btn.disabled = false;
-    btn.textContent = tx('شاهد','Watch');
-    reset.textContent = adRewardResetAt
-      ? (tx('الدورة تنتهي بعد ','Cycle ends in ') + formatCountdown(Math.max(0,adRewardResetAt-nowMs())))
-      : tx('متاح الآن','Available now');
-  }
-
-  function isMonetagReady(){
-    return typeof window['show_' + MONETAG_ZONE_ID] === 'function';
-  }
-
-  let monetagReloadPromise = null;
-
-  async function ensureMonetagReady(timeoutMs = 10000){
-    if(isMonetagReady()) return true;
-
-    if(!monetagReloadPromise){
-      monetagReloadPromise = new Promise(resolve => {
-        const oldScript = document.getElementById('monetagSdk');
-        if(oldScript) oldScript.remove();
-
-        const script = document.createElement('script');
-        script.id = 'monetagSdk';
-        script.src = 'https://libtl.com/sdk.js';
-        script.setAttribute('data-zone', MONETAG_ZONE_ID);
-        script.setAttribute('data-sdk', 'show_' + MONETAG_ZONE_ID);
-        script.async = true;
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.head.appendChild(script);
-      }).finally(() => {
-        monetagReloadPromise = null;
-      });
-    }
-
-    await Promise.race([
-      monetagReloadPromise,
-      new Promise(resolve => setTimeout(() => resolve(false), timeoutMs))
-    ]);
-
-    const startedAt = Date.now();
-    while(Date.now() - startedAt < timeoutMs){
-      if(isMonetagReady()) return true;
-      await new Promise(resolve => setTimeout(resolve,250));
-    }
-
-    return isMonetagReady();
-  }
-
-  async function showTapInterstitial(){
-    if(tapInterstitialBusy || !serverMode) return;
-    if(!isMonetagReady()) return;
-
-    tapInterstitialBusy = true;
-
-    try{
-      await window.show_11916820({
-        type:'inApp',
-        inAppSettings:{
-          frequency:1,
-          capping:0.1,
-          interval:30,
-          timeout:5,
-          everyPage:false
-        }
-      });
-    }catch(e){
-      // Monetag interstitial is optional: mining and tapping continue normally.
-    }finally{
-      tapInterstitialBusy = false;
-    }
-  }
-
-  function maybeShowTapInterstitial(serverPoints){
-    const currentMilestone = Math.floor(
-      Math.max(0,Number(serverPoints || 0)) / MONETAG_TAP_INTERVAL
-    );
-
-    if(tapInterstitialMilestone === null){
-      tapInterstitialMilestone = currentMilestone;
-      return;
-    }
-
-    if(currentMilestone > tapInterstitialMilestone){
-      tapInterstitialMilestone = currentMilestone;
-      showTapInterstitial();
-    }
-  }
-
-  async function refreshAdRewardStatus(showError=false){
-    if(!serverMode) return false;
-
-    try{
-      const data = await apiCall('ad_status');
-
-      if(data?.success !== true){
-        throw new Error(localizeServerMessage(data?.message) || tx('تعذر تحميل حالة الإعلانات','Could not load ad status'));
-      }
-
-      adRewardWatched = Math.max(
-        0,
-        Math.min(MONETAG_REWARD_LIMIT,Number(data.watched || 0))
-      );
-      adRewardRemaining = Math.max(
-        0,
-        Number(data.remaining ?? (MONETAG_REWARD_LIMIT-adRewardWatched))
-      );
-
-      const ts = Date.parse(data.reset_at || '');
-      adRewardResetAt = Number.isFinite(ts) ? ts : 0;
-
-      const nextTs = Date.parse(data.next_available_at || '');
-      adRewardNextAvailableAt = Number.isFinite(nextTs) ? nextTs : 0;
-
-      renderAdTask();
-      return true;
-    }catch(err){
-      if(showError){
-        toast('⚠️ ' + (err.message || tx('تعذر تحميل مهمة الإعلان','Could not load the ad task')));
-      }
-      return false;
-    }
-  }
-
-  async function waitForAdRewardConfirmation(beforeCount){
-    for(let i=0;i<8;i++){
-      await new Promise(resolve=>setTimeout(resolve,700));
-      await refreshAdRewardStatus(false);
-
-      if(adRewardWatched > beforeCount){
-        await syncServerStatus(false,true);
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  window.showRewardAd = async function showRewardAd(){
-    if(adRewardBusy) return;
-
-    if(!serverMode){
-      toast(tx('⚠️ افتح MIMA من داخل Telegram لمشاهدة الإعلان','⚠️ Open MIMA inside Telegram to watch ads'));
-      return;
-    }
-
-    await refreshAdRewardStatus(false);
-
-    if(adRewardRemaining <= 0){
-      renderAdTask();
-      toast(tx('⏳ أكملت 15 إعلاناً، انتظر بداية الدورة الجديدة','⏳ You completed 15 ads. Wait for the next cycle'));
-      return;
-    }
-
-    const nextRemaining = adRewardNextAvailableAt
-      ? Math.max(0, adRewardNextAvailableAt - nowMs())
-      : 0;
-
-    if(nextRemaining > 0){
-      renderAdTask();
-      toast(tx('⏳ الإعلان التالي متاح بعد ','⏳ Next ad available in ') + formatCountdown(nextRemaining));
-      return;
-    }
-
-    if(!isMonetagReady()){
-      toast(tx('⏳ جاري تجهيز الإعلان…','⏳ Preparing ad…'));
-      const ready = await ensureMonetagReady();
-      if(!ready){
-        toast(tx('⚠️ تعذر تحميل خدمة الإعلان. حاول مرة أخرى بعد قليل','⚠️ Could not load the ad service. Please try again shortly'));
-        return;
-      }
-    }
-
-    adRewardBusy = true;
-    renderAdTask();
-
-    try{
-      // Monetag resolves this Promise after the rewarded interstitial is completed.
-      await window['show_' + MONETAG_ZONE_ID]();
-
-      const reward = await apiCall('monetag_reward');
-
-      if(reward?.success !== true){
-        throw new Error(localizeServerMessage(reward?.message) || tx('تعذر إضافة مكافأة الإعلان','Could not add the ad reward'));
-      }
-
-      if(reward?.limit_reached){
-        await refreshAdRewardStatus(false);
-        toast(tx('⏳ أكملت 15 إعلاناً، انتظر بداية الدورة الجديدة','⏳ You completed 15 ads. Wait for the next cycle'));
-        return;
-      }
-
-      if(reward?.duplicate_guard){
-        await refreshAdRewardStatus(false);
-        toast(tx('⏳ تم تجاهل الطلب المكرر','⏳ Duplicate reward request ignored'));
-        return;
-      }
-
-      if(reward?.rewarded === true){
-        adRewardWatched = Math.max(0,Number(reward.watched || (adRewardWatched + 1)));
-        adRewardRemaining = Math.max(0,Number(reward.remaining ?? (MONETAG_REWARD_LIMIT-adRewardWatched)));
-
-        const ts = Date.parse(reward.reset_at || '');
-        adRewardResetAt = Number.isFinite(ts) ? ts : adRewardResetAt;
-
-        const nextTs = Date.parse(reward.next_available_at || '');
-        adRewardNextAvailableAt = Number.isFinite(nextTs)
-          ? nextTs
-          : (nowMs() + MONETAG_REWARD_INTERVAL_MS);
-
-        renderAdTask();
-        await syncServerStatus(false,true);
-
-        toast(tx(
-          '🎁 +1 MIMA أضيفت للرصيد القابل للتبديل',
-          '🎁 +1 MIMA added to your exchangeable balance'
-        ));
-      }else{
-        await refreshAdRewardStatus(false);
-        toast(tx('⚠️ لم تتم إضافة المكافأة','⚠️ Reward was not added'));
-      }
-    }catch(err){
-      const msg = String(err?.message || tx('الإعلان غير متاح','Ad unavailable'));
-
-      if(!/skip|close|cancel/i.test(msg)){
-        toast('⚠️ ' + msg);
-      }
-    }finally{
-      adRewardBusy = false;
-      renderAdTask();
-    }
-  };
-
   function render(){
     const balanceText = formatMima(bal);
     const usdValue = usdFromMima(bal);
@@ -2367,17 +2020,8 @@ html[dir="ltr"] input{text-align:left}
           : tx('تعذر جلب سعر GRAM المباشر حالياً.','Could not fetch the live GRAM price.');
     }
 
-    const adminId = String(
-      window.Telegram?.WebApp?.initDataUnsafe?.user?.id || ''
-    );
-    if($('exchangeTestBtn')){
-      $('exchangeTestBtn').style.display =
-        adminId === ADMIN_TELEGRAM_USER_ID ? 'block' : 'none';
-    }
-
     updateExchangeEstimate();
     renderTask();
-    renderAdTask();
   }
 
   async function claimMiningReward(){
@@ -2739,7 +2383,6 @@ html[dir="ltr"] input{text-align:left}
           Math.max(0,Number(data.tap_reward_progress || 0));
 
         miningPoints = serverPoints + unsent;
-        maybeShowTapInterstitial(serverPoints);
         tapEnergy = Math.max(0,serverEnergy-unsent);
         tapRewardProgress = (serverProgress+unsent)%1000;
         tapLastRegenAt = Date.now();
@@ -2862,27 +2505,9 @@ html[dir="ltr"] input{text-align:left}
 
     render();
   };
-
-  function buy(price){
-    if(serverMode){
-      toast(tx('🔒 الشراء سيُنفذ من الخادم عند تفعيل المتجر','🔒 Purchases will be processed by the server when the store is enabled'));
-      return;
-    }
-
-    if(bal < price){
-      toast(tx('الرصيد غير كافٍ','Insufficient balance'));
-      return;
-    }
-
-    bal -= price;
-    savePreviewState();
-    render();
-    toast(tx('✅ تمت عملية الشراء','✅ Purchase completed'));
-  }
-
   function getReferralLink(){
     if(referralCode){
-      return 'https://t.me/MIMA_COIN_bot?startapp=ref_' +
+      return 'https://t.me/MIMA_COIN_bot/mima?startapp=ref_' +
         encodeURIComponent(referralCode);
     }
 
@@ -2890,11 +2515,11 @@ html[dir="ltr"] input{text-align:left}
       window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
     if(uid){
-      return 'https://t.me/MIMA_COIN_bot?startapp=ref_' +
+      return 'https://t.me/MIMA_COIN_bot/mima?startapp=ref_' +
         encodeURIComponent(String(uid));
     }
 
-    return 'https://t.me/MIMA_Miner_bot?startapp';
+    return 'https://t.me/MIMA_COIN_bot/mima?startapp';
   }
 
   function updateReferralLink(){
@@ -2953,7 +2578,6 @@ html[dir="ltr"] input{text-align:left}
       copyLink();
     }
   }
-
 
 
   function withdrawalStatusInfo(status){
@@ -3420,57 +3044,6 @@ html[dir="ltr"] input{text-align:left}
       amount > exchangeableBalance ||
       walletAddress.length < 12;
   }
-
-  async function sendTestExchangeRequest(){
-    const input = $('exchangeMimaAmount');
-    const wallet = $('exchangeWalletAddress');
-
-    if(!input || !wallet) return;
-
-    const amount = Math.max(0,Number(input.value || 0));
-    const walletAddress = String(wallet.value || '').trim();
-
-    const adminId = String(
-      window.Telegram?.WebApp?.initDataUnsafe?.user?.id || ''
-    );
-
-    if(adminId !== ADMIN_TELEGRAM_USER_ID){
-      toast(tx('⚠️ الاختبار متاح للإدارة فقط','⚠️ Test mode is available to admin only'));
-      return;
-    }
-
-    if(amount < EXCHANGE_MIN_MIMA){
-      toast(tx('⚠️ اكتب 200 MIMA أو أكثر للاختبار','⚠️ Enter 200 MIMA or more for the test'));
-      return;
-    }
-
-    if(walletAddress.length < 12){
-      toast(tx('⚠️ أدخل عنوان سحب للاختبار','⚠️ Enter a withdrawal address for the test'));
-      return;
-    }
-
-    const btn = $('exchangeTestBtn');
-    btn.disabled = true;
-    btn.textContent = tx('⏳ إرسال الاختبار...','⏳ Sending test…');
-
-    try{
-      const data = await exchangeRequestApiCall(
-        amount,
-        walletAddress,
-        true
-      );
-
-      toast(
-        tx('🧪 تم إرسال الطلب التجريبي إلى Telegram بدون خصم','🧪 Test request sent to Telegram without deduction')
-      );
-    }catch(err){
-      toast('⚠️ ' + (err.message || tx('فشل الاختبار','Test failed')));
-    }finally{
-      btn.disabled = false;
-      btn.textContent = tx('🧪 إرسال طلب تجريبي بدون خصم','🧪 Send test request without deduction');
-    }
-  }
-
   async function confirmExchange(){
     const input = $('exchangeMimaAmount');
     const wallet = $('exchangeWalletAddress');
@@ -3722,8 +3295,6 @@ html[dir="ltr"] input{text-align:left}
     render();
   },1000);
 </script>
-
-
 
 
 <style>
@@ -4751,24 +4322,6 @@ body.exchangeModalOpen .bottom{
 
 
 <style>
-.exchangeTestBtn{
-  width:100%;
-  min-height:46px;
-  margin-top:9px;
-  border:1px dashed rgba(32,216,154,.55);
-  border-radius:15px;
-  background:rgba(3,28,24,.65);
-  color:#7ff1c9;
-  font-weight:900;
-  font-size:13px;
-}
-.exchangeTestBtn:disabled{
-  opacity:.55;
-}
-</style>
-
-
-<style>
 /* v32 — tap reward + no blue press highlight */
 #mainCoin,
 #mainCoin:active,
@@ -5027,42 +4580,6 @@ body.withdrawHistoryModalOpen .bottom{
 </style>
 
 
-<style>
-/* ===== Monetag rewarded task ===== */
-.adRewardItem{
-  margin-top:10px;
-  border-top:1px solid rgba(255,195,61,.14);
-  padding-top:13px!important;
-}
-.adRewardProgress{
-  margin-top:7px;
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  font-size:9px;
-  color:#83a4b8;
-}
-.adRewardProgress span:first-child{
-  color:#ffd469;
-  font-weight:900;
-}
-.rewardAdBtn{
-  min-width:68px;
-  padding:10px 12px;
-  border-radius:12px;
-  background:linear-gradient(135deg,#f6b719,#ffd85c);
-  color:#281700;
-  font-weight:1000;
-  box-shadow:0 0 16px rgba(255,190,45,.18);
-}
-.rewardAdBtn:disabled{
-  opacity:.55;
-  cursor:default;
-  box-shadow:none;
-}
-</style>
-
-
 <style id="mima-home-privacy-modal-style">
 .homePrivacyRow{
   position:relative;
@@ -5194,17 +4711,14 @@ body.privacyModalOpen{overflow:hidden!important}
       <li>حفظ سجلات المعاملات وتحسين أمان واستقرار الخدمة.</li>
     </ul>
 
-    <h3>4. الإعلانات وMonetag</h3>
-    <p>يستخدم MIMA خدمة Monetag لعرض الإعلانات، ومنها الإعلانات بمكافأة والإعلانات داخل التطبيق. قد تعالج Monetag ومزودوها معلومات تقنية لازمة لعرض الإعلانات وقياسها وتأمينها وفق سياساتهم الخاصة.</p>
-    <p><a href="https://monetag.com/privacy/" target="_blank" rel="noopener noreferrer">Monetag Privacy Policy</a></p>
 
-    <h3>5. مزودو الخدمة</h3>
-    <p>يستخدم MIMA خدمات Telegram لتشغيل التطبيق والمصادقة، وSupabase للبنية الخلفية وقاعدة البيانات، وGitHub Pages للاستضافة، وMonetag للإعلانات. لكل مزود سياساته الخاصة.</p>
+    <h3>4. مزودو الخدمة</h3>
+    <p>يستخدم MIMA خدمات Telegram لتشغيل التطبيق والمصادقة، وSupabase للبنية الخلفية وقاعدة البيانات، وGitHub Pages للاستضافة. لكل مزود سياساته الخاصة.</p>
 
-    <h3>6. الأمان والاحتفاظ</h3>
+    <h3>5. الأمان والاحتفاظ</h3>
     <p>نحتفظ ببيانات الحساب والمعاملات بالقدر اللازم لتشغيل MIMA، مكافحة الاحتيال، إدارة السحوبات والالتزامات القانونية عند الحاجة. MIMA لا يطلب كلمة مرور Telegram أو العبارة السرية للمحفظة أو المفتاح الخاص.</p>
 
-    <h3>7. حقوق المستخدم</h3>
+    <h3>6. حقوق المستخدم</h3>
     <p>بحسب بلدك قد تكون لك حقوق متعلقة بالوصول إلى بياناتك أو تصحيحها أو حذفها أو تقييد بعض طرق معالجتها. ويمكن الاطلاع على خيارات الخصوصية والإعلانات من خلال سياسات مزودي الخدمة.</p>
   `;
 
@@ -5224,17 +4738,14 @@ body.privacyModalOpen{overflow:hidden!important}
       <li>To maintain transaction records and improve service security and reliability.</li>
     </ul>
 
-    <h3>4. Advertising and Monetag</h3>
-    <p>MIMA uses Monetag to display advertising, including rewarded and in-app formats. Monetag and its providers may process technical information needed to deliver, measure and secure advertising under their own policies.</p>
-    <p><a href="https://monetag.com/privacy/" target="_blank" rel="noopener noreferrer">Monetag Privacy Policy</a></p>
 
-    <h3>5. Service providers</h3>
-    <p>MIMA uses Telegram for the Mini App platform and authentication, Supabase for backend/database services, GitHub Pages for hosting, and Monetag for advertising. Each provider operates under its own privacy terms.</p>
+    <h3>4. Service providers</h3>
+    <p>MIMA uses Telegram for the Mini App platform and authentication, Supabase for backend/database services, GitHub Pages for hosting. Each provider operates under its own privacy terms.</p>
 
-    <h3>6. Security and retention</h3>
+    <h3>5. Security and retention</h3>
     <p>We retain account and transaction records as reasonably necessary to operate MIMA, prevent fraud, manage withdrawals and meet applicable legal requirements. MIMA does not ask for Telegram passwords, wallet seed phrases or private keys.</p>
 
-    <h3>7. Your rights</h3>
+    <h3>6. Your rights</h3>
     <p>Depending on your location, you may have rights to access, correct, delete or restrict certain processing of your personal data. Advertising privacy choices are also available through the relevant service providers.</p>
   `;
 
@@ -5728,6 +5239,15 @@ body.privacyModalOpen{overflow:hidden!important}
 }
 </style>
 
+
+<style id="mima-withdrawals-partner-divider-fix">
+#tasks #mimaWithdrawalsTaskItem{
+  position:relative !important;
+  padding-bottom:18px !important;
+  margin-bottom:10px !important;
+  border-bottom:1px solid rgba(53,115,151,.42) !important;
+}
+</style>
 </body>
 </html>
 <style>
@@ -5849,41 +5369,6 @@ body.privacyModalOpen{overflow:hidden!important}
 .taskActionGroup .taskJoinBtn:active,
 .taskActionGroup #joinChannelTaskBtn:active:not(:disabled){
   transform:scale(.985)!important;
-}
-</style>
-
-
-<style id="mima-gold-reward-ad-button">
-/* Rewarded ad button — same black/gold identity as Exchange */
-.rewardAdBtn,
-#rewardAdTaskBtn{
-  min-width:88px!important;
-  min-height:46px!important;
-  padding:10px 16px!important;
-  border:1.5px solid #d99a24!important;
-  border-radius:14px!important;
-  color:#ffe7a0!important;
-  font-weight:900!important;
-  background:
-    radial-gradient(circle at 50% 15%, rgba(255,217,105,.12), transparent 34%),
-    linear-gradient(180deg,#171005 0%,#090704 50%,#120c04 100%)!important;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,235,164,.14),
-    inset 0 0 14px rgba(255,177,30,.08),
-    0 0 12px rgba(238,164,30,.12)!important;
-  text-shadow:0 1px 0 #000!important;
-}
-.rewardAdBtn:active:not(:disabled),
-#rewardAdTaskBtn:active:not(:disabled){
-  transform:scale(.985)!important;
-}
-.rewardAdBtn:disabled,
-#rewardAdTaskBtn:disabled{
-  opacity:.62!important;
-  filter:saturate(.72)!important;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,235,164,.10),
-    0 0 8px rgba(238,164,30,.08)!important;
 }
 </style>
 
