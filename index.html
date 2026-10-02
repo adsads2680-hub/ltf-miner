@@ -5429,6 +5429,31 @@ body.privacyModalOpen{overflow:hidden!important}
 }
 #adsgramRewardTaskBtn:disabled{opacity:.62!important}
 </style>
+
+<style id="mima-global-no-blue-tap-highlight">
+/* Remove Android/Telegram WebView blue press rectangle from all tappable controls. */
+button,
+a,
+[role="button"],
+input[type="button"],
+input[type="submit"]{
+  -webkit-tap-highlight-color:transparent !important;
+  -webkit-touch-callout:none !important;
+}
+
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible,
+[role="button"]:focus,
+[role="button"]:focus-visible,
+input[type="button"]:focus,
+input[type="button"]:focus-visible,
+input[type="submit"]:focus,
+input[type="submit"]:focus-visible{
+  outline:none !important;
+}
+</style>
 </body>
 </html>
 <style>
