@@ -2356,8 +2356,14 @@ html[dir="ltr"] input{text-align:left}
 
   const VICTORS_PARTNER_URL = 'https://t.me/VictorsCompanybot/app?startapp=ref_5D66CA239C';
   const VICTORS_PARTNER_CLAIM_KEY = 'mima_victors_partner_claimed_v1';
+  const VICTORS_PARTNER_OPENED_KEY = 'mima_victors_partner_opened_v1';
 
   function openVictorsPartner(){
+    try{
+      localStorage.setItem(VICTORS_PARTNER_OPENED_KEY,'1');
+    }catch(e){}
+    renderVictorsPartnerTask();
+
     try{
       if(
         window.Telegram &&
@@ -2375,15 +2381,45 @@ html[dir="ltr"] input{text-align:left}
 
   function renderVictorsPartnerTask(){
     const btn = $('victorsPartnerTaskBtn');
+    const info = $('victorsPartnerTaskInfo');
     if(!btn) return;
+
     let claimed = false;
-    try{ claimed = localStorage.getItem(VICTORS_PARTNER_CLAIM_KEY) === '1'; }catch(e){}
-    btn.disabled = claimed;
-    btn.textContent = claimed ? tx('تم الاستلام','Claimed') : tx('استلم','Claim');
+    let opened = false;
+    try{
+      claimed = localStorage.getItem(VICTORS_PARTNER_CLAIM_KEY) === '1';
+      opened = localStorage.getItem(VICTORS_PARTNER_OPENED_KEY) === '1';
+    }catch(e){}
+
+    btn.disabled = claimed || !opened;
+    btn.textContent = claimed
+      ? tx('تم الاستلام','Claimed')
+      : opened
+      ? tx('استلم','Claim')
+      : tx('اشترك أولاً','Subscribe first');
+
+    if(info){
+      info.textContent = claimed
+        ? tx('+5 MIMA • تم الاستلام','+5 MIMA • claimed')
+        : opened
+        ? tx('+5 MIMA • يمكنك الاستلام الآن','+5 MIMA • ready to claim')
+        : tx('+5 MIMA • اشترك أولاً ثم ارجع واستلم','+5 MIMA • subscribe first, then return and claim');
+    }
   }
 
   async function claimVictorsPartner(btn){
-    if(!btn || btn.disabled) return;
+    if(!btn) return;
+
+    let opened = false;
+    try{ opened = localStorage.getItem(VICTORS_PARTNER_OPENED_KEY) === '1'; }catch(e){}
+
+    if(!opened){
+      toast(tx('⚠️ اشترك مع شريك MIMA أولاً ثم ارجع واضغط استلم','⚠️ Subscribe with the MIMA partner first, then return and tap Claim'));
+      renderVictorsPartnerTask();
+      return;
+    }
+
+    if(btn.disabled) return;
 
     btn.disabled = true;
     btn.textContent = '⏳';
