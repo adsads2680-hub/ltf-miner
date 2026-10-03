@@ -2275,6 +2275,18 @@ html[dir="ltr"] input{text-align:left}
       miningInterstitialController = window.Adsgram.init({
         blockId: MINING_INTERSTITIAL_BLOCK_ID
       });
+
+      // AdsGram shows its own alert when no banner is available unless
+      // these events are handled. Keep mining silent and continue normally.
+      if(
+        miningInterstitialController &&
+        typeof miningInterstitialController.addEventListener === 'function'
+      ){
+        miningInterstitialController.addEventListener('onBannerNotFound',()=>{});
+        miningInterstitialController.addEventListener('onNonStopShow',()=>{});
+        miningInterstitialController.addEventListener('onTooLongSession',()=>{});
+      }
+
       return miningInterstitialController;
     }catch(e){
       return null;
