@@ -355,8 +355,11 @@ html[dir="ltr"] input{text-align:left}
   var img=document.getElementById('mimaSplashImage');
   if(!img) return;
   var lang='';
-  try{ lang=String(localStorage.getItem('mima_language_v1')||'').toLowerCase(); }catch(e){}
-  if(lang!=='ar' && lang!=='en'){
+  var manual='';
+  try{ manual=String(localStorage.getItem('mima_language_manual_v1')||'').toLowerCase(); }catch(e){}
+  if(manual==='ar' || manual==='en'){
+    lang=manual;
+  }else{
     try{
       lang=String((window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user&&Telegram.WebApp.initDataUnsafe.user.language_code)||navigator.language||'en').toLowerCase();
     }catch(e){ lang=String(navigator.language||'en').toLowerCase(); }
@@ -859,14 +862,15 @@ html[dir="ltr"] input{text-align:left}
   }catch(e){}
 
   const LANGUAGE_STORAGE_KEY = 'mima_language_v1';
+  const LANGUAGE_MANUAL_KEY = 'mima_language_manual_v1';
 
   function detectInitialLanguage(){
-    let saved = '';
+    let manual = '';
     try{
-      saved = String(localStorage.getItem(LANGUAGE_STORAGE_KEY) || '').toLowerCase();
+      manual = String(localStorage.getItem(LANGUAGE_MANUAL_KEY) || '').toLowerCase();
     }catch(e){}
 
-    if(saved === 'ar' || saved === 'en') return saved;
+    if(manual === 'ar' || manual === 'en') return manual;
 
     let code = '';
     try{
@@ -1124,6 +1128,7 @@ html[dir="ltr"] input{text-align:left}
 
     if(persist){
       localStorage.setItem(LANGUAGE_STORAGE_KEY,currentLang);
+      localStorage.setItem(LANGUAGE_MANUAL_KEY,currentLang);
     }
 
     translateStaticDom();
