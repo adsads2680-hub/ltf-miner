@@ -1939,49 +1939,10 @@ html[dir="ltr"] input{text-align:left}
     }
   }
 
-  function adsgramDiag(label,payload){
-    try{
-      const detail = String(
-        payload?.description ||
-        payload?.message ||
-        payload?.error ||
-        payload?.type ||
-        ''
-      ).trim();
-
-      const msg = 'ADS TEST: ' + label + (detail ? ' • ' + detail : '');
-      console.warn('[MIMA AdsGram Diagnostic]', label, payload || '');
-      toast(msg);
-    }catch(e){}
-  }
-
-  function bindAdsgramDiagnostics(controller,scope){
-    if(!controller || typeof controller.addEventListener !== 'function') return;
-
-    const events = [
-      'onBannerNotFound',
-      'onNonStopShow',
-      'onTooLongSession',
-      'onError'
-    ];
-
-    events.forEach(eventName=>{
-      try{
-        controller.addEventListener(eventName,(event)=>{
-          adsgramDiag(scope + ' ' + eventName,event);
-        });
-      }catch(e){}
-    });
-  }
-
   function getAdsgramController(){
     if(adsgramController) return adsgramController;
-    if(!window.Adsgram || typeof window.Adsgram.init !== 'function'){
-      adsgramDiag('Reward SDK unavailable');
-      return null;
-    }
+    if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
     adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-    bindAdsgramDiagnostics(adsgramController,'Reward');
     return adsgramController;
   }
 
@@ -2040,7 +2001,6 @@ html[dir="ltr"] input{text-align:left}
       }
     }catch(err){
       const desc = String(err?.description || err?.message || '');
-      adsgramDiag('Reward show() rejected',err);
       if(!/skip|close|cancel/i.test(desc)){
         toast(tx('⚠️ الإعلان غير متاح حالياً','⚠️ Ad is currently unavailable'));
       }
@@ -2316,7 +2276,17 @@ html[dir="ltr"] input{text-align:left}
         blockId: MINING_INTERSTITIAL_BLOCK_ID
       });
 
-      bindAdsgramDiagnostics(miningInterstitialController,'Mining');
+      // AdsGram shows its own alert when no banner is available unless
+      // these events are handled. Keep mining silent and continue normally.
+      if(
+        miningInterstitialController &&
+        typeof miningInterstitialController.addEventListener === 'function'
+      ){
+        miningInterstitialController.addEventListener('onBannerNotFound',()=>{});
+        miningInterstitialController.addEventListener('onNonStopShow',()=>{});
+        miningInterstitialController.addEventListener('onTooLongSession',()=>{});
+      }
+
       return miningInterstitialController;
     }catch(e){
       return null;
@@ -2335,8 +2305,7 @@ html[dir="ltr"] input{text-align:left}
         try{
           await controller.show();
         }catch(e){
-          adsgramDiag('Mining show() rejected',e);
-          // Diagnostic only: mining still continues normally.
+          // If there is no ad available, mining must continue normally.
         }
       }
     }finally{
