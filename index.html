@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src='//libtl.com/sdk.js' data-zone='11916820' data-sdk='show_11916820'></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
 :root{
@@ -6050,3 +6051,73 @@ input[type="submit"]:focus-visible{
   padding:0 !important;
 }
 </style>
+
+
+<script id="mima-entry-ad-v1">
+(function(){
+  const ENTRY_DELAY_MS = 2500;
+  const ENTRY_COOLDOWN_MS = 15 * 60 * 1000;
+  const ENTRY_KEY = 'mima_entry_ad_last_shown_v1';
+  let busy = false;
+
+  function insideTelegram(){
+    try{
+      return !!(window.Telegram && Telegram.WebApp && Telegram.WebApp.initData);
+    }catch(e){
+      return false;
+    }
+  }
+
+  function recentlyShown(){
+    try{
+      const last = Number(localStorage.getItem(ENTRY_KEY) || 0);
+      return last > 0 && (Date.now() - last) < ENTRY_COOLDOWN_MS;
+    }catch(e){
+      return false;
+    }
+  }
+
+  async function showEntryAd(){
+    if(busy || !insideTelegram() || recentlyShown()) return;
+    if(typeof window.show_11916820 !== 'function') return;
+
+    busy = true;
+    try{
+      await window.show_11916820({
+        type:'inApp',
+        inAppSettings:{
+          frequency:1,
+          capping:0.1,
+          interval:30,
+          timeout:5,
+          everyPage:false
+        }
+      });
+      try{ localStorage.setItem(ENTRY_KEY,String(Date.now())); }catch(e){}
+    }catch(e){
+      /* Entry ad must never block MIMA. */
+    }finally{
+      busy = false;
+    }
+  }
+
+  function schedule(){
+    if(!insideTelegram() || recentlyShown()) return;
+    setTimeout(async function(){
+      for(let i=0;i<8;i++){
+        if(typeof window.show_11916820 === 'function'){
+          await showEntryAd();
+          return;
+        }
+        await new Promise(r=>setTimeout(r,1000));
+      }
+    },ENTRY_DELAY_MS);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded',schedule,{once:true});
+  }else{
+    schedule();
+  }
+})();
+</script>
