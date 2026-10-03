@@ -2263,8 +2263,47 @@ html[dir="ltr"] input{text-align:left}
     }
   }
 
+  const MINING_INTERSTITIAL_BLOCK_ID = 'int-51733';
+  let miningInterstitialController = null;
+  let miningInterstitialBusy = false;
+
+  function getMiningInterstitialController(){
+    if(miningInterstitialController) return miningInterstitialController;
+    if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
+
+    try{
+      miningInterstitialController = window.Adsgram.init({
+        blockId: MINING_INTERSTITIAL_BLOCK_ID
+      });
+      return miningInterstitialController;
+    }catch(e){
+      return null;
+    }
+  }
+
+  async function handleMiningClick(){
+    if(claiming || miningInterstitialBusy) return;
+
+    miningInterstitialBusy = true;
+
+    try{
+      const controller = getMiningInterstitialController();
+
+      if(controller && typeof controller.show === 'function'){
+        try{
+          await controller.show();
+        }catch(e){
+          // If there is no ad available, mining must continue normally.
+        }
+      }
+    }finally{
+      miningInterstitialBusy = false;
+      await claimMiningReward();
+    }
+  }
+
   function toggleMining(){
-    claimMiningReward();
+    handleMiningClick();
   }
 
   function openMimaChannel(){
@@ -3361,7 +3400,7 @@ html[dir="ltr"] input{text-align:left}
   });
 
   $('mainCoin').addEventListener('click',tapMima);
-  $('startMining').addEventListener('click',claimMiningReward);
+  $('startMining').addEventListener('click',handleMiningClick);
 
   const adminBtnTransactions = $('adminBtnTransactions');
   const adminBtnReview = $('adminBtnReview');
