@@ -361,9 +361,13 @@ html[dir="ltr"] input{text-align:left}
     lang=manual;
   }else{
     try{
-      lang=String((window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user&&Telegram.WebApp.initDataUnsafe.user.language_code)||navigator.language||'en').toLowerCase();
-    }catch(e){ lang=String(navigator.language||'en').toLowerCase(); }
-    lang=lang.indexOf('ar')===0?'ar':'en';
+      var tgLang = String(
+        (window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user&&Telegram.WebApp.initDataUnsafe.user.language_code) || ''
+      ).toLowerCase();
+      lang = tgLang ? (tgLang.indexOf('ar')===0 ? 'ar' : 'en') : 'en';
+    }catch(e){
+      lang='en';
+    }
   }
   if(lang==='en'){
     var enSrc=img.getAttribute('data-en-src');
@@ -875,14 +879,13 @@ html[dir="ltr"] input{text-align:left}
     let code = '';
     try{
       code = String(
-        window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code ||
-        navigator.language ||
-        'en'
+        window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || ''
       ).toLowerCase();
     }catch(e){
-      code = String(navigator.language || 'en').toLowerCase();
+      code = '';
     }
 
+    if(!code) return 'en';
     return code.startsWith('ar') ? 'ar' : 'en';
   }
 
