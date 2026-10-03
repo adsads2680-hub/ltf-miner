@@ -5399,8 +5399,9 @@ body.privacyModalOpen{overflow:hidden!important}
 
     renderTask();
     syncStatus();
+    // Countdown is rendered locally every second.
+    // Server status is checked on app/task initialization and again when the user taps Verify.
     setInterval(renderTask,1000);
-    setInterval(syncStatus,60000);
   }
 
   if(document.readyState === 'loading'){
