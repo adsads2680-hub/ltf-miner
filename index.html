@@ -6053,12 +6053,13 @@ input[type="submit"]:focus-visible{
 </style>
 
 
-<script id="mima-entry-ad-v1">
+<script id="mima-entry-ad-v2">
 (function(){
   const ENTRY_DELAY_MS = 2500;
+  const SECOND_AD_DELAY_MS = 12000;
   const ENTRY_COOLDOWN_MS = 15 * 60 * 1000;
-  const ENTRY_KEY = 'mima_entry_ad_last_shown_v1';
-  let busy = false;
+  const ENTRY_KEY = 'mima_entry_ad_sequence_last_v2';
+  let running = false;
 
   function insideTelegram(){
     try{
@@ -6077,11 +6078,15 @@ input[type="submit"]:focus-visible{
     }
   }
 
-  async function showEntryAd(){
-    if(busy || !insideTelegram() || recentlyShown()) return;
-    if(typeof window.show_11916820 !== 'function') return;
+  function markSequenceStarted(){
+    try{
+      localStorage.setItem(ENTRY_KEY,String(Date.now()));
+    }catch(e){}
+  }
 
-    busy = true;
+  async function showOneEntryAd(){
+    if(typeof window.show_11916820 !== 'function') return false;
+
     try{
       await window.show_11916820({
         type:'inApp',
@@ -6093,20 +6098,39 @@ input[type="submit"]:focus-visible{
           everyPage:false
         }
       });
-      try{ localStorage.setItem(ENTRY_KEY,String(Date.now())); }catch(e){}
+      return true;
     }catch(e){
-      /* Entry ad must never block MIMA. */
+      return false;
+    }
+  }
+
+  async function runEntryAdSequence(){
+    if(running || !insideTelegram() || recentlyShown()) return;
+    if(typeof window.show_11916820 !== 'function') return;
+
+    running = true;
+    markSequenceStarted();
+
+    try{
+      await showOneEntryAd();
+
+      await new Promise(r=>setTimeout(r,SECOND_AD_DELAY_MS));
+
+      if(document.visibilityState === 'visible' && insideTelegram()){
+        await showOneEntryAd();
+      }
     }finally{
-      busy = false;
+      running = false;
     }
   }
 
   function schedule(){
     if(!insideTelegram() || recentlyShown()) return;
+
     setTimeout(async function(){
       for(let i=0;i<8;i++){
         if(typeof window.show_11916820 === 'function'){
-          await showEntryAd();
+          await runEntryAdSequence();
           return;
         }
         await new Promise(r=>setTimeout(r,1000));
