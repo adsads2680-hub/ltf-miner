@@ -841,6 +841,7 @@ html[dir="ltr"] input{text-align:left}
   let adsgramRewardWatched = 0;
   let adsgramRewardRemaining = 10;
   let adsgramRewardResetAt = 0;
+  let adsgramRewardNextAvailableAt = 0;
 
   let serverTimeOffset = 0;
   let serverReady = false;
@@ -1927,10 +1928,23 @@ html[dir="ltr"] input{text-align:left}
       return;
     }
 
+    const cooldownLeft = adsgramRewardNextAvailableAt
+      ? Math.max(0,adsgramRewardNextAvailableAt-nowMs())
+      : 0;
+
+    if(cooldownLeft > 0){
+      btn.disabled = true;
+      btn.textContent = formatCountdown(cooldownLeft);
+      info.textContent =
+        tx('+1 MIMA • الإعلان التالي بعد ','+1 MIMA • next ad in ') +
+        formatCountdown(cooldownLeft);
+      return;
+    }
+
     btn.disabled = adsgramRewardBusy;
     btn.textContent = adsgramRewardBusy ? '⏳' : tx('شاهد','Watch');
     info.textContent =
-      tx('+1 MIMA • إعلان اختياري • المتبقي ','+1 MIMA • optional ad • remaining ') +
+      tx('+1 MIMA • كل 15 دقيقة • المتبقي ','+1 MIMA • every 15 minutes • remaining ') +
       adsgramRewardRemaining + '/10';
   }
 
@@ -1955,6 +1969,9 @@ html[dir="ltr"] input{text-align:left}
 
       const resetTs = Date.parse(data.reset_at || '');
       adsgramRewardResetAt = Number.isFinite(resetTs) ? resetTs : 0;
+
+      const nextTs = Date.parse(data.next_available_at || '');
+      adsgramRewardNextAvailableAt = Number.isFinite(nextTs) ? nextTs : 0;
 
       renderAdTask();
       return true;
@@ -2002,6 +2019,11 @@ html[dir="ltr"] input{text-align:left}
   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
     if(isAdminNoAds()) return;
     if(adsgramRewardBusy) return;
+
+    if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
+      renderAdTask();
+      return;
+    }
 
     if(!serverMode){
       toast(tx('⚠️ افتح MIMA من داخل Telegram لمشاهدة الإعلان','⚠️ Open MIMA inside Telegram to watch the ad'));
