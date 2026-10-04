@@ -876,6 +876,10 @@ html[dir="ltr"] input{text-align:left}
     currentUserUsername = String(tgUser?.username || '').trim();
   }catch(e){}
 
+  function isAdminNoAds(){
+    return String(currentUserTelegramId || '') === String(ADMIN_TELEGRAM_USER_ID);
+  }
+
   const LANGUAGE_STORAGE_KEY = 'mima_language_v1';
   const LANGUAGE_MANUAL_KEY = 'mima_language_manual_v1';
 
@@ -1893,6 +1897,12 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function renderAdTask(){
+    const item = $('adsgramRewardTaskItem');
+    if(item){
+      item.style.display = isAdminNoAds() ? 'none' : '';
+    }
+    if(isAdminNoAds()) return;
+
     const title = $('adsgramRewardTaskTitle');
     const info = $('adsgramRewardTaskInfo');
     const btn = $('adsgramRewardTaskBtn');
@@ -1925,6 +1935,10 @@ html[dir="ltr"] input{text-align:left}
   }
 
   async function refreshAdsgramRewardStatus(showError=false){
+    if(isAdminNoAds()){
+      renderAdTask();
+      return true;
+    }
     if(!serverMode){
       renderAdTask();
       return false;
@@ -1954,6 +1968,7 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function getAdsgramController(){
+    if(isAdminNoAds()) return null;
     if(adsgramController) return adsgramController;
     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
 
@@ -1985,6 +2000,7 @@ html[dir="ltr"] input{text-align:left}
   }
 
   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+    if(isAdminNoAds()) return;
     if(adsgramRewardBusy) return;
 
     if(!serverMode){
@@ -2298,6 +2314,7 @@ html[dir="ltr"] input{text-align:left}
   let miningInterstitialBusy = false;
 
   function getMiningInterstitialController(){
+    if(isAdminNoAds()) return null;
     if(miningInterstitialController) return miningInterstitialController;
     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
 
@@ -2325,6 +2342,7 @@ html[dir="ltr"] input{text-align:left}
   }
 
   async function showInterstitialSilently(controller){
+    if(isAdminNoAds()) return;
     if(!controller || typeof controller.show !== 'function') return;
 
     const originalAlert = window.alert;
@@ -2375,6 +2393,11 @@ html[dir="ltr"] input{text-align:left}
   async function handleMiningClick(){
     if(claiming || miningInterstitialBusy) return;
 
+    if(isAdminNoAds()){
+      await claimMiningReward();
+      return;
+    }
+
     miningInterstitialBusy = true;
 
     try{
@@ -2400,6 +2423,7 @@ html[dir="ltr"] input{text-align:left}
   let entryInterstitialAttempted = false;
 
   async function showEntryInterstitialOnce(){
+    if(isAdminNoAds()) return;
     if(entryInterstitialAttempted) return;
     entryInterstitialAttempted = true;
 
