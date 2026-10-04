@@ -906,6 +906,7 @@ html[dir="ltr"] input{text-align:left}
   let adsgramRewardRemaining = 10;
   let adsgramRewardResetAt = 0;
   let adsgramRewardNextAvailableAt = 0;
+  let adsgramRewardCountdownTimer = null;
 
   let serverTimeOffset = 0;
   let serverReady = false;
@@ -1962,6 +1963,33 @@ html[dir="ltr"] input{text-align:left}
     renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo');
   }
 
+  function startAdsgramRewardCountdown(){
+    if(adsgramRewardCountdownTimer){
+      clearInterval(adsgramRewardCountdownTimer);
+      adsgramRewardCountdownTimer = null;
+    }
+
+    if(!adsgramRewardNextAvailableAt) return;
+
+    adsgramRewardCountdownTimer = setInterval(async ()=>{
+      const left = Math.max(0,adsgramRewardNextAvailableAt-nowMs());
+
+      if(left <= 0){
+        clearInterval(adsgramRewardCountdownTimer);
+        adsgramRewardCountdownTimer = null;
+        adsgramRewardNextAvailableAt = 0;
+        renderAdTask();
+
+        try{
+          await refreshAdsgramRewardStatus(false);
+        }catch(e){}
+        return;
+      }
+
+      renderAdTask();
+    },1000);
+  }
+
   function renderAdTask(){
     const item = $('adsgramRewardTaskItem');
     if(item){
@@ -2005,6 +2033,10 @@ html[dir="ltr"] input{text-align:left}
       return;
     }
 
+    if(adsgramRewardNextAvailableAt){
+      adsgramRewardNextAvailableAt = 0;
+    }
+
     btn.disabled = adsgramRewardBusy;
     btn.textContent = adsgramRewardBusy ? '⏳' : tx('شاهد','Watch');
     info.textContent =
@@ -2034,6 +2066,7 @@ html[dir="ltr"] input{text-align:left}
       adsgramRewardNextAvailableAt = Number.isFinite(nextTs) ? nextTs : 0;
 
       renderAdTask();
+      startAdsgramRewardCountdown();
       return true;
     }catch(err){
       renderAdTask();
@@ -2113,6 +2146,7 @@ html[dir="ltr"] input{text-align:left}
       const confirmed = await waitForAdsgramReward(beforeCount);
 
       if(confirmed){
+        startAdsgramRewardCountdown();
         toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
       }else{
         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
@@ -2133,6 +2167,7 @@ html[dir="ltr"] input{text-align:left}
     }finally{
       adsgramRewardBusy = false;
       renderAdTask();
+      startAdsgramRewardCountdown();
     }
   };
   function render(){
