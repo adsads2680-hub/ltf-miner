@@ -580,7 +580,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">🎬</span>
       <main>
         <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
-        <small id="adsgramRewardTaskInfo">+1 MIMA • إعلان اختياري</small>
+        <small id="adsgramRewardTaskInfo">+4 MIMA • إعلان اختياري</small>
       </main>
       <div class="taskActionGroup">
         <button id="adsgramRewardTaskBtn" class="taskJoinBtn" type="button" onclick="showAdsgramRewardAd()">شاهد</button>
@@ -2041,8 +2041,8 @@ html[dir="ltr"] input{text-align:left}
       btn.textContent = tx('مكتمل','Completed');
       const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
       info.textContent = left > 0
-        ? tx('+1 MIMA • تتجدد بعد ','+1 MIMA • refreshes in ') + formatCountdown(left)
-        : tx('+1 MIMA • تتجدد قريباً','+1 MIMA • refreshes soon');
+        ? tx('+4 MIMA • تتجدد بعد ','+4 MIMA • refreshes in ') + formatCountdown(left)
+        : tx('+4 MIMA • تتجدد قريباً','+4 MIMA • refreshes soon');
       return;
     }
 
@@ -2054,7 +2054,7 @@ html[dir="ltr"] input{text-align:left}
       btn.disabled = true;
       btn.textContent = formatCountdown(cooldownLeft);
       info.textContent =
-        tx('+1 MIMA • الإعلان التالي بعد ','+1 MIMA • next ad in ') +
+        tx('+4 MIMA • الإعلان التالي بعد ','+4 MIMA • next ad in ') +
         formatCountdown(cooldownLeft);
       return;
     }
@@ -2066,7 +2066,7 @@ html[dir="ltr"] input{text-align:left}
     btn.disabled = adsgramRewardBusy;
     btn.textContent = adsgramRewardBusy ? '⏳' : tx('شاهد','Watch');
     info.textContent =
-      tx('+1 MIMA • كل 15 دقيقة • المتبقي ','+1 MIMA • every 15 minutes • remaining ') +
+      tx('+4 MIMA • كل 15 دقيقة • المتبقي ','+4 MIMA • every 15 minutes • remaining ') +
       adsgramRewardRemaining + '/10';
   }
 
@@ -2191,7 +2191,7 @@ html[dir="ltr"] input{text-align:left}
 
       if(confirmed){
         startAdsgramRewardCountdown();
-        toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
+        toast(tx('🎁 +4 MIMA أضيفت إلى رصيدك','🎁 +4 MIMA added to your balance'));
       }else{
         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
         setTimeout(async()=>{
