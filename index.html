@@ -551,7 +551,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">🤝</span>
       <main>
         <b>انضم إلى شريك MIMA</b>
-        <small id="victorsPartnerTaskInfo">+5 MIMA • مكافأة لمرة واحدة</small>
+        <small id="victorsPartnerTaskInfo">+2 MIMA • مكافأة لمرة واحدة</small>
       </main>
       <div class="taskActionGroup">
         <button class="taskJoinBtn" type="button" onclick="openVictorsPartner()">اشترك</button>
@@ -992,7 +992,7 @@ html[dir="ltr"] input{text-align:left}
     ['انضم إلى شريك MIMA','Join a MIMA partner'],
     ['انضم إلى شركائنا','Join Our Partners'],
     ['+2 MIMA • مكافأة لمرة واحدة','+2 MIMA • one-time reward'],
-    ['+5 MIMA • مكافأة لمرة واحدة','+5 MIMA • one-time reward'],
+    ['+2 MIMA • مكافأة لمرة واحدة','+2 MIMA • one-time reward'],
     ['اشترك','Join'],
     ['استلم','Claim'],
     ['تم الاستلام','Claimed'],
@@ -2579,10 +2579,10 @@ html[dir="ltr"] input{text-align:left}
 
     if(info){
       info.textContent = claimed
-        ? tx('+5 MIMA • تم الاستلام','+5 MIMA • claimed')
+        ? tx('+2 MIMA • تم الاستلام','+2 MIMA • claimed')
         : opened
-        ? tx('+5 MIMA • يمكنك الاستلام الآن','+5 MIMA • ready to claim')
-        : tx('+5 MIMA • اشترك أولاً ثم ارجع واستلم','+5 MIMA • subscribe first, then return and claim');
+        ? tx('+2 MIMA • يمكنك الاستلام الآن','+2 MIMA • ready to claim')
+        : tx('+2 MIMA • اشترك أولاً ثم ارجع واستلم','+2 MIMA • subscribe first, then return and claim');
     }
   }
 
@@ -2604,13 +2604,13 @@ html[dir="ltr"] input{text-align:left}
     btn.textContent = '⏳';
 
     if(!serverMode){
-      bal += 5;
-      exchangeableBalance += 5;
+      bal += 2;
+      exchangeableBalance += 2;
       try{ localStorage.setItem(VICTORS_PARTNER_CLAIM_KEY,'1'); }catch(e){}
       savePreviewState();
       render();
       renderVictorsPartnerTask();
-      toast(tx('🎁 +5 MIMA أضيفت إلى رصيدك','🎁 +5 MIMA added to your balance'));
+      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
       return;
     }
 
@@ -2633,7 +2633,7 @@ html[dir="ltr"] input{text-align:left}
       try{ localStorage.setItem(VICTORS_PARTNER_CLAIM_KEY,'1'); }catch(e){}
       render();
       renderVictorsPartnerTask();
-      toast(tx('🎁 +5 MIMA أضيفت إلى رصيدك','🎁 +5 MIMA added to your balance'));
+      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
     }catch(err){
       btn.disabled = false;
       btn.textContent = tx('استلم','Claim');
@@ -5549,8 +5549,8 @@ body.privacyModalOpen{overflow:hidden!important}
       nextAt = Number.isFinite(parsed) ? parsed : (nowMs() + 10800000);
 
       toast(tx(
-        '🎁 +5 MIMA أضيفت إلى رصيدك',
-        '🎁 +5 MIMA added to your balance'
+        '🎁 +2 MIMA أضيفت إلى رصيدك',
+        '🎁 +2 MIMA added to your balance'
       ));
 
       try{ await syncServerStatus(false); }catch(e){}
