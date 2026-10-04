@@ -2298,7 +2298,7 @@ html[dir="ltr"] input{text-align:left}
         miningInterstitialController &&
         typeof miningInterstitialController.addEventListener === 'function'
       ){
-        const silentAdsgramEvent = ()=>false;
+        const silentAdsgramEvent = ()=>{};
         miningInterstitialController.addEventListener('onBannerNotFound',silentAdsgramEvent);
         miningInterstitialController.addEventListener('onNonStopShow',silentAdsgramEvent);
         miningInterstitialController.addEventListener('onTooLongSession',silentAdsgramEvent);
@@ -2307,6 +2307,54 @@ html[dir="ltr"] input{text-align:left}
       return miningInterstitialController;
     }catch(e){
       return null;
+    }
+  }
+
+  async function showInterstitialSilently(controller){
+    if(!controller || typeof controller.show !== 'function') return;
+
+    const originalAlert = window.alert;
+    let originalShowPopup = null;
+
+    try{
+      window.alert = function(message){
+        const text = String(message || '');
+        if(
+          /AdsgramError/i.test(text) ||
+          /There are currently no ads to display/i.test(text)
+        ){
+          return;
+        }
+        return originalAlert.call(window,message);
+      };
+
+      try{
+        if(
+          window.Telegram?.WebApp &&
+          typeof Telegram.WebApp.showPopup === 'function'
+        ){
+          originalShowPopup = Telegram.WebApp.showPopup.bind(Telegram.WebApp);
+          Telegram.WebApp.showPopup = function(params,callback){
+            const title = String(params?.title || '');
+            const message = String(params?.message || '');
+            if(
+              /AdsgramError/i.test(title) ||
+              /There are currently no ads to display/i.test(message)
+            ){
+              if(typeof callback === 'function') callback('close');
+              return;
+            }
+            return originalShowPopup(params,callback);
+          };
+        }
+      }catch(e){}
+
+      await controller.show();
+    }finally{
+      window.alert = originalAlert;
+      if(originalShowPopup){
+        try{ Telegram.WebApp.showPopup = originalShowPopup; }catch(e){}
+      }
     }
   }
 
@@ -2320,7 +2368,7 @@ html[dir="ltr"] input{text-align:left}
 
       if(controller && typeof controller.show === 'function'){
         try{
-          await controller.show();
+          await showInterstitialSilently(controller);
         }catch(e){
           // If there is no ad available, mining must continue normally.
         }
@@ -2344,7 +2392,7 @@ html[dir="ltr"] input{text-align:left}
     try{
       const controller = getMiningInterstitialController();
       if(controller && typeof controller.show === 'function'){
-        await controller.show();
+        await showInterstitialSilently(controller);
       }
     }catch(e){
       // Entry ad is best-effort only. If AdsGram has no fill,
