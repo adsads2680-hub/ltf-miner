@@ -6151,7 +6151,7 @@ input[type="submit"]:focus-visible{
       if(page)page.remove();
       return;
     }
-    if(btn)btn.style.display='';
+    if(btn)btn.style.display='block';
     load(); renderWallet(); calc(); renderBook(); renderTrades();
     q('marketBuyTab')?.addEventListener('click',()=>setSide('buy'));
     q('marketSellTab')?.addEventListener('click',()=>setSide('sell'));
