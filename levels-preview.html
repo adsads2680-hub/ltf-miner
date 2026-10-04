@@ -1,14 +1,158 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MIMA Levels Preview</title><style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,rgba(35,111,167,.24),transparent 34%),linear-gradient(180deg,#03101a,#061724 55%,#02090f);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;padding:22px 16px 40px}.wrap{max-width:480px;margin:auto}.head{text-align:center}.head h1{font-size:25px;margin:10px 0 5px;color:#f1c15e}.head p{margin:0;color:#91a8b8;font-size:14px}.badge{display:inline-block;padding:6px 10px;border-radius:999px;color:#ffd777;background:rgba(216,166,60,.1);border:1px solid rgba(216,166,60,.3);font-size:12px;font-weight:700}.card{border:1px solid rgba(221,170,61,.34);background:linear-gradient(180deg,rgba(8,29,44,.96),rgba(4,18,29,.96));box-shadow:0 14px 40px rgba(0,0,0,.35);border-radius:22px;padding:18px;margin:14px 0}.levelHero{text-align:center}.levelCircle{width:132px;height:132px;border-radius:50%;margin:6px auto 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid #d8a63c;box-shadow:0 0 28px rgba(216,166,60,.24),inset 0 0 24px rgba(216,166,60,.12);background:#071723}.levelCircle small{color:#8ba5b8}.levelCircle b{font-size:34px;color:#ffd777}.speed{font-size:30px;font-weight:800}.speed small{font-size:13px;color:#8ba5b8;font-weight:500}.progressTrack{height:12px;background:#0b2838;border-radius:999px;overflow:hidden;margin-top:15px}.progressBar{height:100%;background:linear-gradient(90deg,#b77c16,#ffd777);transition:width .25s}.progressText{display:flex;justify-content:space-between;margin-top:8px;color:#8ea5b5;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#06131e;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;text-align:center}.stat small{display:block;color:#8da5b6;margin-bottom:5px}.stat b{font-size:20px;color:#f6ce6e}.controls label{display:block;color:#cdd9e1;margin-bottom:7px}.controls input{width:100%;padding:14px 12px;border-radius:14px;border:1px solid rgba(216,166,60,.35);background:#03111b;color:#fff;font-size:18px}.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.quick button{flex:1;min-width:82px;padding:10px;border:1px solid rgba(216,166,60,.35);border-radius:12px;background:#0a2232;color:#ffd777;font-weight:700}.note{color:#aebfca;font-size:13px;line-height:1.7;margin-top:10px}.rule{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06)}.rule:last-child{border-bottom:0}.rule b{color:#ffd777}
-</style></head><body><div class="wrap"><div class="head"><span class="badge">نسخة تجريبية فقط — لا تؤثر على المستخدمين</span><h1>⚡ نظام مستويات MIMA</h1><p>Level 1 → Level 200 قبل النشر</p></div>
-<div class="card levelHero"><div class="levelCircle"><small>LEVEL</small><b id="level">4</b></div><div class="speed" id="speed">1.15 <small>MIMA / ساعة</small></div><div class="progressTrack"><div class="progressBar" id="bar"></div></div><div class="progressText"><span id="progressNow">0 نقطة</span><span id="progressNeed">200 نقطة للفل التالي</span></div></div>
-<div class="grid"><div class="stat"><small>النقاط الحالية</small><b id="pointsStat">800</b></div><div class="stat"><small>الحد الأقصى</small><b>Level 200</b></div></div>
-<div class="card controls"><label for="points">جرّب عدد النقاط</label><input id="points" type="number" min="0" max="40000" value="800"><div class="quick"><button data-p="200">200</button><button data-p="800">800</button><button data-p="1000">1000</button><button data-p="40000">40000</button></div><div class="note">800 نقطة = Level 4. كل Level جديد يرفع سرعة التعدين +0.05 MIMA/ساعة.</div></div>
-<div class="card"><div class="rule"><span>🏆</span><div><b>كل 200 نقطة</b><br><small>مستوى جديد</small></div></div><div class="rule"><span>⚡</span><div><b>+0.05 MIMA/ساعة</b><br><small>مع كل Level</small></div></div><div class="rule"><span>🚫</span><div><b>بدون نظام النقرات للترقية</b><br><small>النقرات لا تدخل في حساب المستوى</small></div></div><div class="rule"><span>🚀</span><div><b>Level 200</b><br><small>أقصى مستوى</small></div></div></div></div>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MIMA Levels Preview</title>
+<style>
+:root{
+  --bg:#02060b;--panel:#07131f;--panel2:#0a1d2c;--line:#1a4259;
+  --gold:#ffc33d;--gold2:#ffe58a;--blue:#20aaff;--green:#18d991;
+  --text:#f7fbff;--muted:#8fa8b9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#01050a;color:var(--text);font-family:Tahoma,Arial,sans-serif}
+body{overflow-x:hidden}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.app{width:min(100%,460px);min-height:100vh;margin:auto;position:relative;overflow:hidden;background:
+radial-gradient(circle at 50% 18%,rgba(16,104,151,.18),transparent 35%),
+radial-gradient(circle at 50% 65%,rgba(255,176,0,.08),transparent 38%),
+linear-gradient(180deg,#030912,#01050a 80%)}
+.topbar{height:68px;padding:9px 13px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,195,61,.16);position:sticky;top:0;z-index:30;background:rgba(2,7,13,.84);backdrop-filter:blur(18px)}
+.logo{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#ffe89a,#bd7b00 58%,#251600);border:1px solid #ffd45c;box-shadow:0 0 18px rgba(255,188,45,.25)}
+.logo span{font-size:24px;font-weight:1000;color:#3b2200}
+.brand{flex:1;line-height:1.05;text-align:right}.brand b{font-size:19px;letter-spacing:2px;color:#ffd25a}.brand small{display:block;color:#6ecbff;margin-top:5px;font-size:10px}
+.iconBtn{width:42px;height:42px;border-radius:13px;background:#071827;border:1px solid #173d53;display:grid;place-items:center;font-size:19px}
+.screen{padding:15px 13px 112px}
+.title{font-size:22px;margin:5px 0 8px}.sub{color:var(--muted);font-size:12px;line-height:1.7}
+.card{background:linear-gradient(145deg,rgba(9,29,44,.97),rgba(3,13,22,.98));border:1px solid var(--line);border-radius:17px;padding:15px;margin-top:12px}
+.center{text-align:center}.gold{color:#ffd15c}.green{color:#1be29a}.blue{color:#43c6ff}
+.timer{font-size:42px;font-weight:900;letter-spacing:1px;margin:2px 0 7px}
+.primary{width:100%;padding:13px;border-radius:13px;background:linear-gradient(100deg,#078fff,#1dbaff);font-weight:bold;margin-top:12px}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.stat{padding:12px;border-radius:13px;background:#061521;border:1px solid #11374d}.stat small{color:var(--muted);display:block;font-size:10px}.stat b{font-size:16px;margin-top:5px;display:block}
+.previewTag{margin-top:10px;display:inline-block;padding:6px 10px;border-radius:9px;background:#0a3447;color:#63d5ff;font-size:10px}
+.levelCard{padding:0;overflow:hidden;border-color:rgba(255,195,61,.32)}
+.levelHead{padding:15px;background:linear-gradient(135deg,rgba(255,192,61,.09),rgba(17,55,75,.08));display:flex;align-items:center;justify-content:space-between;gap:10px}
+.levelBadge{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 28%,#ffe999,#d99000 55%,#4b2b00);border:3px solid #ffd769;box-shadow:0 0 22px rgba(255,190,45,.26),inset 0 0 0 3px rgba(73,39,0,.4)}
+.levelBadge span{display:block;color:#402400;font-size:10px;font-weight:900;line-height:1}.levelBadge b{display:block;color:#2b1800;font-size:27px;line-height:1}
+.levelMeta{flex:1;text-align:right}.levelMeta small{display:block;color:#8fa8b9;font-size:10px}.levelMeta strong{display:block;color:#ffe083;font-size:23px;margin-top:3px}
+.progressWrap{margin:0 15px 15px;padding:10px 12px;border-radius:14px;background:rgba(2,10,16,.82);border:1px solid #17384b}
+.progressTop{display:flex;justify-content:space-between;font-size:10px;color:#8ca7b8}.progress{height:7px;background:#07111a;border-radius:20px;overflow:hidden;margin-top:7px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f1a800,#ffe37b);border-radius:20px;transition:width .25s}
+.levelStrip{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:0 15px 15px}
+.lv{padding:9px 3px;border-radius:12px;background:#061521;border:1px solid #11374d;text-align:center}
+.lv small{display:block;color:#7893a5;font-size:8px}.lv b{display:block;margin-top:4px;color:#ffd35b;font-size:11px}
+.lv.active{border-color:#d99a24;box-shadow:inset 0 0 16px rgba(255,190,45,.08),0 0 12px rgba(255,190,45,.08)}
+.ruleList .row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #103149}.ruleList .row:last-child{border:0}.ruleIcon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:#0a3048}.ruleText{flex:1;text-align:right}.ruleText b{font-size:12px}.ruleText small{display:block;color:#8da9bb;margin-top:4px;font-size:10px}
+.testBox{margin-top:12px}.testBox label{display:block;color:#8fa8b9;font-size:10px;margin-bottom:7px}.testBox input{width:100%;height:46px;border-radius:13px;border:1px solid #173d53;background:#04111b;color:#fff;padding:0 12px;font-size:16px;direction:ltr}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px}.quick button{padding:9px 4px;border-radius:10px;background:#071827;border:1px solid #173d53;color:#ffd15c;font-size:10px}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,460px);padding:8px 8px 11px;background:rgba(2,8,14,.94);backdrop-filter:blur(18px);border-top:1px solid #193b4e;display:grid;grid-template-columns:repeat(5,1fr);z-index:40}.nav{background:transparent;color:#718da2;font-size:9px;padding:3px 1px}.nav b{display:block;font-size:18px;margin-bottom:3px;line-height:1}.nav.active{color:#ffd15c}
+@media(min-width:700px){body{padding:20px}.app{border:1px solid #17384d;border-radius:25px;box-shadow:0 25px 90px #000}.topbar{border-radius:25px 25px 0 0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="logo"><span>M</span></div>
+    <div class="brand"><b>MIMA</b><small>MINING BOT</small></div>
+    <button class="iconBtn">☰</button>
+  </header>
+
+  <section class="screen">
+    <h2 class="title">⚡ المعدنون</h2>
+    <p class="sub">إدارة المعدّنين، متابعة السرعة، والتحكم بحالة التعدين.</p>
+    <span class="previewTag">تجربة خاصة — غير منشورة للمستخدمين</span>
+
+    <div class="card center">
+      <div class="timer">00:00:00</div>
+      <small class="gold" id="rateLine">+1.15 MIMA / ساعة • حد الجولة 4.60 MIMA</small>
+      <button class="primary">⛏ التعدين</button>
+    </div>
+
+    <div class="statgrid">
+      <div class="stat"><small>الإجمالي المكتسب</small><b>0.00 MIMA</b></div>
+      <div class="stat"><small>حالة التعدين</small><b class="green">متوقف</b></div>
+    </div>
+
+    <div class="card levelCard">
+      <div class="levelHead">
+        <div class="levelBadge"><div><span>LEVEL</span><b id="level">4</b></div></div>
+        <div class="levelMeta">
+          <small>مستوى التعدين الحالي</small>
+          <strong id="rate">1.15 MIMA/ساعة</strong>
+          <small id="pointsLabel">800 نقطة</small>
+        </div>
+      </div>
+      <div class="progressWrap">
+        <div class="progressTop"><span id="progressText">200 / 200 نقطة</span><span id="nextText">Level 5</span></div>
+        <div class="progress"><i id="bar"></i></div>
+      </div>
+      <div class="levelStrip" id="levelStrip"></div>
+    </div>
+
+    <div class="card ruleList">
+      <div class="row"><div class="ruleIcon">🏆</div><div class="ruleText"><b>كل 200 نقطة = Level جديد</b><small>حتى Level 200</small></div></div>
+      <div class="row"><div class="ruleIcon">⚡</div><div class="ruleText"><b>كل Level يزيد السرعة +0.05</b><small>مثال: Level 4 = 1.15 MIMA/ساعة</small></div></div>
+      <div class="row"><div class="ruleIcon">🚫</div><div class="ruleText"><b>النقرات لا ترفع المستوى</b><small>الترقية تعتمد على النقاط فقط في هذه التجربة</small></div></div>
+    </div>
+
+    <div class="card testBox">
+      <label>جرّب رصيد النقاط</label>
+      <input id="points" type="number" value="800" min="0" max="40000">
+      <div class="quick">
+        <button data-p="200">200</button>
+        <button data-p="800">800</button>
+        <button data-p="1000">1000</button>
+        <button data-p="40000">40000</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<nav class="bottom">
+  <button class="nav"><b>⌂</b><span>الرئيسية</span></button>
+  <button class="nav active"><b>⚡</b><span>المعدنون</span></button>
+  <button class="nav"><b>▣</b><span>المهام</span></button>
+  <button class="nav"><b>👥</b><span>الأصدقاء</span></button>
+  <button class="nav"><b>◫</b><span>المحفظة</span></button>
+</nav>
+
 <script>
-const P=200,MAX=200,BASE=1,STEP=.05;
-function level(points){points=Math.max(0,Number(points)||0);return points<=0?1:Math.min(MAX,Math.max(1,Math.ceil(points/P)))}
-function rate(l){return Number((BASE+(Math.max(1,l)-1)*STEP).toFixed(2))}
-function render(v){const points=Math.max(0,Math.floor(Number(v)||0)),l=level(points),r=rate(l);let cur;if(l>=MAX&&points>=MAX*P)cur=P;else{const low=(l-1)*P;cur=Math.max(0,points-low);if(cur===0&&points>0)cur=P}document.getElementById('level').textContent=l;document.getElementById('speed').innerHTML=r.toFixed(2)+' <small>MIMA / ساعة</small>';document.getElementById('bar').style.width=Math.min(100,cur/P*100)+'%';document.getElementById('progressNow').textContent=cur+' نقطة';document.getElementById('progressNeed').textContent=l>=MAX?'MAX LEVEL':'200 نقطة للفل التالي';document.getElementById('pointsStat').textContent=points.toLocaleString('en-US')}
-const inp=document.getElementById('points');inp.addEventListener('input',()=>render(inp.value));document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{inp.value=b.dataset.p;render(inp.value)});render(inp.value);
-</script></body></html>
+const POINTS_PER_LEVEL=200, MAX_LEVEL=200, BASE_RATE=1, STEP=.05;
+function calcLevel(points){
+  points=Math.max(0,Math.floor(Number(points)||0));
+  if(points<=0)return 1;
+  return Math.min(MAX_LEVEL,Math.max(1,Math.ceil(points/POINTS_PER_LEVEL)));
+}
+function calcRate(level){return Number((BASE_RATE+(level-1)*STEP).toFixed(2))}
+function render(points){
+  points=Math.max(0,Math.floor(Number(points)||0));
+  const level=calcLevel(points), rate=calcRate(level);
+  const round=(rate*4).toFixed(2);
+  let current=points-(level-1)*POINTS_PER_LEVEL;
+  if(points>0 && current===0) current=POINTS_PER_LEVEL;
+  if(level>=MAX_LEVEL && points>=MAX_LEVEL*POINTS_PER_LEVEL) current=POINTS_PER_LEVEL;
+  const pct=Math.min(100,current/POINTS_PER_LEVEL*100);
+
+  document.getElementById('level').textContent=level;
+  document.getElementById('rate').textContent=rate.toFixed(2)+' MIMA/ساعة';
+  document.getElementById('rateLine').textContent='+'+rate.toFixed(2)+' MIMA / ساعة • حد الجولة '+round+' MIMA';
+  document.getElementById('pointsLabel').textContent=points.toLocaleString('en-US')+' نقطة';
+  document.getElementById('progressText').textContent=current+' / '+POINTS_PER_LEVEL+' نقطة';
+  document.getElementById('nextText').textContent=level>=MAX_LEVEL?'MAX LEVEL':'Level '+(level+1);
+  document.getElementById('bar').style.width=pct+'%';
+
+  const strip=document.getElementById('levelStrip'); strip.innerHTML='';
+  let start=Math.max(1,level-2), end=Math.min(MAX_LEVEL,start+4);
+  start=Math.max(1,end-4);
+  for(let i=start;i<=end;i++){
+    const d=document.createElement('div');
+    d.className='lv'+(i===level?' active':'');
+    d.innerHTML='<small>LEVEL</small><b>'+i+'</b>';
+    strip.appendChild(d);
+  }
+}
+const inp=document.getElementById('points');
+inp.addEventListener('input',()=>render(inp.value));
+document.querySelectorAll('[data-p]').forEach(btn=>btn.onclick=()=>{inp.value=btn.dataset.p;render(inp.value)});
+render(inp.value);
+</script>
+</body></html>
