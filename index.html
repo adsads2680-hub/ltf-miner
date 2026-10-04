@@ -6582,6 +6582,32 @@ input[type="submit"]:focus-visible{
 </style>
 
 
+<style id="mima-task-join-first-stable-style">
+#tasks button.mimaJoinFirstLocked{
+  opacity:1 !important;
+  filter:none !important;
+  animation:none !important;
+  transition:none !important;
+  pointer-events:auto !important;
+  cursor:pointer !important;
+  color:transparent !important;
+  position:relative !important;
+}
+#tasks button.mimaJoinFirstLocked::after{
+  content:attr(data-locked-label);
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#bfa86d;
+  font-size:inherit;
+  font-weight:900;
+  text-shadow:0 1px 0 rgba(0,0,0,.8);
+  pointer-events:none;
+}
+</style>
+
 <script id="mima-task-join-first-guard-v1">
 (function(){
   const TASKS = [
@@ -6591,19 +6617,24 @@ input[type="submit"]:focus-visible{
   ];
 
   function t(ar,en){
-    try{
-      if(typeof tx === 'function') return tx(ar,en);
-    }catch(e){}
+    try{ if(typeof tx==='function') return tx(ar,en); }catch(e){}
     const isAr=(document.documentElement.lang||'').toLowerCase().startsWith('ar') || document.documentElement.dir==='rtl';
     return isAr ? ar : en;
   }
+  function isOpened(key){ try{return localStorage.getItem(key)==='1';}catch(e){return false;} }
+  function markOpened(key){ try{localStorage.setItem(key,'1');}catch(e){} }
 
-  function isOpened(key){
-    try{return localStorage.getItem(key)==='1';}catch(e){return false;}
+  function lockVisual(btn,task){
+    if(!btn) return;
+    btn.classList.add('mimaJoinFirstLocked');
+    btn.dataset.lockedLabel=t(task.joinAr,task.joinEn);
+    btn.setAttribute('aria-disabled','true');
   }
-
-  function markOpened(key){
-    try{localStorage.setItem(key,'1');}catch(e){}
+  function unlockVisual(btn){
+    if(!btn) return;
+    btn.classList.remove('mimaJoinFirstLocked');
+    delete btn.dataset.lockedLabel;
+    btn.removeAttribute('aria-disabled');
   }
 
   function protectTask(task){
@@ -6615,33 +6646,32 @@ input[type="submit"]:focus-visible{
       openBtn.dataset.joinFirstBound='1';
       openBtn.addEventListener('click',function(){
         markOpened(task.key);
-        setTimeout(function(){
-          const b=document.getElementById(task.verifyId);
-          if(!b) return;
-          if((b.textContent||'').trim()===t(task.joinAr,task.joinEn)){
-            b.disabled=false;
-            b.textContent=t(task.verifyAr,task.verifyEn);
-          }
-        },0);
+        unlockVisual(verifyBtn);
+        verifyBtn.disabled=false;
+        verifyBtn.textContent=t(task.verifyAr,task.verifyEn);
+      },true);
+    }
+
+    if(!verifyBtn.dataset.joinFirstClickGuard){
+      verifyBtn.dataset.joinFirstClickGuard='1';
+      verifyBtn.addEventListener('click',function(ev){
+        if(!isOpened(task.key)){
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          lockVisual(verifyBtn,task);
+          return false;
+        }
       },true);
     }
 
     if(!isOpened(task.key)){
-      verifyBtn.disabled=true;
-      verifyBtn.textContent=t(task.joinAr,task.joinEn);
-      verifyBtn.setAttribute('aria-disabled','true');
+      lockVisual(verifyBtn,task);
     }else{
-      verifyBtn.removeAttribute('aria-disabled');
-      if((verifyBtn.textContent||'').trim()===t(task.joinAr,task.joinEn)){
-        verifyBtn.disabled=false;
-        verifyBtn.textContent=t(task.verifyAr,task.verifyEn);
-      }
+      unlockVisual(verifyBtn);
     }
   }
 
-  function applyGuard(){
-    TASKS.forEach(protectTask);
-  }
+  function applyGuard(){ TASKS.forEach(protectTask); }
 
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',applyGuard,{once:true});
@@ -6649,7 +6679,9 @@ input[type="submit"]:focus-visible{
     applyGuard();
   }
 
-  setInterval(applyGuard,350);
+  const observer=new MutationObserver(applyGuard);
+  observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['disabled','class']});
+  setInterval(applyGuard,2000);
 })();
 </script>
 
