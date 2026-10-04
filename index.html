@@ -582,7 +582,7 @@ html[dir="ltr"] input{text-align:left}
         <small id="joinChannelTaskInfo">+10 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
-        <button class="taskJoinBtn" type="button" onclick="openMimaChannel()">انضم</button>
+        <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">انضم</button>
         <button id="joinChannelTaskBtn" type="button" onclick="claimTask('join_channel',this)">تحقق</button>
       </div>
     </div>
@@ -594,7 +594,7 @@ html[dir="ltr"] input{text-align:left}
         <small id="joinChannel2TaskInfo">+10 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
-        <button class="taskJoinBtn" type="button" onclick="openMimaChannel2()">انضم</button>
+        <button id="joinChannel2OpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel2()">انضم</button>
         <button id="joinChannel2TaskBtn" type="button" onclick="claimTask('join_channel_2',this)">تحقق</button>
       </div>
     </div>
@@ -6580,3 +6580,76 @@ input[type="submit"]:focus-visible{
   padding:0 !important;
 }
 </style>
+
+
+<script id="mima-task-join-first-guard-v1">
+(function(){
+  const TASKS = [
+    {openId:'joinChannelOpenBtn', verifyId:'joinChannelTaskBtn', key:'mima_join_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
+    {openId:'joinChannel2OpenBtn', verifyId:'joinChannel2TaskBtn', key:'mima_join_channel_2_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
+    {openId:'mimaWithdrawalsJoinBtn', verifyId:'mimaWithdrawalsVerifyBtn', key:'mima_withdrawals_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'}
+  ];
+
+  function t(ar,en){
+    try{
+      if(typeof tx === 'function') return tx(ar,en);
+    }catch(e){}
+    const isAr=(document.documentElement.lang||'').toLowerCase().startsWith('ar') || document.documentElement.dir==='rtl';
+    return isAr ? ar : en;
+  }
+
+  function isOpened(key){
+    try{return localStorage.getItem(key)==='1';}catch(e){return false;}
+  }
+
+  function markOpened(key){
+    try{localStorage.setItem(key,'1');}catch(e){}
+  }
+
+  function protectTask(task){
+    const openBtn=document.getElementById(task.openId);
+    const verifyBtn=document.getElementById(task.verifyId);
+    if(!verifyBtn) return;
+
+    if(openBtn && !openBtn.dataset.joinFirstBound){
+      openBtn.dataset.joinFirstBound='1';
+      openBtn.addEventListener('click',function(){
+        markOpened(task.key);
+        setTimeout(function(){
+          const b=document.getElementById(task.verifyId);
+          if(!b) return;
+          if((b.textContent||'').trim()===t(task.joinAr,task.joinEn)){
+            b.disabled=false;
+            b.textContent=t(task.verifyAr,task.verifyEn);
+          }
+        },0);
+      },true);
+    }
+
+    if(!isOpened(task.key)){
+      verifyBtn.disabled=true;
+      verifyBtn.textContent=t(task.joinAr,task.joinEn);
+      verifyBtn.setAttribute('aria-disabled','true');
+    }else{
+      verifyBtn.removeAttribute('aria-disabled');
+      if((verifyBtn.textContent||'').trim()===t(task.joinAr,task.joinEn)){
+        verifyBtn.disabled=false;
+        verifyBtn.textContent=t(task.verifyAr,task.verifyEn);
+      }
+    }
+  }
+
+  function applyGuard(){
+    TASKS.forEach(protectTask);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',applyGuard,{once:true});
+  }else{
+    applyGuard();
+  }
+
+  setInterval(applyGuard,350);
+})();
+</script>
+
