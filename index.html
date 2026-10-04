@@ -1942,7 +1942,19 @@ html[dir="ltr"] input{text-align:left}
   function getAdsgramController(){
     if(adsgramController) return adsgramController;
     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
+
     adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+
+    if(
+      adsgramController &&
+      typeof adsgramController.addEventListener === 'function'
+    ){
+      const silentAdsgramEvent = ()=>false;
+      adsgramController.addEventListener('onBannerNotFound',silentAdsgramEvent);
+      adsgramController.addEventListener('onNonStopShow',silentAdsgramEvent);
+      adsgramController.addEventListener('onTooLongSession',silentAdsgramEvent);
+    }
+
     return adsgramController;
   }
 
@@ -2001,8 +2013,12 @@ html[dir="ltr"] input{text-align:left}
       }
     }catch(err){
       const desc = String(err?.description || err?.message || '');
-      if(!/skip|close|cancel/i.test(desc)){
-        toast(tx('⚠️ الإعلان غير متاح حالياً','⚠️ Ad is currently unavailable'));
+
+      // No-ad / no-fill cases should stay completely silent.
+      if(!/no ads|no banner|banner not found|not found|non.?stop|too long session/i.test(desc)){
+        if(!/skip|close|cancel/i.test(desc)){
+          toast(tx('⚠️ تعذر تشغيل الإعلان','⚠️ Could not play the ad'));
+        }
       }
     }finally{
       adsgramRewardBusy = false;
@@ -2282,9 +2298,10 @@ html[dir="ltr"] input{text-align:left}
         miningInterstitialController &&
         typeof miningInterstitialController.addEventListener === 'function'
       ){
-        miningInterstitialController.addEventListener('onBannerNotFound',()=>{});
-        miningInterstitialController.addEventListener('onNonStopShow',()=>{});
-        miningInterstitialController.addEventListener('onTooLongSession',()=>{});
+        const silentAdsgramEvent = ()=>false;
+        miningInterstitialController.addEventListener('onBannerNotFound',silentAdsgramEvent);
+        miningInterstitialController.addEventListener('onNonStopShow',silentAdsgramEvent);
+        miningInterstitialController.addEventListener('onTooLongSession',silentAdsgramEvent);
       }
 
       return miningInterstitialController;
