@@ -5740,6 +5740,30 @@ input[type="submit"]:focus-visible{
   else initArtPartnerUi();
 })();
 </script>
+
+<script id="mima-victors-reward-ui-force-2">
+(function(){
+  function forceVictorsRewardLabel(){
+    try{
+      const info=document.getElementById('victorsPartnerTaskInfo');
+      if(info){
+        const ar=(document.documentElement.lang||'').toLowerCase().startsWith('ar') || document.documentElement.dir==='rtl';
+        if(/5\s*MIMA/i.test(info.textContent||'')){
+          info.textContent=ar ? '+2 MIMA • مكافأة لمرة واحدة' : '+2 MIMA • one-time reward';
+        }
+      }
+    }catch(e){}
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',forceVictorsRewardLabel,{once:true});
+  }else{
+    forceVictorsRewardLabel();
+  }
+  setTimeout(forceVictorsRewardLabel,500);
+  setTimeout(forceVictorsRewardLabel,1500);
+})();
+</script>
+
 </body>
 </html>
 <style>
