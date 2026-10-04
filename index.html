@@ -6663,3 +6663,38 @@ input[type="submit"]:focus-visible{
   setTimeout(applyOfficialMimaLogo,1200);
 })();
 </script>
+
+<style id="mima-mining-button-official-logo-v1">
+#startMining .mineBtnIcon{
+  font-size:0 !important;
+  color:transparent !important;
+  background-color:#050505 !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:cover !important;
+  border-radius:50% !important;
+  overflow:hidden !important;
+  flex:0 0 auto !important;
+}
+</style>
+<script id="mima-mining-button-official-logo-script-v1">
+(function(){
+  function applyMiningButtonLogo(){
+    const source=document.getElementById('mimaCoinImage');
+    const icon=document.querySelector('#startMining .mineBtnIcon');
+    if(!source || !icon) return;
+    const src=source.currentSrc || source.src || source.getAttribute('src');
+    if(!src) return;
+    icon.style.setProperty('background-image','url("' + src.replace(/"/g,'\\\"') + '")','important');
+    icon.textContent='';
+    icon.setAttribute('aria-label','MIMA');
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',applyMiningButtonLogo,{once:true});
+  }else{
+    applyMiningButtonLogo();
+  }
+  setTimeout(applyMiningButtonLogo,300);
+  setTimeout(applyMiningButtonLogo,1200);
+})();
+</script>
