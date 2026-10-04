@@ -416,6 +416,21 @@ html[dir="ltr"] input{text-align:left}
 .marketSwapMainBtn{width:100%;min-height:50px;margin-top:13px;border-radius:14px;background:linear-gradient(100deg,#d69720,#f1c958,#b77513);color:#211300;font-weight:1000;font-size:15px}.marketSwapNote{display:block;margin-top:8px;text-align:center;color:#657d8b;font-size:8px;line-height:1.5}
 .marketRecentRows{margin-top:2px}.marketRecentRows>div{border-top:1px solid #0d2430}.marketRecentRows .up{color:#34dda3}.marketRecentRows .down{color:#ff7682}
 @media(min-width:430px){.marketProGrid{grid-template-columns:1.05fr .95fr}}
+</style><style id="mima-market-candlestick-v3">
+.marketCandleChart{position:relative;height:245px;margin-top:8px;border-radius:16px;overflow:hidden;background:#03090e;border:1px solid #102631}
+.marketCandleChart svg{position:absolute;left:0;right:0;top:0;width:100%;height:220px}
+.marketCandleChart .grid line{stroke:rgba(255,255,255,.055);stroke-width:1}
+.marketCandleChart .candles .green line,.marketCandleChart .candles .green rect{stroke:#2fdfa5;fill:#2fdfa5}
+.marketCandleChart .candles .red line,.marketCandleChart .candles .red rect{stroke:#ff6f7d;fill:#ff6f7d}
+.marketCandleChart .candles line{stroke-width:1.4}
+.marketCandleChart .currentPriceLine{stroke:#e9c95d;stroke-width:1;stroke-dasharray:4 4;opacity:.7}
+.marketCandleChart .volume rect{fill:#2fdfa5;opacity:.28}
+.marketCandleChart .volume rect:nth-child(4n),.marketCandleChart .volume rect:nth-child(7n){fill:#ff6f7d}
+.marketChartAxis{position:absolute;right:7px;top:7px;bottom:52px;display:flex;flex-direction:column;justify-content:space-between;z-index:2;pointer-events:none}
+.marketChartAxis span{font-size:8px;color:#59717f;background:rgba(3,9,14,.72);padding-left:4px;direction:ltr}
+.marketChartPriceTag{position:absolute;right:7px;top:35px;z-index:3;padding:4px 6px;border-radius:7px;background:#3a310f;color:#f4d66f;border:1px solid rgba(244,214,111,.35);font-size:9px;font-weight:900;direction:ltr}
+.marketChartTimes{position:absolute;left:8px;right:8px;bottom:7px;display:flex;justify-content:space-between;color:#5d7583;font-size:8px;direction:ltr}
+.marketTimeTabs button.active{border-color:#98721d;background:#1c1607;color:#f4cf62}
 </style></head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -875,25 +890,85 @@ html[dir="ltr"] input{text-align:left}
 
     <div class="marketTimeTabs">
       <button type="button">1H</button>
-      <button type="button" class="active">24H</button>
-      <button type="button">7D</button>
-      <button type="button">30D</button>
+      <button type="button">4H</button>
+      <button type="button" class="active">1D</button>
+      <button type="button">1W</button>
     </div>
 
-    <div class="marketCandleChart" aria-label="MIMA market preview chart">
-      <svg viewBox="0 0 420 190" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="mimaArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#2fe1a8" stop-opacity=".28"/>
-            <stop offset="100%" stop-color="#2fe1a8" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <path d="M0,158 C24,146 37,152 56,140 C75,128 87,137 105,121 C124,105 145,116 160,102 C180,84 197,96 214,82 C233,66 246,73 265,58 C284,42 299,50 317,38 C340,22 363,32 382,18 C394,11 407,13 420,7 L420,190 L0,190 Z" fill="url(#mimaArea)"/>
-        <path d="M0,158 C24,146 37,152 56,140 C75,128 87,137 105,121 C124,105 145,116 160,102 C180,84 197,96 214,82 C233,66 246,73 265,58 C284,42 299,50 317,38 C340,22 363,32 382,18 C394,11 407,13 420,7" fill="none" stroke="#2fe1a8" stroke-width="3.5"/>
+    <div class="marketCandleChart" aria-label="MIMA candlestick market preview">
+      <div class="marketChartAxis">
+        <span>0.00340</span>
+        <span>0.00330</span>
+        <span>0.00320</span>
+        <span>0.00310</span>
+        <span>0.00300</span>
+      </div>
+      <svg viewBox="0 0 420 220" preserveAspectRatio="none" aria-hidden="true">
+        <g class="grid">
+          <line x1="0" y1="28" x2="420" y2="28"/>
+          <line x1="0" y1="64" x2="420" y2="64"/>
+          <line x1="0" y1="100" x2="420" y2="100"/>
+          <line x1="0" y1="136" x2="420" y2="136"/>
+          <line x1="0" y1="172" x2="420" y2="172"/>
+          <line x1="52" y1="0" x2="52" y2="180"/>
+          <line x1="104" y1="0" x2="104" y2="180"/>
+          <line x1="156" y1="0" x2="156" y2="180"/>
+          <line x1="208" y1="0" x2="208" y2="180"/>
+          <line x1="260" y1="0" x2="260" y2="180"/>
+          <line x1="312" y1="0" x2="312" y2="180"/>
+          <line x1="364" y1="0" x2="364" y2="180"/>
+        </g>
+
+        <g class="candles">
+          <g class="red"><line x1="20" y1="118" x2="20" y2="158"/><rect x="14" y="128" width="12" height="19" rx="1"/></g>
+          <g class="green"><line x1="40" y1="108" x2="40" y2="149"/><rect x="34" y="116" width="12" height="23" rx="1"/></g>
+          <g class="green"><line x1="60" y1="96" x2="60" y2="138"/><rect x="54" y="105" width="12" height="22" rx="1"/></g>
+          <g class="red"><line x1="80" y1="92" x2="80" y2="128"/><rect x="74" y="100" width="12" height="18" rx="1"/></g>
+          <g class="green"><line x1="100" y1="82" x2="100" y2="122"/><rect x="94" y="92" width="12" height="20" rx="1"/></g>
+          <g class="green"><line x1="120" y1="70" x2="120" y2="112"/><rect x="114" y="80" width="12" height="24" rx="1"/></g>
+          <g class="red"><line x1="140" y1="68" x2="140" y2="105"/><rect x="134" y="76" width="12" height="18" rx="1"/></g>
+          <g class="green"><line x1="160" y1="60" x2="160" y2="98"/><rect x="154" y="67" width="12" height="22" rx="1"/></g>
+          <g class="green"><line x1="180" y1="49" x2="180" y2="90"/><rect x="174" y="58" width="12" height="24" rx="1"/></g>
+          <g class="red"><line x1="200" y1="47" x2="200" y2="84"/><rect x="194" y="56" width="12" height="17" rx="1"/></g>
+          <g class="green"><line x1="220" y1="40" x2="220" y2="77"/><rect x="214" y="48" width="12" height="21" rx="1"/></g>
+          <g class="green"><line x1="240" y1="31" x2="240" y2="70"/><rect x="234" y="39" width="12" height="23" rx="1"/></g>
+          <g class="red"><line x1="260" y1="34" x2="260" y2="67"/><rect x="254" y="42" width="12" height="16" rx="1"/></g>
+          <g class="green"><line x1="280" y1="26" x2="280" y2="61"/><rect x="274" y="34" width="12" height="19" rx="1"/></g>
+          <g class="green"><line x1="300" y1="18" x2="300" y2="55"/><rect x="294" y="26" width="12" height="21" rx="1"/></g>
+          <g class="red"><line x1="320" y1="20" x2="320" y2="52"/><rect x="314" y="28" width="12" height="15" rx="1"/></g>
+          <g class="green"><line x1="340" y1="13" x2="340" y2="48"/><rect x="334" y="21" width="12" height="20" rx="1"/></g>
+          <g class="green"><line x1="360" y1="9" x2="360" y2="43"/><rect x="354" y="16" width="12" height="19" rx="1"/></g>
+          <g class="green"><line x1="380" y1="5" x2="380" y2="38"/><rect x="374" y="12" width="12" height="18" rx="1"/></g>
+          <g class="red"><line x1="400" y1="7" x2="400" y2="36"/><rect x="394" y="14" width="12" height="14" rx="1"/></g>
+        </g>
+
+        <line class="currentPriceLine" x1="0" y1="42" x2="420" y2="42"/>
+        <g class="volume">
+          <rect x="14" y="194" width="12" height="18"/>
+          <rect x="34" y="188" width="12" height="24"/>
+          <rect x="54" y="183" width="12" height="29"/>
+          <rect x="74" y="191" width="12" height="21"/>
+          <rect x="94" y="181" width="12" height="31"/>
+          <rect x="114" y="176" width="12" height="36"/>
+          <rect x="134" y="189" width="12" height="23"/>
+          <rect x="154" y="180" width="12" height="32"/>
+          <rect x="174" y="172" width="12" height="40"/>
+          <rect x="194" y="187" width="12" height="25"/>
+          <rect x="214" y="178" width="12" height="34"/>
+          <rect x="234" y="169" width="12" height="43"/>
+          <rect x="254" y="186" width="12" height="26"/>
+          <rect x="274" y="177" width="12" height="35"/>
+          <rect x="294" y="166" width="12" height="46"/>
+          <rect x="314" y="184" width="12" height="28"/>
+          <rect x="334" y="174" width="12" height="38"/>
+          <rect x="354" y="163" width="12" height="49"/>
+          <rect x="374" y="171" width="12" height="41"/>
+          <rect x="394" y="182" width="12" height="30"/>
+        </g>
       </svg>
-      <div class="marketGridLines"></div>
-      <span class="marketChartTag">0.00325000</span>
-    </div>
+      <div class="marketChartPriceTag">0.00325000</div>
+      <div class="marketChartTimes"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>Now</span></div>
+    </div></div>
   </div>
 
   <div class="marketProGrid">
