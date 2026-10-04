@@ -3184,7 +3184,7 @@ html[dir="ltr"] input{text-align:left}
   };
   function getReferralLink(){
     if(referralCode){
-      return 'https://t.me/MIMA_COIN_bot/mima?startapp=ref_' +
+      return 'https://t.me/MIMA_COIN_bot?start=ref_' +
         encodeURIComponent(referralCode);
     }
 
@@ -3192,11 +3192,11 @@ html[dir="ltr"] input{text-align:left}
       window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
 
     if(uid){
-      return 'https://t.me/MIMA_COIN_bot/mima?startapp=ref_' +
+      return 'https://t.me/MIMA_COIN_bot?start=ref_' +
         encodeURIComponent(String(uid));
     }
 
-    return 'https://t.me/MIMA_COIN_bot/mima?startapp';
+    return 'https://t.me/MIMA_COIN_bot';
   }
 
   function updateReferralLink(){
