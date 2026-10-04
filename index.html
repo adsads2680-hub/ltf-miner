@@ -6611,9 +6611,9 @@ input[type="submit"]:focus-visible{
 <script id="mima-task-join-first-guard-v1">
 (function(){
   const TASKS = [
-    {openId:'joinChannelOpenBtn', verifyId:'joinChannelTaskBtn', key:'mima_join_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
-    {openId:'joinChannel2OpenBtn', verifyId:'joinChannel2TaskBtn', key:'mima_join_channel_2_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
-    {openId:'mimaWithdrawalsJoinBtn', verifyId:'mimaWithdrawalsVerifyBtn', key:'mima_withdrawals_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'}
+    {openId:'joinChannelOpenBtn', verifyId:'joinChannelTaskBtn', infoId:'joinChannelTaskInfo', key:'mima_join_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
+    {openId:'joinChannel2OpenBtn', verifyId:'joinChannel2TaskBtn', infoId:'joinChannel2TaskInfo', key:'mima_join_channel_2_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
+    {openId:'mimaWithdrawalsJoinBtn', verifyId:'mimaWithdrawalsVerifyBtn', infoId:'mimaWithdrawalsTaskInfo', key:'mima_withdrawals_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'}
   ];
 
   function t(ar,en){
@@ -6624,12 +6624,21 @@ input[type="submit"]:focus-visible{
   function isOpened(key){ try{return localStorage.getItem(key)==='1';}catch(e){return false;} }
   function markOpened(key){ try{localStorage.setItem(key,'1');}catch(e){} }
 
+  function isCountdownState(task,btn){
+    const info=document.getElementById(task.infoId);
+    const bt=String(btn?.textContent||'').trim();
+    const it=String(info?.textContent||'');
+    return /^\d{2}:\d{2}:\d{2}$/.test(bt) ||
+      /متاحة بعد|available in/i.test(it);
+  }
+
   function lockVisual(btn,task){
     if(!btn) return;
     btn.classList.add('mimaJoinFirstLocked');
     btn.dataset.lockedLabel=t(task.joinAr,task.joinEn);
     btn.setAttribute('aria-disabled','true');
   }
+
   function unlockVisual(btn){
     if(!btn) return;
     btn.classList.remove('mimaJoinFirstLocked');
@@ -6647,21 +6656,28 @@ input[type="submit"]:focus-visible{
       openBtn.addEventListener('click',function(){
         markOpened(task.key);
         unlockVisual(verifyBtn);
-        verifyBtn.disabled=false;
-        verifyBtn.textContent=t(task.verifyAr,task.verifyEn);
+        if(!isCountdownState(task,verifyBtn)){
+          verifyBtn.disabled=false;
+          verifyBtn.textContent=t(task.verifyAr,task.verifyEn);
+        }
       },true);
     }
 
     if(!verifyBtn.dataset.joinFirstClickGuard){
       verifyBtn.dataset.joinFirstClickGuard='1';
       verifyBtn.addEventListener('click',function(ev){
-        if(!isOpened(task.key)){
+        if(!isOpened(task.key) && !isCountdownState(task,verifyBtn)){
           ev.preventDefault();
           ev.stopImmediatePropagation();
           lockVisual(verifyBtn,task);
           return false;
         }
       },true);
+    }
+
+    if(isCountdownState(task,verifyBtn)){
+      unlockVisual(verifyBtn);
+      return;
     }
 
     if(!isOpened(task.key)){
@@ -6679,9 +6695,7 @@ input[type="submit"]:focus-visible{
     applyGuard();
   }
 
-  const observer=new MutationObserver(applyGuard);
-  observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['disabled','class']});
-  setInterval(applyGuard,2000);
+  setInterval(applyGuard,250);
 })();
 </script>
 
