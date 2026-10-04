@@ -2396,7 +2396,38 @@ html[dir="ltr"] input{text-align:left}
   function toggleMining(){
     handleMiningClick();
   }
-  // Entry interstitial temporarily disabled for bot review.
+  // AdsGram entry interstitial — restored after approval.
+  let entryInterstitialAttempted = false;
+
+  async function showEntryInterstitialOnce(){
+    if(entryInterstitialAttempted) return;
+    entryInterstitialAttempted = true;
+
+    try{
+      const controller = getMiningInterstitialController();
+      if(controller && typeof controller.show === 'function'){
+        await showInterstitialSilently(controller);
+      }
+    }catch(e){
+      // No-fill or ad errors stay silent so the app opens normally.
+    }
+  }
+
+  function scheduleEntryInterstitial(){
+    const run = ()=>{
+      setTimeout(()=>{
+        showEntryInterstitialOnce().catch(()=>{});
+      },1800);
+    };
+
+    if(document.readyState === 'complete'){
+      run();
+    }else{
+      window.addEventListener('load',run,{once:true});
+    }
+  }
+
+  scheduleEntryInterstitial();
   const ART_AIRDROP_PARTNER_CLAIM_KEY = 'mima_art_airdrop_partner_claimed_v1';
   const ART_AIRDROP_PARTNER_OPENED_KEY = 'mima_art_airdrop_partner_opened_v1';
 
