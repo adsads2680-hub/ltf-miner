@@ -410,8 +410,20 @@ html[dir="ltr"] input{text-align:left}
 <section id="home" class="screen active">
   <div class="hero">
     <div class="heroHead">
-      <strong id="heroWelcome">مرحباً بك في منظومة</strong>
-      <div id="heroUsername" class="heroUsername" style="display:none"></div>
+      <div class="mimaUserCard">
+        <div class="mimaUserAvatarWrap">
+          <img id="mimaUserAvatar" class="mimaUserAvatar" alt="MIMA User">
+          <div id="mimaUserAvatarFallback" class="mimaUserAvatarFallback">M</div>
+          <span class="mimaUserOnlineDot"></span>
+        </div>
+        <div class="mimaUserMeta">
+          <strong id="heroWelcome">مرحباً بك في منظومة</strong>
+          <div class="mimaUserMetaRow">
+            <div id="heroUsername" class="heroUsername" style="display:none"></div>
+            <span class="mimaMemberBadge">ACTIVE MINER</span>
+          </div>
+        </div>
+      </div>
       <h1>MIMA</h1>
       <small>MINING • EARN • GROW</small>
     </div>
@@ -6696,5 +6708,193 @@ input[type="submit"]:focus-visible{
   }
   setTimeout(applyMiningButtonLogo,300);
   setTimeout(applyMiningButtonLogo,1200);
+})();
+</script>
+
+<style id="mima-premium-user-card-v1">
+.heroHead{
+  text-align:right !important;
+  padding:18px 14px 0 !important;
+}
+.mimaUserCard{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 13px;
+  border:1px solid rgba(255,195,61,.34);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 18% 10%,rgba(255,207,78,.09),transparent 34%),
+    linear-gradient(145deg,rgba(7,20,31,.96),rgba(3,9,15,.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.025),
+    0 10px 26px rgba(0,0,0,.28),
+    0 0 20px rgba(255,184,33,.07);
+  backdrop-filter:blur(12px);
+  overflow:hidden;
+}
+.mimaUserCard::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,221,120,.55),transparent);
+}
+.mimaUserAvatarWrap{
+  position:relative;
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+}
+.mimaUserAvatar,
+.mimaUserAvatarFallback{
+  position:absolute;
+  inset:0;
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  border:2px solid #d99a24;
+  box-shadow:0 0 0 3px rgba(217,154,36,.12),0 0 18px rgba(255,195,61,.16);
+}
+.mimaUserAvatar{
+  object-fit:cover;
+  display:none;
+  background:#06101a;
+}
+.mimaUserAvatarFallback{
+  display:grid;
+  place-items:center;
+  color:#3d2400;
+  font-size:24px;
+  font-weight:1000;
+  background:radial-gradient(circle at 35% 25%,#fff0a7,#ffc844 45%,#b97300 100%);
+}
+.mimaUserOnlineDot{
+  position:absolute;
+  right:1px;
+  bottom:2px;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#19d58a;
+  border:2px solid #06101a;
+  box-shadow:0 0 10px rgba(25,213,138,.75);
+}
+.mimaUserMeta{
+  min-width:0;
+  flex:1;
+}
+.mimaUserMeta #heroWelcome{
+  display:block;
+  color:#f7fbff !important;
+  font-size:16px !important;
+  line-height:1.3;
+  font-weight:900;
+  letter-spacing:.1px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.mimaUserMetaRow{
+  margin-top:7px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+.heroHead .heroUsername{
+  margin-top:0 !important;
+  display:inline-flex !important;
+  align-items:center;
+  max-width:160px;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(74,188,255,.26);
+  background:rgba(18,123,183,.12);
+  color:#76d2ff !important;
+  font-size:10px !important;
+  font-weight:900 !important;
+  line-height:1;
+  direction:ltr;
+  unicode-bidi:isolate;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.mimaMemberBadge{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(255,195,61,.28);
+  background:rgba(255,195,61,.08);
+  color:#ffd66f;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.7px;
+  line-height:1;
+  direction:ltr;
+}
+.heroHead h1{
+  margin:14px 0 4px !important;
+  text-align:left;
+}
+.heroHead > small{
+  display:block;
+  text-align:left;
+}
+@media (max-width:370px){
+  .mimaUserCard{gap:9px;padding:10px}
+  .mimaUserAvatarWrap,
+  .mimaUserAvatar,
+  .mimaUserAvatarFallback{width:48px;height:48px}
+  .mimaUserAvatarWrap{flex-basis:48px}
+  .mimaUserMeta #heroWelcome{font-size:14px !important}
+  .mimaMemberBadge{font-size:8px;padding:4px 7px}
+}
+</style>
+
+<script id="mima-premium-user-card-script-v1">
+(function(){
+  function applyPremiumUserCard(){
+    try{
+      const user=window.Telegram?.WebApp?.initDataUnsafe?.user;
+      const avatar=document.getElementById('mimaUserAvatar');
+      const fallback=document.getElementById('mimaUserAvatarFallback');
+      const username=document.getElementById('heroUsername');
+      const badge=document.querySelector('.mimaMemberBadge');
+
+      if(user?.photo_url && avatar){
+        avatar.src=user.photo_url;
+        avatar.style.display='block';
+        if(fallback) fallback.style.display='none';
+      }else if(avatar && fallback){
+        avatar.style.display='none';
+        fallback.style.display='grid';
+        const initial=String(user?.first_name || 'M').trim().charAt(0).toUpperCase() || 'M';
+        fallback.textContent=initial;
+      }
+
+      if(username && !String(username.textContent||'').trim()){
+        username.style.display='none';
+      }
+
+      if(badge){
+        const lang=String(document.documentElement.lang||'').toLowerCase();
+        badge.textContent=lang.startsWith('ar') ? 'معدّن نشط' : 'ACTIVE MINER';
+      }
+    }catch(e){}
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',applyPremiumUserCard,{once:true});
+  }else{
+    applyPremiumUserCard();
+  }
+  setTimeout(applyPremiumUserCard,300);
+  setTimeout(applyPremiumUserCard,1200);
 })();
 </script>
