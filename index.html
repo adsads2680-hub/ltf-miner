@@ -1965,9 +1965,8 @@ html[dir="ltr"] input{text-align:left}
   function renderAdTask(){
     const item = $('adsgramRewardTaskItem');
     if(item){
-      item.style.display = isAdminNoAds() ? 'none' : '';
+      item.style.display = '';
     }
-    if(isAdminNoAds()) return;
 
     const title = $('adsgramRewardTaskTitle');
     const info = $('adsgramRewardTaskInfo');
@@ -2014,10 +2013,6 @@ html[dir="ltr"] input{text-align:left}
   }
 
   async function refreshAdsgramRewardStatus(showError=false){
-    if(isAdminNoAds()){
-      renderAdTask();
-      return true;
-    }
     if(!serverMode){
       renderAdTask();
       return false;
@@ -2050,7 +2045,6 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function getAdsgramController(){
-    if(isAdminNoAds()) return null;
     if(adsgramController) return adsgramController;
     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
 
@@ -2082,7 +2076,6 @@ html[dir="ltr"] input{text-align:left}
   }
 
   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
-    if(isAdminNoAds()) return;
     if(adsgramRewardBusy) return;
 
     if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
