@@ -2318,6 +2318,39 @@ html[dir="ltr"] input{text-align:left}
     handleMiningClick();
   }
 
+  let entryInterstitialAttempted = false;
+
+  async function showEntryInterstitialOnce(){
+    if(entryInterstitialAttempted) return;
+    entryInterstitialAttempted = true;
+
+    try{
+      const controller = getMiningInterstitialController();
+      if(controller && typeof controller.show === 'function'){
+        await controller.show();
+      }
+    }catch(e){
+      // Entry ad is best-effort only. If AdsGram has no fill,
+      // the user must still be able to enter and use MIMA normally.
+    }
+  }
+
+  function scheduleEntryInterstitial(){
+    const run = ()=>{
+      setTimeout(()=>{
+        showEntryInterstitialOnce().catch(()=>{});
+      },1800);
+    };
+
+    if(document.readyState === 'complete'){
+      run();
+    }else{
+      window.addEventListener('load',run,{once:true});
+    }
+  }
+
+  scheduleEntryInterstitial();
+
   function openMimaChannel(){
     const url = 'https://t.me/MIMA_COIN/3614';
 
