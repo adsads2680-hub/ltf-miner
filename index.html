@@ -2059,11 +2059,29 @@ html[dir="ltr"] input{text-align:left}
       adsgramRewardWatched = Math.max(0,Number(data.watched || 0));
       adsgramRewardRemaining = Math.max(0,Number(data.remaining ?? 0));
 
+      const serverTs = Date.parse(data.server_time || '');
+      if(Number.isFinite(serverTs)){
+        serverTimeOffset = serverTs - Date.now();
+      }
+
       const resetTs = Date.parse(data.reset_at || '');
       adsgramRewardResetAt = Number.isFinite(resetTs) ? resetTs : 0;
 
-      const nextTs = Date.parse(data.next_available_at || '');
-      adsgramRewardNextAvailableAt = Number.isFinite(nextTs) ? nextTs : 0;
+      if(data.available === true){
+        adsgramRewardNextAvailableAt = 0;
+      }else{
+        const nextTs = Date.parse(data.next_available_at || '');
+        adsgramRewardNextAvailableAt = Number.isFinite(nextTs) ? nextTs : 0;
+
+        // Ignore tiny clock/network differences that would otherwise
+        // leave the task stuck displaying 00:00:01.
+        if(
+          adsgramRewardNextAvailableAt &&
+          adsgramRewardNextAvailableAt - nowMs() <= 1500
+        ){
+          adsgramRewardNextAvailableAt = 0;
+        }
+      }
 
       renderAdTask();
       startAdsgramRewardCountdown();
