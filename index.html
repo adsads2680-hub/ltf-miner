@@ -1938,7 +1938,7 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function renderTask(){
-    const renderOne = (taskCode, btnId, infoId) => {
+    const renderOne = (taskCode, btnId, infoId, openedKey) => {
       const btn = $(btnId);
       const info = $(infoId);
       if(!btn || !info) return;
@@ -1948,19 +1948,33 @@ html[dir="ltr"] input{text-align:left}
         : taskNextAvailableAt;
       const remaining = nextAt ? nextAt - nowMs() : 0;
 
+      let opened = false;
+      try{ opened = localStorage.getItem(openedKey) === '1'; }catch(e){}
+
       if(remaining > 0){
         btn.disabled = true;
+        btn.classList.remove('mimaJoinFirstLocked');
         btn.textContent = formatCountdown(remaining);
         info.textContent = tx('+10 MIMA • متاحة بعد ','+10 MIMA • available in ') + formatCountdown(remaining);
-      }else{
-        btn.disabled = false;
-        btn.textContent = tx('تحقق','Verify');
-        info.textContent = tx('+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify');
+        return;
       }
+
+      if(!opened){
+        btn.disabled = true;
+        btn.classList.remove('mimaJoinFirstLocked');
+        btn.textContent = tx('انضم أولاً','Join first');
+        info.textContent = tx('+10 MIMA • انضم أولاً ثم تحقق','+10 MIMA • join first, then verify');
+        return;
+      }
+
+      btn.disabled = false;
+      btn.classList.remove('mimaJoinFirstLocked');
+      btn.textContent = tx('تحقق','Verify');
+      info.textContent = tx('+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify');
     };
 
-    renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo');
-    renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo');
+    renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
+    renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v1');
   }
 
   function startAdsgramRewardCountdown(){
@@ -2724,6 +2738,8 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function openMimaChannel(){
+    try{ localStorage.setItem('mima_join_channel_opened_v1','1'); }catch(e){}
+    renderTask();
     const url = 'https://t.me/MIMA_COIN/3616';
 
     try{
@@ -2742,6 +2758,8 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function openMimaChannel2(){
+    try{ localStorage.setItem('mima_join_channel_2_opened_v1','1'); }catch(e){}
+    renderTask();
     const url = 'https://t.me/MIMACOIN2/9';
 
     try{
@@ -5675,6 +5693,8 @@ body.privacyModalOpen{overflow:hidden!important}
   function el(id){ return document.getElementById(id); }
 
   function openChannel(){
+    try{ localStorage.setItem('mima_withdrawals_channel_opened_v1','1'); }catch(e){}
+    renderTask();
     try{
       if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function'){
         Telegram.WebApp.openTelegramLink(CHANNEL_URL);
@@ -5728,20 +5748,37 @@ body.privacyModalOpen{overflow:hidden!important}
     joinBtn.textContent = tx('انضم','Join');
 
     const rem = remainingMs();
+    let opened = false;
+    try{ opened = localStorage.getItem('mima_withdrawals_channel_opened_v1') === '1'; }catch(e){}
+
     if(rem > 0){
       verifyBtn.disabled = true;
+      verifyBtn.classList.remove('mimaJoinFirstLocked');
       verifyBtn.textContent = formatCountdown(rem);
       info.textContent =
         tx('+5 MIMA • متاحة بعد ','+5 MIMA • available in ') +
         formatCountdown(rem);
-    }else{
-      verifyBtn.disabled = busy;
-      verifyBtn.textContent = busy ? '⏳' : tx('تحقق','Verify');
-      info.textContent = tx(
-        '+5 MIMA • انضم ثم تحقق • تتجدد كل 3 ساعات',
-        '+5 MIMA • join then verify • refreshes every 3 hours'
-      );
+      return;
     }
+
+    if(!opened){
+      verifyBtn.disabled = true;
+      verifyBtn.classList.remove('mimaJoinFirstLocked');
+      verifyBtn.textContent = tx('انضم أولاً','Join first');
+      info.textContent = tx(
+        '+5 MIMA • انضم أولاً ثم تحقق • تتجدد كل 3 ساعات',
+        '+5 MIMA • join first, then verify • refreshes every 3 hours'
+      );
+      return;
+    }
+
+    verifyBtn.disabled = busy;
+    verifyBtn.classList.remove('mimaJoinFirstLocked');
+    verifyBtn.textContent = busy ? '⏳' : tx('تحقق','Verify');
+    info.textContent = tx(
+      '+5 MIMA • انضم ثم تحقق • تتجدد كل 3 ساعات',
+      '+5 MIMA • join then verify • refreshes every 3 hours'
+    );
   }
 
   async function syncStatus(){
@@ -6582,120 +6619,5 @@ input[type="submit"]:focus-visible{
 </style>
 
 
-<style id="mima-task-join-first-stable-style">
-#tasks button.mimaJoinFirstLocked{
-  opacity:1 !important;
-  filter:none !important;
-  animation:none !important;
-  transition:none !important;
-  pointer-events:auto !important;
-  cursor:pointer !important;
-  color:transparent !important;
-  position:relative !important;
-}
-#tasks button.mimaJoinFirstLocked::after{
-  content:attr(data-locked-label);
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#bfa86d;
-  font-size:inherit;
-  font-weight:900;
-  text-shadow:0 1px 0 rgba(0,0,0,.8);
-  pointer-events:none;
-}
-</style>
 
-<script id="mima-task-join-first-guard-v1">
-(function(){
-  const TASKS = [
-    {openId:'joinChannelOpenBtn', verifyId:'joinChannelTaskBtn', infoId:'joinChannelTaskInfo', key:'mima_join_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
-    {openId:'joinChannel2OpenBtn', verifyId:'joinChannel2TaskBtn', infoId:'joinChannel2TaskInfo', key:'mima_join_channel_2_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'},
-    {openId:'mimaWithdrawalsJoinBtn', verifyId:'mimaWithdrawalsVerifyBtn', infoId:'mimaWithdrawalsTaskInfo', key:'mima_withdrawals_channel_opened_v1', joinAr:'انضم أولاً', joinEn:'Join first', verifyAr:'تحقق', verifyEn:'Verify'}
-  ];
-
-  function t(ar,en){
-    try{ if(typeof tx==='function') return tx(ar,en); }catch(e){}
-    const isAr=(document.documentElement.lang||'').toLowerCase().startsWith('ar') || document.documentElement.dir==='rtl';
-    return isAr ? ar : en;
-  }
-  function isOpened(key){ try{return localStorage.getItem(key)==='1';}catch(e){return false;} }
-  function markOpened(key){ try{localStorage.setItem(key,'1');}catch(e){} }
-
-  function isCountdownState(task,btn){
-    const info=document.getElementById(task.infoId);
-    const bt=String(btn?.textContent||'').trim();
-    const it=String(info?.textContent||'');
-    return /^\d{2}:\d{2}:\d{2}$/.test(bt) ||
-      /متاحة بعد|available in/i.test(it);
-  }
-
-  function lockVisual(btn,task){
-    if(!btn) return;
-    btn.classList.add('mimaJoinFirstLocked');
-    btn.dataset.lockedLabel=t(task.joinAr,task.joinEn);
-    btn.setAttribute('aria-disabled','true');
-  }
-
-  function unlockVisual(btn){
-    if(!btn) return;
-    btn.classList.remove('mimaJoinFirstLocked');
-    delete btn.dataset.lockedLabel;
-    btn.removeAttribute('aria-disabled');
-  }
-
-  function protectTask(task){
-    const openBtn=document.getElementById(task.openId);
-    const verifyBtn=document.getElementById(task.verifyId);
-    if(!verifyBtn) return;
-
-    if(openBtn && !openBtn.dataset.joinFirstBound){
-      openBtn.dataset.joinFirstBound='1';
-      openBtn.addEventListener('click',function(){
-        markOpened(task.key);
-        unlockVisual(verifyBtn);
-        if(!isCountdownState(task,verifyBtn)){
-          verifyBtn.disabled=false;
-          verifyBtn.textContent=t(task.verifyAr,task.verifyEn);
-        }
-      },true);
-    }
-
-    if(!verifyBtn.dataset.joinFirstClickGuard){
-      verifyBtn.dataset.joinFirstClickGuard='1';
-      verifyBtn.addEventListener('click',function(ev){
-        if(!isOpened(task.key) && !isCountdownState(task,verifyBtn)){
-          ev.preventDefault();
-          ev.stopImmediatePropagation();
-          lockVisual(verifyBtn,task);
-          return false;
-        }
-      },true);
-    }
-
-    if(isCountdownState(task,verifyBtn)){
-      unlockVisual(verifyBtn);
-      return;
-    }
-
-    if(!isOpened(task.key)){
-      lockVisual(verifyBtn,task);
-    }else{
-      unlockVisual(verifyBtn);
-    }
-  }
-
-  function applyGuard(){ TASKS.forEach(protectTask); }
-
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',applyGuard,{once:true});
-  }else{
-    applyGuard();
-  }
-
-  setInterval(applyGuard,250);
-})();
-</script>
 
