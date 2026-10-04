@@ -350,9 +350,11 @@ html[dir="ltr"] input{text-align:left}
 <style id="mima-miner-levels-v1">
 .minerLevelCard{padding:0!important;overflow:hidden;border-color:rgba(255,195,61,.32)!important}
 .minerLevelHead{padding:15px;background:linear-gradient(135deg,rgba(255,192,61,.09),rgba(17,55,75,.08));display:flex;align-items:center;justify-content:space-between;gap:10px}
-.minerLevelBadge{width:72px;height:72px;flex:0 0 72px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 28%,#ffe999,#d99000 55%,#4b2b00);border:3px solid #ffd769;box-shadow:0 0 22px rgba(255,190,45,.26),inset 0 0 0 3px rgba(73,39,0,.4)}
-.minerLevelBadge span{display:block;color:#402400;font-size:10px;font-weight:900;line-height:1;text-align:center}
-.minerLevelBadge b{display:block;color:#2b1800;font-size:27px;line-height:1;text-align:center;margin-top:3px}
+.minerLevelBadge{width:82px;height:82px;flex:0 0 82px;border-radius:50%;position:relative;overflow:hidden;display:grid;place-items:center;background:#120b02;border:2px solid #ffd769;box-shadow:0 0 22px rgba(255,190,45,.26)}
+.minerLevelBadge img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.minerLevelOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.24);text-shadow:0 1px 3px #000}
+.minerLevelBadge span{display:block;color:#ffe7a0;font-size:9px;font-weight:900;line-height:1;text-align:center}
+.minerLevelBadge b{display:block;color:#fff2b0;font-size:23px;line-height:1;text-align:center;margin-top:3px}
 .minerLevelMeta{flex:1;text-align:right}.minerLevelMeta small{display:block;color:#8fa8b9;font-size:10px}.minerLevelMeta strong{display:block;color:#ffe083;font-size:23px;margin:3px 0}
 .minerLevelProgressWrap{margin:0 15px 15px;padding:10px 12px;border-radius:14px;background:rgba(2,10,16,.82);border:1px solid #17384b}
 .minerLevelProgressTop{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#8ca7b8}.minerLevelProgress{height:7px;background:#07111a;border-radius:20px;overflow:hidden;margin-top:7px}.minerLevelProgress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f1a800,#ffe37b);border-radius:20px;transition:width .25s}
@@ -515,7 +517,8 @@ html[dir="ltr"] input{text-align:left}
   <div class="card minerLevelCard">
     <div class="minerLevelHead">
       <div class="minerLevelBadge">
-        <div><span>LEVEL</span><b id="mineLevelNumber">1</b></div>
+        <img id="mineLevelCoinImage" alt="MIMA">
+        <div class="minerLevelOverlay"><span>LEVEL</span><b id="mineLevelNumber">1</b></div>
       </div>
       <div class="minerLevelMeta">
         <small id="mineLevelCaption">مستوى التعدين الحالي</small>
@@ -538,7 +541,7 @@ html[dir="ltr"] input{text-align:left}
   <div class="card minerLevelRules">
     <div class="minerLevelRule">
       <div class="minerLevelRuleIcon">🏆</div>
-      <div><b id="mineRule1Title">كل 200 نقطة = Level جديد</b><small id="mineRule1Sub">حتى Level 200</small></div>
+      <div><b id="mineRule1Title">كل 200 MIMA من الرصيد = Level جديد</b><small id="mineRule1Sub">حتى Level 200</small></div>
     </div>
     <div class="minerLevelRule">
       <div class="minerLevelRuleIcon">⚡</div>
@@ -546,7 +549,7 @@ html[dir="ltr"] input{text-align:left}
     </div>
     <div class="minerLevelRule">
       <div class="minerLevelRuleIcon">🚫</div>
-      <div><b id="mineRule3Title">النقرات لا ترفع المستوى</b><small id="mineRule3Sub">الترقية تعتمد على نقاط المستوى فقط</small></div>
+      <div><b id="mineRule3Title">النقرات لا تحدد المستوى</b><small id="mineRule3Sub">اللفل يعتمد على الرصيد الحالي</small></div>
     </div>
   </div>
 </section>
@@ -849,7 +852,7 @@ html[dir="ltr"] input{text-align:left}
   const TAP_REGEN_MS = 5000;
   const TAP_BATCH_MAX = 40;
   const TAP_BATCH_FLUSH_MS = 20000;
-  const POINTS_PER_LEVEL = 200;
+  const POINTS_PER_LEVEL = 200; // MIMA balance per level
   const MAX_MINING_LEVEL = 200;
 
   const TASK_REWARD = 10;
@@ -1300,10 +1303,9 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function getMiningLevel(){
-    if(miningPoints <= 0) return 1;
     return Math.min(
       MAX_MINING_LEVEL,
-      Math.max(1,Math.ceil(miningPoints / POINTS_PER_LEVEL))
+      Math.floor(Math.max(0,Number(bal || 0)) / POINTS_PER_LEVEL) + 1
     );
   }
 
@@ -1315,17 +1317,14 @@ html[dir="ltr"] input{text-align:left}
 
   function getLevelProgress(){
     const level = getMiningLevel();
+    const currentBalance = Math.max(0,Number(bal || 0));
 
-    if(level >= MAX_MINING_LEVEL && miningPoints >= MAX_MINING_LEVEL * POINTS_PER_LEVEL){
+    if(level >= MAX_MINING_LEVEL){
       return {current:POINTS_PER_LEVEL,needed:POINTS_PER_LEVEL};
     }
 
-    const lowerBound = (level - 1) * POINTS_PER_LEVEL;
-    let current = Math.max(0, miningPoints - lowerBound);
-    if(miningPoints > 0 && current === 0) current = POINTS_PER_LEVEL;
-
     return {
-      current:Math.min(POINTS_PER_LEVEL,current),
+      current:currentBalance % POINTS_PER_LEVEL,
       needed:POINTS_PER_LEVEL
     };
   }
@@ -2204,7 +2203,7 @@ html[dir="ltr"] input{text-align:left}
     if($('levelPoints')){
       $('levelPoints').textContent = level >= MAX_MINING_LEVEL
         ? 'MAX'
-        : (lp.current + ' / ' + lp.needed + tx(' نقطة',' points'));
+        : (lp.current.toFixed(2) + ' / ' + lp.needed + ' MIMA');
     }
 
     if($('mineRateLine')){
@@ -2213,11 +2212,14 @@ html[dir="ltr"] input{text-align:left}
         roundMax.toFixed(2) + ' MIMA';
     }
 
+    if($('mineLevelCoinImage') && $('mimaCoinImage')){
+      $('mineLevelCoinImage').src = $('mimaCoinImage').src;
+    }
     if($('mineLevelNumber')) $('mineLevelNumber').textContent = level;
     if($('mineLevelCaption')) $('mineLevelCaption').textContent = tx('مستوى التعدين الحالي','Current mining level');
     if($('mineLevelRate')) $('mineLevelRate').textContent = miningRate.toFixed(2) + tx(' MIMA/ساعة',' MIMA/hour');
-    if($('mineLevelPointsTotal')) $('mineLevelPointsTotal').textContent = miningPoints.toLocaleString('en-US') + tx(' نقطة',' points');
-    if($('mineLevelProgressText')) $('mineLevelProgressText').textContent = lp.current + ' / ' + lp.needed + tx(' نقطة',' points');
+    if($('mineLevelPointsTotal')) $('mineLevelPointsTotal').textContent = formatMima(bal) + ' MIMA';
+    if($('mineLevelProgressText')) $('mineLevelProgressText').textContent = lp.current.toFixed(2) + ' / ' + lp.needed + ' MIMA';
     if($('mineLevelNextText')) $('mineLevelNextText').textContent = level >= MAX_MINING_LEVEL ? 'MAX LEVEL' : ('Level ' + (level + 1));
     if($('mineLevelProgressBar')) $('mineLevelProgressBar').style.width = Math.min(100,(lp.current/Math.max(1,lp.needed))*100) + '%';
 
@@ -2235,12 +2237,12 @@ html[dir="ltr"] input{text-align:left}
       }
     }
 
-    if($('mineRule1Title')) $('mineRule1Title').textContent = tx('كل 200 نقطة = Level جديد','Every 200 points = a new Level');
+    if($('mineRule1Title')) $('mineRule1Title').textContent = tx('كل 200 MIMA من الرصيد = Level جديد','Every 200 MIMA balance = a new Level');
     if($('mineRule1Sub')) $('mineRule1Sub').textContent = tx('حتى Level 200','Up to Level 200');
     if($('mineRule2Title')) $('mineRule2Title').textContent = tx('كل Level يزيد السرعة +0.05','Each Level increases speed by +0.05');
     if($('mineRule2Sub')) $('mineRule2Sub').textContent = tx('تزداد سرعة التعدين تلقائياً مع المستوى','Mining speed increases automatically with your level');
-    if($('mineRule3Title')) $('mineRule3Title').textContent = tx('النقرات لا ترفع المستوى','Taps do not increase your level');
-    if($('mineRule3Sub')) $('mineRule3Sub').textContent = tx('الترقية تعتمد على نقاط المستوى فقط','Level progression depends only on level points');
+    if($('mineRule3Title')) $('mineRule3Title').textContent = tx('اللفل يعتمد على الرصيد الحالي','Level depends on current balance');
+    if($('mineRule3Sub')) $('mineRule3Sub').textContent = tx('عند السحب ينخفض اللفل والسرعة حسب الرصيد المتبقي','After withdrawal, level and speed drop with the remaining balance');
 
     const roundText = formatMima(earned) + ' MIMA';
 
