@@ -380,10 +380,13 @@ html[dir="ltr"] input{text-align:left}
 }
 .mimaConnectedWalletTitle{display:flex;align-items:center;gap:9px}
 .mimaTonIcon{
-  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
-  background:#169cde;color:#fff;font-weight:1000;font-size:15px;
-  box-shadow:0 0 18px rgba(22,156,222,.22)
+  width:38px;height:38px;border-radius:50%;display:grid;place-items:center;
+  background:linear-gradient(145deg,#32b8f2,#1198d6);
+  box-shadow:0 0 20px rgba(22,156,222,.30),inset 0 0 0 1px rgba(255,255,255,.16);
+  flex:0 0 38px
 }
+.mimaTonIcon svg{width:23px;height:23px;display:block}
+.mimaTonIcon path{fill:#fff}
 .mimaConnectedWalletTitle b{display:block;font-size:12px;color:#eef8ff}
 .mimaConnectedWalletTitle small{display:block;margin-top:2px;font-size:8px;color:#7491a6}
 #ton-connect{display:flex;justify-content:flex-end;min-height:40px}
@@ -748,7 +751,11 @@ html[dir="ltr"] input{text-align:left}
   <div class="card mimaConnectedWallet">
     <div class="mimaConnectedWalletHead">
       <div class="mimaConnectedWalletTitle">
-        <span class="mimaTonIcon">◈</span>
+        <span class="mimaTonIcon" aria-label="TON">
+          <svg viewBox="0 0 56 56" aria-hidden="true">
+            <path d="M28 7.5c-7.6 0-15.2.4-22.5 1.3-3.4.4-5.2 4.1-3.3 6.9l22.2 32.4c1.7 2.5 5.5 2.5 7.2 0l22.2-32.4c1.9-2.8.1-6.5-3.3-6.9C43.2 7.9 35.6 7.5 28 7.5Zm-3 8.2v21.8L10.6 16.1c4.7-.3 9.6-.4 14.4-.4Zm6 0c4.8 0 9.7.1 14.4.4L31 37.5V15.7Z"/>
+          </svg>
+        </span>
         <div>
           <b>GRAM Wallet</b>
           <small>اربط محفظتك لعرض رصيد GRAM</small>
