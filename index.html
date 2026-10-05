@@ -4289,6 +4289,20 @@ html[dir="ltr"] input{text-align:left}
         String(data.request_id || '') +
         tx(' • الرسوم 15 MIMA',' sent • fee 15 MIMA')
       );
+
+      // Natural break: the exchange request is already completed.
+      // Interstitial failure/no-fill must never affect the withdrawal request.
+      if(!isAdminNoAds()){
+        try{
+          const controller = getMiningInterstitialController();
+          if(controller && typeof controller.show === 'function'){
+            await new Promise(resolve=>setTimeout(resolve,250));
+            await showInterstitialSilently(controller);
+          }
+        }catch(e){
+          // Keep ad errors completely silent after a successful request.
+        }
+      }
     }catch(err){
       await syncServerStatus(false);
       toast('⚠️ ' + (err.message || tx('فشل إرسال طلب التبادل','Could not send the exchange request')));
