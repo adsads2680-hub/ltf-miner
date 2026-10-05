@@ -366,6 +366,52 @@ html[dir="ltr"] input{text-align:left}
 .minerLevelRule>div:last-child{flex:1}.minerLevelRule b{font-size:12px}.minerLevelRule small{display:block;color:#8da9bb;margin-top:4px;font-size:10px}
 </style>
 
+<style id="mima-ton-connect-style">
+.mimaConnectedWallet{
+  margin-top:11px;
+  padding:14px;
+  border:1px solid rgba(39,153,255,.24);
+  background:
+    radial-gradient(circle at 88% 10%,rgba(42,166,255,.13),transparent 35%),
+    linear-gradient(145deg,#06131e,#030a10);
+}
+.mimaConnectedWalletHead{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.mimaConnectedWalletTitle{display:flex;align-items:center;gap:9px}
+.mimaTonIcon{
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:#169cde;color:#fff;font-weight:1000;font-size:15px;
+  box-shadow:0 0 18px rgba(22,156,222,.22)
+}
+.mimaConnectedWalletTitle b{display:block;font-size:12px;color:#eef8ff}
+.mimaConnectedWalletTitle small{display:block;margin-top:2px;font-size:8px;color:#7491a6}
+#ton-connect{display:flex;justify-content:flex-end;min-height:40px}
+.mimaWalletExternalInfo{
+  margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.06)
+}
+.mimaWalletAddressLine{
+  display:flex;align-items:center;justify-content:space-between;gap:8px
+}
+.mimaWalletAddressLine small{font-size:8px;color:#7890a3}
+#mimaTonWalletAddress{font-size:9px;color:#b8c8d5;direction:ltr}
+.mimaGramExternalBalance{
+  display:flex;align-items:end;justify-content:space-between;gap:8px;margin-top:10px
+}
+.mimaGramExternalBalance small{display:block;color:#7890a3;font-size:8px}
+.mimaGramExternalBalance b{
+  display:block;margin-top:4px;font-size:20px;color:#58c9ff;direction:ltr
+}
+#mimaTonWalletRefresh{
+  border:1px solid rgba(88,201,255,.24);border-radius:9px;
+  background:rgba(88,201,255,.08);color:#aee6ff;padding:7px 9px;
+  font-size:9px;font-weight:900
+}
+#mimaTonWalletState{display:block;margin-top:6px;color:#688094;font-size:8px}
+</style>
+
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -697,6 +743,34 @@ html[dir="ltr"] input{text-align:left}
   <div class="statgrid">
     <div class="stat"><small>MIMA</small><b id="walletMimaStat">0.000000</b></div>
     <div class="stat"><small>القيمة بالدولار</small><b id="walletUsdStat">$0.000000</b></div>
+  </div>
+
+  <div class="card mimaConnectedWallet">
+    <div class="mimaConnectedWalletHead">
+      <div class="mimaConnectedWalletTitle">
+        <span class="mimaTonIcon">◈</span>
+        <div>
+          <b>GRAM Wallet</b>
+          <small>اربط محفظتك لعرض رصيد GRAM</small>
+        </div>
+      </div>
+      <div id="ton-connect"></div>
+    </div>
+
+    <div class="mimaWalletExternalInfo">
+      <div class="mimaWalletAddressLine">
+        <small>المحفظة المتصلة</small>
+        <b id="mimaTonWalletAddress">—</b>
+      </div>
+      <div class="mimaGramExternalBalance">
+        <div>
+          <small>رصيد GRAM في المحفظة</small>
+          <b id="mimaTonWalletBalance">— GRAM</b>
+        </div>
+        <button id="mimaTonWalletRefresh" type="button" onclick="refreshConnectedGramBalance()">↻</button>
+      </div>
+      <span id="mimaTonWalletState">غير متصلة</span>
+    </div>
   </div>
 
   <div class="card" style="margin-top:11px;text-align:center">
@@ -1109,6 +1183,13 @@ html[dir="ltr"] input{text-align:left}
     ['الرصيد المتاح في المحفظة','Available wallet balance'],
     ['جاري المزامنة…','Syncing…'],
     ['القيمة بالدولار','USD value'],
+    ['اربط محفظتك لعرض رصيد GRAM','Connect your wallet to view GRAM balance'],
+    ['المحفظة المتصلة','Connected wallet'],
+    ['رصيد GRAM في المحفظة','GRAM wallet balance'],
+    ['غير متصلة','Not connected'],
+    ['متصلة • قراءة فقط','Connected • Read only'],
+    ['جاري قراءة الرصيد…','Reading balance…'],
+    ['تعذر قراءة الرصيد','Could not read balance'],
     ['سعر العرض داخل النظام','Internal display rate'],
     ['تبادل MIMA إلى GRAM','Exchange MIMA to GRAM'],
     ['سحوباتي','My withdrawals'],
@@ -1292,6 +1373,10 @@ html[dir="ltr"] input{text-align:left}
       loadPublicPayouts();
     }
 
+    if(id === 'wallet' && connectedTonWalletAddress){
+      refreshConnectedGramBalance();
+    }
+
     if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
       refreshAdsgramRewardStatus(false).catch(()=>{});
     }
@@ -1448,6 +1533,125 @@ html[dir="ltr"] input{text-align:left}
     }
 
     return data;
+  }
+
+  const TONCONNECT_MANIFEST_URL =
+    'https://raw.githubusercontent.com/adsads2680-hub/ltf-miner/main/tonconnect-manifest.json';
+  let mimaTonConnectUI = null;
+  let connectedTonWalletAddress = '';
+  let connectedTonWalletChain = '';
+
+  function shortTonAddress(value){
+    const s = String(value || '').trim();
+    if(!s) return '—';
+    if(s.length <= 18) return s;
+    return s.slice(0,8) + '…' + s.slice(-8);
+  }
+
+  function renderConnectedTonWallet(){
+    const addressEl = $('mimaTonWalletAddress');
+    const stateEl = $('mimaTonWalletState');
+    if(addressEl){
+      addressEl.textContent = connectedTonWalletAddress
+        ? shortTonAddress(connectedTonWalletAddress)
+        : '—';
+      addressEl.title = connectedTonWalletAddress || '';
+    }
+    if(stateEl){
+      stateEl.textContent = connectedTonWalletAddress
+        ? tx('متصلة • قراءة فقط','Connected • Read only')
+        : tx('غير متصلة','Not connected');
+    }
+    if(!connectedTonWalletAddress && $('mimaTonWalletBalance')){
+      $('mimaTonWalletBalance').textContent = '— GRAM';
+    }
+  }
+
+  window.refreshConnectedGramBalance = async function(){
+    const balanceEl = $('mimaTonWalletBalance');
+    const stateEl = $('mimaTonWalletState');
+    if(!connectedTonWalletAddress){
+      renderConnectedTonWallet();
+      return;
+    }
+
+    if(connectedTonWalletChain && String(connectedTonWalletChain) !== '-239'){
+      if(balanceEl) balanceEl.textContent = '— GRAM';
+      if(stateEl) stateEl.textContent = tx(
+        'يرجى ربط محفظة الشبكة الرئيسية',
+        'Please connect a mainnet wallet'
+      );
+      return;
+    }
+
+    if(balanceEl) balanceEl.textContent = '…';
+    if(stateEl) stateEl.textContent = tx('جاري قراءة الرصيد…','Reading balance…');
+
+    try{
+      const data = await apiCall('wallet_balance',{
+        wallet_address:connectedTonWalletAddress
+      });
+      if(data?.success !== true) throw new Error(data?.message || 'wallet_balance_failed');
+
+      const value = Number(data.gram_balance || 0);
+      if(balanceEl){
+        balanceEl.textContent = value.toLocaleString('en-US',{
+          minimumFractionDigits:4,
+          maximumFractionDigits:9
+        }) + ' GRAM';
+      }
+      if(stateEl){
+        stateEl.textContent = tx('متصلة • قراءة فقط','Connected • Read only');
+      }
+    }catch(err){
+      if(balanceEl) balanceEl.textContent = '— GRAM';
+      if(stateEl) stateEl.textContent = tx('تعذر قراءة الرصيد','Could not read balance');
+    }
+  };
+
+  function initTonConnectWallet(){
+    const root = $('ton-connect');
+    if(!root) return;
+
+    if(!window.TON_CONNECT_UI?.TonConnectUI){
+      root.innerHTML = '<small style="color:#75879a">' +
+        tx('تعذر تحميل ربط المحفظة','Wallet connector unavailable') +
+        '</small>';
+      return;
+    }
+
+    try{
+      mimaTonConnectUI = new window.TON_CONNECT_UI.TonConnectUI({
+        manifestUrl:TONCONNECT_MANIFEST_URL,
+        buttonRootId:'ton-connect',
+        uiPreferences:{theme:'DARK'},
+        analytics:{mode:'off'}
+      });
+
+      mimaTonConnectUI.onStatusChange(wallet=>{
+        connectedTonWalletAddress = String(wallet?.account?.address || '').trim();
+        connectedTonWalletChain = String(wallet?.account?.chain || '').trim();
+        renderConnectedTonWallet();
+
+        if(connectedTonWalletAddress){
+          refreshConnectedGramBalance();
+        }
+      });
+
+      const restored = mimaTonConnectUI.wallet;
+      if(restored?.account?.address){
+        connectedTonWalletAddress = String(restored.account.address || '').trim();
+        connectedTonWalletChain = String(restored.account.chain || '').trim();
+        renderConnectedTonWallet();
+        refreshConnectedGramBalance();
+      }else{
+        renderConnectedTonWallet();
+      }
+    }catch(err){
+      root.innerHTML = '<small style="color:#75879a">' +
+        tx('تعذر تشغيل ربط المحفظة','Could not initialize wallet connection') +
+        '</small>';
+    }
   }
 
   function isMimaAdmin(){
@@ -4074,6 +4278,17 @@ html[dir="ltr"] input{text-align:left}
 
 
   applyLanguage(false);
+  initTonConnectWallet();
+
+  setInterval(()=>{
+    if(
+      connectedTonWalletAddress &&
+      document.visibilityState === 'visible' &&
+      $('wallet')?.classList.contains('active')
+    ){
+      refreshConnectedGramBalance();
+    }
+  },60000);
 
   if(serverMode){
     bal = 0;
