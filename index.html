@@ -700,11 +700,11 @@ html[dir="ltr"] input{text-align:left}
     <div class="item" id="victorsPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
-        <b>انضم إلى شريك MIMA</b>
-        <small id="victorsPartnerTaskInfo">+2 MIMA • مكافأة لمرة واحدة</small>
+        <b id="victorsPartnerTaskTitle">اربط المحفظة وابدأ التعدين</b>
+        <small id="victorsPartnerTaskInfo">+2 MIMA • تتجدد كل 4 ساعات</small>
       </main>
       <div class="taskActionGroup">
-        <button class="taskJoinBtn" type="button" onclick="openVictorsPartner()">اشترك</button>
+        <button id="victorsPartnerOpenBtn" class="taskJoinBtn" type="button" onclick="openVictorsPartner()">ابدأ</button>
         <button id="victorsPartnerTaskBtn" type="button" onclick="claimVictorsPartner(this)">استلم</button>
       </div>
     </div>
@@ -1025,6 +1025,7 @@ html[dir="ltr"] input{text-align:left}
   let task2NextAvailableAt = 0;
   let mimaExchangeChannelNextAvailableAt = 0;
   let interactPostNextAvailableAt = 0;
+  let victorsPartnerNextAvailableAt = 0;
 
   const ADSGRAM_BLOCK_ID = '51807';
   let adsgramController = null;
@@ -1490,7 +1491,8 @@ html[dir="ltr"] input{text-align:left}
       taskNextAvailableAt,
       task2NextAvailableAt,
       mimaExchangeChannelNextAvailableAt,
-      interactPostNextAvailableAt
+      interactPostNextAvailableAt,
+      victorsPartnerNextAvailableAt
     }));
   }
 
@@ -1536,6 +1538,7 @@ html[dir="ltr"] input{text-align:left}
       if(Number.isFinite(saved.task2NextAvailableAt)) task2NextAvailableAt = saved.task2NextAvailableAt;
       if(Number.isFinite(saved.mimaExchangeChannelNextAvailableAt)) mimaExchangeChannelNextAvailableAt = saved.mimaExchangeChannelNextAvailableAt;
       if(Number.isFinite(saved.interactPostNextAvailableAt)) interactPostNextAvailableAt = saved.interactPostNextAvailableAt;
+      if(Number.isFinite(saved.victorsPartnerNextAvailableAt)) victorsPartnerNextAvailableAt = saved.victorsPartnerNextAvailableAt;
 
       miningRate = getMiningRateForLevel();
       roundMax = Number((miningRate * 4).toFixed(8));
@@ -2285,6 +2288,9 @@ html[dir="ltr"] input{text-align:left}
 
     const exchangeChannelTs = Date.parse(data.join_mima_exchange_channel_next_available_at || '');
     mimaExchangeChannelNextAvailableAt = Number.isFinite(exchangeChannelTs) ? exchangeChannelTs : 0;
+
+    const victorsPartnerTs = Date.parse(data.victors_partner_next_available_at || '');
+    victorsPartnerNextAvailableAt = Number.isFinite(victorsPartnerTs) ? victorsPartnerTs : 0;
 
     roundEnded = data.round_ended === true;
     serverReady = true;
@@ -3427,8 +3433,7 @@ html[dir="ltr"] input{text-align:left}
   }
 
   const VICTORS_PARTNER_URL = 'https://t.me/VictorsCompanybot/app?startapp=ref_5D66CA239C';
-  const VICTORS_PARTNER_CLAIM_KEY = 'mima_victors_partner_claimed_v1';
-  const VICTORS_PARTNER_OPENED_KEY = 'mima_victors_partner_opened_v1';
+  const VICTORS_PARTNER_OPENED_KEY = 'mima_victors_partner_opened_v2';
 
   function openVictorsPartner(){
     try{
@@ -3452,46 +3457,54 @@ html[dir="ltr"] input{text-align:left}
   }
 
   function renderVictorsPartnerTask(){
+    const title = $('victorsPartnerTaskTitle');
+    const openBtn = $('victorsPartnerOpenBtn');
     const btn = $('victorsPartnerTaskBtn');
     const info = $('victorsPartnerTaskInfo');
-    if(!btn) return;
+    if(!btn || !info) return;
 
-    let claimed = false;
-    let opened = false;
-    try{
-      claimed = localStorage.getItem(VICTORS_PARTNER_CLAIM_KEY) === '1';
-      opened = localStorage.getItem(VICTORS_PARTNER_OPENED_KEY) === '1';
-    }catch(e){}
-
-    btn.disabled = claimed || !opened;
-    btn.textContent = claimed
-      ? tx('تم الاستلام','Claimed')
-      : opened
-      ? tx('استلم','Claim')
-      : tx('اشترك أولاً','Subscribe first');
-
-    if(info){
-      info.textContent = claimed
-        ? tx('+2 MIMA • تم الاستلام','+2 MIMA • claimed')
-        : opened
-        ? tx('+2 MIMA • يمكنك الاستلام الآن','+2 MIMA • ready to claim')
-        : tx('+2 MIMA • اشترك أولاً ثم ارجع واستلم','+2 MIMA • subscribe first, then return and claim');
+    if(title){
+      title.textContent = tx('اربط المحفظة وابدأ التعدين','Connect Wallet & Start Mining');
     }
-  }
+    if(openBtn){
+      openBtn.textContent = tx('ابدأ','Start');
+    }
 
-  async function claimVictorsPartner(btn){
-    if(!btn) return;
+    const remaining = victorsPartnerNextAvailableAt
+      ? victorsPartnerNextAvailableAt - nowMs()
+      : 0;
 
     let opened = false;
     try{ opened = localStorage.getItem(VICTORS_PARTNER_OPENED_KEY) === '1'; }catch(e){}
 
-    if(!opened){
-      toast(tx('⚠️ اشترك مع شريك MIMA أولاً ثم ارجع واضغط استلم','⚠️ Subscribe with the MIMA partner first, then return and tap Claim'));
-      renderVictorsPartnerTask();
+    if(remaining > 0){
+      btn.disabled = true;
+      btn.textContent = formatCountdown(remaining);
+      info.textContent = tx('+2 MIMA • متاحة بعد ','+2 MIMA • available in ') + formatCountdown(remaining);
       return;
     }
 
-    if(btn.disabled) return;
+    if(!opened){
+      btn.disabled = true;
+      btn.textContent = tx('ابدأ أولاً','Start first');
+      info.textContent = tx('+2 MIMA • اربط المحفظة وابدأ التعدين ثم ارجع واستلم','+2 MIMA • connect your wallet and start mining, then return to claim');
+      return;
+    }
+
+    btn.disabled = false;
+    btn.textContent = tx('استلم','Claim');
+    info.textContent = tx('+2 MIMA • جاهزة للاستلام','+2 MIMA • ready to claim');
+  }
+
+  async function claimVictorsPartner(btn){
+    if(!btn || btn.disabled) return;
+
+    let opened = false;
+    try{ opened = localStorage.getItem(VICTORS_PARTNER_OPENED_KEY) === '1'; }catch(e){}
+    if(!opened){
+      renderVictorsPartnerTask();
+      return;
+    }
 
     btn.disabled = true;
     btn.textContent = '⏳';
@@ -3499,38 +3512,37 @@ html[dir="ltr"] input{text-align:left}
     if(!serverMode){
       bal += 2;
       exchangeableBalance += 2;
-      try{ localStorage.setItem(VICTORS_PARTNER_CLAIM_KEY,'1'); }catch(e){}
+      victorsPartnerNextAvailableAt = Date.now() + 4 * 60 * 60 * 1000;
+      try{ localStorage.removeItem(VICTORS_PARTNER_OPENED_KEY); }catch(e){}
       savePreviewState();
       render();
-      renderVictorsPartnerTask();
       toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
       return;
     }
 
     try{
-      const data = await apiCall('claim_task',{ task_code:'victors_partner' });
+      const data = await apiCall('claim_task',{task_code:'victors_partner'});
 
       if(data.success !== true){
-        const msg = localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available');
-        if(/غير متاحة بعد|not available yet/i.test(String(data.message || msg))){
-          try{ localStorage.setItem(VICTORS_PARTNER_CLAIM_KEY,'1'); }catch(e){}
-          renderVictorsPartnerTask();
-          toast(tx('✅ تم استلام مكافأة هذه المهمة سابقاً','✅ This task reward was already claimed'));
-          return;
-        }
-        throw new Error(msg);
+        const nextTs = Date.parse(data.next_available_at || '');
+        if(Number.isFinite(nextTs)) victorsPartnerNextAvailableAt = nextTs;
+        throw new Error(localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available'));
       }
 
       bal = Math.max(0,Number(data.balance || bal));
       exchangeableBalance = Math.max(0,Number(data.exchangeable_balance ?? exchangeableBalance));
-      try{ localStorage.setItem(VICTORS_PARTNER_CLAIM_KEY,'1'); }catch(e){}
-      render();
-      renderVictorsPartnerTask();
+
+      const nextTs = Date.parse(data.next_available_at || '');
+      victorsPartnerNextAvailableAt = Number.isFinite(nextTs)
+        ? nextTs
+        : nowMs() + 4 * 60 * 60 * 1000;
+
+      try{ localStorage.removeItem(VICTORS_PARTNER_OPENED_KEY); }catch(e){}
       toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      render();
     }catch(err){
-      btn.disabled = false;
-      btn.textContent = tx('استلم','Claim');
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
+      render();
     }
   }
 
