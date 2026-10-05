@@ -661,6 +661,18 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
+    <div class="item" id="mimaExchangeChannelTaskItem">
+      <span class="ico">📈</span>
+      <main>
+        <b id="mimaExchangeChannelTaskTitle">انضم إلى قناة بورصة MIMA</b>
+        <small id="mimaExchangeChannelTaskInfo">+1 MIMA • تتجدد كل 4 ساعات</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="mimaExchangeChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaExchangeChannel()">انضم</button>
+        <button id="mimaExchangeChannelTaskBtn" type="button" onclick="claimMimaExchangeChannelTask(this)">تحقق</button>
+      </div>
+    </div>
+
     <div class="item" id="interactPostTaskItem">
       <span class="ico">❤️</span>
       <main>
@@ -1011,6 +1023,7 @@ html[dir="ltr"] input{text-align:left}
 
   let taskNextAvailableAt = 0;
   let task2NextAvailableAt = 0;
+  let mimaExchangeChannelNextAvailableAt = 0;
   let interactPostNextAvailableAt = 0;
 
   const ADSGRAM_BLOCK_ID = '51807';
@@ -1344,6 +1357,7 @@ html[dir="ltr"] input{text-align:left}
 
     if(typeof render === 'function') render();
     if(typeof renderTask === 'function') renderTask();
+    if(typeof renderMimaExchangeChannelTask === 'function') renderMimaExchangeChannelTask();
     if(typeof renderInteractPostTask === 'function') renderInteractPostTask();
     if(typeof renderVictorsPartnerTask === 'function') renderVictorsPartnerTask();
     if(typeof renderArtAirdropPartnerTask === 'function') renderArtAirdropPartnerTask();
@@ -1475,6 +1489,7 @@ html[dir="ltr"] input{text-align:left}
       referralBonusTotal,
       taskNextAvailableAt,
       task2NextAvailableAt,
+      mimaExchangeChannelNextAvailableAt,
       interactPostNextAvailableAt
     }));
   }
@@ -1519,6 +1534,7 @@ html[dir="ltr"] input{text-align:left}
       if(Number.isFinite(saved.referralBonusTotal)) referralBonusTotal = Math.max(0,saved.referralBonusTotal);
       if(Number.isFinite(saved.taskNextAvailableAt)) taskNextAvailableAt = saved.taskNextAvailableAt;
       if(Number.isFinite(saved.task2NextAvailableAt)) task2NextAvailableAt = saved.task2NextAvailableAt;
+      if(Number.isFinite(saved.mimaExchangeChannelNextAvailableAt)) mimaExchangeChannelNextAvailableAt = saved.mimaExchangeChannelNextAvailableAt;
       if(Number.isFinite(saved.interactPostNextAvailableAt)) interactPostNextAvailableAt = saved.interactPostNextAvailableAt;
 
       miningRate = getMiningRateForLevel();
@@ -1774,6 +1790,7 @@ html[dir="ltr"] input{text-align:left}
     const labels = {
       join_channel: tx('قناة MIMA','MIMA channel'),
       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+      join_mima_exchange_channel: tx('قناة بورصة MIMA','MIMA Exchange channel'),
       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
       victors_partner: tx('مهمة الشريك','Partner task'),
       art_airdrop_partner: tx('مهمة الشريك ART','ART partner task'),
@@ -2265,6 +2282,9 @@ html[dir="ltr"] input{text-align:left}
 
     const interactPostTs = Date.parse(data.interact_mimacoin2_post_next_available_at || '');
     interactPostNextAvailableAt = Number.isFinite(interactPostTs) ? interactPostTs : 0;
+
+    const exchangeChannelTs = Date.parse(data.join_mima_exchange_channel_next_available_at || '');
+    mimaExchangeChannelNextAvailableAt = Number.isFinite(exchangeChannelTs) ? exchangeChannelTs : 0;
 
     roundEnded = data.round_ended === true;
     serverReady = true;
@@ -2825,6 +2845,7 @@ html[dir="ltr"] input{text-align:left}
 
     updateExchangeEstimate();
     renderTask();
+    renderMimaExchangeChannelTask();
     renderInteractPostTask();
   }
 
@@ -3178,6 +3199,123 @@ html[dir="ltr"] input{text-align:left}
       }
     }catch(e){
       window.location.href = url;
+    }
+  }
+
+  const MIMA_EXCHANGE_CHANNEL_URL = 'https://t.me/MIMACOIN_OFFICIAL';
+  const MIMA_EXCHANGE_CHANNEL_OPENED_KEY = 'mima_exchange_channel_opened_v1';
+
+  function openMimaExchangeChannel(){
+    try{ localStorage.setItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY,'1'); }catch(e){}
+    renderMimaExchangeChannelTask();
+
+    try{
+      if(
+        window.Telegram &&
+        Telegram.WebApp &&
+        typeof Telegram.WebApp.openTelegramLink === 'function'
+      ){
+        Telegram.WebApp.openTelegramLink(MIMA_EXCHANGE_CHANNEL_URL);
+      }else{
+        window.open(MIMA_EXCHANGE_CHANNEL_URL,'_blank','noopener,noreferrer');
+      }
+    }catch(e){
+      window.location.href = MIMA_EXCHANGE_CHANNEL_URL;
+    }
+  }
+
+  function renderMimaExchangeChannelTask(){
+    const title = $('mimaExchangeChannelTaskTitle');
+    const info = $('mimaExchangeChannelTaskInfo');
+    const openBtn = $('mimaExchangeChannelOpenBtn');
+    const btn = $('mimaExchangeChannelTaskBtn');
+    if(!title || !info || !openBtn || !btn) return;
+
+    title.textContent = tx('انضم إلى قناة بورصة MIMA','Join the MIMA Exchange Channel');
+    openBtn.textContent = tx('انضم','Join');
+
+    const remaining = mimaExchangeChannelNextAvailableAt
+      ? mimaExchangeChannelNextAvailableAt - nowMs()
+      : 0;
+
+    let opened = false;
+    try{ opened = localStorage.getItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY) === '1'; }catch(e){}
+
+    if(remaining > 0){
+      btn.disabled = true;
+      btn.textContent = formatCountdown(remaining);
+      info.textContent = tx('+1 MIMA • متاحة بعد ','+1 MIMA • available in ') + formatCountdown(remaining);
+      return;
+    }
+
+    if(!opened){
+      btn.disabled = true;
+      btn.textContent = tx('انضم أولاً','Join first');
+      info.textContent = tx('+1 MIMA • انضم ثم تحقق','+1 MIMA • join then verify');
+      return;
+    }
+
+    btn.disabled = false;
+    btn.textContent = tx('تحقق','Verify');
+    info.textContent = tx('+1 MIMA • تتجدد كل 4 ساعات','+1 MIMA • refreshes every 4 hours');
+  }
+
+  async function claimMimaExchangeChannelTask(btn){
+    if(!btn || btn.disabled) return;
+
+    let opened = false;
+    try{ opened = localStorage.getItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY) === '1'; }catch(e){}
+    if(!opened){
+      renderMimaExchangeChannelTask();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳';
+
+    if(!serverMode){
+      bal += 1;
+      exchangeableBalance += 1;
+      mimaExchangeChannelNextAvailableAt = Date.now() + 4 * 60 * 60 * 1000;
+      savePreviewState();
+      render();
+      toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
+      return;
+    }
+
+    try{
+      const data = await apiCall('claim_task',{task_code:'join_mima_exchange_channel'});
+
+      if(data.success !== true){
+        const nextTs = Date.parse(data.next_available_at || '');
+        if(Number.isFinite(nextTs)) mimaExchangeChannelNextAvailableAt = nextTs;
+
+        if(data.channel_url){
+          toast(tx(
+            '⚠️ انضم إلى قناة بورصة MIMA ثم ارجع واضغط تحقق',
+            '⚠️ Join the MIMA Exchange channel, then return and tap Verify'
+          ));
+          renderMimaExchangeChannelTask();
+          return;
+        }
+
+        throw new Error(localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available'));
+      }
+
+      bal = Math.max(0,Number(data.balance || bal));
+      exchangeableBalance = Math.max(0,Number(data.exchangeable_balance ?? exchangeableBalance));
+
+      const nextTs = Date.parse(data.next_available_at || '');
+      mimaExchangeChannelNextAvailableAt = Number.isFinite(nextTs)
+        ? nextTs
+        : nowMs() + 4 * 60 * 60 * 1000;
+
+      try{ localStorage.removeItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY); }catch(e){}
+      toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
+      render();
+    }catch(err){
+      toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
+      render();
     }
   }
 
