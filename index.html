@@ -1823,6 +1823,10 @@ html[dir="ltr"] input{text-align:left}
         '<div class="adminUserIdentity">' +
           '<b>' + escapeHtml(userLabel) + '</b>' +
           '<small>ID: ' + escapeHtml(String(u.telegram_user_id || '')) + '</small>' +
+          '<small>' + tx('تاريخ إنشاء الحساب','Account created') + ': ' +
+            escapeHtml(adminAuditDate(u.created_at)) + '</small>' +
+          '<small>' + tx('آخر ظهور','Last seen') + ': ' +
+            escapeHtml(adminAuditDate(u.last_seen_at)) + '</small>' +
         '</div>' +
         '<div class="adminUserBalanceGrid">' +
           '<div><small>' + tx('الرصيد الحالي','Current balance') + '</small><b>' + formatMima(u.balance) + '</b></div>' +
@@ -1844,8 +1848,14 @@ html[dir="ltr"] input{text-align:left}
         '<div class="adminAuditRow">' +
           '<div class="adminAuditHead"><b>📋 ' + tx('المهام','Tasks') + '</b><span>' + tasks.length + '</span></div>' +
           (tasks.length ? tasks.map(x =>
-            '<div class="adminUserLine"><span>' + escapeHtml(adminActivityTaskLabel(x.task_code)) +
-            '</span><b>' + Number(x.claims_count || 0) + ' × • ' + formatMima(x.total_reward) + ' MIMA</b></div>'
+            '<div class="adminUserTaskBlock">' +
+              '<div class="adminUserLine"><span>' + escapeHtml(adminActivityTaskLabel(x.task_code)) +
+              '</span><b>' + Number(x.claims_count || 0) + ' × • ' + formatMima(x.total_reward) + ' MIMA</b></div>' +
+              '<small>' + tx('أول تنفيذ','First claim') + ': ' +
+                escapeHtml(adminAuditDate(x.first_claim_at)) + '</small>' +
+              '<small>' + tx('آخر تنفيذ','Last claim') + ': ' +
+                escapeHtml(adminAuditDate(x.last_claim_at)) + '</small>' +
+            '</div>'
           ).join('') : '<small>' + tx('لا توجد مهام مسجلة','No recorded tasks') + '</small>') +
         '</div>' +
         '<div class="adminAuditRow">' +
@@ -5934,6 +5944,7 @@ body.privacyModalOpen{overflow:hidden!important}
 .adminUserBalanceGrid small{display:block;color:#7f90a2;font-size:8px}.adminUserBalanceGrid b{display:block;margin-top:4px;color:#f3f6fb;font-size:10px}
 .adminUserLine{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid rgba(255,255,255,.04);font-size:9px}
 .adminUserLine span{color:#93a3b4}.adminUserLine b{color:#ffd35b;text-align:left;direction:ltr}
+.adminUserTaskBlock{padding:5px 0;border-top:1px solid rgba(255,255,255,.04)}.adminUserTaskBlock .adminUserLine{border-top:0;padding:2px 0}.adminUserTaskBlock small{margin-top:2px!important;color:#65778a!important;font-size:8px!important}
 .adminUserRecent{display:grid;grid-template-columns:1fr auto;gap:3px 8px;padding:6px 0;border-top:1px solid rgba(255,255,255,.04);font-size:9px}
 .adminUserRecent span{color:#d8e0e8}.adminUserRecent b{color:#ffd35b;direction:ltr}.adminUserRecent small{grid-column:1/-1!important;margin:0!important;color:#64748b!important}
 </style>
