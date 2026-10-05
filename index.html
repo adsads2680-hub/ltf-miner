@@ -753,6 +753,11 @@ html[dir="ltr"] input{text-align:left}
            placeholder="أدخل عنوان محفظة السحب"
            oninput="updateExchangeEstimate()">
 
+    <label class="exchangeLabel" for="exchangeMemo">Memo (إن توفر)</label>
+    <input id="exchangeMemo" class="exchangeWalletInput" type="text"
+           autocomplete="off" autocapitalize="off" spellcheck="false"
+           maxlength="200">
+
     <div class="exchangeFeeBox">
       <div><span>الحد الأدنى</span><b>200 MIMA</b></div>
       <div><span>الرسوم</span><b>15 MIMA</b></div>
@@ -1117,6 +1122,7 @@ html[dir="ltr"] input{text-align:left}
     ['رصيد GRAM','GRAM balance'],
     ['كمية MIMA المراد تبديلها','MIMA amount to exchange'],
     ['عنوان سحب GRAM','GRAM withdrawal address'],
+    ['Memo (إن توفر)','Memo (if available)'],
     ['الحد الأدنى','Minimum'],
     ['الرسوم','Fee'],
     ['الصافي بعد الرسوم','Net after fee'],
@@ -1677,7 +1683,7 @@ html[dir="ltr"] input{text-align:left}
     }
   };
 
-  async function exchangeRequestApiCall(mimaAmount,walletAddress,testOnly=false){
+  async function exchangeRequestApiCall(mimaAmount,walletAddress,memo='',testOnly=false){
     if(!serverMode){
       throw new Error(tx('افتح البوت داخل Telegram لإرسال طلب التبادل','Open MIMA inside Telegram to send an exchange request'));
     }
@@ -1692,6 +1698,7 @@ html[dir="ltr"] input{text-align:left}
       body:JSON.stringify({
         mima_amount:mimaAmount,
         wallet_address:walletAddress,
+        memo:String(memo || '').trim(),
         test_only:testOnly
       })
     });
@@ -3724,11 +3731,13 @@ html[dir="ltr"] input{text-align:left}
   async function confirmExchange(){
     const input = $('exchangeMimaAmount');
     const wallet = $('exchangeWalletAddress');
+    const memoInput = $('exchangeMemo');
 
     if(!input || !wallet) return;
 
     const amount = Math.max(0,Number(input.value || 0));
     const walletAddress = String(wallet.value || '').trim();
+    const memo = String(memoInput?.value || '').trim();
 
     if(!exchangeEnabled || mimaPerGram <= 0){
       toast(tx('⚠️ سعر GRAM المباشر غير متاح حالياً','⚠️ Live GRAM price is currently unavailable'));
@@ -3760,7 +3769,7 @@ html[dir="ltr"] input{text-align:left}
     btn.textContent = tx('⏳ جاري إرسال الطلب...','⏳ Sending request…');
 
     try{
-      const data = await exchangeRequestApiCall(amount,walletAddress);
+      const data = await exchangeRequestApiCall(amount,walletAddress,memo);
 
       bal = Math.max(0,Number(data.balance ?? bal));
       exchangeableBalance = Math.max(
@@ -3774,6 +3783,7 @@ html[dir="ltr"] input{text-align:left}
 
       input.value = '';
       wallet.value = '';
+      if(memoInput) memoInput.value = '';
 
       render();
       closeExchangePanel();
