@@ -1373,10 +1373,6 @@ html[dir="ltr"] input{text-align:left}
       loadPublicPayouts();
     }
 
-    if(id === 'wallet' && connectedTonWalletAddress){
-      refreshConnectedGramBalance();
-    }
-
     if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
       refreshAdsgramRewardStatus(false).catch(()=>{});
     }
@@ -4279,16 +4275,6 @@ html[dir="ltr"] input{text-align:left}
 
   applyLanguage(false);
   initTonConnectWallet();
-
-  setInterval(()=>{
-    if(
-      connectedTonWalletAddress &&
-      document.visibilityState === 'visible' &&
-      $('wallet')?.classList.contains('active')
-    ){
-      refreshConnectedGramBalance();
-    }
-  },60000);
 
   if(serverMode){
     bal = 0;
