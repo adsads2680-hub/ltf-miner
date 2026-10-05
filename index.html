@@ -664,7 +664,7 @@ html[dir="ltr"] input{text-align:left}
     <div class="item" id="mimaExchangeChannelTaskItem">
       <span class="ico">📈</span>
       <main>
-        <b id="mimaExchangeChannelTaskTitle">انضم إلى قناة بورصة MIMA</b>
+        <b id="mimaExchangeChannelTaskTitle">انضم إلى قناة MIMA</b>
         <small id="mimaExchangeChannelTaskInfo">+1 MIMA • تتجدد كل 4 ساعات</small>
       </main>
       <div class="taskActionGroup">
@@ -1790,7 +1790,7 @@ html[dir="ltr"] input{text-align:left}
     const labels = {
       join_channel: tx('قناة MIMA','MIMA channel'),
       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
-      join_mima_exchange_channel: tx('قناة بورصة MIMA','MIMA Exchange channel'),
+      join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
       victors_partner: tx('مهمة الشريك','Partner task'),
       art_airdrop_partner: tx('مهمة الشريك ART','ART partner task'),
@@ -3231,7 +3231,7 @@ html[dir="ltr"] input{text-align:left}
     const btn = $('mimaExchangeChannelTaskBtn');
     if(!title || !info || !openBtn || !btn) return;
 
-    title.textContent = tx('انضم إلى قناة بورصة MIMA','Join the MIMA Exchange Channel');
+    title.textContent = tx('انضم إلى قناة MIMA','Join the MIMA Channel');
     openBtn.textContent = tx('انضم','Join');
 
     const remaining = mimaExchangeChannelNextAvailableAt
@@ -3292,8 +3292,8 @@ html[dir="ltr"] input{text-align:left}
 
         if(data.channel_url){
           toast(tx(
-            '⚠️ انضم إلى قناة بورصة MIMA ثم ارجع واضغط تحقق',
-            '⚠️ Join the MIMA Exchange channel, then return and tap Verify'
+            '⚠️ انضم إلى قناة MIMA ثم ارجع واضغط تحقق',
+            '⚠️ Join the MIMA channel, then return and tap Verify'
           ));
           renderMimaExchangeChannelTask();
           return;
