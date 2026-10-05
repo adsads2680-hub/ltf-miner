@@ -483,6 +483,7 @@ html[dir="ltr"] input{text-align:left}
       </div>
 
       <div class="adminAuditActions">
+        <button id="adminBtnUserSearch" type="button">🔎 بحث عن مستخدم</button>
         <button id="adminBtnTransactions" type="button">🧾 آخر المعاملات</button>
         <button id="adminBtnReview" type="button">⚠️ نشاط يحتاج مراجعة</button>
         <button id="adminBtnReferrals" type="button">👥 الإحالات الحقيقية</button>
@@ -1059,6 +1060,7 @@ html[dir="ltr"] input{text-align:left}
     ['النقرات المتاحة','Available taps'],
     ['الإحالات','Referrals'],
     ['📊 عدادات الإدارة','📊 Admin Live Stats'],
+    ['🔎 بحث عن مستخدم','🔎 Search user'],
     ['تتحدث تلقائيًا','Updates automatically'],
     ['إجمالي المستخدمين','Total users'],
     ['متصل الآن','Online now'],
@@ -1527,6 +1529,156 @@ html[dir="ltr"] input{text-align:left}
     if(backdrop) backdrop.style.display = 'block';
     if(panel) panel.style.display = 'block';
   }
+
+  function adminActivitySourceLabel(type){
+    const labels = {
+      adsgram_reward: tx('إعلانات AdsGram','AdsGram ads'),
+      monetag_reward: tx('إعلانات Monetag','Monetag ads'),
+      mining_claim: tx('التعدين','Mining'),
+      tap_reward: tx('مكافآت النقر','Tap rewards'),
+      task_reward: tx('المهام','Tasks'),
+      referral_signup_reward: tx('مكافآت الإحالة','Referral rewards'),
+      referral_mining_bonus: tx('10% تعدين الإحالات','Referral mining 10%'),
+      admin_bonus: tx('مكافأة الإدارة','Admin bonus')
+    };
+    return labels[String(type || '')] || String(type || '—');
+  }
+
+  function adminActivityTaskLabel(code){
+    const labels = {
+      join_channel: tx('قناة MIMA','MIMA channel'),
+      join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+      join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
+      victors_partner: tx('مهمة الشريك','Partner task'),
+      art_airdrop_partner: tx('مهمة الشريك ART','ART partner task')
+    };
+    return labels[String(code || '')] || String(code || '—');
+  }
+
+  window.openAdminUserSearch = function(){
+    const panel = $('adminAuditPanel');
+    if(!panel) return;
+    openAdminAuditPanel();
+    panel.innerHTML =
+      '<button class="adminAuditClose" type="button" onclick="closeAdminAuditPanel()">×</button>' +
+      '<div class="adminAuditTitle">🔎 ' + tx('بحث عن مستخدم','Search user') + '</div>' +
+      '<div class="adminUserSearchBox">' +
+        '<input id="adminUserSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="' +
+          tx('Telegram ID أو Username','Telegram ID or Username') + '">' +
+        '<button type="button" onclick="runAdminUserSearch()">' + tx('بحث','Search') + '</button>' +
+      '</div>' +
+      '<div class="adminAuditHint">' +
+        tx('يعرض مصدر الرصيد، الإعلانات، المهام، التعدين، الإحالات والسحوبات.','Shows balance sources, ads, tasks, mining, referrals and withdrawals.') +
+      '</div>' +
+      '<div id="adminUserSearchResult"></div>';
+
+    setTimeout(()=>{
+      const input = $('adminUserSearchInput');
+      if(input){
+        input.focus();
+        input.addEventListener('keydown',(e)=>{
+          if(e.key === 'Enter') runAdminUserSearch();
+        });
+      }
+    },50);
+  };
+
+  window.runAdminUserSearch = async function(){
+    const input = $('adminUserSearchInput');
+    const result = $('adminUserSearchResult');
+    if(!input || !result) return;
+
+    const search = String(input.value || '').trim();
+    if(!search){
+      result.innerHTML = '<div class="adminAuditState">' +
+        tx('أدخل Telegram ID أو Username','Enter Telegram ID or Username') + '</div>';
+      return;
+    }
+
+    result.innerHTML = '<div class="adminAuditState">⏳ ' + tx('جاري البحث…','Searching…') + '</div>';
+
+    try{
+      const data = await apiCall('admin_user_activity',{search});
+      if(data?.success !== true){
+        throw new Error(data?.message || tx('المستخدم غير موجود','User not found'));
+      }
+
+      const u = data.user || {};
+      const sources = Array.isArray(data.earning_sources) ? data.earning_sources : [];
+      const tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      const refs = data.referrals || {};
+      const wd = data.withdrawals || {};
+      const recent = Array.isArray(data.recent_activity) ? data.recent_activity : [];
+
+      const adsCount = sources
+        .filter(x => x.transaction_type === 'adsgram_reward' || x.transaction_type === 'monetag_reward')
+        .reduce((sum,x)=>sum + Number(x.count || 0),0);
+      const adsMima = sources
+        .filter(x => x.transaction_type === 'adsgram_reward' || x.transaction_type === 'monetag_reward')
+        .reduce((sum,x)=>sum + Number(x.total_mima || 0),0);
+
+      const userLabel = u.username ? '@' + String(u.username).replace(/^@/,'') : (u.first_name || 'MIMA User');
+
+      result.innerHTML =
+        '<div class="adminUserIdentity">' +
+          '<b>' + escapeHtml(userLabel) + '</b>' +
+          '<small>ID: ' + escapeHtml(String(u.telegram_user_id || '')) + '</small>' +
+        '</div>' +
+        '<div class="adminUserBalanceGrid">' +
+          '<div><small>' + tx('الرصيد الحالي','Current balance') + '</small><b>' + formatMima(u.balance) + '</b></div>' +
+          '<div><small>' + tx('قابل للتبادل','Exchangeable') + '</small><b>' + formatMima(u.exchangeable_balance) + '</b></div>' +
+          '<div><small>' + tx('رصيد التعدين','Mining balance') + '</small><b>' + formatMima(u.mining_balance) + '</b></div>' +
+          '<div><small>GRAM</small><b>' + formatMima(u.gram_balance) + '</b></div>' +
+        '</div>' +
+        '<div class="adminAuditRow">' +
+          '<div class="adminAuditHead"><b>🎬 ' + tx('الإعلانات','Ads') + '</b><span>' + adsCount + ' ×</span></div>' +
+          '<div class="adminAuditChips"><span>' + tx('إجمالي المكافآت','Total rewards') + ': <b>' + formatMima(adsMima) + ' MIMA</b></span></div>' +
+        '</div>' +
+        '<div class="adminAuditRow">' +
+          '<div class="adminAuditHead"><b>💰 ' + tx('مصادر الرصيد','Balance sources') + '</b><span>' + sources.length + '</span></div>' +
+          (sources.length ? sources.map(x =>
+            '<div class="adminUserLine"><span>' + escapeHtml(adminActivitySourceLabel(x.transaction_type)) +
+            '</span><b>' + Number(x.count || 0) + ' × • ' + formatMima(x.total_mima) + ' MIMA</b></div>'
+          ).join('') : '<small>' + tx('لا توجد مكافآت مسجلة','No recorded rewards') + '</small>') +
+        '</div>' +
+        '<div class="adminAuditRow">' +
+          '<div class="adminAuditHead"><b>📋 ' + tx('المهام','Tasks') + '</b><span>' + tasks.length + '</span></div>' +
+          (tasks.length ? tasks.map(x =>
+            '<div class="adminUserLine"><span>' + escapeHtml(adminActivityTaskLabel(x.task_code)) +
+            '</span><b>' + Number(x.claims_count || 0) + ' × • ' + formatMima(x.total_reward) + ' MIMA</b></div>'
+          ).join('') : '<small>' + tx('لا توجد مهام مسجلة','No recorded tasks') + '</small>') +
+        '</div>' +
+        '<div class="adminAuditRow">' +
+          '<div class="adminAuditHead"><b>👥 ' + tx('الإحالات','Referrals') + '</b></div>' +
+          '<div class="adminAuditChips">' +
+            '<span>' + tx('الإجمالي','Total') + ': <b>' + Number(refs.invited_total || 0) + '</b></span>' +
+            '<span>' + tx('الصحيحة','Valid') + ': <b>' + Number(refs.valid || 0) + '</b></span>' +
+            '<span>' + tx('الملغاة','Invalid') + ': <b>' + Number(refs.invalid || 0) + '</b></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="adminAuditRow">' +
+          '<div class="adminAuditHead"><b>💸 ' + tx('السحوبات','Withdrawals') + '</b><span>' + Number(wd.total || 0) + '</span></div>' +
+          '<div class="adminAuditChips">' +
+            '<span>Pending: <b>' + Number(wd.pending || 0) + '</b></span>' +
+            '<span>Completed: <b>' + Number(wd.completed || 0) + '</b></span>' +
+            '<span>Rejected: <b>' + Number(wd.rejected || 0) + '</b></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="adminAuditRow">' +
+          '<div class="adminAuditHead"><b>🕘 ' + tx('آخر النشاطات','Recent activity') + '</b><span>' + recent.length + '</span></div>' +
+          (recent.length ? recent.map(x =>
+            '<div class="adminUserRecent">' +
+              '<span>' + escapeHtml(adminActivitySourceLabel(x.transaction_type)) + '</span>' +
+              '<b>' + (Number(x.amount || 0) >= 0 ? '+' : '') + formatMima(x.amount) + '</b>' +
+              '<small>' + escapeHtml(adminAuditDate(x.created_at)) + '</small>' +
+            '</div>'
+          ).join('') : '<small>' + tx('لا يوجد نشاط مسجل','No recorded activity') + '</small>') +
+        '</div>';
+    }catch(err){
+      result.innerHTML = '<div class="adminAuditState">⚠️ ' +
+        escapeHtml(String(err?.message || tx('تعذر البحث','Search failed'))) + '</div>';
+    }
+  };
 
   window.loadAdminAuditPanel = async function(mode){
     const panel = $('adminAuditPanel');
@@ -3888,9 +4040,16 @@ html[dir="ltr"] input{text-align:left}
   $('mainCoin').addEventListener('click',tapMima);
   $('startMining').addEventListener('click',handleMiningClick);
 
+  const adminBtnUserSearch = $('adminBtnUserSearch');
   const adminBtnTransactions = $('adminBtnTransactions');
   const adminBtnReview = $('adminBtnReview');
   const adminBtnReferrals = $('adminBtnReferrals');
+
+  if(adminBtnUserSearch){
+    adminBtnUserSearch.addEventListener('click',()=>{
+      openAdminUserSearch();
+    });
+  }
 
   if(adminBtnTransactions){
     adminBtnTransactions.addEventListener('click',()=>{
@@ -5564,6 +5723,18 @@ body.privacyModalOpen{overflow:hidden!important}
   color:#e6c66d;
 }
 .adminAuditMini{padding:4px 7px!important;font-size:8px!important}
+.adminUserSearchBox{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:10px}
+.adminUserSearchBox input{min-width:0;padding:10px;border-radius:10px;border:1px solid rgba(217,154,36,.28);background:#040b12;color:#fff;outline:none;font-size:11px}
+.adminUserSearchBox button{padding:9px 13px;border-radius:10px;border:1px solid rgba(217,154,36,.35);background:rgba(217,154,36,.13);color:#ffe08a;font-weight:900}
+.adminUserIdentity{margin-top:10px;padding:11px;border:1px solid rgba(217,154,36,.25);border-radius:12px;background:rgba(217,154,36,.05)}
+.adminUserIdentity b{display:block;color:#ffe08a;font-size:14px}.adminUserIdentity small{display:block;margin-top:4px;color:#8090a3;font-size:9px}
+.adminUserBalanceGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.adminUserBalanceGrid div{padding:8px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
+.adminUserBalanceGrid small{display:block;color:#7f90a2;font-size:8px}.adminUserBalanceGrid b{display:block;margin-top:4px;color:#f3f6fb;font-size:10px}
+.adminUserLine{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid rgba(255,255,255,.04);font-size:9px}
+.adminUserLine span{color:#93a3b4}.adminUserLine b{color:#ffd35b;text-align:left;direction:ltr}
+.adminUserRecent{display:grid;grid-template-columns:1fr auto;gap:3px 8px;padding:6px 0;border-top:1px solid rgba(255,255,255,.04);font-size:9px}
+.adminUserRecent span{color:#d8e0e8}.adminUserRecent b{color:#ffd35b;direction:ltr}.adminUserRecent small{grid-column:1/-1!important;margin:0!important;color:#64748b!important}
 </style>
 
 
@@ -5611,6 +5782,7 @@ body.privacyModalOpen{overflow:hidden!important}
 
 
 <style id="mima-admin-button-click-fix">
+#adminBtnUserSearch,
 #adminBtnTransactions,
 #adminBtnReview,
 #adminBtnReferrals{
