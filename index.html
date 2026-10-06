@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js?63"></script>
 <script src='//libtl.com/sdk.js' data-zone='11916820' data-sdk='show_11916820'></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
@@ -1091,6 +1091,14 @@ html[dir="ltr"] input{text-align:left}
 
     // Telegram Android can expose tgWebAppData in the launch URL before
     // Telegram.WebApp.initData is populated. Read that signed payload directly.
+    if(!freshInitData){
+      try{
+        freshInitData = String(
+          window.Telegram?.WebView?.initParams?.tgWebAppData || ''
+        );
+      }catch(e){}
+    }
+
     if(!freshInitData){
       freshInitData = readTelegramInitDataFromLaunchUrl();
     }
@@ -4530,7 +4538,11 @@ html[dir="ltr"] input{text-align:left}
       flushTapBatch();
     }else{
       refreshTelegramSession();
-      if(serverMode) syncServerStatus(false,true);
+      if(typeof mimaKickForegroundSync === 'function'){
+        mimaKickForegroundSync();
+      }else if(serverMode){
+        syncServerStatus(false,true);
+      }
 
       if(isMimaAdmin()){
         loadAdminLiveStats().catch(()=>{});
@@ -4668,17 +4680,66 @@ html[dir="ltr"] input{text-align:left}
     render();
   }
 
-  // Cold-start foreground-equivalent refresh.
-  // This mirrors the successful refresh that happens when the user leaves
-  // Telegram and immediately returns, but does it automatically on first open.
-  [900,2200,5200,8500].forEach((delay)=>{
-    setTimeout(async()=>{
-      if(serverReady) return;
+  // Telegram lifecycle boot controller.
+  // The manual "leave Mini App -> return" path works because Telegram emits
+  // an activation/foreground transition. Run that exact refresh path on the
+  // initial activation too, and keep trying locally until the first server
+  // state has actually been applied.
+  let mimaBootSyncBusy = false;
+  let mimaBootSyncTimer = null;
+
+  async function mimaRunForegroundSync(){
+    if(serverReady || mimaBootSyncBusy) return serverReady;
+    mimaBootSyncBusy = true;
+    try{
       refreshTelegramSession();
-      if(!serverMode || !telegramInitData) return;
-      await syncServerStatus(false,true);
-    },delay);
-  });
+      if(!serverMode || !telegramInitData) return false;
+
+      if($('walletSyncState')){
+        $('walletSyncState').textContent = tx('جاري تحديث البيانات…','Updating data…');
+      }
+
+      return await syncServerStatus(false,true);
+    }finally{
+      mimaBootSyncBusy = false;
+      if(serverReady && mimaBootSyncTimer){
+        clearInterval(mimaBootSyncTimer);
+        mimaBootSyncTimer = null;
+      }
+    }
+  }
+
+  function mimaKickForegroundSync(){
+    mimaRunForegroundSync().catch(()=>{});
+  }
+
+  // Native browser lifecycle signals.
+  window.addEventListener('load',mimaKickForegroundSync,{once:true});
+  window.addEventListener('pageshow',mimaKickForegroundSync);
+  window.addEventListener('focus',mimaKickForegroundSync);
+
+  // Telegram lifecycle signal: this is the same transition that currently
+  // makes the account update after the user leaves and comes back.
+  try{
+    if(window.Telegram?.WebApp?.onEvent){
+      Telegram.WebApp.onEvent('activated',mimaKickForegroundSync);
+      Telegram.WebApp.onEvent('viewportChanged',mimaKickForegroundSync);
+    }
+  }catch(e){}
+
+  // Do not permanently fall back to preview mode during a cold-open race.
+  // This loop performs no network request until signed Telegram initData exists.
+  mimaBootSyncTimer = setInterval(()=>{
+    if(serverReady){
+      clearInterval(mimaBootSyncTimer);
+      mimaBootSyncTimer = null;
+      return;
+    }
+    mimaKickForegroundSync();
+  },1000);
+
+  // Fire once immediately after listeners are attached.
+  mimaKickForegroundSync();
 
   // Public payout proofs are hidden in the current UI, so do not fetch them
   // in the background. This avoids unnecessary network/database load.
