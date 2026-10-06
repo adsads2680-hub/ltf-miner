@@ -2409,19 +2409,17 @@ html[dir="ltr"] input{text-align:left}
     render();
     cacheServerStatus(data);
 
-    // Admin visibility must follow the authenticated account returned by
-    // the server, not whether the initial sync was lightweight or full.
-    const adminBox = $('adminLiveStats');
+    // Show admin tools after the authenticated user id is known.
+    // Keep admin stats outside the core sync path so they can never block MIMA.
     if(isMimaAdmin()){
+      const adminBox = $('adminLiveStats');
       if(adminBox) adminBox.style.display = '';
-      if(!window.__mimaAdminStatsBooted){
-        window.__mimaAdminStatsBooted = true;
-        loadAdminLiveStats().catch(()=>{
-          window.__mimaAdminStatsBooted = false;
-        });
+      if(!window.__mimaAdminStatsOnce){
+        window.__mimaAdminStatsOnce = true;
+        setTimeout(()=>{
+          loadAdminLiveStats().catch(()=>{});
+        },300);
       }
-    }else if(adminBox){
-      adminBox.style.display = 'none';
     }
   }
 
@@ -2469,7 +2467,7 @@ html[dir="ltr"] input{text-align:left}
       applyServerStatus(data);
       lastServerStatusSyncAt = Date.now();
 
-      if(isMimaAdmin()){
+      if(isMimaAdmin() && !lightweight){
         loadAdminLiveStats().catch(()=>{});
       }
       return true;
