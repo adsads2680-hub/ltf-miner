@@ -709,7 +709,17 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-
+    <div class="item" id="artAirdropPartnerTaskItem">
+      <span class="ico">🤝</span>
+      <main>
+        <b>انضم إلى شركائنا</b>
+        <small id="artAirdropPartnerTaskInfo">+2 MIMA • مكافأة لمرة واحدة</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="artAirdropPartnerOpenBtn" class="taskJoinBtn" type="button" onclick="openArtAirdropPartner()">انضم</button>
+        <button id="artAirdropPartnerTaskBtn" type="button" onclick="claimArtAirdropPartner(this)">استلم</button>
+      </div>
+    </div>
 
 
 
@@ -1179,6 +1189,7 @@ html[dir="ltr"] input{text-align:left}
     ['+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify'],
     ['انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel'],
     ['انضم إلى شريك MIMA','Join a MIMA partner'],
+    ['انضم إلى شركائنا','Join Our Partners'],
     ['+2 MIMA • مكافأة لمرة واحدة','+2 MIMA • one-time reward'],
     ['+2 MIMA • مكافأة لمرة واحدة','+2 MIMA • one-time reward'],
     ['اشترك','Join'],
@@ -1350,6 +1361,7 @@ html[dir="ltr"] input{text-align:left}
     if(typeof renderMimaExchangeChannelTask === 'function') renderMimaExchangeChannelTask();
     if(typeof renderInteractPostTask === 'function') renderInteractPostTask();
     if(typeof renderVictorsPartnerTask === 'function') renderVictorsPartnerTask();
+    if(typeof renderArtAirdropPartnerTask === 'function') renderArtAirdropPartnerTask();
     if(typeof renderAdTask === 'function') renderAdTask();
     if(typeof updateExchangeEstimate === 'function') updateExchangeEstimate();
   }
@@ -3056,6 +3068,105 @@ html[dir="ltr"] input{text-align:left}
   }
 
   scheduleEntryInterstitial();
+
+  const ART_AIRDROP_PARTNER_CLAIM_KEY = 'mima_art_airdrop_partner_claimed_v1';
+  const ART_AIRDROP_PARTNER_OPENED_KEY = 'mima_art_airdrop_partner_opened_v1';
+
+  function openArtAirdropPartner(){
+    const url = 'https://t.me/vyrodrop_bot?startapp=ref_9JUbc2lIUxYm';
+    try{ localStorage.setItem(ART_AIRDROP_PARTNER_OPENED_KEY,'1'); }catch(e){}
+    setTimeout(renderArtAirdropPartnerTask,50);
+    try{
+      if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function'){
+        Telegram.WebApp.openTelegramLink(url);
+      }else{
+        window.open(url,'_blank','noopener,noreferrer');
+      }
+    }catch(e){
+      window.location.href = url;
+    }
+  }
+
+  function renderArtAirdropPartnerTask(){
+    const btn = $('artAirdropPartnerTaskBtn');
+    const info = $('artAirdropPartnerTaskInfo');
+    if(!btn) return;
+
+    let claimed = false;
+    let opened = false;
+    try{
+      claimed = localStorage.getItem(ART_AIRDROP_PARTNER_CLAIM_KEY) === '1';
+      opened = localStorage.getItem(ART_AIRDROP_PARTNER_OPENED_KEY) === '1';
+    }catch(e){}
+
+    btn.disabled = claimed || !opened;
+    btn.textContent = claimed
+      ? tx('تم الاستلام','Claimed')
+      : opened
+      ? tx('استلم','Claim')
+      : tx('انضم أولاً','Join first');
+
+    if(info){
+      info.textContent = claimed
+        ? tx('+2 MIMA • تم الاستلام','+2 MIMA • claimed')
+        : opened
+        ? tx('+2 MIMA • يمكنك الاستلام الآن','+2 MIMA • ready to claim')
+        : tx('+2 MIMA • انضم أولاً ثم ارجع واستلم','+2 MIMA • join first, then return and claim');
+    }
+  }
+
+  async function claimArtAirdropPartner(btn){
+    if(!btn) return;
+
+    let opened = false;
+    try{ opened = localStorage.getItem(ART_AIRDROP_PARTNER_OPENED_KEY) === '1'; }catch(e){}
+    if(!opened){
+      toast(tx('⚠️ انضم إلى شركائنا أولاً ثم ارجع واضغط استلم','⚠️ Join our partner first, then return and tap Claim'));
+      renderArtAirdropPartnerTask();
+      return;
+    }
+
+    if(btn.disabled) return;
+    btn.disabled = true;
+    btn.textContent = '⏳';
+
+    if(!serverMode){
+      bal += 2;
+      exchangeableBalance += 2;
+      try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
+      savePreviewState();
+      render();
+      renderArtAirdropPartnerTask();
+      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      return;
+    }
+
+    try{
+      const data = await apiCall('claim_task',{ task_code:'art_airdrop_partner' });
+
+      if(data.success !== true){
+        const msg = localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available');
+        if(/غير متاحة بعد|not available yet/i.test(String(data.message || msg))){
+          try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
+          renderArtAirdropPartnerTask();
+          toast(tx('✅ تم استلام مكافأة هذه المهمة سابقاً','✅ This task reward was already claimed'));
+          return;
+        }
+        throw new Error(msg);
+      }
+
+      bal = Math.max(0,Number(data.balance || bal));
+      exchangeableBalance = Math.max(0,Number(data.exchangeable_balance ?? exchangeableBalance));
+      try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
+      render();
+      renderArtAirdropPartnerTask();
+      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+    }catch(err){
+      btn.disabled = false;
+      btn.textContent = tx('استلم','Claim');
+      toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
+    }
+  }
 
   function openMimaChannel(){
     try{ localStorage.setItem('mima_join_channel_opened_v1','1'); }catch(e){}
@@ -6582,6 +6693,16 @@ input[type="submit"]:focus-visible{
   outline:none !important;
 }
 </style>
+
+<script>
+(function(){
+  function initArtPartnerUi(){
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',initArtPartnerUi,{once:true});
+  else initArtPartnerUi();
+})();
+</script>
+
 <script id="mima-victors-reward-ui-force-2">
 (function(){
   function forceVictorsRewardLabel(){
