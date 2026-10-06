@@ -2298,7 +2298,7 @@ html[dir="ltr"] input{text-align:left}
       const data = await apiCall(lightweight ? 'status_refresh' : 'status');
       applyServerStatus(data);
 
-      if(isMimaAdmin()){
+      if(isMimaAdmin() && !lightweight){
         loadAdminLiveStats().catch(()=>{});
       }
     }catch(err){
@@ -4495,7 +4495,7 @@ html[dir="ltr"] input{text-align:left}
       if(document.visibilityState === 'visible'){
         syncServerStatus(false,true);
       }
-    },900000);
+    },120000);
   }else{
     loadPreviewState();
 
