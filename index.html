@@ -622,7 +622,7 @@ html[dir="ltr"] input{text-align:left}
 
   <div class="card list">
     <div class="row" style="margin-bottom:8px">
-      <span class="badge">10 MIMA</span>
+      <span class="badge">4 MIMA</span>
       <span class="sub">مهمة القناة • تتجدد كل 3 ساعات</span>
     </div>
 
@@ -641,7 +641,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">✈️</span>
       <main>
         <b>انضم إلى قناة MIMA</b>
-        <small id="joinChannelTaskInfo">+10 MIMA • انضم ثم تحقق</small>
+        <small id="joinChannelTaskInfo">+4 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
         <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">انضم</button>
@@ -653,7 +653,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">✈️</span>
       <main>
         <b>انضم إلى قناة MIMACOIN2</b>
-        <small id="joinChannel2TaskInfo">+10 MIMA • انضم ثم تحقق</small>
+        <small id="joinChannel2TaskInfo">+4 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
         <button id="joinChannel2OpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel2()">انضم</button>
@@ -980,7 +980,7 @@ html[dir="ltr"] input{text-align:left}
   const POINTS_PER_LEVEL = 200; // MIMA balance per level
   const MAX_MINING_LEVEL = 200;
 
-  const TASK_REWARD = 10;
+  const TASK_REWARD = 4;
   const TASK_COOLDOWN_MS = 3 * 60 * 60 * 1000;
 
   const STORAGE_KEY = 'mima_preview_state_v29';
@@ -2400,14 +2400,14 @@ html[dir="ltr"] input{text-align:left}
         btn.disabled = true;
         btn.classList.remove('mimaJoinFirstLocked');
         btn.textContent = tx('انضم أولاً','Join first');
-        info.textContent = tx('+10 MIMA • انضم أولاً ثم تحقق','+10 MIMA • join first, then verify');
+        info.textContent = tx('+4 MIMA • انضم أولاً ثم تحقق','+4 MIMA • join first, then verify');
         return;
       }
 
       btn.disabled = false;
       btn.classList.remove('mimaJoinFirstLocked');
       btn.textContent = tx('تحقق','Verify');
-      info.textContent = tx('+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify');
+      info.textContent = tx('+4 MIMA • انضم ثم تحقق','+4 MIMA • join then verify');
     };
 
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
@@ -3573,7 +3573,7 @@ html[dir="ltr"] input{text-align:left}
       setNextAt(Date.now() + TASK_COOLDOWN_MS);
       savePreviewState();
       render();
-      toast(tx('🎁 +10 MIMA أضيفت للرصيد القابل للتبادل','🎁 +10 MIMA added to your exchangeable balance'));
+      toast(tx('🎁 +4 MIMA أضيفت للرصيد القابل للتبادل','🎁 +4 MIMA added to your exchangeable balance'));
       return;
     }
 
@@ -3601,7 +3601,7 @@ html[dir="ltr"] input{text-align:left}
       const nextTs = Date.parse(data.next_available_at || '');
       setNextAt(Number.isFinite(nextTs) ? nextTs : nowMs() + TASK_COOLDOWN_MS);
 
-      toast(tx('🎁 +10 MIMA أضيفت للرصيد القابل للتبادل','🎁 +10 MIMA added to your exchangeable balance'));
+      toast(tx('🎁 +4 MIMA أضيفت للرصيد القابل للتبادل','🎁 +4 MIMA added to your exchangeable balance'));
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
