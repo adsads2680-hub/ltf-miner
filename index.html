@@ -6211,30 +6211,16 @@ body.privacyModalOpen{overflow:hidden!important}
     splash.classList.add('hide');
     setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 450);
   }
-  // Fast startup: keep the branded screen only briefly.
-  // Hide as soon as the first authoritative server state arrives,
-  // with a short minimum display to avoid flicker and a hard timeout
-  // so the UI is never blocked by a slow network request.
+  // Keep the branded screen visible for roughly four seconds,
+  // giving the first account sync time to load balances before the app is revealed.
   var start=Date.now();
-  var MIN_SPLASH_MS=450;
-  var MAX_SPLASH_MS=1600;
-
-  function hideWhenAllowed(){
-    var wait=Math.max(0,MIN_SPLASH_MS-(Date.now()-start));
+  function readyHide(){
+    var wait=Math.max(0,4000-(Date.now()-start));
     setTimeout(hide,wait);
   }
-
-  if(window.mimaServerReady){
-    hideWhenAllowed();
-  }else{
-    window.addEventListener('mima-server-ready',hideWhenAllowed,{once:true});
-  }
-
-  if(document.readyState==='complete' && window.mimaServerReady){
-    hideWhenAllowed();
-  }
-
-  setTimeout(hide,MAX_SPLASH_MS);
+  if(document.readyState==='complete') readyHide();
+  else window.addEventListener('load',readyHide,{once:true});
+  setTimeout(hide,7000);
 })();
 </script>
 
