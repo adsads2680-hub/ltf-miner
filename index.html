@@ -4,23 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
-<script>
-(function(){
-  try{
-    var hash=String(window.location.hash||'').replace(/^#/,'');
-    var search=String(window.location.search||'').replace(/^\?/,'');
-    var hp=new URLSearchParams(hash);
-    var sp=new URLSearchParams(search);
-    window.__MIMA_TG_WEBAPP_DATA__=String(
-      hp.get('tgWebAppData') ||
-      sp.get('tgWebAppData') ||
-      ''
-    );
-  }catch(e){
-    window.__MIMA_TG_WEBAPP_DATA__='';
-  }
-})();
-</script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src='//libtl.com/sdk.js' data-zone='11916820' data-sdk='show_11916820'></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -639,7 +622,7 @@ html[dir="ltr"] input{text-align:left}
 
   <div class="card list">
     <div class="row" style="margin-bottom:8px">
-      <span class="badge">4 MIMA</span>
+      <span class="badge">10 MIMA</span>
       <span class="sub">مهمة القناة • تتجدد كل 3 ساعات</span>
     </div>
 
@@ -658,7 +641,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">✈️</span>
       <main>
         <b>انضم إلى قناة MIMA</b>
-        <small id="joinChannelTaskInfo">+4 MIMA • انضم ثم تحقق</small>
+        <small id="joinChannelTaskInfo">+10 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
         <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">انضم</button>
@@ -670,7 +653,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">✈️</span>
       <main>
         <b>انضم إلى قناة MIMACOIN2</b>
-        <small id="joinChannel2TaskInfo">+4 MIMA • انضم ثم تحقق</small>
+        <small id="joinChannel2TaskInfo">+10 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
         <button id="joinChannel2OpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel2()">انضم</button>
@@ -687,6 +670,18 @@ html[dir="ltr"] input{text-align:left}
       <div class="taskActionGroup">
         <button id="mimaExchangeChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaExchangeChannel()">انضم</button>
         <button id="mimaExchangeChannelTaskBtn" type="button" onclick="claimMimaExchangeChannelTask(this)">تحقق</button>
+      </div>
+    </div>
+
+    <div class="item" id="interactPostTaskItem">
+      <span class="ico">❤️</span>
+      <main>
+        <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
+        <small id="interactPostTaskInfo">+2 MIMA • تتجدد كل 12 ساعة</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="interactPostOpenBtn" class="taskJoinBtn" type="button" onclick="openInteractPost()">فتح المنشور</button>
+        <button id="interactPostTaskBtn" type="button" onclick="claimInteractPostTask(this)" disabled>إكمال المهمة</button>
       </div>
     </div>
 
@@ -985,7 +980,7 @@ html[dir="ltr"] input{text-align:left}
   const POINTS_PER_LEVEL = 200; // MIMA balance per level
   const MAX_MINING_LEVEL = 200;
 
-  const TASK_REWARD = 4;
+  const TASK_REWARD = 10;
   const TASK_COOLDOWN_MS = 3 * 60 * 60 * 1000;
 
   const STORAGE_KEY = 'mima_preview_state_v29';
@@ -1029,6 +1024,7 @@ html[dir="ltr"] input{text-align:left}
   let taskNextAvailableAt = 0;
   let task2NextAvailableAt = 0;
   let mimaExchangeChannelNextAvailableAt = 0;
+  let interactPostNextAvailableAt = 0;
   let victorsPartnerNextAvailableAt = 0;
 
   const ADSGRAM_BLOCK_ID = '51807';
@@ -1053,100 +1049,26 @@ html[dir="ltr"] input{text-align:left}
   let lastTapLimitToastAt = 0;
 
   let telegramInitData = '';
-  let serverMode = false;
+  try{
+    if(window.Telegram && Telegram.WebApp){
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+      telegramInitData = Telegram.WebApp.initData || '';
+    }
+  }catch(e){}
+
+  const serverMode = !!telegramInitData;
 
   let currentUserFirstName = '';
   let currentUserUsername = '';
   let currentUserTelegramId = 0;
 
-  const TELEGRAM_INITDATA_SESSION_KEY = 'mima_tg_initdata_session_v1';
-
-  function readTelegramInitDataFromLaunchUrl(){
-    try{
-      const candidates = [
-        String(window.location.hash || '').replace(/^#/,''),
-        String(window.location.search || '').replace(/^\?/,'')
-      ];
-
-      for(const raw of candidates){
-        if(!raw) continue;
-        const params = new URLSearchParams(raw);
-        const value = params.get('tgWebAppData');
-        if(value) return String(value);
-      }
-    }catch(e){}
-    return '';
-  }
-
-  function hydrateTelegramUserFromInitData(initData){
-    try{
-      const params = new URLSearchParams(String(initData || ''));
-      const rawUser = params.get('user');
-      if(!rawUser) return;
-      const user = JSON.parse(rawUser);
-      if(user?.id) currentUserTelegramId = Number(user.id || 0);
-      if(user?.first_name) currentUserFirstName = String(user.first_name).trim();
-      if(user?.username) currentUserUsername = String(user.username).trim();
-    }catch(e){}
-  }
-
-  function refreshTelegramSession(){
-    let freshInitData = '';
-
-    try{
-      if(window.Telegram && Telegram.WebApp){
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-        freshInitData = String(Telegram.WebApp.initData || '');
-
-        const tgUser = Telegram.WebApp.initDataUnsafe?.user;
-        if(tgUser?.id) currentUserTelegramId = Number(tgUser.id || 0);
-        if(tgUser?.first_name) currentUserFirstName = String(tgUser.first_name).trim();
-        if(tgUser?.username) currentUserUsername = String(tgUser.username).trim();
-      }
-    }catch(e){}
-
-    // Telegram Android can expose tgWebAppData in the launch URL before
-    // Telegram.WebApp.initData is populated. Read that signed payload directly.
-    if(!freshInitData){
-      try{
-        freshInitData = String(window.__MIMA_TG_WEBAPP_DATA__ || '');
-      }catch(e){}
-    }
-
-    if(!freshInitData){
-      try{
-        freshInitData = String(
-          window.Telegram?.WebView?.initParams?.tgWebAppData || ''
-        );
-      }catch(e){}
-    }
-
-    if(!freshInitData){
-      freshInitData = readTelegramInitDataFromLaunchUrl();
-    }
-
-    // Keep the signed payload for this WebView session only, so a cold-open
-    // race cannot drop the app into preview mode while Telegram is still booting.
-    if(!freshInitData){
-      try{
-        freshInitData = String(sessionStorage.getItem(TELEGRAM_INITDATA_SESSION_KEY) || '');
-      }catch(e){}
-    }
-
-    if(freshInitData){
-      telegramInitData = freshInitData;
-      serverMode = true;
-      hydrateTelegramUserFromInitData(freshInitData);
-      try{
-        sessionStorage.setItem(TELEGRAM_INITDATA_SESSION_KEY,freshInitData);
-      }catch(e){}
-    }
-
-    return serverMode;
-  }
-
-  refreshTelegramSession();
+  try{
+    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    currentUserTelegramId = Number(tgUser?.id || 0);
+    currentUserFirstName = String(tgUser?.first_name || '').trim();
+    currentUserUsername = String(tgUser?.username || '').trim();
+  }catch(e){}
 
   function isAdminNoAds(){
     return String(currentUserTelegramId || '') === String(ADMIN_TELEGRAM_USER_ID);
@@ -1215,7 +1137,6 @@ html[dir="ltr"] input{text-align:left}
       'الرصيد غير كافٍ':'Insufficient balance',
       'الكمية أصغر من الحد القابل للحساب':'Amount is too small to calculate',
       'لديك طلب سحب قيد المعالجة حالياً':'You already have a withdrawal request being processed',
-      'يمكنك إرسال طلب سحب واحد فقط كل 24 ساعة':'You can submit only one withdrawal request every 24 hours',
       'تم إنشاء طلب التبادل':'Exchange request created',
       'لازم تنضم إلى قناة MIMA أولاً، وبعدها ارجع واضغط تحقق واستلم':'Join the MIMA channel first, then return and tap Verify to claim',
       'وصلت إلى حد 10 إعلانات لهذه الدورة':'You reached the 10-ad limit for this cycle',
@@ -1438,6 +1359,7 @@ html[dir="ltr"] input{text-align:left}
     if(typeof render === 'function') render();
     if(typeof renderTask === 'function') renderTask();
     if(typeof renderMimaExchangeChannelTask === 'function') renderMimaExchangeChannelTask();
+    if(typeof renderInteractPostTask === 'function') renderInteractPostTask();
     if(typeof renderVictorsPartnerTask === 'function') renderVictorsPartnerTask();
     if(typeof renderArtAirdropPartnerTask === 'function') renderArtAirdropPartnerTask();
     if(typeof renderAdTask === 'function') renderAdTask();
@@ -1457,6 +1379,9 @@ html[dir="ltr"] input{text-align:left}
       loadWithdrawHistory().catch(()=>{});
     }
 
+    if(typeof loadPublicPayouts === 'function'){
+      loadPublicPayouts().catch(()=>{});
+    }
   };
 
   function nowMs(){
@@ -1482,6 +1407,10 @@ html[dir="ltr"] input{text-align:left}
     }
 
     window.scrollTo({top:0,behavior:'smooth'});
+
+    if(id === 'home'){
+      loadPublicPayouts();
+    }
 
     if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
       refreshAdsgramRewardStatus(false).catch(()=>{});
@@ -1618,8 +1547,7 @@ html[dir="ltr"] input{text-align:left}
   }
 
   async function apiCall(action, extra={}){
-    refreshTelegramSession();
-    if(!serverMode || !telegramInitData){
+    if(!serverMode){
       throw new Error('Telegram initData unavailable');
     }
 
@@ -2293,42 +2221,8 @@ html[dir="ltr"] input{text-align:left}
   }
 
 
-  const SERVER_STATUS_CACHE_KEY = 'mima_last_server_status_v1';
-
-  function cacheServerStatus(data){
-    try{
-      if(!data || data.success !== true) return;
-      localStorage.setItem(SERVER_STATUS_CACHE_KEY,JSON.stringify({
-        saved_at:Date.now(),
-        telegram_user_id:String(currentUserTelegramId||''),
-        data:data
-      }));
-    }catch(e){}
-  }
-
-  function loadCachedServerStatus(){
-    try{
-      const row=JSON.parse(localStorage.getItem(SERVER_STATUS_CACHE_KEY)||'null');
-      if(!row || !row.data || row.data.success!==true) return false;
-      if(
-        currentUserTelegramId &&
-        String(row.telegram_user_id||'')!==String(currentUserTelegramId||'')
-      ) return false;
-      // Only use a recent cached state as an instant visual fallback.
-      if(Date.now()-Number(row.saved_at||0) > 6*60*60*1000) return false;
-      applyServerStatus(row.data);
-      return true;
-    }catch(e){
-      return false;
-    }
-  }
-
   function applyServerStatus(data){
     if(!data || data.success !== true) return;
-
-    if(Number.isFinite(Number(data.telegram_user_id)) && Number(data.telegram_user_id) > 0){
-      currentUserTelegramId = Number(data.telegram_user_id);
-    }
 
     currentUserFirstName = String(
       data.first_name || currentUserFirstName || ''
@@ -2389,6 +2283,9 @@ html[dir="ltr"] input{text-align:left}
     const task2Ts = Date.parse(data.join_channel_2_next_available_at || '');
     task2NextAvailableAt = Number.isFinite(task2Ts) ? task2Ts : 0;
 
+    const interactPostTs = Date.parse(data.interact_mimacoin2_post_next_available_at || '');
+    interactPostNextAvailableAt = Number.isFinite(interactPostTs) ? interactPostTs : 0;
+
     const exchangeChannelTs = Date.parse(data.join_mima_exchange_channel_next_available_at || '');
     mimaExchangeChannelNextAvailableAt = Number.isFinite(exchangeChannelTs) ? exchangeChannelTs : 0;
 
@@ -2397,8 +2294,6 @@ html[dir="ltr"] input{text-align:left}
 
     roundEnded = data.round_ended === true;
     serverReady = true;
-    window.mimaServerReady = true;
-    try{ window.dispatchEvent(new Event('mima-server-ready')); }catch(e){}
 
     if($('walletSyncState')){
       $('walletSyncState').textContent = tx('متصل بالخادم ✓','Connected ✓');
@@ -2407,103 +2302,32 @@ html[dir="ltr"] input{text-align:left}
 
     updateReferralLink();
     render();
-    cacheServerStatus(data);
-
-    // Show admin tools after the authenticated user id is known.
-    // Keep admin stats outside the core sync path so they can never block MIMA.
-    if(isMimaAdmin()){
-      const adminBox = $('adminLiveStats');
-      if(adminBox) adminBox.style.display = '';
-      if(!window.__mimaAdminStatsOnce){
-        window.__mimaAdminStatsOnce = true;
-        setTimeout(()=>{
-          loadAdminLiveStats().catch(()=>{});
-        },300);
-      }
-    }
   }
 
-  let lastServerStatusSyncAt = 0;
-  const SERVER_STATUS_MIN_GAP_MS = 15000;
-
-  let serverSyncStartedAt = 0;
-  const SERVER_SYNC_TIMEOUT_MS = 4500;
-
   async function syncServerStatus(showError=false,lightweight=false){
-    refreshTelegramSession();
-    if(!serverMode || !telegramInitData) return false;
-
-    // Telegram Android cold-start protection:
-    // a first authenticated request can occasionally remain pending until
-    // the Mini App is backgrounded/foregrounded. Never let that stale request
-    // lock every later balance refresh behind syncing=true.
-    if(syncing){
-      if(Date.now() - serverSyncStartedAt < SERVER_SYNC_TIMEOUT_MS + 750){
-        return false;
-      }
-      syncing = false;
-    }
-
-    const now = Date.now();
-    if(lightweight && !showError && now - lastServerStatusSyncAt < SERVER_STATUS_MIN_GAP_MS) return true;
+    if(!serverMode || syncing) return;
 
     syncing = true;
-    serverSyncStartedAt = Date.now();
 
-    let timeoutId = null;
     try{
-      const timeoutPromise = new Promise((_,reject)=>{
-        timeoutId = setTimeout(
-          ()=>reject(new Error('MIMA_STATUS_SYNC_TIMEOUT')),
-          SERVER_SYNC_TIMEOUT_MS
-        );
-      });
-
-      const data = await Promise.race([
-        apiCall(lightweight ? 'status_refresh' : 'status'),
-        timeoutPromise
-      ]);
-
+      const data = await apiCall(lightweight ? 'status_refresh' : 'status');
       applyServerStatus(data);
-      lastServerStatusSyncAt = Date.now();
 
-      if(isMimaAdmin() && !lightweight){
+      if(isMimaAdmin()){
         loadAdminLiveStats().catch(()=>{});
       }
-      return true;
     }catch(err){
       if($('walletSyncState')){
-        $('walletSyncState').textContent = tx('جاري تحديث البيانات…','Updating data…');
+        $('walletSyncState').textContent = tx('تعذر المزامنة','Sync failed');
         $('walletSyncState').classList.remove('online');
       }
 
-      if(showError && String(err?.message || '') !== 'MIMA_STATUS_SYNC_TIMEOUT'){
+      if(showError){
         toast('⚠️ ' + (err.message || tx('تعذر المزامنة','Sync failed')));
       }
-      return false;
     }finally{
-      if(timeoutId) clearTimeout(timeoutId);
       syncing = false;
-      serverSyncStartedAt = 0;
     }
-  }
-
-  // Independent first-open sync.
-  // Start account hydration here, before wallet/admin/other UI initialization,
-  // so a later optional feature can never prevent the real account state
-  // from being requested on the first Telegram open.
-  if(!window.__mimaEarlyAccountBoot){
-    window.__mimaEarlyAccountBoot = true;
-    [0,350,900,1800,3200,5200].forEach((delay)=>{
-      setTimeout(async()=>{
-        if(serverReady) return;
-        refreshTelegramSession();
-        if(!serverMode || !telegramInitData) return;
-        try{
-          await syncServerStatus(false,true);
-        }catch(e){}
-      },delay);
-    });
   }
 
   function computeAccrued(){
@@ -2575,14 +2399,14 @@ html[dir="ltr"] input{text-align:left}
         btn.disabled = true;
         btn.classList.remove('mimaJoinFirstLocked');
         btn.textContent = tx('انضم أولاً','Join first');
-        info.textContent = tx('+4 MIMA • انضم أولاً ثم تحقق','+4 MIMA • join first, then verify');
+        info.textContent = tx('+10 MIMA • انضم أولاً ثم تحقق','+10 MIMA • join first, then verify');
         return;
       }
 
       btn.disabled = false;
       btn.classList.remove('mimaJoinFirstLocked');
       btn.textContent = tx('تحقق','Verify');
-      info.textContent = tx('+4 MIMA • انضم ثم تحقق','+4 MIMA • join then verify');
+      info.textContent = tx('+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify');
     };
 
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
@@ -3501,6 +3325,113 @@ html[dir="ltr"] input{text-align:left}
     }
   }
 
+  const INTERACT_POST_URL = 'https://t.me/MIMACOIN2/13';
+  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_v1';
+
+  function openInteractPost(){
+    try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
+    renderInteractPostTask();
+
+    try{
+      if(
+        window.Telegram &&
+        Telegram.WebApp &&
+        typeof Telegram.WebApp.openTelegramLink === 'function'
+      ){
+        Telegram.WebApp.openTelegramLink(INTERACT_POST_URL);
+      }else{
+        window.open(INTERACT_POST_URL,'_blank','noopener,noreferrer');
+      }
+    }catch(e){
+      window.location.href = INTERACT_POST_URL;
+    }
+  }
+
+  function renderInteractPostTask(){
+    const title = $('interactPostTaskTitle');
+    const info = $('interactPostTaskInfo');
+    const openBtn = $('interactPostOpenBtn');
+    const btn = $('interactPostTaskBtn');
+    if(!title || !info || !openBtn || !btn) return;
+
+    title.textContent = tx('تفاعل مع المنشور','Interact with the Post');
+    openBtn.textContent = tx('فتح المنشور','Open Post');
+
+    const remaining = interactPostNextAvailableAt
+      ? interactPostNextAvailableAt - nowMs()
+      : 0;
+
+    let opened = false;
+    try{ opened = localStorage.getItem(INTERACT_POST_OPENED_KEY) === '1'; }catch(e){}
+
+    if(remaining > 0){
+      btn.disabled = true;
+      btn.textContent = formatCountdown(remaining);
+      info.textContent = tx('+2 MIMA • متاحة بعد ','+2 MIMA • available in ') + formatCountdown(remaining);
+      return;
+    }
+
+    if(!opened){
+      btn.disabled = true;
+      btn.textContent = tx('افتح المنشور أولاً','Open post first');
+      info.textContent = tx('+2 MIMA • افتح المنشور ثم أكمل المهمة','+2 MIMA • open the post, then complete the task');
+      return;
+    }
+
+    btn.disabled = false;
+    btn.textContent = tx('إكمال المهمة','Complete Task');
+    info.textContent = tx('+2 MIMA • جاهزة للاستلام','+2 MIMA • ready to claim');
+  }
+
+  async function claimInteractPostTask(btn){
+    if(!btn || btn.disabled) return;
+
+    let opened = false;
+    try{ opened = localStorage.getItem(INTERACT_POST_OPENED_KEY) === '1'; }catch(e){}
+    if(!opened){
+      renderInteractPostTask();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳';
+
+    if(!serverMode){
+      bal += 2;
+      exchangeableBalance += 2;
+      interactPostNextAvailableAt = Date.now() + 12 * 60 * 60 * 1000;
+      savePreviewState();
+      render();
+      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      return;
+    }
+
+    try{
+      const data = await apiCall('claim_task',{task_code:'interact_mimacoin2_post'});
+
+      if(data.success !== true){
+        const nextTs = Date.parse(data.next_available_at || '');
+        if(Number.isFinite(nextTs)) interactPostNextAvailableAt = nextTs;
+        throw new Error(localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available'));
+      }
+
+      bal = Math.max(0,Number(data.balance || bal));
+      exchangeableBalance = Math.max(0,Number(data.exchangeable_balance ?? exchangeableBalance));
+
+      const nextTs = Date.parse(data.next_available_at || '');
+      interactPostNextAvailableAt = Number.isFinite(nextTs)
+        ? nextTs
+        : nowMs() + 12 * 60 * 60 * 1000;
+
+      try{ localStorage.removeItem(INTERACT_POST_OPENED_KEY); }catch(e){}
+      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      render();
+    }catch(err){
+      toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
+      render();
+    }
+  }
+
   const VICTORS_PARTNER_URL = 'https://t.me/VictorsCompanybot/app?startapp=ref_5D66CA239C';
   const VICTORS_PARTNER_OPENED_KEY = 'mima_victors_partner_opened_v2';
 
@@ -3641,7 +3572,7 @@ html[dir="ltr"] input{text-align:left}
       setNextAt(Date.now() + TASK_COOLDOWN_MS);
       savePreviewState();
       render();
-      toast(tx('🎁 +4 MIMA أضيفت للرصيد القابل للتبادل','🎁 +4 MIMA added to your exchangeable balance'));
+      toast(tx('🎁 +10 MIMA أضيفت للرصيد القابل للتبادل','🎁 +10 MIMA added to your exchangeable balance'));
       return;
     }
 
@@ -3669,7 +3600,7 @@ html[dir="ltr"] input{text-align:left}
       const nextTs = Date.parse(data.next_available_at || '');
       setNextAt(Number.isFinite(nextTs) ? nextTs : nowMs() + TASK_COOLDOWN_MS);
 
-      toast(tx('🎁 +4 MIMA أضيفت للرصيد القابل للتبادل','🎁 +4 MIMA added to your exchangeable balance'));
+      toast(tx('🎁 +10 MIMA أضيفت للرصيد القابل للتبادل','🎁 +10 MIMA added to your exchangeable balance'));
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
@@ -3819,6 +3750,17 @@ html[dir="ltr"] input{text-align:left}
       }
     }
   }
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden && serverMode && pendingTapCount>0){
+      flushTapBatch();
+      return;
+    }
+
+    if(!document.hidden && serverMode){
+      syncServerStatus(false,true);
+    }
+  });
 
   window.tapMima = function tapMima(event){
     const tapNow = Date.now();
@@ -4597,9 +4539,8 @@ html[dir="ltr"] input{text-align:left}
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState === 'hidden'){
       flushTapBatch();
-    }else{
-      refreshTelegramSession();
-      if(serverMode) syncServerStatus(false,true);
+    }else if(serverMode){
+      syncServerStatus(false,true);
 
       if(isMimaAdmin()){
         loadAdminLiveStats().catch(()=>{});
@@ -4646,66 +4587,21 @@ html[dir="ltr"] input{text-align:left}
   applyLanguage(false);
   initTonConnectWallet();
 
-  refreshTelegramSession();
-
-  // First-launch recovery for Telegram Android/WebView:
-  // On a cold open, Telegram.initData can arrive a fraction of a second
-  // after this script starts. Previously that sent the app into preview mode
-  // and left the real balance at 0 until the user closed/reopened the Mini App.
-  if(!serverMode){
-    const firstLaunchRecoveryDelays = [120,300,700,1200,2000,3000,4500];
-    firstLaunchRecoveryDelays.forEach((delay)=>{
-      setTimeout(async()=>{
-        if(serverReady) return;
-        refreshTelegramSession();
-        if(!serverMode || !telegramInitData) return;
-
-        if($('walletSyncState')){
-          $('walletSyncState').textContent = tx('جاري تحديث البيانات…','Updating data…');
-        }
-
-        const ok = await syncServerStatus(false,false);
-        if(ok && !window.__mimaRecoveredSyncTimer){
-          window.__mimaRecoveredSyncTimer = setInterval(()=>{
-            if(document.visibilityState === 'visible'){
-              syncServerStatus(false,true);
-            }
-          },600000);
-        }
-      },delay);
-    });
-  }
-
   if(serverMode){
-    const hadCachedServerState = loadCachedServerStatus();
-
-    if(!hadCachedServerState){
-      bal = 0;
-      miningBalance = 0;
-      exchangeableBalance = 0;
-      gramBalance = 0;
-      earned = 0;
-      miningPoints = 0;
-      tapEnergy = MAX_TAP_ENERGY;
-      render();
-    }
+    bal = 0;
+    miningBalance = 0;
+    exchangeableBalance = 0;
+    gramBalance = 0;
+    earned = 0;
+    miningPoints = 0;
+    tapEnergy = MAX_TAP_ENERGY;
 
     if($('walletSyncState')){
-      $('walletSyncState').textContent = tx('جاري تحديث البيانات…','Updating data…');
+      $('walletSyncState').textContent = tx('جاري الاتصال…','Connecting…');
     }
 
-    (async()=>{
-      // Telegram Android can expose the Mini App before its session is fully
-      // usable by authenticated fetches. Refresh initData and retry quickly
-      // during the existing 4-second splash instead of waiting for foreground.
-      const delays=[0,500,1000,1800];
-      for(let i=0;i<delays.length;i++){
-        if(delays[i]) await new Promise(r=>setTimeout(r,delays[i]));
-        refreshTelegramSession();
-        if(await syncServerStatus(false,true)) return;
-      }
-      await syncServerStatus(true,true);
-    })();
+    render();
+    syncServerStatus(true);
 
     if(isMimaAdmin()){
       loadAdminLiveStats().catch(()=>{});
@@ -4721,7 +4617,7 @@ html[dir="ltr"] input{text-align:left}
       if(document.visibilityState === 'visible'){
         syncServerStatus(false,true);
       }
-    },600000);
+    },900000);
   }else{
     loadPreviewState();
 
@@ -4737,20 +4633,14 @@ html[dir="ltr"] input{text-align:left}
     render();
   }
 
-  // Cold-start foreground-equivalent refresh.
-  // This mirrors the successful refresh that happens when the user leaves
-  // Telegram and immediately returns, but does it automatically on first open.
-  [900,2200,5200,8500].forEach((delay)=>{
-    setTimeout(async()=>{
-      if(serverReady) return;
-      refreshTelegramSession();
-      if(!serverMode || !telegramInitData) return;
-      await syncServerStatus(false,true);
-    },delay);
-  });
+  loadPublicPayouts().catch(()=>{});
 
-  // Public payout proofs are hidden in the current UI, so do not fetch them
-  // in the background. This avoids unnecessary network/database load.
+  setInterval(()=>{
+    if(document.visibilityState === 'visible'){
+      loadPublicPayouts().catch(()=>{});
+    }
+  },300000);
+
   setInterval(()=>{
     computeAccrued();
 
@@ -6460,29 +6350,15 @@ body.privacyModalOpen{overflow:hidden!important}
     splash.classList.add('hide');
     setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 450);
   }
-  // Keep the branded screen for at least four seconds,
-  // then reveal the app as soon as the first real server balance is ready.
-  // A seven-second ceiling prevents the splash from getting stuck on poor networks.
+  // Keep the branded screen visible for roughly four seconds,
+  // while allowing the app to finish its initial paint.
   var start=Date.now();
-  var minReadyAt=start+4000;
-  var maxReadyAt=start+7000;
-
-  function tryHideAfterSync(){
-    var now=Date.now();
-    if(now<minReadyAt){
-      setTimeout(tryHideAfterSync,minReadyAt-now);
-      return;
-    }
-    if(window.mimaServerReady || now>=maxReadyAt){
-      hide();
-      return;
-    }
-    setTimeout(tryHideAfterSync,120);
+  function readyHide(){
+    var wait=Math.max(0,4000-(Date.now()-start));
+    setTimeout(hide,wait);
   }
-
-  if(document.readyState==='complete') tryHideAfterSync();
-  else window.addEventListener('load',tryHideAfterSync,{once:true});
-  window.addEventListener('mima-server-ready',tryHideAfterSync,{once:true});
+  if(document.readyState==='complete') readyHide();
+  else window.addEventListener('load',readyHide,{once:true});
   setTimeout(hide,7000);
 })();
 </script>
@@ -6664,38 +6540,9 @@ body.privacyModalOpen{overflow:hidden!important}
     }
 
     renderTask();
-
-    // Lazy-load this task only when the Tasks screen is actually visible.
-    // This preserves the same reward/verification logic while removing one request
-    // from every app launch for users who never open Tasks.
-    const taskItem = el('mimaWithdrawalsTaskItem');
-    let statusLoaded = false;
-    let statusLoading = false;
-    const ensureStatus = async()=>{
-      if(statusLoaded || statusLoading || !serverMode) return;
-      statusLoading = true;
-      try{
-        await syncStatus();
-        statusLoaded = true;
-      }finally{
-        statusLoading = false;
-      }
-    };
-
-    if(taskItem && 'IntersectionObserver' in window){
-      const observer = new IntersectionObserver((entries)=>{
-        if(entries.some(entry=>entry.isIntersecting)){
-          ensureStatus().catch(()=>{});
-          observer.disconnect();
-        }
-      },{threshold:0.05});
-      observer.observe(taskItem);
-    }else{
-      // Safe fallback for older WebViews.
-      setTimeout(()=>ensureStatus().catch(()=>{}),2500);
-    }
-
-    // Countdown itself remains local and causes no server traffic.
+    syncStatus();
+    // Countdown is rendered locally every second.
+    // Server status is checked on app/task initialization and again when the user taps Verify.
     setInterval(renderTask,1000);
   }
 
@@ -6878,8 +6725,6 @@ input[type="submit"]:focus-visible{
   setTimeout(forceVictorsRewardLabel,1500);
 })();
 </script>
-
-
 
 </body>
 </html>
