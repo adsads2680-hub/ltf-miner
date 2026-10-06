@@ -1038,33 +1038,84 @@ html[dir="ltr"] input{text-align:left}
   let telegramInitData = '';
   let serverMode = false;
 
-  function refreshTelegramSession(){
-    try{
-      if(window.Telegram && Telegram.WebApp){
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-        const freshInitData = String(Telegram.WebApp.initData || '');
-        if(freshInitData){
-          telegramInitData = freshInitData;
-          serverMode = true;
-        }
-      }
-    }catch(e){}
-    return serverMode;
-  }
-
-  refreshTelegramSession();
-
   let currentUserFirstName = '';
   let currentUserUsername = '';
   let currentUserTelegramId = 0;
 
-  try{
-    const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
-    currentUserTelegramId = Number(tgUser?.id || 0);
-    currentUserFirstName = String(tgUser?.first_name || '').trim();
-    currentUserUsername = String(tgUser?.username || '').trim();
-  }catch(e){}
+  const TELEGRAM_INITDATA_SESSION_KEY = 'mima_tg_initdata_session_v1';
+
+  function readTelegramInitDataFromLaunchUrl(){
+    try{
+      const candidates = [
+        String(window.location.hash || '').replace(/^#/,''),
+        String(window.location.search || '').replace(/^\?/,'')
+      ];
+
+      for(const raw of candidates){
+        if(!raw) continue;
+        const params = new URLSearchParams(raw);
+        const value = params.get('tgWebAppData');
+        if(value) return String(value);
+      }
+    }catch(e){}
+    return '';
+  }
+
+  function hydrateTelegramUserFromInitData(initData){
+    try{
+      const params = new URLSearchParams(String(initData || ''));
+      const rawUser = params.get('user');
+      if(!rawUser) return;
+      const user = JSON.parse(rawUser);
+      if(user?.id) currentUserTelegramId = Number(user.id || 0);
+      if(user?.first_name) currentUserFirstName = String(user.first_name).trim();
+      if(user?.username) currentUserUsername = String(user.username).trim();
+    }catch(e){}
+  }
+
+  function refreshTelegramSession(){
+    let freshInitData = '';
+
+    try{
+      if(window.Telegram && Telegram.WebApp){
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        freshInitData = String(Telegram.WebApp.initData || '');
+
+        const tgUser = Telegram.WebApp.initDataUnsafe?.user;
+        if(tgUser?.id) currentUserTelegramId = Number(tgUser.id || 0);
+        if(tgUser?.first_name) currentUserFirstName = String(tgUser.first_name).trim();
+        if(tgUser?.username) currentUserUsername = String(tgUser.username).trim();
+      }
+    }catch(e){}
+
+    // Telegram Android can expose tgWebAppData in the launch URL before
+    // Telegram.WebApp.initData is populated. Read that signed payload directly.
+    if(!freshInitData){
+      freshInitData = readTelegramInitDataFromLaunchUrl();
+    }
+
+    // Keep the signed payload for this WebView session only, so a cold-open
+    // race cannot drop the app into preview mode while Telegram is still booting.
+    if(!freshInitData){
+      try{
+        freshInitData = String(sessionStorage.getItem(TELEGRAM_INITDATA_SESSION_KEY) || '');
+      }catch(e){}
+    }
+
+    if(freshInitData){
+      telegramInitData = freshInitData;
+      serverMode = true;
+      hydrateTelegramUserFromInitData(freshInitData);
+      try{
+        sessionStorage.setItem(TELEGRAM_INITDATA_SESSION_KEY,freshInitData);
+      }catch(e){}
+    }
+
+    return serverMode;
+  }
+
+  refreshTelegramSession();
 
   function isAdminNoAds(){
     return String(currentUserTelegramId || '') === String(ADMIN_TELEGRAM_USER_ID);
@@ -4582,9 +4633,9 @@ html[dir="ltr"] input{text-align:left}
       for(let i=0;i<delays.length;i++){
         if(delays[i]) await new Promise(r=>setTimeout(r,delays[i]));
         refreshTelegramSession();
-        if(await syncServerStatus(false,false)) return;
+        if(await syncServerStatus(false,true)) return;
       }
-      await syncServerStatus(true,false);
+      await syncServerStatus(true,true);
     })();
 
     if(isMimaAdmin()){
@@ -4625,7 +4676,7 @@ html[dir="ltr"] input{text-align:left}
       if(serverReady) return;
       refreshTelegramSession();
       if(!serverMode || !telegramInitData) return;
-      await syncServerStatus(false,false);
+      await syncServerStatus(false,true);
     },delay);
   });
 
