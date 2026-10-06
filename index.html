@@ -2325,16 +2325,44 @@ html[dir="ltr"] input{text-align:left}
   let lastServerStatusSyncAt = 0;
   const SERVER_STATUS_MIN_GAP_MS = 15000;
 
+  let serverSyncStartedAt = 0;
+  const SERVER_SYNC_TIMEOUT_MS = 4500;
+
   async function syncServerStatus(showError=false,lightweight=false){
     refreshTelegramSession();
-    if(!serverMode || !telegramInitData || syncing) return false;
+    if(!serverMode || !telegramInitData) return false;
+
+    // Telegram Android cold-start protection:
+    // a first authenticated request can occasionally remain pending until
+    // the Mini App is backgrounded/foregrounded. Never let that stale request
+    // lock every later balance refresh behind syncing=true.
+    if(syncing){
+      if(Date.now() - serverSyncStartedAt < SERVER_SYNC_TIMEOUT_MS + 750){
+        return false;
+      }
+      syncing = false;
+    }
+
     const now = Date.now();
     if(lightweight && !showError && now - lastServerStatusSyncAt < SERVER_STATUS_MIN_GAP_MS) return true;
 
     syncing = true;
+    serverSyncStartedAt = Date.now();
 
+    let timeoutId = null;
     try{
-      const data = await apiCall(lightweight ? 'status_refresh' : 'status');
+      const timeoutPromise = new Promise((_,reject)=>{
+        timeoutId = setTimeout(
+          ()=>reject(new Error('MIMA_STATUS_SYNC_TIMEOUT')),
+          SERVER_SYNC_TIMEOUT_MS
+        );
+      });
+
+      const data = await Promise.race([
+        apiCall(lightweight ? 'status_refresh' : 'status'),
+        timeoutPromise
+      ]);
+
       applyServerStatus(data);
       lastServerStatusSyncAt = Date.now();
 
@@ -2344,16 +2372,18 @@ html[dir="ltr"] input{text-align:left}
       return true;
     }catch(err){
       if($('walletSyncState')){
-        $('walletSyncState').textContent = tx('تعذر المزامنة','Sync failed');
+        $('walletSyncState').textContent = tx('جاري تحديث البيانات…','Updating data…');
         $('walletSyncState').classList.remove('online');
       }
 
-      if(showError){
+      if(showError && String(err?.message || '') !== 'MIMA_STATUS_SYNC_TIMEOUT'){
         toast('⚠️ ' + (err.message || tx('تعذر المزامنة','Sync failed')));
       }
       return false;
     }finally{
+      if(timeoutId) clearTimeout(timeoutId);
       syncing = false;
+      serverSyncStartedAt = 0;
     }
   }
 
@@ -4587,6 +4617,18 @@ html[dir="ltr"] input{text-align:left}
     updateReferralLink();
     render();
   }
+
+  // Cold-start foreground-equivalent refresh.
+  // This mirrors the successful refresh that happens when the user leaves
+  // Telegram and immediately returns, but does it automatically on first open.
+  [900,2200,5200,8500].forEach((delay)=>{
+    setTimeout(async()=>{
+      if(serverReady) return;
+      refreshTelegramSession();
+      if(!serverMode || !telegramInitData) return;
+      await syncServerStatus(false,false);
+    },delay);
+  });
 
   // Public payout proofs are hidden in the current UI, so do not fetch them
   // in the background. This avoids unnecessary network/database load.
