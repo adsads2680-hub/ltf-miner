@@ -2202,6 +2202,33 @@ html[dir="ltr"] input{text-align:left}
   }
 
 
+  const SERVER_STATUS_CACHE_KEY = 'mima_last_server_status_v1';
+
+  function cacheServerStatus(data){
+    try{
+      if(!data || data.success !== true) return;
+      localStorage.setItem(SERVER_STATUS_CACHE_KEY,JSON.stringify({
+        saved_at:Date.now(),
+        telegram_user_id:String(currentUserTelegramId||''),
+        data:data
+      }));
+    }catch(e){}
+  }
+
+  function loadCachedServerStatus(){
+    try{
+      const row=JSON.parse(localStorage.getItem(SERVER_STATUS_CACHE_KEY)||'null');
+      if(!row || !row.data || row.data.success!==true) return false;
+      if(String(row.telegram_user_id||'')!==String(currentUserTelegramId||'')) return false;
+      // Only use a recent cached state as an instant visual fallback.
+      if(Date.now()-Number(row.saved_at||0) > 6*60*60*1000) return false;
+      applyServerStatus(row.data);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
   function applyServerStatus(data){
     if(!data || data.success !== true) return;
 
@@ -2282,25 +2309,28 @@ html[dir="ltr"] input{text-align:left}
 
     updateReferralLink();
     render();
+    cacheServerStatus(data);
   }
 
   let lastServerStatusSyncAt = 0;
   const SERVER_STATUS_MIN_GAP_MS = 15000;
 
   async function syncServerStatus(showError=false,lightweight=false){
-    if(!serverMode || syncing) return;
+    if(!serverMode || syncing) return false;
     const now = Date.now();
-    if(lightweight && !showError && now - lastServerStatusSyncAt < SERVER_STATUS_MIN_GAP_MS) return;
+    if(lightweight && !showError && now - lastServerStatusSyncAt < SERVER_STATUS_MIN_GAP_MS) return false;
 
     syncing = true;
 
     try{
       const data = await apiCall(lightweight ? 'status_refresh' : 'status');
       applyServerStatus(data);
+      lastServerStatusSyncAt = Date.now();
 
       if(isMimaAdmin() && !lightweight){
         loadAdminLiveStats().catch(()=>{});
       }
+      return true;
     }catch(err){
       if($('walletSyncState')){
         $('walletSyncState').textContent = tx('تعذر المزامنة','Sync failed');
@@ -2310,6 +2340,7 @@ html[dir="ltr"] input{text-align:left}
       if(showError){
         toast('⚠️ ' + (err.message || tx('تعذر المزامنة','Sync failed')));
       }
+      return false;
     }finally{
       syncing = false;
     }
@@ -4455,20 +4486,34 @@ html[dir="ltr"] input{text-align:left}
   initTonConnectWallet();
 
   if(serverMode){
-    bal = 0;
-    miningBalance = 0;
-    exchangeableBalance = 0;
-    gramBalance = 0;
-    earned = 0;
-    miningPoints = 0;
-    tapEnergy = MAX_TAP_ENERGY;
+    const hadCachedServerState = loadCachedServerStatus();
 
-    if($('walletSyncState')){
-      $('walletSyncState').textContent = tx('جاري الاتصال…','Connecting…');
+    if(!hadCachedServerState){
+      bal = 0;
+      miningBalance = 0;
+      exchangeableBalance = 0;
+      gramBalance = 0;
+      earned = 0;
+      miningPoints = 0;
+      tapEnergy = MAX_TAP_ENERGY;
+      render();
     }
 
-    render();
-    syncServerStatus(true);
+    if($('walletSyncState')){
+      $('walletSyncState').textContent = tx('جاري تحديث البيانات…','Updating data…');
+    }
+
+    (async()=>{
+      const ok = await syncServerStatus(false);
+      if(ok) return;
+
+      // Fast retries on startup. Do not make the user wait for the background timer.
+      await new Promise(r=>setTimeout(r,1200));
+      if(await syncServerStatus(false,true)) return;
+
+      await new Promise(r=>setTimeout(r,2500));
+      await syncServerStatus(true,true);
+    })();
 
     if(isMimaAdmin()){
       loadAdminLiveStats().catch(()=>{});
