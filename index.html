@@ -4,6 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
+<script>
+(function(){
+  try{
+    var hash=String(window.location.hash||'').replace(/^#/,'');
+    var search=String(window.location.search||'').replace(/^\?/,'');
+    var hp=new URLSearchParams(hash);
+    var sp=new URLSearchParams(search);
+    window.__MIMA_TG_WEBAPP_DATA__=String(
+      hp.get('tgWebAppData') ||
+      sp.get('tgWebAppData') ||
+      ''
+    );
+  }catch(e){
+    window.__MIMA_TG_WEBAPP_DATA__='';
+  }
+})();
+</script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src='//libtl.com/sdk.js' data-zone='11916820' data-sdk='show_11916820'></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -1091,6 +1108,20 @@ html[dir="ltr"] input{text-align:left}
 
     // Telegram Android can expose tgWebAppData in the launch URL before
     // Telegram.WebApp.initData is populated. Read that signed payload directly.
+    if(!freshInitData){
+      try{
+        freshInitData = String(window.__MIMA_TG_WEBAPP_DATA__ || '');
+      }catch(e){}
+    }
+
+    if(!freshInitData){
+      try{
+        freshInitData = String(
+          window.Telegram?.WebView?.initParams?.tgWebAppData || ''
+        );
+      }catch(e){}
+    }
+
     if(!freshInitData){
       freshInitData = readTelegramInitDataFromLaunchUrl();
     }
