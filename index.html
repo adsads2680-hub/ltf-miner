@@ -2310,7 +2310,10 @@ html[dir="ltr"] input{text-align:left}
     try{
       const row=JSON.parse(localStorage.getItem(SERVER_STATUS_CACHE_KEY)||'null');
       if(!row || !row.data || row.data.success!==true) return false;
-      if(String(row.telegram_user_id||'')!==String(currentUserTelegramId||'')) return false;
+      if(
+        currentUserTelegramId &&
+        String(row.telegram_user_id||'')!==String(currentUserTelegramId||'')
+      ) return false;
       // Only use a recent cached state as an instant visual fallback.
       if(Date.now()-Number(row.saved_at||0) > 6*60*60*1000) return false;
       applyServerStatus(row.data);
@@ -2466,6 +2469,24 @@ html[dir="ltr"] input{text-align:left}
       syncing = false;
       serverSyncStartedAt = 0;
     }
+  }
+
+  // Independent first-open sync.
+  // Start account hydration here, before wallet/admin/other UI initialization,
+  // so a later optional feature can never prevent the real account state
+  // from being requested on the first Telegram open.
+  if(!window.__mimaEarlyAccountBoot){
+    window.__mimaEarlyAccountBoot = true;
+    [0,350,900,1800,3200,5200].forEach((delay)=>{
+      setTimeout(async()=>{
+        if(serverReady) return;
+        refreshTelegramSession();
+        if(!serverMode || !telegramInitData) return;
+        try{
+          await syncServerStatus(false,true);
+        }catch(e){}
+      },delay);
+    });
   }
 
   function computeAccrued(){
