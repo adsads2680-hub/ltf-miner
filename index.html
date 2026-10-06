@@ -1367,9 +1367,6 @@ html[dir="ltr"] input{text-align:left}
       loadWithdrawHistory().catch(()=>{});
     }
 
-    if(typeof loadPublicPayouts === 'function'){
-      loadPublicPayouts().catch(()=>{});
-    }
   };
 
   function nowMs(){
@@ -1395,10 +1392,6 @@ html[dir="ltr"] input{text-align:left}
     }
 
     window.scrollTo({top:0,behavior:'smooth'});
-
-    if(id === 'home'){
-      loadPublicPayouts();
-    }
 
     if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
       refreshAdsgramRewardStatus(false).catch(()=>{});
@@ -2289,8 +2282,13 @@ html[dir="ltr"] input{text-align:left}
     render();
   }
 
+  let lastServerStatusSyncAt = 0;
+  const SERVER_STATUS_MIN_GAP_MS = 15000;
+
   async function syncServerStatus(showError=false,lightweight=false){
     if(!serverMode || syncing) return;
+    const now = Date.now();
+    if(lightweight && !showError && now - lastServerStatusSyncAt < SERVER_STATUS_MIN_GAP_MS) return;
 
     syncing = true;
 
@@ -3629,17 +3627,6 @@ html[dir="ltr"] input{text-align:left}
     }
   }
 
-  document.addEventListener('visibilitychange',()=>{
-    if(document.hidden && serverMode && pendingTapCount>0){
-      flushTapBatch();
-      return;
-    }
-
-    if(!document.hidden && serverMode){
-      syncServerStatus(false,true);
-    }
-  });
-
   window.tapMima = function tapMima(event){
     const tapNow = Date.now();
 
@@ -4495,7 +4482,7 @@ html[dir="ltr"] input{text-align:left}
       if(document.visibilityState === 'visible'){
         syncServerStatus(false,true);
       }
-    },120000);
+    },600000);
   }else{
     loadPreviewState();
 
@@ -4511,14 +4498,8 @@ html[dir="ltr"] input{text-align:left}
     render();
   }
 
-  loadPublicPayouts().catch(()=>{});
-
-  setInterval(()=>{
-    if(document.visibilityState === 'visible'){
-      loadPublicPayouts().catch(()=>{});
-    }
-  },300000);
-
+  // Public payout proofs are hidden in the current UI, so do not fetch them
+  // in the background. This avoids unnecessary network/database load.
   setInterval(()=>{
     computeAccrued();
 
@@ -6418,9 +6399,38 @@ body.privacyModalOpen{overflow:hidden!important}
     }
 
     renderTask();
-    syncStatus();
-    // Countdown is rendered locally every second.
-    // Server status is checked on app/task initialization and again when the user taps Verify.
+
+    // Lazy-load this task only when the Tasks screen is actually visible.
+    // This preserves the same reward/verification logic while removing one request
+    // from every app launch for users who never open Tasks.
+    const taskItem = el('mimaWithdrawalsTaskItem');
+    let statusLoaded = false;
+    let statusLoading = false;
+    const ensureStatus = async()=>{
+      if(statusLoaded || statusLoading || !serverMode) return;
+      statusLoading = true;
+      try{
+        await syncStatus();
+        statusLoaded = true;
+      }finally{
+        statusLoading = false;
+      }
+    };
+
+    if(taskItem && 'IntersectionObserver' in window){
+      const observer = new IntersectionObserver((entries)=>{
+        if(entries.some(entry=>entry.isIntersecting)){
+          ensureStatus().catch(()=>{});
+          observer.disconnect();
+        }
+      },{threshold:0.05});
+      observer.observe(taskItem);
+    }else{
+      // Safe fallback for older WebViews.
+      setTimeout(()=>ensureStatus().catch(()=>{}),2500);
+    }
+
+    // Countdown itself remains local and causes no server traffic.
     setInterval(renderTask,1000);
   }
 
