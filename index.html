@@ -1037,15 +1037,24 @@ html[dir="ltr"] input{text-align:left}
   let lastTapLimitToastAt = 0;
 
   let telegramInitData = '';
-  try{
-    if(window.Telegram && Telegram.WebApp){
-      Telegram.WebApp.ready();
-      Telegram.WebApp.expand();
-      telegramInitData = Telegram.WebApp.initData || '';
-    }
-  }catch(e){}
+  let serverMode = false;
 
-  const serverMode = !!telegramInitData;
+  function refreshTelegramSession(){
+    try{
+      if(window.Telegram && Telegram.WebApp){
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        const freshInitData = String(Telegram.WebApp.initData || '');
+        if(freshInitData){
+          telegramInitData = freshInitData;
+          serverMode = true;
+        }
+      }
+    }catch(e){}
+    return serverMode;
+  }
+
+  refreshTelegramSession();
 
   let currentUserFirstName = '';
   let currentUserUsername = '';
@@ -1528,7 +1537,8 @@ html[dir="ltr"] input{text-align:left}
   }
 
   async function apiCall(action, extra={}){
-    if(!serverMode){
+    refreshTelegramSession();
+    if(!serverMode || !telegramInitData){
       throw new Error('Telegram initData unavailable');
     }
 
@@ -2316,9 +2326,10 @@ html[dir="ltr"] input{text-align:left}
   const SERVER_STATUS_MIN_GAP_MS = 15000;
 
   async function syncServerStatus(showError=false,lightweight=false){
-    if(!serverMode || syncing) return false;
+    refreshTelegramSession();
+    if(!serverMode || !telegramInitData || syncing) return false;
     const now = Date.now();
-    if(lightweight && !showError && now - lastServerStatusSyncAt < SERVER_STATUS_MIN_GAP_MS) return false;
+    if(lightweight && !showError && now - lastServerStatusSyncAt < SERVER_STATUS_MIN_GAP_MS) return true;
 
     syncing = true;
 
@@ -4437,8 +4448,9 @@ html[dir="ltr"] input{text-align:left}
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState === 'hidden'){
       flushTapBatch();
-    }else if(serverMode){
-      syncServerStatus(false,true);
+    }else{
+      refreshTelegramSession();
+      if(serverMode) syncServerStatus(false,true);
 
       if(isMimaAdmin()){
         loadAdminLiveStats().catch(()=>{});
@@ -4485,6 +4497,8 @@ html[dir="ltr"] input{text-align:left}
   applyLanguage(false);
   initTonConnectWallet();
 
+  refreshTelegramSession();
+
   if(serverMode){
     const hadCachedServerState = loadCachedServerStatus();
 
@@ -4504,15 +4518,16 @@ html[dir="ltr"] input{text-align:left}
     }
 
     (async()=>{
-      const ok = await syncServerStatus(false);
-      if(ok) return;
-
-      // Fast retries on startup. Do not make the user wait for the background timer.
-      await new Promise(r=>setTimeout(r,1200));
-      if(await syncServerStatus(false,true)) return;
-
-      await new Promise(r=>setTimeout(r,2500));
-      await syncServerStatus(true,true);
+      // Telegram Android can expose the Mini App before its session is fully
+      // usable by authenticated fetches. Refresh initData and retry quickly
+      // during the existing 4-second splash instead of waiting for foreground.
+      const delays=[0,500,1000,1800];
+      for(let i=0;i<delays.length;i++){
+        if(delays[i]) await new Promise(r=>setTimeout(r,delays[i]));
+        refreshTelegramSession();
+        if(await syncServerStatus(false,false)) return;
+      }
+      await syncServerStatus(true,false);
     })();
 
     if(isMimaAdmin()){
