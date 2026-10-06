@@ -673,18 +673,6 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item" id="interactPostTaskItem">
-      <span class="ico">❤️</span>
-      <main>
-        <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
-        <small id="interactPostTaskInfo">+2 MIMA • تتجدد كل 12 ساعة</small>
-      </main>
-      <div class="taskActionGroup">
-        <button id="interactPostOpenBtn" class="taskJoinBtn" type="button" onclick="openInteractPost()">فتح المنشور</button>
-        <button id="interactPostTaskBtn" type="button" onclick="claimInteractPostTask(this)" disabled>إكمال المهمة</button>
-      </div>
-    </div>
-
     <div class="item mimaWithdrawalsTask" id="mimaWithdrawalsTaskItem">
       <span class="ico">💸</span>
       <main>
@@ -1024,7 +1012,6 @@ html[dir="ltr"] input{text-align:left}
   let taskNextAvailableAt = 0;
   let task2NextAvailableAt = 0;
   let mimaExchangeChannelNextAvailableAt = 0;
-  let interactPostNextAvailableAt = 0;
   let victorsPartnerNextAvailableAt = 0;
 
   const ADSGRAM_BLOCK_ID = '51807';
@@ -1360,7 +1347,6 @@ html[dir="ltr"] input{text-align:left}
     if(typeof render === 'function') render();
     if(typeof renderTask === 'function') renderTask();
     if(typeof renderMimaExchangeChannelTask === 'function') renderMimaExchangeChannelTask();
-    if(typeof renderInteractPostTask === 'function') renderInteractPostTask();
     if(typeof renderVictorsPartnerTask === 'function') renderVictorsPartnerTask();
     if(typeof renderArtAirdropPartnerTask === 'function') renderArtAirdropPartnerTask();
     if(typeof renderAdTask === 'function') renderAdTask();
@@ -2283,9 +2269,6 @@ html[dir="ltr"] input{text-align:left}
 
     const task2Ts = Date.parse(data.join_channel_2_next_available_at || '');
     task2NextAvailableAt = Number.isFinite(task2Ts) ? task2Ts : 0;
-
-    const interactPostTs = Date.parse(data.interact_mimacoin2_post_next_available_at || '');
-    interactPostNextAvailableAt = Number.isFinite(interactPostTs) ? interactPostTs : 0;
 
     const exchangeChannelTs = Date.parse(data.join_mima_exchange_channel_next_available_at || '');
     mimaExchangeChannelNextAvailableAt = Number.isFinite(exchangeChannelTs) ? exchangeChannelTs : 0;
@@ -3319,113 +3302,6 @@ html[dir="ltr"] input{text-align:left}
 
       try{ localStorage.removeItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY); }catch(e){}
       toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
-      render();
-    }catch(err){
-      toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
-      render();
-    }
-  }
-
-  const INTERACT_POST_URL = 'https://t.me/MIMACOINWITHDRAWALS/151';
-  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_v1';
-
-  function openInteractPost(){
-    try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
-    renderInteractPostTask();
-
-    try{
-      if(
-        window.Telegram &&
-        Telegram.WebApp &&
-        typeof Telegram.WebApp.openTelegramLink === 'function'
-      ){
-        Telegram.WebApp.openTelegramLink(INTERACT_POST_URL);
-      }else{
-        window.open(INTERACT_POST_URL,'_blank','noopener,noreferrer');
-      }
-    }catch(e){
-      window.location.href = INTERACT_POST_URL;
-    }
-  }
-
-  function renderInteractPostTask(){
-    const title = $('interactPostTaskTitle');
-    const info = $('interactPostTaskInfo');
-    const openBtn = $('interactPostOpenBtn');
-    const btn = $('interactPostTaskBtn');
-    if(!title || !info || !openBtn || !btn) return;
-
-    title.textContent = tx('تفاعل مع المنشور','Interact with the Post');
-    openBtn.textContent = tx('فتح المنشور','Open Post');
-
-    const remaining = interactPostNextAvailableAt
-      ? interactPostNextAvailableAt - nowMs()
-      : 0;
-
-    let opened = false;
-    try{ opened = localStorage.getItem(INTERACT_POST_OPENED_KEY) === '1'; }catch(e){}
-
-    if(remaining > 0){
-      btn.disabled = true;
-      btn.textContent = formatCountdown(remaining);
-      info.textContent = tx('+2 MIMA • متاحة بعد ','+2 MIMA • available in ') + formatCountdown(remaining);
-      return;
-    }
-
-    if(!opened){
-      btn.disabled = true;
-      btn.textContent = tx('افتح المنشور أولاً','Open post first');
-      info.textContent = tx('+2 MIMA • افتح المنشور ثم أكمل المهمة','+2 MIMA • open the post, then complete the task');
-      return;
-    }
-
-    btn.disabled = false;
-    btn.textContent = tx('إكمال المهمة','Complete Task');
-    info.textContent = tx('+2 MIMA • جاهزة للاستلام','+2 MIMA • ready to claim');
-  }
-
-  async function claimInteractPostTask(btn){
-    if(!btn || btn.disabled) return;
-
-    let opened = false;
-    try{ opened = localStorage.getItem(INTERACT_POST_OPENED_KEY) === '1'; }catch(e){}
-    if(!opened){
-      renderInteractPostTask();
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = '⏳';
-
-    if(!serverMode){
-      bal += 2;
-      exchangeableBalance += 2;
-      interactPostNextAvailableAt = Date.now() + 12 * 60 * 60 * 1000;
-      savePreviewState();
-      render();
-      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
-      return;
-    }
-
-    try{
-      const data = await apiCall('claim_task',{task_code:'interact_mimacoin2_post'});
-
-      if(data.success !== true){
-        const nextTs = Date.parse(data.next_available_at || '');
-        if(Number.isFinite(nextTs)) interactPostNextAvailableAt = nextTs;
-        throw new Error(localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available'));
-      }
-
-      bal = Math.max(0,Number(data.balance || bal));
-      exchangeableBalance = Math.max(0,Number(data.exchangeable_balance ?? exchangeableBalance));
-
-      const nextTs = Date.parse(data.next_available_at || '');
-      interactPostNextAvailableAt = Number.isFinite(nextTs)
-        ? nextTs
-        : nowMs() + 12 * 60 * 60 * 1000;
-
-      try{ localStorage.removeItem(INTERACT_POST_OPENED_KEY); }catch(e){}
-      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
