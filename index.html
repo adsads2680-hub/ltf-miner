@@ -4499,6 +4499,34 @@ html[dir="ltr"] input{text-align:left}
 
   refreshTelegramSession();
 
+  // First-launch recovery for Telegram Android/WebView:
+  // On a cold open, Telegram.initData can arrive a fraction of a second
+  // after this script starts. Previously that sent the app into preview mode
+  // and left the real balance at 0 until the user closed/reopened the Mini App.
+  if(!serverMode){
+    const firstLaunchRecoveryDelays = [120,300,700,1200,2000,3000,4500];
+    firstLaunchRecoveryDelays.forEach((delay)=>{
+      setTimeout(async()=>{
+        if(serverReady) return;
+        refreshTelegramSession();
+        if(!serverMode || !telegramInitData) return;
+
+        if($('walletSyncState')){
+          $('walletSyncState').textContent = tx('جاري تحديث البيانات…','Updating data…');
+        }
+
+        const ok = await syncServerStatus(false,false);
+        if(ok && !window.__mimaRecoveredSyncTimer){
+          window.__mimaRecoveredSyncTimer = setInterval(()=>{
+            if(document.visibilityState === 'visible'){
+              syncServerStatus(false,true);
+            }
+          },600000);
+        }
+      },delay);
+    });
+  }
+
   if(serverMode){
     const hadCachedServerState = loadCachedServerStatus();
 
