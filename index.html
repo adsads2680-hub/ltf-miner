@@ -536,6 +536,7 @@ html[dir="ltr"] input{text-align:left}
         <button id="adminBtnTransactions" type="button">🧾 آخر المعاملات</button>
         <button id="adminBtnReview" type="button">⚠️ نشاط يحتاج مراجعة</button>
         <button id="adminBtnReferrals" type="button">👥 الإحالات الحقيقية</button>
+        <button id="adminBtnMarketTest" type="button" onclick="openMimaAdminMarketTest()">📈 بورصة MIMA التجريبية</button>
       </div>
       <div id="adminAuditBackdrop" class="adminAuditBackdrop" style="display:none" onclick="closeAdminAuditPanel()"></div>
       <div id="adminAuditPanel" class="adminAuditPanel" style="display:none" role="dialog" aria-modal="true">
@@ -6600,6 +6601,119 @@ input[type="submit"]:focus-visible{
   }
   setTimeout(forceVictorsRewardLabel,500);
   setTimeout(forceVictorsRewardLabel,1500);
+})();
+</script>
+
+
+<style id="mima-admin-market-test-style">
+#mimaAdminMarketTest{position:fixed;inset:0;z-index:9999;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.72);backdrop-filter:blur(8px)}
+#mimaAdminMarketTest.show{display:flex}
+.mamt-panel{width:min(100%,460px);max-height:92vh;overflow:auto;border:1px solid rgba(255,201,76,.42);border-radius:24px 24px 0 0;background:linear-gradient(180deg,#07131f,#02070c);padding:16px 14px 26px;box-shadow:0 -20px 70px rgba(0,0,0,.65)}
+.mamt-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.mamt-head b{font-size:18px;color:#ffe08a}.mamt-head small{display:block;color:#7893a5;margin-top:4px}.mamt-close{width:38px;height:38px;border-radius:12px;background:#102536;color:#fff;font-size:22px}
+.mamt-badge{display:inline-block;margin:12px 0 8px;padding:6px 9px;border-radius:999px;border:1px solid rgba(255,193,61,.35);background:rgba(255,193,61,.08);color:#ffd15c;font-size:10px;font-weight:900}
+.mamt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mamt-card{padding:11px;border-radius:14px;background:#061521;border:1px solid #15384d}.mamt-card small{display:block;color:#7893a5;font-size:9px}.mamt-card b{display:block;margin-top:5px;color:#fff;font-size:15px}.mamt-card b.gold{color:#ffd15c}
+.mamt-box{margin-top:10px;padding:12px;border-radius:15px;background:#04101a;border:1px solid #14374d}.mamt-box h3{margin:0 0 9px;font-size:13px;color:#dcebf5}
+.mamt-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mamt-box input{width:100%;margin-top:7px;padding:11px;border:1px solid #21485e;border-radius:11px;background:#020a10;color:#fff;outline:none}
+.mamt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.mamt-actions button{padding:12px;border-radius:12px;font-weight:900}.mamt-buy{background:linear-gradient(100deg,#0b9b69,#27e5a0);color:#03291c}.mamt-sell{background:linear-gradient(100deg,#8d5a00,#ffd66c);color:#251700}
+.mamt-line{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #102b3d;font-size:11px}.mamt-line:last-child{border-bottom:0}.mamt-line small{color:#7893a5}.mamt-empty{color:#6f8798;font-size:11px;padding:8px 0}
+</style>
+
+<div id="mimaAdminMarketTest" onclick="if(event.target===this)closeMimaAdminMarketTest()">
+  <div class="mamt-panel">
+    <div class="mamt-head">
+      <div><b>📈 MIMA Internal Market</b><small>نسخة تجريبية خاصة بالإدارة فقط</small></div>
+      <button class="mamt-close" type="button" onclick="closeMimaAdminMarketTest()">×</button>
+    </div>
+    <span class="mamt-badge">TEST MODE • ADMIN ONLY • NO REAL FUNDS</span>
+
+    <div class="mamt-grid">
+      <div class="mamt-card"><small>إجمالي عرض MIMA</small><b class="gold" id="mamtSupply">1,000,000,000</b></div>
+      <div class="mamt-card"><small>السعر التجريبي</small><b id="mamtPrice">0.001000 USDT</b></div>
+      <div class="mamt-card"><small>محفظة الإدارة MIMA</small><b id="mamtMima">1,000,000.000</b></div>
+      <div class="mamt-card"><small>محفظة الإدارة USDT</small><b id="mamtUsdt">10,000.00</b></div>
+      <div class="mamt-card"><small>احتياطي السوق</small><b id="mamtReserve">999,000,000.000</b></div>
+      <div class="mamt-card"><small>عدد الصفقات التجريبية</small><b id="mamtTradeCount">0</b></div>
+    </div>
+
+    <div class="mamt-box">
+      <h3>تنفيذ صفقة تجريبية</h3>
+      <div class="mamt-row">
+        <label><small>الكمية MIMA</small><input id="mamtQty" type="number" min="0.001" step="0.001" value="1000"></label>
+        <label><small>السعر USDT</small><input id="mamtPriceInput" type="number" min="0.000001" step="0.000001" value="0.001"></label>
+      </div>
+      <div class="mamt-actions">
+        <button class="mamt-buy" type="button" onclick="mimaMarketPaperTrade('buy')">شراء تجريبي</button>
+        <button class="mamt-sell" type="button" onclick="mimaMarketPaperTrade('sell')">بيع تجريبي</button>
+      </div>
+    </div>
+
+    <div class="mamt-box"><h3>آخر الصفقات</h3><div id="mamtTrades"></div></div>
+  </div>
+</div>
+
+<script id="mima-admin-market-test-script">
+(function(){
+  const KEY='mima_admin_market_paper_v1';
+  const TOTAL=1000000000;
+  function adminAllowed(){
+    try{return String(currentUserTelegramId||'')===String(ADMIN_TELEGRAM_USER_ID);}catch(e){return false;}
+  }
+  function fresh(){return {mima:1000000,usdt:10000,reserve:999000000,price:.001,trades:[]};}
+  function load(){
+    try{
+      const x=JSON.parse(localStorage.getItem(KEY)||'null');
+      if(x&&Number.isFinite(Number(x.mima))&&Number.isFinite(Number(x.usdt))&&Array.isArray(x.trades)) return x;
+    }catch(e){}
+    return fresh();
+  }
+  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  function fmt(n,d=3){return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+  function render(){
+    const s=load();
+    const priceEl=document.getElementById('mamtPriceInput');
+    if(priceEl && document.activeElement!==priceEl) priceEl.value=Number(s.price||.001).toFixed(6);
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    set('mamtSupply',TOTAL.toLocaleString('en-US'));
+    set('mamtPrice',Number(s.price||.001).toFixed(6)+' USDT');
+    set('mamtMima',fmt(s.mima));
+    set('mamtUsdt',fmt(s.usdt,2));
+    set('mamtReserve',fmt(s.reserve));
+    set('mamtTradeCount',String(s.trades.length));
+    const box=document.getElementById('mamtTrades');
+    if(box){
+      box.innerHTML=s.trades.length?s.trades.slice().reverse().slice(0,10).map(t=>
+        '<div class="mamt-line"><span>'+(t.side==='buy'?'🟢 شراء':'🟡 بيع')+' '+fmt(t.qty)+' MIMA</span><small>'+Number(t.price).toFixed(6)+' USDT • '+fmt(t.total,2)+' USDT</small></div>'
+      ).join(''):'<div class="mamt-empty">لا توجد صفقات تجريبية بعد.</div>';
+    }
+  }
+  window.openMimaAdminMarketTest=function(){
+    if(!adminAllowed()) return;
+    const root=document.getElementById('mimaAdminMarketTest');
+    if(root){root.classList.add('show');render();}
+  };
+  window.closeMimaAdminMarketTest=function(){
+    const root=document.getElementById('mimaAdminMarketTest');if(root)root.classList.remove('show');
+  };
+  window.mimaMarketPaperTrade=function(side){
+    if(!adminAllowed()) return;
+    const qty=Number(document.getElementById('mamtQty')?.value||0);
+    const price=Number(document.getElementById('mamtPriceInput')?.value||0);
+    if(!(qty>0)||!(price>0)){try{toast('⚠️ أدخل كمية وسعراً صحيحين');}catch(e){} return;}
+    const s=load(), total=qty*price;
+    if(side==='buy'){
+      if(total>s.usdt || qty>s.reserve){try{toast('⚠️ الرصيد التجريبي أو الاحتياطي غير كافٍ');}catch(e){} return;}
+      s.usdt-=total;s.mima+=qty;s.reserve-=qty;
+    }else{
+      if(qty>s.mima){try{toast('⚠️ رصيد MIMA التجريبي غير كافٍ');}catch(e){} return;}
+      s.mima-=qty;s.usdt+=total;s.reserve+=qty;
+    }
+    s.price=price;
+    s.trades.push({side,qty,price,total,at:new Date().toISOString()});
+    if(s.trades.length>100)s.trades=s.trades.slice(-100);
+    save(s);render();
+    try{toast(side==='buy'?'✅ تم تنفيذ شراء تجريبي':'✅ تم تنفيذ بيع تجريبي');}catch(e){}
+  };
 })();
 </script>
 
