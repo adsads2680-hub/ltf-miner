@@ -2326,6 +2326,10 @@ html[dir="ltr"] input{text-align:left}
   function applyServerStatus(data){
     if(!data || data.success !== true) return;
 
+    if(Number.isFinite(Number(data.telegram_user_id)) && Number(data.telegram_user_id) > 0){
+      currentUserTelegramId = Number(data.telegram_user_id);
+    }
+
     currentUserFirstName = String(
       data.first_name || currentUserFirstName || ''
     ).trim();
@@ -2404,6 +2408,21 @@ html[dir="ltr"] input{text-align:left}
     updateReferralLink();
     render();
     cacheServerStatus(data);
+
+    // Admin visibility must follow the authenticated account returned by
+    // the server, not whether the initial sync was lightweight or full.
+    const adminBox = $('adminLiveStats');
+    if(isMimaAdmin()){
+      if(adminBox) adminBox.style.display = '';
+      if(!window.__mimaAdminStatsBooted){
+        window.__mimaAdminStatsBooted = true;
+        loadAdminLiveStats().catch(()=>{
+          window.__mimaAdminStatsBooted = false;
+        });
+      }
+    }else if(adminBox){
+      adminBox.style.display = 'none';
+    }
   }
 
   let lastServerStatusSyncAt = 0;
@@ -2450,7 +2469,7 @@ html[dir="ltr"] input{text-align:left}
       applyServerStatus(data);
       lastServerStatusSyncAt = Date.now();
 
-      if(isMimaAdmin() && !lightweight){
+      if(isMimaAdmin()){
         loadAdminLiveStats().catch(()=>{});
       }
       return true;
