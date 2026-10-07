@@ -633,27 +633,42 @@ html[dir="ltr"] input{text-align:left}
 </section>
 
 <section id="tasks" class="screen">
-  <h2 class="title">📋 المهام</h2>
-  <p class="sub">أكمل المهام واربح MIMA قابلة للتبديل.</p>
-
-  <div class="card list">
-    <div class="row" style="margin-bottom:8px">
-      <span class="badge">3 MIMA</span>
-      <span class="sub">مهمة القناة • تتجدد كل 3 ساعات</span>
+  <div class="mimaTasksHead">
+    <div class="mimaTasksHeadIcon">✓</div>
+    <div>
+      <h2 class="title">مهام MIMA</h2>
+      <p class="sub">أكمل المهام وشاهد الإعلانات لتحصل على مكافآت MIMA.</p>
     </div>
+  </div>
 
-    <div class="item" id="adsgramRewardTaskItem">
-      <span class="ico">🎬</span>
-      <main>
+  <div class="mimaAdTaskCard" id="adsgramRewardTaskItem">
+    <div class="mimaAdTop">
+      <div class="mimaAdIcon">▶</div>
+      <div class="mimaAdCopy">
         <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
         <small id="adsgramRewardTaskInfo">+5 MIMA • إعلان كل 5 دقائق • حد أقصى 6 كل 4 ساعات</small>
-      </main>
-      <div class="taskActionGroup">
-        <button id="adsgramRewardTaskBtn" class="taskJoinBtn" type="button" onclick="showAdsgramRewardAd()">شاهد</button>
       </div>
+      <span class="mimaAdBadge">AD</span>
     </div>
 
-    <div class="item">
+    <div class="mimaAdProgressTrack" aria-hidden="true">
+      <i id="adsgramRewardProgress"></i>
+    </div>
+    <div class="mimaAdProgressMeta">
+      <span id="adsgramRewardTaskCount">0 / 6</span>
+      <span id="adsgramRewardTaskLeft">6 متبقية</span>
+    </div>
+
+    <button id="adsgramRewardTaskBtn" class="mimaAdWatchBtn" type="button" onclick="showAdsgramRewardAd()">
+      <span>▶</span>
+      <strong>شاهد الإعلان (+5 MIMA)</strong>
+    </button>
+  </div>
+
+  <div class="mimaTasksSectionLabel">المهام المتاحة</div>
+
+  <div class="mimaTaskList">
+    <div class="item mimaTaskRow">
       <span class="ico">✈️</span>
       <main>
         <b>انضم إلى قناة MIMA</b>
@@ -665,7 +680,7 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item" id="mimaExchangeChannelTaskItem">
+    <div class="item mimaTaskRow" id="mimaExchangeChannelTaskItem">
       <span class="ico">📈</span>
       <main>
         <b id="mimaExchangeChannelTaskTitle">انضم إلى قناة MIMA</b>
@@ -677,7 +692,7 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item" id="interactPostTaskItem">
+    <div class="item mimaTaskRow" id="interactPostTaskItem">
       <span class="ico">❤️</span>
       <main>
         <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
@@ -689,7 +704,7 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item mimaWithdrawalsTask" id="mimaWithdrawalsTaskItem">
+    <div class="item mimaTaskRow mimaWithdrawalsTask" id="mimaWithdrawalsTaskItem">
       <span class="ico">💸</span>
       <main>
         <b id="mimaWithdrawalsTaskTitle">انضم إلى قناة سحوبات MIMA</b>
@@ -701,7 +716,7 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item" id="victorsPartnerTaskItem">
+    <div class="item mimaTaskRow" id="victorsPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
         <b id="victorsPartnerTaskTitle">اربط المحفظة وابدأ التعدين</b>
@@ -713,7 +728,7 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item" id="artAirdropPartnerTaskItem">
+    <div class="item mimaTaskRow" id="artAirdropPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
         <b id="artAirdropPartnerTaskTitle">انضم إلى شريكنا</b>
@@ -724,11 +739,6 @@ html[dir="ltr"] input{text-align:left}
         <button id="artAirdropPartnerTaskBtn" type="button" onclick="claimArtAirdropPartner(this)">استلم</button>
       </div>
     </div>
-
-
-
-
-    
   </div>
 </section>
 
@@ -1358,6 +1368,10 @@ html[dir="ltr"] input{text-align:left}
     ['حالة التعدين','Mining status'],
     ['متوقف','Stopped'],
     ['📋 المهام','📋 Tasks'],
+    ['مهام MIMA','MIMA Tasks'],
+    ['أكمل المهام وشاهد الإعلانات لتحصل على مكافآت MIMA.','Complete tasks and watch ads to earn MIMA rewards.'],
+    ['المهام المتاحة','Available Tasks'],
+    ['شاهد الإعلان (+5 MIMA)','Watch Ad (+5 MIMA)'],
     ['أكمل المهام واربح MIMA قابلة للتبديل.','Complete tasks and earn exchangeable MIMA.'],
     ['مهمة القناة • تتجدد كل 3 ساعات','Channel task • refreshes every 3 hours'],
     ['انضم إلى قناة MIMA','Join the MIMA channel'],
@@ -2658,7 +2672,20 @@ html[dir="ltr"] input{text-align:left}
     const title = $('adsgramRewardTaskTitle');
     const info = $('adsgramRewardTaskInfo');
     const btn = $('adsgramRewardTaskBtn');
+    const progress = $('adsgramRewardProgress');
+    const count = $('adsgramRewardTaskCount');
+    const leftLabel = $('adsgramRewardTaskLeft');
     if(!title || !info || !btn) return;
+
+    const completedAds = Math.max(0,Math.min(6,6-Number(adsgramRewardRemaining || 0)));
+    if(progress) progress.style.width = ((completedAds / 6) * 100).toFixed(2) + '%';
+    if(count) count.textContent = completedAds + ' / 6';
+    if(leftLabel){
+      leftLabel.textContent = tx(
+        adsgramRewardRemaining + ' متبقية',
+        adsgramRewardRemaining + ' left'
+      );
+    }
 
     title.textContent = tx('شاهد إعلان','Watch an ad');
 
@@ -2697,7 +2724,9 @@ html[dir="ltr"] input{text-align:left}
     }
 
     btn.disabled = adsgramRewardBusy;
-    btn.textContent = adsgramRewardBusy ? '⏳' : tx('شاهد','Watch');
+    btn.innerHTML = adsgramRewardBusy
+      ? '<strong>⏳</strong>'
+      : '<span>▶</span><strong>' + tx('شاهد الإعلان (+5 MIMA)','Watch Ad (+5 MIMA)') + '</strong>';
     info.textContent =
       tx('+5 MIMA • كل 5 دقائق • المتبقي ','+5 MIMA • every 5 minutes • remaining ') +
       adsgramRewardRemaining + '/6';
@@ -6090,6 +6119,229 @@ body.withdrawHistoryModalOpen .bottom{
 }
 </style>
 
+
+<style id="mima-tasks-premium-style">
+#tasks{
+  padding-top:14px;
+}
+#tasks .mimaTasksHead{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:2px 2px 16px;
+}
+#tasks .mimaTasksHeadIcon{
+  width:48px;
+  height:48px;
+  flex:0 0 48px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  color:#201400;
+  font-size:25px;
+  font-weight:1000;
+  background:linear-gradient(145deg,#ffe68c,#d99500);
+  border:1px solid rgba(255,226,126,.78);
+  box-shadow:0 0 22px rgba(255,185,38,.22);
+}
+#tasks .mimaTasksHead .title{
+  margin:0;
+  font-size:23px;
+  color:#f4f7fb;
+}
+#tasks .mimaTasksHead .sub{
+  margin:4px 0 0;
+  color:#8199aa;
+  line-height:1.5;
+}
+
+#tasks .mimaAdTaskCard{
+  position:relative;
+  overflow:hidden;
+  padding:17px;
+  margin-bottom:22px;
+  border-radius:24px;
+  border:1px solid rgba(255,199,73,.62);
+  background:
+    radial-gradient(circle at 92% 5%,rgba(43,168,255,.15),transparent 30%),
+    linear-gradient(145deg,rgba(10,29,43,.98),rgba(4,12,20,.98));
+  box-shadow:0 15px 38px rgba(0,0,0,.30),inset 0 0 0 1px rgba(255,255,255,.025);
+}
+#tasks .mimaAdTaskCard:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(125deg,transparent 15%,rgba(255,207,84,.055) 45%,transparent 70%);
+}
+#tasks .mimaAdTop{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+#tasks .mimaAdIcon{
+  width:62px;
+  height:62px;
+  flex:0 0 62px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  color:#0b1320;
+  font-size:25px;
+  padding-left:3px;
+  background:linear-gradient(145deg,#ffe577,#d68c00);
+  box-shadow:0 0 20px rgba(255,183,32,.20);
+}
+#tasks .mimaAdCopy{
+  min-width:0;
+  flex:1;
+}
+#tasks .mimaAdCopy b{
+  display:block;
+  color:#f5f7fb;
+  font-size:18px;
+  line-height:1.25;
+}
+#tasks .mimaAdCopy small{
+  display:block;
+  margin-top:5px;
+  color:#8fa6b7;
+  font-size:10px;
+  line-height:1.55;
+}
+#tasks .mimaAdBadge{
+  flex:0 0 auto;
+  border:1px solid rgba(255,201,70,.50);
+  color:#ffd25c;
+  border-radius:11px;
+  padding:6px 8px;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+#tasks .mimaAdProgressTrack{
+  position:relative;
+  height:8px;
+  overflow:hidden;
+  border-radius:999px;
+  margin:17px 0 7px;
+  background:#06101a;
+  border:1px solid rgba(85,157,204,.18);
+}
+#tasks .mimaAdProgressTrack i{
+  display:block;
+  height:100%;
+  width:0;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#159bff,#ffd45d);
+  box-shadow:0 0 14px rgba(44,172,255,.28);
+  transition:width .3s ease;
+}
+#tasks .mimaAdProgressMeta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:#738da1;
+  font-size:10px;
+  direction:ltr;
+}
+#tasks .mimaAdWatchBtn{
+  position:relative;
+  width:100%;
+  min-height:52px;
+  margin-top:14px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  color:#251700!important;
+  font-size:14px!important;
+  font-weight:1000!important;
+  background:linear-gradient(105deg,#d68b00,#ffe07a,#d99600)!important;
+  border:1px solid #ffe183!important;
+  box-shadow:0 9px 24px rgba(225,153,16,.20);
+}
+#tasks .mimaAdWatchBtn:disabled{
+  opacity:.55;
+  filter:saturate(.6);
+}
+#tasks .mimaTasksSectionLabel{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0 4px 10px;
+  color:#d3a938;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.2px;
+}
+#tasks .mimaTasksSectionLabel:after{
+  content:"";
+  height:1px;
+  flex:1;
+  background:linear-gradient(90deg,rgba(218,165,42,.55),transparent);
+}
+#tasks .mimaTaskList{
+  display:grid;
+  gap:10px;
+}
+#tasks .mimaTaskRow{
+  margin:0;
+  padding:13px 12px;
+  min-height:74px;
+  border-radius:18px;
+  background:linear-gradient(145deg,rgba(9,25,38,.96),rgba(5,14,23,.98));
+  border:1px solid rgba(101,139,166,.20);
+  box-shadow:0 7px 20px rgba(0,0,0,.14);
+}
+#tasks .mimaTaskRow .ico{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:linear-gradient(145deg,rgba(255,200,62,.13),rgba(18,104,158,.15));
+  border:1px solid rgba(255,196,55,.24);
+  font-size:21px;
+}
+#tasks .mimaTaskRow main b{
+  color:#f0f4f8;
+  font-size:12px;
+}
+#tasks .mimaTaskRow main small{
+  color:#8097a9;
+  font-size:9px;
+  line-height:1.45;
+}
+#tasks .mimaTaskRow .taskActionGroup{
+  gap:5px;
+}
+#tasks .mimaTaskRow .taskActionGroup button{
+  min-width:52px;
+  padding:9px 8px;
+  border-radius:11px;
+  font-size:9px;
+  font-weight:1000;
+}
+#tasks .mimaTaskRow .taskActionGroup button:not(.taskJoinBtn){
+  background:linear-gradient(180deg,#d49a1b,#8e5d00)!important;
+  border:1px solid rgba(255,217,116,.45)!important;
+  color:#fff1c6!important;
+}
+@media (max-width:380px){
+  #tasks .mimaAdTaskCard{padding:14px}
+  #tasks .mimaAdIcon{width:54px;height:54px;flex-basis:54px}
+  #tasks .mimaAdCopy b{font-size:16px}
+  #tasks .mimaTaskRow{padding:11px 9px}
+  #tasks .mimaTaskRow .ico{width:40px;height:40px;flex-basis:40px}
+  #tasks .mimaTaskRow .taskActionGroup button{min-width:46px;padding:8px 6px}
+}
+</style>
 
 <style>
 .taskActionGroup{
