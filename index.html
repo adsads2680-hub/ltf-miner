@@ -673,6 +673,48 @@ html[dir="ltr"] input{text-align:left}
     </button>
   </div>
 
+  <section class="mimaDailyCheckin" id="mimaDailyCheckin" aria-live="polite">
+    <div class="mimaDailyHead">
+      <div>
+        <b id="mimaDailyTitle">تسجيل الحضور اليومي</b>
+        <small id="mimaDailySubtitle">ادخل كل يوم واحصل على مكافأة MIMA متزايدة</small>
+      </div>
+      <div class="mimaDailyStreakBadge">
+        <span class="mimaDailyFlame">◆</span>
+        <strong id="mimaDailyStreakText">0/7</strong>
+      </div>
+    </div>
+
+    <div class="mimaDailyDays" id="mimaDailyDays">
+      <div class="mimaDailyDay" data-day="1"><small>اليوم 1</small><b>1</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="2"><small>اليوم 2</small><b>2</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="3"><small>اليوم 3</small><b>4</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="4"><small>اليوم 4</small><b>6</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="5"><small>اليوم 5</small><b>8</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="6"><small>اليوم 6</small><b>10</b><span>MIMA</span></div>
+      <div class="mimaDailyDay mimaDailyGiftDay" data-day="7">
+        <small>اليوم 7</small>
+        <svg class="mimaDailyGiftIcon" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M10 29h44v27H10z"></path>
+          <path d="M7 21h50v12H7z"></path>
+          <path d="M32 21v35"></path>
+          <path d="M31 21c-8-1-13-4-13-9 0-4 3-6 7-5 5 1 7 7 7 14"></path>
+          <path d="M33 21c8-1 13-4 13-9 0-4-3-6-7-5-5 1-7 7-7 14"></path>
+        </svg>
+        <b>12</b><span>MIMA</span>
+      </div>
+    </div>
+
+    <div class="mimaDailyStatusLine">
+      <span id="mimaDailyStatusText">جاري تحميل حالة الحضور…</span>
+      <strong id="mimaDailyNextReward">+1 MIMA</strong>
+    </div>
+
+    <button id="mimaDailyClaimBtn" class="mimaDailyClaimBtn" type="button" onclick="claimMimaDailyCheckin()">
+      تسجيل حضور اليوم
+    </button>
+  </section>
+
   <div class="mimaTaskList">
     <div class="item mimaTaskRow">
       <span class="ico">✈️</span>
@@ -8557,3 +8599,354 @@ input[type="submit"]:focus-visible{
   animation:none!important;
 }
 </style>
+
+
+<style id="mima-daily-checkin-v1">
+#tasks .mimaDailyCheckin{
+  position:relative;
+  overflow:hidden;
+  margin:0 0 13px;
+  padding:15px;
+  border:1px solid rgba(218,164,44,.48);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 12% 0%,rgba(33,160,255,.11),transparent 31%),
+    radial-gradient(circle at 90% 0%,rgba(255,198,73,.09),transparent 28%),
+    linear-gradient(145deg,#090b0d 0%,#141006 60%,#080706 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,230,154,.025),0 10px 28px rgba(0,0,0,.24);
+}
+#tasks .mimaDailyCheckin::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(118deg,transparent 0 45%,rgba(255,216,111,.035) 51%,transparent 58%);
+}
+#tasks .mimaDailyHead{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+#tasks .mimaDailyHead>div:first-child{min-width:0}
+#tasks .mimaDailyHead b{
+  display:block;
+  color:#fff0b8;
+  font-size:16px;
+  font-weight:1000;
+}
+#tasks .mimaDailyHead small{
+  display:block;
+  margin-top:4px;
+  color:#9f8b5e;
+  font-size:9.5px;
+  line-height:1.5;
+}
+#tasks .mimaDailyStreakBadge{
+  flex:0 0 auto;
+  min-width:58px;
+  height:36px;
+  padding:0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border-radius:12px;
+  border:1px solid rgba(226,174,52,.42);
+  color:#f7cb57;
+  background:linear-gradient(180deg,#1d1406,#0c0904);
+}
+#tasks .mimaDailyFlame{font-size:11px;transform:rotate(45deg);color:#65c8ff}
+#tasks .mimaDailyStreakBadge strong{font-size:11px;color:#ffe397}
+#tasks .mimaDailyDays{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:5px;
+  margin-top:14px;
+  direction:ltr;
+}
+#tasks .mimaDailyDay{
+  min-width:0;
+  min-height:78px;
+  padding:7px 3px 6px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-radius:13px;
+  border:1px solid rgba(173,130,36,.25);
+  background:linear-gradient(180deg,rgba(28,23,12,.92),rgba(10,9,7,.96));
+  color:#8d7950;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+#tasks .mimaDailyDay small{
+  display:block;
+  color:#7d6d4e;
+  font-size:7.5px;
+  white-space:nowrap;
+}
+#tasks .mimaDailyDay b{
+  display:block;
+  margin-top:5px;
+  color:#d8bd74;
+  font-size:15px;
+  line-height:1;
+}
+#tasks .mimaDailyDay span{
+  display:block;
+  margin-top:3px;
+  color:#776644;
+  font-size:6.8px;
+  font-weight:900;
+}
+#tasks .mimaDailyDay.done{
+  border-color:rgba(42,200,143,.55);
+  background:linear-gradient(180deg,rgba(9,45,34,.88),rgba(6,24,20,.94));
+  box-shadow:inset 0 0 0 1px rgba(66,236,171,.05);
+}
+#tasks .mimaDailyDay.done::after{
+  content:"✓";
+  margin-top:3px;
+  color:#4be1a7;
+  font-size:10px;
+  font-weight:1000;
+}
+#tasks .mimaDailyDay.done span{display:none}
+#tasks .mimaDailyDay.done b{color:#8ef0c8}
+#tasks .mimaDailyDay.done small{color:#63c9a4}
+#tasks .mimaDailyDay.next{
+  transform:translateY(-2px);
+  border-color:#e0a522;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,223,126,.16),transparent 45%),
+    linear-gradient(180deg,#271a05,#0d0a04);
+  box-shadow:0 0 16px rgba(224,165,34,.16),inset 0 0 0 1px rgba(255,229,154,.08);
+}
+#tasks .mimaDailyDay.next b,
+#tasks .mimaDailyDay.next small,
+#tasks .mimaDailyDay.next span{color:#ffe29a}
+#tasks .mimaDailyGiftDay{
+  border-color:rgba(220,167,46,.38);
+}
+#tasks .mimaDailyGiftIcon{
+  width:22px;
+  height:22px;
+  margin:4px 0 1px;
+  fill:none;
+  stroke:#d9a323;
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+#tasks .mimaDailyGiftDay.next .mimaDailyGiftIcon{
+  stroke:#ffe08a;
+  filter:drop-shadow(0 0 4px rgba(255,194,54,.35));
+}
+#tasks .mimaDailyGiftDay b{margin-top:1px;font-size:13px}
+#tasks .mimaDailyStatusLine{
+  position:relative;
+  z-index:1;
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:28px;
+  padding:7px 9px;
+  border-radius:10px;
+  border:1px solid rgba(205,154,45,.20);
+  background:rgba(0,0,0,.22);
+}
+#tasks .mimaDailyStatusLine span{
+  color:#aa976b;
+  font-size:9px;
+  line-height:1.35;
+}
+#tasks .mimaDailyStatusLine strong{
+  flex:0 0 auto;
+  color:#f5cb62;
+  font-size:10px;
+}
+#tasks .mimaDailyClaimBtn{
+  position:relative;
+  z-index:1;
+  width:100%;
+  min-height:46px;
+  margin-top:10px;
+  border:1.5px solid #d79b27!important;
+  border-radius:13px;
+  color:#ffe7a0!important;
+  font-weight:1000;
+  font-size:12px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,224,139,.15),transparent 40%),
+    linear-gradient(180deg,#251704 0%,#0e0903 52%,#1c1104 100%)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,240,185,.10),0 7px 16px rgba(0,0,0,.22),0 0 12px rgba(221,154,33,.09)!important;
+}
+#tasks .mimaDailyClaimBtn:active:not(:disabled){transform:translateY(1px)}
+#tasks .mimaDailyClaimBtn:disabled{
+  color:#8f7b51!important;
+  border-color:#6f5321!important;
+  background:linear-gradient(180deg,#171108,#0b0905)!important;
+  box-shadow:none!important;
+  opacity:.82;
+}
+@media(max-width:390px){
+  #tasks .mimaDailyCheckin{padding:13px 10px}
+  #tasks .mimaDailyDays{gap:3px}
+  #tasks .mimaDailyDay{min-height:73px;padding-left:1px;padding-right:1px}
+  #tasks .mimaDailyDay small{font-size:6.8px}
+  #tasks .mimaDailyDay b{font-size:13px}
+  #tasks .mimaDailyDay span{font-size:6px}
+}
+</style>
+
+<script id="mima-daily-checkin-script-v1">
+(function(){
+  const REWARDS=[1,2,4,6,8,10,12];
+  let state={
+    loaded:false,
+    busy:false,
+    currentDay:0,
+    nextDay:1,
+    claimedToday:false,
+    available:false,
+    missedReset:false
+  };
+
+  function el(id){return document.getElementById(id)}
+  function label(ar,en){
+    try{return typeof tx==='function'?tx(ar,en):ar}catch(e){return ar}
+  }
+
+  function render(){
+    const card=el('mimaDailyCheckin');
+    const title=el('mimaDailyTitle');
+    const subtitle=el('mimaDailySubtitle');
+    const streak=el('mimaDailyStreakText');
+    const status=el('mimaDailyStatusText');
+    const nextReward=el('mimaDailyNextReward');
+    const btn=el('mimaDailyClaimBtn');
+    if(!card||!btn) return;
+
+    if(title) title.textContent=label('تسجيل الحضور اليومي','Daily Check-in');
+    if(subtitle) subtitle.textContent=label('7 أيام من المكافآت • اليوم السابع هدية خاصة','7 days of rewards • Day 7 is a special gift');
+
+    const completed=Math.max(0,Math.min(7,Number(state.currentDay||0)));
+    if(streak) streak.textContent=completed+'/7';
+
+    card.querySelectorAll('.mimaDailyDay').forEach((node,index)=>{
+      const day=index+1;
+      node.classList.remove('done','next');
+      const s=node.querySelector('small');
+      if(s) s.textContent=label('اليوم '+day,'Day '+day);
+      if(day<=completed) node.classList.add('done');
+      if(!state.claimedToday && day===Number(state.nextDay||1)) node.classList.add('next');
+    });
+
+    const reward=REWARDS[Math.max(0,Math.min(6,Number(state.nextDay||1)-1))]||1;
+    if(nextReward) nextReward.textContent='+'+reward+' MIMA';
+
+    if(!state.loaded){
+      btn.disabled=true;
+      btn.textContent=label('جاري التحميل…','Loading…');
+      if(status) status.textContent=label('جاري تحميل حالة الحضور…','Loading check-in status…');
+      return;
+    }
+
+    if(!serverMode){
+      btn.disabled=true;
+      btn.textContent=label('افتح داخل Telegram','Open in Telegram');
+      if(status) status.textContent=label('تسجيل الحضور متاح داخل Telegram','Check-in is available inside Telegram');
+      return;
+    }
+
+    if(state.claimedToday){
+      btn.disabled=true;
+      btn.textContent=label('✓ تم تسجيل حضور اليوم','✓ Checked in today');
+      if(status){
+        status.textContent=state.currentDay>=7
+          ? label('اكتملت الدورة • غداً تبدأ من اليوم 1','Cycle complete • Tomorrow starts Day 1')
+          : label('تم استلام مكافأة اليوم '+state.currentDay,'Day '+state.currentDay+' reward claimed');
+      }
+      return;
+    }
+
+    btn.disabled=state.busy||!state.available;
+    btn.textContent=state.busy?'⏳':label('تسجيل حضور اليوم','Check in today');
+    if(status){
+      status.textContent=state.missedReset
+        ? label('انقطعت السلسلة • تبدأ اليوم من اليوم 1','Streak reset • Starting again from Day 1')
+        : label('مكافأة اليوم '+state.nextDay+' جاهزة للاستلام','Day '+state.nextDay+' reward is ready');
+    }
+  }
+
+  async function refresh(showError=false){
+    if(!serverMode){
+      state.loaded=true;
+      render();
+      return;
+    }
+    try{
+      const data=await apiCall('daily_login_status');
+      if(data?.success!==true) throw new Error(data?.message||label('تعذر تحميل الحضور','Could not load check-in'));
+      state.loaded=true;
+      state.currentDay=Number(data.current_day||0);
+      state.nextDay=Number(data.next_day||1);
+      state.claimedToday=data.claimed_today===true;
+      state.available=data.available===true;
+      state.missedReset=data.missed_reset===true;
+      render();
+    }catch(e){
+      state.loaded=true;
+      render();
+      if(showError) toast('⚠️ '+(e?.message||label('تعذر تحميل الحضور','Could not load check-in')));
+    }
+  }
+
+  window.claimMimaDailyCheckin=async function(){
+    if(state.busy||state.claimedToday||!serverMode) return;
+    state.busy=true;
+    render();
+    try{
+      const data=await apiCall('daily_login_claim');
+      if(data?.success!==true) throw new Error(data?.message||label('تعذر تسجيل الحضور','Could not check in'));
+
+      if(Number.isFinite(Number(data.balance))) bal=Math.max(0,Number(data.balance));
+      if(Number.isFinite(Number(data.exchangeable_balance))) exchangeableBalance=Math.max(0,Number(data.exchangeable_balance));
+
+      state.currentDay=Number(data.day||state.nextDay||1);
+      state.nextDay=Number(data.next_day||(state.currentDay>=7?1:state.currentDay+1));
+      state.claimedToday=true;
+      state.available=false;
+      state.missedReset=false;
+
+      try{render()}catch(e){}
+      try{if(typeof window.showMimaTaskSuccess==='function') window.showMimaTaskSuccess('تسجيل الحضور اليومي','Daily Check-in',Number(data.reward_amount||0))}catch(e){}
+      try{await syncServerStatus(false,true)}catch(e){}
+    }catch(e){
+      toast('⚠️ '+(e?.message||label('تعذر تسجيل الحضور','Could not check in')));
+      await refresh(false);
+    }finally{
+      state.busy=false;
+      render();
+    }
+  };
+
+  function init(){
+    render();
+    refresh(false);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible') refresh(false);
+  });
+})();
+</script>
