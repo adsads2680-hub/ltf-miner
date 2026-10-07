@@ -643,11 +643,14 @@ html[dir="ltr"] input{text-align:left}
   <div class="mimaAdTaskCard" id="adsgramRewardTaskItem">
     <div class="mimaAdTop">
       <div class="mimaAdIcon" aria-label="Advertisement">
-        <svg class="mimaAdMegaphoneIcon" viewBox="0 0 64 64" aria-hidden="true">
-          <path class="mimaAdMegaBody" d="M14 27h12l20-10v30L26 37H14z"></path>
-          <path class="mimaAdMegaHandle" d="M21 37l5 12h8l-5-12"></path>
-          <path class="mimaAdMegaWave" d="M50 24c3 2 5 5 5 8s-2 6-5 8"></path>
-          <path class="mimaAdMegaWave" d="M54 18c5 4 8 8 8 14s-3 10-8 14"></path>
+        <svg class="mimaAdPremiumIcon" viewBox="0 0 64 64" aria-hidden="true">
+          <rect class="mimaAdScreen" x="10" y="14" width="44" height="30" rx="8"></rect>
+          <path class="mimaAdPlay" d="M29 23.5L40 29L29 34.5Z"></path>
+          <path class="mimaAdStem" d="M32 44v5"></path>
+          <path class="mimaAdStand" d="M24 50h16"></path>
+          <circle class="mimaAdSpark" cx="49" cy="19" r="2.1"></circle>
+          <path class="mimaAdSparkLine1" d="M49 13v3"></path>
+          <path class="mimaAdSparkLine2" d="M54 19h-3"></path>
         </svg>
       </div>
       <div class="mimaAdCopy">
@@ -8461,5 +8464,59 @@ input[type="submit"]:focus-visible{
     padding:8px 7px!important;
     font-size:8.5px!important;
   }
+}
+</style>
+
+
+<style id="mima-premium-watch-ad-icon-v4">
+/* Premium media-screen icon for Watch Ad */
+#tasks .mimaAdIcon{
+  width:50px!important;
+  height:50px!important;
+  flex:0 0 50px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:14px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:linear-gradient(145deg,#ffe18a,#c88400)!important;
+  border:1px solid #f7cb5c!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.38),
+    inset 0 -8px 18px rgba(105,61,0,.12),
+    0 5px 14px rgba(196,132,0,.18)!important;
+}
+#tasks .mimaAdPremiumIcon{
+  width:35px!important;
+  height:35px!important;
+  display:block!important;
+}
+#tasks .mimaAdScreen{
+  fill:rgba(36,22,0,.04)!important;
+  stroke:#241600!important;
+  stroke-width:2.8!important;
+}
+#tasks .mimaAdPlay{
+  fill:#241600!important;
+  stroke:none!important;
+}
+#tasks .mimaAdStem,
+#tasks .mimaAdStand,
+#tasks .mimaAdSparkLine1,
+#tasks .mimaAdSparkLine2{
+  fill:none!important;
+  stroke:#241600!important;
+  stroke-width:2.6!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+#tasks .mimaAdSpark{
+  fill:#241600!important;
+  stroke:none!important;
+}
+/* Neutralize obsolete icon styles */
+#tasks .mimaAdMegaphoneIcon,
+#tasks .mimaAdRealIcon{
+  display:none!important;
 }
 </style>
