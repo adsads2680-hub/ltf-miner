@@ -642,7 +642,15 @@ html[dir="ltr"] input{text-align:left}
 
   <div class="mimaAdTaskCard" id="adsgramRewardTaskItem">
     <div class="mimaAdTop">
-      <div class="mimaAdIcon">▶</div>
+      <div class="mimaAdIcon" aria-label="Ad video">
+        <svg class="mimaAdRealIcon" viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="8" y="13" width="48" height="38" rx="10"></rect>
+          <circle cx="32" cy="32" r="12"></circle>
+          <path d="M29 25.5 40 32 29 38.5Z"></path>
+          <path class="mimaAdIconLine" d="M17 20h12"></path>
+          <circle class="mimaAdIconDot" cx="48" cy="20" r="2.4"></circle>
+        </svg>
+      </div>
       <div class="mimaAdCopy">
         <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
         <small id="adsgramRewardTaskInfo">+5 MIMA • إعلان كل 5 دقائق • حد أقصى 6 كل 4 ساعات</small>
@@ -8278,5 +8286,57 @@ input[type="submit"]:focus-visible{
     padding:8px 7px!important;
     font-size:8.5px!important;
   }
+}
+</style>
+
+
+<style id="mima-final-two-task-fixes">
+/* Real video/ad icon instead of emoji-like play symbol. */
+#tasks .mimaAdIcon{
+  padding:0!important;
+  overflow:hidden!important;
+}
+#tasks .mimaAdRealIcon{
+  width:34px!important;
+  height:34px!important;
+  display:block!important;
+  fill:none!important;
+  stroke:#241600!important;
+  stroke-width:2.5!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+#tasks .mimaAdRealIcon circle{
+  fill:rgba(36,22,0,.07)!important;
+}
+#tasks .mimaAdRealIcon path:not(.mimaAdIconLine){
+  fill:#241600!important;
+  stroke:none!important;
+}
+#tasks .mimaAdRealIcon .mimaAdIconLine{
+  stroke-width:2.2!important;
+}
+#tasks .mimaAdRealIcon .mimaAdIconDot{
+  fill:#241600!important;
+  stroke:none!important;
+}
+
+/* Withdrawals task buttons must stay gold like the rest, even during countdown/disabled state. */
+#tasks #mimaWithdrawalsJoinBtn,
+#tasks #mimaWithdrawalsVerifyBtn,
+#tasks #mimaWithdrawalsVerifyBtn:disabled{
+  border:1.5px solid #d79b27!important;
+  border-radius:14px!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,224,139,.16),transparent 40%),
+    linear-gradient(180deg,#251704 0%,#0e0903 52%,#1c1104 100%)!important;
+  color:#ffe7a0!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,240,185,.10),
+    inset 0 0 16px rgba(255,178,35,.07),
+    0 7px 16px rgba(0,0,0,.24),
+    0 0 12px rgba(221,154,33,.10)!important;
+  opacity:1!important;
+  filter:none!important;
 }
 </style>
