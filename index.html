@@ -1480,7 +1480,18 @@ html[dir="ltr"] input{text-align:left}
       addVariants([ar,en,mimaLanguageText(en,'uz'),mimaLanguageText(en,'ur')]);
     }
     for(const [en,uz] of Object.entries(MIMA_EXTRA_TRANSLATIONS.uz)){
-      addVariants([en,uz,MIMA_EXTRA_TRANSLATIONS.ur[en]]);
+      const ur=MIMA_EXTRA_TRANSLATIONS.ur[en]||en;
+      const variants=[en,en,uz,ur];
+      for(const value of variants){
+        if(value&&!sourceMap.has(value)) sourceMap.set(value,variants);
+      }
+    }
+    for(const [en,ur] of Object.entries(MIMA_EXTRA_TRANSLATIONS.ur)){
+      const uz=MIMA_EXTRA_TRANSLATIONS.uz[en]||en;
+      const variants=[en,en,uz,ur];
+      for(const value of variants){
+        if(value&&!sourceMap.has(value)) sourceMap.set(value,variants);
+      }
     }
 
     const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
