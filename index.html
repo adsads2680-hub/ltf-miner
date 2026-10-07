@@ -813,7 +813,7 @@ html[dir="ltr"] input{text-align:left}
 
   <div class="card" style="margin-top:11px;text-align:center">
     <small class="sub">سعر العرض داخل النظام</small>
-    <b class="gold priceLine" style="display:block;margin-top:5px" dir="ltr"><span>1000 MIMA</span> <span>=</span> <span>$1</span></b>
+    <b class="gold priceLine" style="display:block;margin-top:5px" dir="ltr"><span>700 MIMA</span> <span>=</span> <span>$1</span></b>
   </div>
 
   <button class="exchangeMainBtn" type="button" onclick="openExchangePanel()">
@@ -975,7 +975,7 @@ html[dir="ltr"] input{text-align:left}
   const ROUND_MAX = 4;
   const ROUND_SECONDS = 4 * 60 * 60;
   const RATE_PER_HOUR = 1;
-  const MIMA_PER_USD = 1000;
+  const MIMA_PER_USD = 700;
 
   const MAX_TAP_ENERGY = 1000;
   const TAP_REWARD_PER_TAP = 0.001;
@@ -2397,39 +2397,6 @@ html[dir="ltr"] input{text-align:left}
     }
 
     return Array.isArray(data.withdrawals) ? data.withdrawals : [];
-  }
-
-  async function cancelWithdrawalApiCall(requestId){
-    if(!serverMode){
-      throw new Error(tx('افتح البوت داخل Telegram لإلغاء الطلب','Open MIMA inside Telegram to cancel the request'));
-    }
-
-    const response = await fetch(MIMA_EXCHANGE_REQUEST_URL,{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'apikey':SUPABASE_PUBLISHABLE_KEY,
-        'x-telegram-init-data':telegramInitData
-      },
-      body:JSON.stringify({
-        action:'cancel',
-        request_id:Number(requestId)
-      })
-    });
-
-    let data = null;
-
-    try{
-      data = await response.json();
-    }catch(e){
-      throw new Error(tx('استجابة الخادم غير صالحة','Invalid server response'));
-    }
-
-    if(!response.ok || data?.success !== true){
-      throw new Error(localizeServerMessage(data?.message) || tx('تعذر إلغاء الطلب','Could not cancel the request'));
-    }
-
-    return data;
   }
 
   async function publicPayoutsApiCall(){
@@ -4464,14 +4431,6 @@ html[dir="ltr"] input{text-align:left}
             </div>
           ` : ''}
 
-          ${String(row.status || '').toLowerCase() === 'pending' ? `
-            <button
-              type="button"
-              class="withdrawCancelBtn"
-              onclick="cancelPendingWithdrawal(${Number(row.id || 0)},this)"
-            >${tx('إلغاء طلب السحب','Cancel withdrawal request')}</button>
-          ` : ''}
-
           <div class="withdrawDate">
             ${formatWithdrawalDate(row.created_at)}
           </div>
@@ -4479,61 +4438,6 @@ html[dir="ltr"] input{text-align:left}
       `;
     }).join('');
   }
-
-  window.cancelPendingWithdrawal = async function(requestId,button){
-    const id = Number(requestId || 0);
-    if(!id) return;
-
-    const ok = window.confirm(
-      tx(
-        'هل تريد إلغاء طلب السحب؟ سيتم إرجاع كامل مبلغ MIMA إلى رصيدك.',
-        'Cancel this withdrawal request? The full MIMA amount will be returned to your balance.'
-      )
-    );
-
-    if(!ok) return;
-
-    const btn = button || null;
-    if(btn){
-      btn.disabled = true;
-      btn.textContent = tx('جاري الإلغاء…','Cancelling…');
-    }
-
-    try{
-      const data = await cancelWithdrawalApiCall(id);
-
-      if(Number.isFinite(Number(data.balance))){
-        bal = Math.max(0,Number(data.balance));
-      }
-      if(Number.isFinite(Number(data.exchangeable_balance))){
-        exchangeableBalance = Math.max(0,Number(data.exchangeable_balance));
-      }
-      if(Number.isFinite(Number(data.mining_balance))){
-        miningBalance = Math.max(0,Number(data.mining_balance));
-      }
-
-      toast(
-        tx(
-          '✅ تم إلغاء الطلب وإرجاع الرصيد',
-          '✅ Request cancelled and balance refunded'
-        )
-      );
-
-      render();
-
-      const rows = await exchangeHistoryApiCall();
-      renderWithdrawHistory(rows);
-
-      // Refresh the authoritative account state without blocking the UI.
-      syncServerStatus(false,true).catch(()=>{});
-    }catch(err){
-      toast('⚠️ ' + (err?.message || tx('تعذر إلغاء الطلب','Could not cancel request')));
-      if(btn){
-        btn.disabled = false;
-        btn.textContent = tx('إلغاء طلب السحب','Cancel withdrawal request');
-      }
-    }
-  };
 
   async function openWithdrawHistory(){
     closeExchangePanel();
