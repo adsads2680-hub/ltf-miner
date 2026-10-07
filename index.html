@@ -646,7 +646,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">🎬</span>
       <main>
         <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
-        <small id="adsgramRewardTaskInfo">+12 MIMA • إعلان اختياري</small>
+        <small id="adsgramRewardTaskInfo">+5 MIMA • إعلان كل 5 دقائق • حد أقصى 6 كل 4 ساعات</small>
       </main>
       <div class="taskActionGroup">
         <button id="adsgramRewardTaskBtn" class="taskJoinBtn" type="button" onclick="showAdsgramRewardAd()">شاهد</button>
@@ -1048,8 +1048,8 @@ html[dir="ltr"] input{text-align:left}
   let adsgramController = null;
   let adsgramRewardBusy = false;
   let adsgramRewardWatched = 0;
-  let adsgramRewardAmount = 12;
-  let adsgramRewardRemaining = 10;
+  let adsgramRewardAmount = 5;
+  let adsgramRewardRemaining = 6;
   let adsgramRewardResetAt = 0;
   let adsgramRewardNextAvailableAt = 0;
   let adsgramRewardCountdownTimer = null;
@@ -1386,7 +1386,7 @@ html[dir="ltr"] input{text-align:left}
     ['انضم','Join'],
     ['تحقق','Verify'],
     ['شاهد إعلان واربح','Watch an ad & earn'],
-    ['+12 MIMA لكل إعلان • إعلان كل 15 دقيقة','+12 MIMA per ad • one ad every 15 minutes'],
+    ['+5 MIMA لكل إعلان • إعلان كل 5 دقائق • بحد أقصى 6 كل 4 ساعات','+5 MIMA per ad • one ad every 5 minutes • max 6 every 4 hours'],
     ['متاح الآن','Available now'],
     ['شاهد','Watch'],
     ['👥 الإحالات','👥 Referrals'],
@@ -2712,7 +2712,7 @@ html[dir="ltr"] input{text-align:left}
     if(!serverMode){
       btn.disabled = true;
       btn.textContent = tx('افتح داخل Telegram','Open in Telegram');
-      info.textContent = tx('+12 MIMA • إعلان اختياري','+12 MIMA • optional ad');
+      info.textContent = tx('+5 MIMA • إعلان اختياري','+5 MIMA • optional ad');
       return;
     }
 
@@ -2721,8 +2721,8 @@ html[dir="ltr"] input{text-align:left}
       btn.textContent = tx('مكتمل','Completed');
       const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
       info.textContent = left > 0
-        ? tx('+12 MIMA • تتجدد بعد ','+12 MIMA • refreshes in ') + formatCountdown(left)
-        : tx('+12 MIMA • تتجدد قريباً','+12 MIMA • refreshes soon');
+        ? tx('+5 MIMA • تتجدد بعد ','+5 MIMA • refreshes in ') + formatCountdown(left)
+        : tx('+5 MIMA • تتجدد قريباً','+5 MIMA • refreshes soon');
       return;
     }
 
@@ -2734,7 +2734,7 @@ html[dir="ltr"] input{text-align:left}
       btn.disabled = true;
       btn.textContent = formatCountdown(cooldownLeft);
       info.textContent =
-        tx('+12 MIMA • الإعلان التالي بعد ','+12 MIMA • next ad in ') +
+        tx('+5 MIMA • الإعلان التالي بعد ','+5 MIMA • next ad in ') +
         formatCountdown(cooldownLeft);
       return;
     }
@@ -2746,8 +2746,8 @@ html[dir="ltr"] input{text-align:left}
     btn.disabled = adsgramRewardBusy;
     btn.textContent = adsgramRewardBusy ? '⏳' : tx('شاهد','Watch');
     info.textContent =
-      tx('+12 MIMA • كل 15 دقيقة • المتبقي ','+12 MIMA • every 15 minutes • remaining ') +
-      adsgramRewardRemaining + '/10';
+      tx('+5 MIMA • كل 5 دقائق • المتبقي ','+5 MIMA • every 5 minutes • remaining ') +
+      adsgramRewardRemaining + '/6';
   }
 
   async function refreshAdsgramRewardStatus(showError=false){
