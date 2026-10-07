@@ -3284,12 +3284,13 @@ html[dir="ltr"] input{text-align:left}
   let entryInterstitialAttempted = false;
 
   async function showEntryInterstitialOnce(){
-    if(isAdminNoAds()) return;
     if(entryInterstitialAttempted) return;
     entryInterstitialAttempted = true;
 
     try{
-      const controller = getMiningInterstitialController();
+      // Give the AdsGram SDK enough time to finish loading before the
+      // one-time entry attempt. This also lets the admin account see it.
+      const controller = await waitForMiningInterstitialController(6500);
       if(controller && typeof controller.show === 'function'){
         await showInterstitialSilently(controller);
       }
@@ -3312,9 +3313,8 @@ html[dir="ltr"] input{text-align:left}
     }
   }
 
-  // Entry interstitial remains disabled.
-  // Mining / Claim buttons now run without any interstitial ad.
-  // scheduleEntryInterstitial();
+  // Show one AdsGram interstitial shortly after MIMA opens.
+  scheduleEntryInterstitial();
 
   const ART_AIRDROP_PARTNER_CLAIM_KEY = 'mima_art_airdrop_partner_claimed_v1';
   const ART_AIRDROP_PARTNER_OPENED_KEY = 'mima_art_airdrop_partner_opened_v1';
@@ -7161,6 +7161,66 @@ input[type="submit"]:focus-visible{
 })();
 </script>
 
+
+
+<style id="mima-task-buttons-compact-v2">
+/* Restore the compact MIMA task buttons instead of full-width mockup buttons. */
+#tasks .mimaTaskRow{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-height:74px!important;
+  padding:13px 12px!important;
+}
+#tasks .mimaTaskRow .ico{
+  flex:0 0 44px!important;
+  width:44px!important;
+  height:44px!important;
+}
+#tasks .mimaTaskRow main{
+  flex:1 1 auto!important;
+  min-width:0!important;
+}
+#tasks .mimaTaskRow .taskActionGroup{
+  grid-column:auto!important;
+  width:auto!important;
+  display:flex!important;
+  grid-template-columns:none!important;
+  gap:5px!important;
+  align-items:center!important;
+  flex:0 0 auto!important;
+}
+#tasks .mimaTaskRow .taskActionGroup button,
+#tasks .mimaTaskRow .taskActionGroup .taskJoinBtn{
+  width:auto!important;
+  min-width:52px!important;
+  min-height:0!important;
+  padding:9px 8px!important;
+  border-radius:11px!important;
+  font-size:9px!important;
+  line-height:1.15!important;
+}
+@media (max-width:380px){
+  #tasks .mimaTaskRow{
+    gap:7px!important;
+    padding:11px 9px!important;
+  }
+  #tasks .mimaTaskRow .ico{
+    flex-basis:40px!important;
+    width:40px!important;
+    height:40px!important;
+  }
+  #tasks .mimaTaskRow .taskActionGroup{
+    gap:4px!important;
+  }
+  #tasks .mimaTaskRow .taskActionGroup button,
+  #tasks .mimaTaskRow .taskActionGroup .taskJoinBtn{
+    min-width:46px!important;
+    padding:8px 6px!important;
+    font-size:8.5px!important;
+  }
+}
+</style>
 </body>
 </html>
 <style>
