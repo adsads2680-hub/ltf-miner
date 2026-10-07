@@ -8012,3 +8012,95 @@ input[type="submit"]:focus-visible{
   setTimeout(applyPremiumUserCard,1200);
 })();
 </script>
+
+
+<style>
+/* ===== MIMA TASKS PREMIUM GOLD v1 ===== */
+#tasksPage,
+#tasksSection,
+.page[data-page="tasks"],
+.page.tasksPage{
+  --mima-task-gold:#e7ad20;
+  --mima-task-gold2:#ffd86a;
+  --mima-task-gold3:#8e6311;
+  --mima-task-bg:#07131e;
+  --mima-task-card:#091824;
+  --mima-task-border:rgba(231,173,32,.42);
+}
+
+/* Real task cards: dark premium surface + restrained gold border */
+#tasksPage .item,
+#tasksSection .item,
+.page[data-page="tasks"] .item,
+.page.tasksPage .item{
+  background:linear-gradient(145deg,rgba(10,27,40,.98),rgba(4,14,23,.98))!important;
+  border:1px solid rgba(231,173,32,.34)!important;
+  box-shadow:inset 0 1px 0 rgba(255,216,106,.06),0 8px 22px rgba(0,0,0,.18)!important;
+}
+
+/* Every real action button uses one coherent gold system */
+#tasksPage .item button,
+#tasksSection .item button,
+.page[data-page="tasks"] .item button,
+.page.tasksPage .item button,
+#tasksPage #adsgramWatchBtn,
+#tasksSection #adsgramWatchBtn,
+.page[data-page="tasks"] #adsgramWatchBtn,
+.page.tasksPage #adsgramWatchBtn{
+  background:linear-gradient(180deg,#f7c94c 0%,#d99a12 100%)!important;
+  border:1px solid #ffd86a!important;
+  color:#15100a!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 10px rgba(205,145,13,.20)!important;
+  text-shadow:none!important;
+  font-weight:800!important;
+}
+
+/* Disabled/countdown states remain visibly real, not fake/glowing */
+#tasksPage .item button:disabled,
+#tasksSection .item button:disabled,
+.page[data-page="tasks"] .item button:disabled,
+.page.tasksPage .item button:disabled,
+#tasksPage #adsgramWatchBtn:disabled,
+#tasksSection #adsgramWatchBtn:disabled,
+.page[data-page="tasks"] #adsgramWatchBtn:disabled,
+.page.tasksPage #adsgramWatchBtn:disabled{
+  background:linear-gradient(180deg,#6e5829,#463919)!important;
+  border-color:rgba(231,173,32,.34)!important;
+  color:#d9c58f!important;
+  box-shadow:none!important;
+  opacity:.88!important;
+}
+
+/* Task icons and labels stay within MIMA gold identity */
+#tasksPage .item .ico,
+#tasksSection .item .ico,
+.page[data-page="tasks"] .item .ico,
+.page.tasksPage .item .ico{
+  border-color:rgba(231,173,32,.42)!important;
+  box-shadow:none!important;
+}
+
+#tasksPage .item main small,
+#tasksSection .item main small,
+.page[data-page="tasks"] .item main small,
+.page.tasksPage .item main small{
+  color:#8d9cac!important;
+}
+
+/* Ads task gets emphasis without looking like a mockup */
+#tasksPage #adsgramTaskItem,
+#tasksSection #adsgramTaskItem,
+.page[data-page="tasks"] #adsgramTaskItem,
+.page.tasksPage #adsgramTaskItem{
+  border-color:rgba(255,200,62,.62)!important;
+  background:linear-gradient(145deg,rgba(19,29,37,.99),rgba(7,19,29,.99))!important;
+}
+
+/* Progress bars, when present, are gold rather than purple/blue */
+#tasksPage progress,
+#tasksSection progress,
+.page[data-page="tasks"] progress,
+.page.tasksPage progress{
+  accent-color:#e7ad20!important;
+}
+</style>
