@@ -1100,7 +1100,7 @@ html[dir="ltr"] input{text-align:left}
       manual = String(localStorage.getItem(LANGUAGE_MANUAL_KEY) || '').toLowerCase();
     }catch(e){}
 
-    if(manual === 'ar' || manual === 'en') return manual;
+    if(['ar','en','uz','ur'].includes(manual)) return manual;
 
     // Prefer device/WebView language. Telegram user language is the fallback;
     // any explicit choice in MIMA settings still takes precedence above.
@@ -1113,13 +1113,181 @@ html[dir="ltr"] input{text-align:left}
         code = String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || '').toLowerCase();
       }catch(e){}
     }
-    return code.startsWith('ar') ? 'ar' : 'en';
+    if(code.startsWith('ar')) return 'ar';
+    if(code.startsWith('uz')) return 'uz';
+    if(code.startsWith('ur')) return 'ur';
+    return 'en';
+  }
+
+
+  // Local, synchronous translations; no external translation requests or extra server load.
+  const MIMA_EXTRA_TRANSLATIONS = {
+    uz: {
+      'Withdraw':'Yechib olish','Welcome to the ecosystem':'MIMA tizimiga xush kelibsiz',
+      'Your current balance':'Joriy balansingiz','Mining rate':'Mayning tezligi',
+      '● Active':'● Faol','Mining inactive':'Mayning faol emas','Tap to start':'Boshlash uchun bosing',
+      'Earned this round':'Ushbu davrda yigʻilgan','Mining level':'Mayning darajasi',
+      'Available taps':'Mavjud bosishlar','Referrals':'Takliflar','Total users':'Jami foydalanuvchilar',
+      'Online now':'Hozir onlayn','Active today':'Bugun faol','Miners':'Maynerlar',
+      'Mining':'Mayning','Tasks':'Vazifalar','Friends':'Doʻstlar','Wallet':'Hamyon',
+      'Settings':'Sozlamalar','Language':'Til','Arabic':'Arabcha','English':'Inglizcha',
+      'Uzbek':'Oʻzbekcha','Urdu':'Urducha','Privacy Policy':'Maxfiylik siyosati',
+      'How we use and protect your data':'Maʼlumotlaringizdan qanday foydalanamiz va ularni himoya qilamiz',
+      'Admin Live Stats':'Admin statistikasi','Search user':'Foydalanuvchini qidirish',
+      'Updates automatically':'Avtomatik yangilanadi',
+      'Manage miners, track speed, and monitor mining status.':'Maynerlar, tezlik va mayning holatini kuzatish.',
+      'Total earned':'Jami yigʻilgan','Mining status':'Mayning holati','Stopped':'Toʻxtagan',
+      'Complete tasks and earn exchangeable MIMA.':'Vazifalarni bajaring va almashtiriladigan MIMA oling.',
+      'Channel task • refreshes every 3 hours':'Kanal vazifasi • har 3 soatda yangilanadi',
+      'Join the MIMA channel':'MIMA kanaliga qoʻshiling','Join the MIMACOIN2 channel':'MIMACOIN2 kanaliga qoʻshiling',
+      'Join the MIMA Withdrawals channel':'MIMA yechib olish kanaliga qoʻshiling',
+      'Join the MIMA Exchange channel':'MIMA birja kanaliga qoʻshiling',
+      'Join the MIMA Channel':'MIMA kanaliga qoʻshiling',
+      'Join a MIMA partner':'MIMA hamkoriga qoʻshiling','Join Our Partners':'Hamkorlarimizga qoʻshiling',
+      'Join':'Qoʻshilish','Claim':'Olish','Claimed':'Olindi','Verify':'Tekshirish',
+      'Watch':'Koʻrish','Watch an ad':'Reklama koʻrish','Watch an ad & earn':'Reklama koʻrib mukofot oling',
+      'Available now':'Hozir mavjud','Open':'Ochish','Buy':'Sotib olish',
+      'Invite friends & earn':'Doʻstlarni taklif qiling va mukofot oling',
+      'Each valid referral =':'Har bir haqiqiy taklif =','and you earn':'va siz olasiz',
+      'Referral link':'Taklif havolasi','Preparing link…':'Havola tayyorlanmoqda…',
+      'Share link 🔗':'Havolani ulashish 🔗','Referral count':'Takliflar soni',
+      'Referral rewards':'Taklif mukofotlari','Mining bonus':'Mayning bonusi',
+      'Available wallet balance':'Hamyondagi mavjud balans','Syncing…':'Sinxronlanmoqda…',
+      'USD value':'AQSH dollaridagi qiymat','Connect your wallet to view GRAM balance':'GRAM balansini koʻrish uchun hamyoningizni ulang',
+      'Connected wallet':'Ulangan hamyon','GRAM wallet balance':'GRAM hamyon balansi',
+      'Not connected':'Ulanmagan','Connected • Read only':'Ulangan • faqat koʻrish',
+      'Reading balance…':'Balans oʻqilmoqda…','Could not read balance':'Balansni oʻqib boʻlmadi',
+      'Internal display rate':'Ichki hisob kursi','Exchange MIMA to GRAM':'MIMA ni GRAM ga almashtirish',
+      'My withdrawals':'Yechib olishlarim','Withdrawals':'Yechib olishlar',
+      'Loading withdrawals…':'Yechib olishlar yuklanmoqda…',
+      'View Transaction':'Tranzaksiyani koʻrish','Copy TX Hash':'TX Hash nusxalash',
+      'Loading requests…':'Soʻrovlar yuklanmoqda…',
+      'Exchangeable MIMA balance':'Almashtiriladigan MIMA balansi',
+      'GRAM balance':'GRAM balansi','MIMA amount to exchange':'Almashtiriladigan MIMA miqdori',
+      'GRAM withdrawal address':'GRAM yechib olish manzili','Memo (if available)':'Memo (mavjud boʻlsa)',
+      'Minimum':'Minimum','Fee':'Komissiya','Net after fee':'Komissiyadan keyingi summa',
+      'You will receive approximately':'Taxminan olasiz','Live':'Jonli',
+      'Fetching live GRAM price…':'GRAM narxi olinmoqda…','Send exchange request':'Almashtirish soʻrovini yuborish',
+      'Store':'Doʻkon','Boost mining speed':'Mayning tezligini oshirish',
+      'Increase mining power':'Mayning quvvatini oshirish','Account protection':'Hisob himoyasi',
+      'Notifications':'Bildirishnomalar','Enabled':'Yoqilgan','Security':'Xavfsizlik',
+      'Account settings':'Hisob sozlamalari','Log out':'Chiqish',
+      'Connect Wallet & Start Mining':'Hamyonni ulang va mayningni boshlang',
+      'Connect wallet and start mining':'Hamyonni ulang va mayningni boshlang',
+      'Join first':'Avval qoʻshiling','Start':'Boshlash','Complete Task':'Vazifani yakunlash',
+      'Open post':'Postni ochish','Interact with the Post':'Post bilan oʻzaro aloqada boʻling',
+      'Congratulations! Task completed':'Tabriklaymiz! Vazifa muvaffaqiyatli bajarildi!',
+      '✅ Completed task: ':'✅ Bajarilgan vazifa: ','Skip':'Oʻtkazib yuborish',
+      '💛 Your reward has been added to your balance and recorded successfully. Thank you for staying active with MIMA. You can review your balance in Wallet.':'💛 Mukofotingiz balansingizga muvaffaqiyatli qoʻshildi va qayd etildi. MIMA ga ishonchingiz uchun rahmat. Balansingizni hamyondan koʻrishingiz mumkin.',
+      'Request could not be completed. Please try again.':'Soʻrov bajarilmadi. Qayta urinib koʻring.',
+      'Could not connect to the server':'Serverga ulanib boʻlmadi',
+      'Task is not available':'Vazifa hozir mavjud emas',
+      'Could not claim the task reward':'Vazifa mukofotini olib boʻlmadi',
+      'Mining • ':'Mayning • ','Start mining • 0.000000 MIMA':'Mayningni boshlash • 0.000000 MIMA',
+      'Claim ':'Olish ','Waiting for claim':'Mukofot olinishini kutmoqda',
+      'Running':'Ishlamoqda','Connected ✓':'Ulangan ✓','Sync failed':'Sinxronlash amalga oshmadi',
+      'Join then verify':'Qoʻshiling va tekshiring','Completed':'Bajarildi',
+      'Refreshes every 3 hours':'Har 3 soatda yangilanadi'
+    },
+    ur: {
+      'Withdraw':'رقم نکالیں','Welcome to the ecosystem':'MIMA نظام میں خوش آمدید',
+      'Your current balance':'آپ کا موجودہ بیلنس','Mining rate':'مائننگ کی رفتار',
+      '● Active':'● فعال','Mining inactive':'مائننگ غیر فعال ہے','Tap to start':'شروع کرنے کے لیے دبائیں',
+      'Earned this round':'اس دور کی کمائی','Mining level':'مائننگ کی سطح',
+      'Available taps':'دستیاب ٹیپس','Referrals':'ریفرلز','Total users':'کل صارفین',
+      'Online now':'ابھی آن لائن','Active today':'آج فعال','Miners':'مائنرز',
+      'Mining':'مائننگ','Tasks':'ٹاسکس','Friends':'دوست','Wallet':'والٹ',
+      'Settings':'ترتیبات','Language':'زبان','Arabic':'عربی','English':'انگریزی',
+      'Uzbek':'ازبک','Urdu':'اردو','Privacy Policy':'رازداری کی پالیسی',
+      'How we use and protect your data':'ہم آپ کا ڈیٹا کیسے استعمال اور محفوظ کرتے ہیں',
+      'Admin Live Stats':'ایڈمن اعداد و شمار','Search user':'صارف تلاش کریں',
+      'Updates automatically':'خودکار اپ ڈیٹ',
+      'Manage miners, track speed, and monitor mining status.':'مائنرز اور مائننگ کی حالت کی نگرانی کریں۔',
+      'Total earned':'کل کمائی','Mining status':'مائننگ کی حالت','Stopped':'بند',
+      'Complete tasks and earn exchangeable MIMA.':'ٹاسکس مکمل کریں اور قابل تبادلہ MIMA حاصل کریں۔',
+      'Channel task • refreshes every 3 hours':'چینل ٹاسک • ہر 3 گھنٹے بعد دستیاب',
+      'Join the MIMA channel':'MIMA چینل میں شامل ہوں','Join the MIMACOIN2 channel':'MIMACOIN2 چینل میں شامل ہوں',
+      'Join the MIMA Withdrawals channel':'MIMA ادائیگی چینل میں شامل ہوں',
+      'Join the MIMA Exchange channel':'MIMA ایکسچینج چینل میں شامل ہوں',
+      'Join the MIMA Channel':'MIMA چینل میں شامل ہوں',
+      'Join a MIMA partner':'MIMA پارٹنر میں شامل ہوں','Join Our Partners':'ہمارے پارٹنرز میں شامل ہوں',
+      'Join':'شامل ہوں','Claim':'حاصل کریں','Claimed':'حاصل ہو گیا','Verify':'تصدیق کریں',
+      'Watch':'دیکھیں','Watch an ad':'اشتہار دیکھیں','Watch an ad & earn':'اشتہار دیکھیں اور انعام پائیں',
+      'Available now':'ابھی دستیاب','Open':'کھولیں','Buy':'خریدیں',
+      'Invite friends & earn':'دوستوں کو دعوت دیں اور انعام پائیں',
+      'Each valid referral =':'ہر درست ریفرل =','and you earn':'اور آپ کو ملے گا',
+      'Referral link':'ریفرل لنک','Preparing link…':'لنک تیار ہو رہا ہے…',
+      'Share link 🔗':'لنک شیئر کریں 🔗','Referral count':'ریفرلز کی تعداد',
+      'Referral rewards':'ریفرل انعامات','Mining bonus':'مائننگ بونس',
+      'Available wallet balance':'والٹ کا دستیاب بیلنس','Syncing…':'ہم آہنگی ہو رہی ہے…',
+      'USD value':'ڈالر میں قدر','Connect your wallet to view GRAM balance':'GRAM بیلنس کے لیے والٹ جوڑیں',
+      'Connected wallet':'منسلک والٹ','GRAM wallet balance':'GRAM والٹ بیلنس',
+      'Not connected':'منسلک نہیں','Connected • Read only':'منسلک • صرف دیکھنے کے لیے',
+      'Reading balance…':'بیلنس پڑھا جا رہا ہے…','Could not read balance':'بیلنس نہیں پڑھا جا سکا',
+      'Internal display rate':'اندرونی شرح','Exchange MIMA to GRAM':'MIMA کو GRAM میں تبدیل کریں',
+      'My withdrawals':'میری ادائیگیاں','Withdrawals':'ادائیگیاں',
+      'Loading withdrawals…':'ادائیگیاں لوڈ ہو رہی ہیں…',
+      'View Transaction':'ٹرانزیکشن دیکھیں','Copy TX Hash':'TX Hash کاپی کریں',
+      'Loading requests…':'درخواستیں لوڈ ہو رہی ہیں…',
+      'Exchangeable MIMA balance':'قابل تبادلہ MIMA بیلنس',
+      'GRAM balance':'GRAM بیلنس','MIMA amount to exchange':'تبدیل کرنے کے لیے MIMA کی مقدار',
+      'GRAM withdrawal address':'GRAM وصول کرنے کا پتہ','Memo (if available)':'میمو (اگر ہو)',
+      'Minimum':'کم از کم','Fee':'فیس','Net after fee':'فیس کے بعد رقم',
+      'You will receive approximately':'آپ کو تقریباً ملے گا','Live':'براہ راست',
+      'Fetching live GRAM price…':'GRAM کی قیمت حاصل ہو رہی ہے…','Send exchange request':'تبادلے کی درخواست بھیجیں',
+      'Store':'اسٹور','Boost mining speed':'مائننگ کی رفتار بڑھائیں',
+      'Increase mining power':'مائننگ کی طاقت بڑھائیں','Account protection':'اکاؤنٹ کا تحفظ',
+      'Notifications':'اطلاعات','Enabled':'فعال','Security':'سیکیورٹی',
+      'Account settings':'اکاؤنٹ کی ترتیبات','Log out':'لاگ آؤٹ',
+      'Connect Wallet & Start Mining':'والٹ جوڑیں اور مائننگ شروع کریں',
+      'Connect wallet and start mining':'والٹ جوڑیں اور مائننگ شروع کریں',
+      'Join first':'پہلے شامل ہوں','Start':'شروع کریں','Complete Task':'ٹاسک مکمل کریں',
+      'Open post':'پوسٹ کھولیں','Interact with the Post':'پوسٹ کے ساتھ تعامل کریں',
+      'Congratulations! Task completed':'مبارک ہو! ٹاسک کامیابی سے مکمل ہو گیا!',
+      '✅ Completed task: ':'✅ مکمل کردہ ٹاسک: ','Skip':'آگے بڑھیں',
+      '💛 Your reward has been added to your balance and recorded successfully. Thank you for staying active with MIMA. You can review your balance in Wallet.':'💛 آپ کا انعام کامیابی سے آپ کے بیلنس میں شامل اور ریکارڈ ہو گیا ہے۔ MIMA پر اعتماد اور سرگرمی کے لیے شکریہ۔ آپ اپنا بیلنس والٹ میں دیکھ سکتے ہیں۔',
+      'Request could not be completed. Please try again.':'درخواست مکمل نہیں ہوئی۔ دوبارہ کوشش کریں۔',
+      'Could not connect to the server':'سرور سے رابطہ نہیں ہو سکا',
+      'Task is not available':'ٹاسک ابھی دستیاب نہیں',
+      'Could not claim the task reward':'ٹاسک کا انعام نہیں مل سکا',
+      'Mining • ':'مائننگ • ','Start mining • 0.000000 MIMA':'مائننگ شروع کریں • 0.000000 MIMA',
+      'Claim ':'حاصل کریں ','Waiting for claim':'انعام کا انتظار','Running':'چل رہا ہے',
+      'Connected ✓':'منسلک ✓','Sync failed':'ہم آہنگی ناکام',
+      'Join then verify':'شامل ہو کر تصدیق کریں','Completed':'مکمل'
+    }
+  };
+
+  function mimaLanguageText(value, lang=currentLang){
+    const english=String(value ?? '');
+    if(lang==='en') return english;
+    const map=MIMA_EXTRA_TRANSLATIONS[lang];
+    if(!map) return english;
+    if(Object.prototype.hasOwnProperty.call(map,english)) return map[english];
+
+    // Reward text is composed from many dynamic phrases. Keep the amount exact
+    // and translate the surrounding context without changing app logic.
+    let match=english.match(/^([+]?\\d+(?:\\.\\d+)? MIMA • )(.+)$/);
+    if(match){
+      const suffix=match[2];
+      const common={
+        'join then verify':['qoʻshiling va tekshiring','شامل ہو کر تصدیق کریں'],
+        'optional ad':['ixtiyoriy reklama','اختیاری اشتہار'],
+        'every 15 minutes • remaining ':['har 15 daqiqada • qoldi ','ہر 15 منٹ بعد • باقی '],
+        'ready to claim':['olishga tayyor','حاصل کرنے کے لیے تیار'],
+        'refreshes every 4 hours':['har 4 soatda yangilanadi','ہر 4 گھنٹے بعد دستیاب'],
+        'refreshes every 3 hours':['har 3 soatda yangilanadi','ہر 3 گھنٹے بعد دستیاب']
+      };
+      for(const [term,translations] of Object.entries(common)){
+        if(suffix.startsWith(term)) return match[1] + translations[lang==='uz'?0:1]+suffix.slice(term.length);
+      }
+    }
+    return english;
   }
 
   let currentLang = detectInitialLanguage();
 
   function tx(ar,en){
-    return currentLang === 'ar' ? ar : en;
+    return currentLang === 'ar' ? ar : mimaLanguageText(en);
   }
 
   function localizeServerMessage(message){
@@ -1302,69 +1470,67 @@ html[dir="ltr"] input{text-align:left}
   ];
 
   function translateStaticDom(){
-    const toEnglish = new Map(STATIC_TEXT_PAIRS);
-    const toArabic = new Map(STATIC_TEXT_PAIRS.map(([ar,en]) => [en,ar]));
+    const sourceMap=new Map();
+    const addVariants=(variants)=>{
+      for(const value of variants){
+        if(value) sourceMap.set(value,variants);
+      }
+    };
+    for(const [ar,en] of STATIC_TEXT_PAIRS){
+      addVariants([ar,en,mimaLanguageText(en,'uz'),mimaLanguageText(en,'ur')]);
+    }
+    for(const [en,uz] of Object.entries(MIMA_EXTRA_TRANSLATIONS.uz)){
+      addVariants([en,uz,MIMA_EXTRA_TRANSLATIONS.ur[en]]);
+    }
 
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT
-    );
-
-    const nodes = [];
+    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    const nodes=[];
     while(walker.nextNode()) nodes.push(walker.currentNode);
 
     for(const node of nodes){
-      const parent = node.parentElement;
-      if(!parent || parent.closest('script,style')) continue;
-
-      const raw = node.nodeValue || '';
-      const trimmed = raw.trim();
+      const parent=node.parentElement;
+      if(!parent||parent.closest('script,style')) continue;
+      const raw=node.nodeValue||'';
+      const trimmed=raw.trim();
       if(!trimmed) continue;
-
-      let next = null;
-      if(currentLang === 'en'){
-        next = toEnglish.get(trimmed);
-      }else{
-        next = toArabic.get(trimmed);
-      }
-
-      if(next != null){
-        const lead = raw.match(/^\s*/)?.[0] || '';
-        const tail = raw.match(/\s*$/)?.[0] || '';
-        node.nodeValue = lead + next + tail;
+      const variants=sourceMap.get(trimmed);
+      if(!variants) continue;
+      const english=variants[1] || variants[0];
+      const next=currentLang==='ar' ? (variants[0]||english)
+        : currentLang==='en' ? english
+        : mimaLanguageText(english);
+      if(next!==trimmed){
+        const lead=raw.match(/^\\s*/)?.[0]||'';
+        const tail=raw.match(/\\s*$/)?.[0]||'';
+        node.nodeValue=lead+next+tail;
       }
     }
 
+    const placeholderMap=new Map();
+    for(const [ar,en] of PLACEHOLDER_PAIRS){
+      const variants=[ar,en,mimaLanguageText(en,'uz'),mimaLanguageText(en,'ur')];
+      variants.forEach(v=>placeholderMap.set(v,variants));
+    }
     document.querySelectorAll('[placeholder]').forEach((el)=>{
-      const value = String(el.getAttribute('placeholder') || '');
-      for(const [ar,en] of PLACEHOLDER_PAIRS){
-        if(currentLang === 'en' && value === ar){
-          el.setAttribute('placeholder',en);
-        }else if(currentLang === 'ar' && value === en){
-          el.setAttribute('placeholder',ar);
-        }
-      }
+      const variants=placeholderMap.get(String(el.getAttribute('placeholder')||''));
+      if(!variants) return;
+      const next=currentLang==='ar'?variants[0]:currentLang==='en'?variants[1]:variants[currentLang==='uz'?2:3];
+      el.setAttribute('placeholder',next);
     });
 
-    const coin = document.getElementById('mainCoin');
-    if(coin){
-      coin.setAttribute(
-        'aria-label',
-        tx('عملة MIMA','MIMA coin')
-      );
-    }
+    const coin=document.getElementById('mainCoin');
+    if(coin) coin.setAttribute('aria-label',tx('عملة MIMA','MIMA coin'));
 
-    const languageValue = document.getElementById('languageValue');
+    const languageValue=document.getElementById('languageValue');
     if(languageValue){
-      languageValue.textContent = currentLang === 'ar'
-        ? 'العربية'
-        : 'English';
+      const names={ar:'العربية',en:'English',uz:'Oʻzbekcha',ur:'اردو'};
+      languageValue.textContent=names[currentLang]||names.en;
     }
   }
 
   function applyLanguage(persist=false){
     document.documentElement.lang = currentLang;
-    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = ['ar','ur'].includes(currentLang) ? 'rtl' : 'ltr';
     document.body.dir = document.documentElement.dir;
 
     if(persist){
@@ -1385,13 +1551,15 @@ html[dir="ltr"] input{text-align:left}
   }
 
   window.toggleLanguage = function toggleLanguage(){
-    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    const langs=['ar','en','uz','ur'];
+    currentLang=langs[(langs.indexOf(currentLang)+1)%langs.length];
     applyLanguage(true);
-    toast(
-      currentLang === 'ar'
-        ? '🌐 تم تغيير اللغة إلى العربية'
-        : '🌐 Language changed to English'
-    );
+    toast({
+      ar:'🌐 تم تغيير اللغة إلى العربية',
+      en:'🌐 Language changed to English',
+      uz:'🌐 Til oʻzbekchaga oʻzgartirildi',
+      ur:'🌐 زبان اردو میں تبدیل ہو گئی'
+    }[currentLang]);
 
     if(serverMode && typeof loadWithdrawHistory === 'function'){
       loadWithdrawHistory().catch(()=>{});
@@ -1454,7 +1622,7 @@ html[dir="ltr"] input{text-align:left}
       congratsCoin.setAttribute('src',MIMA_CONGRATS_ORIGINAL_COIN);
     }
 
-    overlay.dir=currentLang==='ar'?'rtl':'ltr';
+    overlay.dir=['ar','ur'].includes(currentLang)?'rtl':'ltr';
     document.getElementById('mimaTaskCongratsHeading').textContent =
       tx('تهانينا! تمت المهمة بنجاح','Congratulations! Task completed');
     document.getElementById('mimaTaskCongratsTask').textContent =
@@ -6195,8 +6363,9 @@ body.privacyModalOpen{overflow:hidden!important}
     const title = document.getElementById('privacyModalTitle');
     if(!modal || !body || !title) return;
 
-    const isEnglish = document.documentElement.lang === 'en';
-    title.textContent = isEnglish ? '🔐 Privacy Policy' : '🔐 سياسة الخصوصية';
+    const isEnglish = document.documentElement.lang !== 'ar';
+    const language=document.documentElement.lang;
+    title.textContent=language==='ar'?'🔐 سياسة الخصوصية':language==='uz'?'🔐 Maxfiylik siyosati':language==='ur'?'🔐 رازداری کی پالیسی':'🔐 Privacy Policy';
     body.innerHTML = isEnglish ? privacyEN : privacyAR;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden','false');
