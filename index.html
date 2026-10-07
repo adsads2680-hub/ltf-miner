@@ -1266,7 +1266,7 @@ html[dir="ltr"] input{text-align:left}
 
     // Reward text is composed from many dynamic phrases. Keep the amount exact
     // and translate the surrounding context without changing app logic.
-    let match=english.match(/^([+]?\\d+(?:\\.\\d+)? MIMA • )(.+)$/);
+    let match=english.match(/^([+]?\d+(?:\.\d+)? MIMA • )(.+)$/);
     if(match){
       const suffix=match[2];
       const common={
@@ -1511,8 +1511,8 @@ html[dir="ltr"] input{text-align:left}
         : currentLang==='en' ? english
         : mimaLanguageText(english);
       if(next!==trimmed){
-        const lead=raw.match(/^\\s*/)?.[0]||'';
-        const tail=raw.match(/\\s*$/)?.[0]||'';
+        const lead=raw.match(/^\s*/)?.[0]||'';
+        const tail=raw.match(/\s*$/)?.[0]||'';
         node.nodeValue=lead+next+tail;
       }
     }
