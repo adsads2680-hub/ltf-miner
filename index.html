@@ -622,7 +622,7 @@ html[dir="ltr"] input{text-align:left}
 
   <div class="card list">
     <div class="row" style="margin-bottom:8px">
-      <span class="badge">10 MIMA</span>
+      <span class="badge">3 MIMA</span>
       <span class="sub">مهمة القناة • تتجدد كل 3 ساعات</span>
     </div>
 
@@ -630,7 +630,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">🎬</span>
       <main>
         <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
-        <small id="adsgramRewardTaskInfo">+4 MIMA • إعلان اختياري</small>
+        <small id="adsgramRewardTaskInfo">+12 MIMA • إعلان اختياري</small>
       </main>
       <div class="taskActionGroup">
         <button id="adsgramRewardTaskBtn" class="taskJoinBtn" type="button" onclick="showAdsgramRewardAd()">شاهد</button>
@@ -641,7 +641,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">✈️</span>
       <main>
         <b>انضم إلى قناة MIMA</b>
-        <small id="joinChannelTaskInfo">+10 MIMA • انضم ثم تحقق</small>
+        <small id="joinChannelTaskInfo">+3 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
         <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">انضم</button>
@@ -653,7 +653,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">✈️</span>
       <main>
         <b>انضم إلى قناة MIMACOIN2</b>
-        <small id="joinChannel2TaskInfo">+10 MIMA • انضم ثم تحقق</small>
+        <small id="joinChannel2TaskInfo">+3 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
         <button id="joinChannel2OpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel2()">انضم</button>
@@ -665,7 +665,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">📈</span>
       <main>
         <b id="mimaExchangeChannelTaskTitle">انضم إلى قناة MIMA</b>
-        <small id="mimaExchangeChannelTaskInfo">+1 MIMA • تتجدد كل 4 ساعات</small>
+        <small id="mimaExchangeChannelTaskInfo">+3 MIMA • تتجدد كل 4 ساعات</small>
       </main>
       <div class="taskActionGroup">
         <button id="mimaExchangeChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaExchangeChannel()">انضم</button>
@@ -689,7 +689,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">💸</span>
       <main>
         <b id="mimaWithdrawalsTaskTitle">انضم إلى قناة سحوبات MIMA</b>
-        <small id="mimaWithdrawalsTaskInfo">+5 MIMA • انضم ثم تحقق</small>
+        <small id="mimaWithdrawalsTaskInfo">+3 MIMA • انضم ثم تحقق</small>
       </main>
       <div class="taskActionGroup">
         <button id="mimaWithdrawalsJoinBtn" class="taskJoinBtn" type="button">انضم</button>
@@ -980,7 +980,7 @@ html[dir="ltr"] input{text-align:left}
   const POINTS_PER_LEVEL = 200; // MIMA balance per level
   const MAX_MINING_LEVEL = 200;
 
-  const TASK_REWARD = 10;
+  const TASK_REWARD = 3;
   const TASK_COOLDOWN_MS = 3 * 60 * 60 * 1000;
 
   const STORAGE_KEY = 'mima_preview_state_v29';
@@ -1186,7 +1186,7 @@ html[dir="ltr"] input{text-align:left}
     ['أكمل المهام واربح MIMA قابلة للتبديل.','Complete tasks and earn exchangeable MIMA.'],
     ['مهمة القناة • تتجدد كل 3 ساعات','Channel task • refreshes every 3 hours'],
     ['انضم إلى قناة MIMA','Join the MIMA channel'],
-    ['+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify'],
+    ['+3 MIMA • انضم ثم تحقق','+3 MIMA • join then verify'],
     ['انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel'],
     ['انضم إلى شريك MIMA','Join a MIMA partner'],
     ['انضم إلى شركائنا','Join Our Partners'],
@@ -2391,7 +2391,7 @@ html[dir="ltr"] input{text-align:left}
         btn.disabled = true;
         btn.classList.remove('mimaJoinFirstLocked');
         btn.textContent = formatCountdown(remaining);
-        info.textContent = tx('+10 MIMA • متاحة بعد ','+10 MIMA • available in ') + formatCountdown(remaining);
+        info.textContent = tx('+3 MIMA • متاحة بعد ','+3 MIMA • available in ') + formatCountdown(remaining);
         return;
       }
 
@@ -2399,14 +2399,14 @@ html[dir="ltr"] input{text-align:left}
         btn.disabled = true;
         btn.classList.remove('mimaJoinFirstLocked');
         btn.textContent = tx('انضم أولاً','Join first');
-        info.textContent = tx('+10 MIMA • انضم أولاً ثم تحقق','+10 MIMA • join first, then verify');
+        info.textContent = tx('+3 MIMA • انضم أولاً ثم تحقق','+3 MIMA • join first, then verify');
         return;
       }
 
       btn.disabled = false;
       btn.classList.remove('mimaJoinFirstLocked');
       btn.textContent = tx('تحقق','Verify');
-      info.textContent = tx('+10 MIMA • انضم ثم تحقق','+10 MIMA • join then verify');
+      info.textContent = tx('+3 MIMA • انضم ثم تحقق','+3 MIMA • join then verify');
     };
 
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
@@ -2456,7 +2456,7 @@ html[dir="ltr"] input{text-align:left}
     if(!serverMode){
       btn.disabled = true;
       btn.textContent = tx('افتح داخل Telegram','Open in Telegram');
-      info.textContent = tx('+1 MIMA • إعلان اختياري','+1 MIMA • optional ad');
+      info.textContent = tx('+12 MIMA • إعلان اختياري','+12 MIMA • optional ad');
       return;
     }
 
@@ -2465,8 +2465,8 @@ html[dir="ltr"] input{text-align:left}
       btn.textContent = tx('مكتمل','Completed');
       const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
       info.textContent = left > 0
-        ? tx('+4 MIMA • تتجدد بعد ','+4 MIMA • refreshes in ') + formatCountdown(left)
-        : tx('+4 MIMA • تتجدد قريباً','+4 MIMA • refreshes soon');
+        ? tx('+12 MIMA • تتجدد بعد ','+12 MIMA • refreshes in ') + formatCountdown(left)
+        : tx('+12 MIMA • تتجدد قريباً','+12 MIMA • refreshes soon');
       return;
     }
 
@@ -2478,7 +2478,7 @@ html[dir="ltr"] input{text-align:left}
       btn.disabled = true;
       btn.textContent = formatCountdown(cooldownLeft);
       info.textContent =
-        tx('+4 MIMA • الإعلان التالي بعد ','+4 MIMA • next ad in ') +
+        tx('+12 MIMA • الإعلان التالي بعد ','+12 MIMA • next ad in ') +
         formatCountdown(cooldownLeft);
       return;
     }
@@ -2490,7 +2490,7 @@ html[dir="ltr"] input{text-align:left}
     btn.disabled = adsgramRewardBusy;
     btn.textContent = adsgramRewardBusy ? '⏳' : tx('شاهد','Watch');
     info.textContent =
-      tx('+4 MIMA • كل 15 دقيقة • المتبقي ','+4 MIMA • every 15 minutes • remaining ') +
+      tx('+12 MIMA • كل 15 دقيقة • المتبقي ','+12 MIMA • every 15 minutes • remaining ') +
       adsgramRewardRemaining + '/10';
   }
 
@@ -3250,20 +3250,20 @@ html[dir="ltr"] input{text-align:left}
     if(remaining > 0){
       btn.disabled = true;
       btn.textContent = formatCountdown(remaining);
-      info.textContent = tx('+1 MIMA • متاحة بعد ','+1 MIMA • available in ') + formatCountdown(remaining);
+      info.textContent = tx('+3 MIMA • متاحة بعد ','+3 MIMA • available in ') + formatCountdown(remaining);
       return;
     }
 
     if(!opened){
       btn.disabled = true;
       btn.textContent = tx('انضم أولاً','Join first');
-      info.textContent = tx('+1 MIMA • انضم ثم تحقق','+1 MIMA • join then verify');
+      info.textContent = tx('+3 MIMA • انضم ثم تحقق','+3 MIMA • join then verify');
       return;
     }
 
     btn.disabled = false;
     btn.textContent = tx('تحقق','Verify');
-    info.textContent = tx('+1 MIMA • تتجدد كل 4 ساعات','+1 MIMA • refreshes every 4 hours');
+    info.textContent = tx('+3 MIMA • تتجدد كل 4 ساعات','+3 MIMA • refreshes every 4 hours');
   }
 
   async function claimMimaExchangeChannelTask(btn){
@@ -3280,12 +3280,12 @@ html[dir="ltr"] input{text-align:left}
     btn.textContent = '⏳';
 
     if(!serverMode){
-      bal += 1;
-      exchangeableBalance += 1;
+      bal += 3;
+      exchangeableBalance += 3;
       mimaExchangeChannelNextAvailableAt = Date.now() + 4 * 60 * 60 * 1000;
       savePreviewState();
       render();
-      toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
+      toast(tx('🎁 +3 MIMA أضيفت إلى رصيدك','🎁 +3 MIMA added to your balance'));
       return;
     }
 
@@ -3317,7 +3317,7 @@ html[dir="ltr"] input{text-align:left}
         : nowMs() + 4 * 60 * 60 * 1000;
 
       try{ localStorage.removeItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY); }catch(e){}
-      toast(tx('🎁 +1 MIMA أضيفت إلى رصيدك','🎁 +1 MIMA added to your balance'));
+      toast(tx('🎁 +3 MIMA أضيفت إلى رصيدك','🎁 +3 MIMA added to your balance'));
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
@@ -6456,7 +6456,7 @@ body.privacyModalOpen{overflow:hidden!important}
       verifyBtn.classList.remove('mimaJoinFirstLocked');
       verifyBtn.textContent = formatCountdown(rem);
       info.textContent =
-        tx('+5 MIMA • متاحة بعد ','+5 MIMA • available in ') +
+        tx('+3 MIMA • متاحة بعد ','+3 MIMA • available in ') +
         formatCountdown(rem);
       return;
     }
@@ -6466,8 +6466,8 @@ body.privacyModalOpen{overflow:hidden!important}
       verifyBtn.classList.remove('mimaJoinFirstLocked');
       verifyBtn.textContent = tx('انضم أولاً','Join first');
       info.textContent = tx(
-        '+5 MIMA • انضم أولاً ثم تحقق • تتجدد كل 3 ساعات',
-        '+5 MIMA • join first, then verify • refreshes every 3 hours'
+        '+3 MIMA • انضم أولاً ثم تحقق • تتجدد كل 3 ساعات',
+        '+3 MIMA • join first, then verify • refreshes every 3 hours'
       );
       return;
     }
@@ -6476,8 +6476,8 @@ body.privacyModalOpen{overflow:hidden!important}
     verifyBtn.classList.remove('mimaJoinFirstLocked');
     verifyBtn.textContent = busy ? '⏳' : tx('تحقق','Verify');
     info.textContent = tx(
-      '+5 MIMA • انضم ثم تحقق • تتجدد كل 3 ساعات',
-      '+5 MIMA • join then verify • refreshes every 3 hours'
+      '+3 MIMA • انضم ثم تحقق • تتجدد كل 3 ساعات',
+      '+3 MIMA • join then verify • refreshes every 3 hours'
     );
   }
 
@@ -6512,8 +6512,8 @@ body.privacyModalOpen{overflow:hidden!important}
       nextAt = Number.isFinite(parsed) ? parsed : (nowMs() + 10800000);
 
       toast(tx(
-        '🎁 +2 MIMA أضيفت إلى رصيدك',
-        '🎁 +2 MIMA added to your balance'
+        '🎁 +3 MIMA أضيفت إلى رصيدك',
+        '🎁 +3 MIMA added to your balance'
       ));
 
       try{ await syncServerStatus(false); }catch(e){}
