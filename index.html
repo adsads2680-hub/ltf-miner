@@ -415,6 +415,20 @@ html[dir="ltr"] input{text-align:left}
 
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
+
+<style id="mima-task-congrats-style">
+#mimaTaskCongrats{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(1,6,12,.84);backdrop-filter:blur(9px);}
+#mimaTaskCongrats.isOpen{display:flex;}
+#mimaTaskCongrats .mimaTaskCongratsCard{width:min(100%,390px);padding:29px 23px 24px;text-align:center;border:1px solid #e6b74a;border-radius:24px;background:radial-gradient(ellipse at top,#173349 0%,#091724 43%,#050b14 100%);box-shadow:0 18px 60px #000a,0 0 35px #dc9e2d26;color:#f7fbff;font-family:Tahoma,Arial,sans-serif;direction:inherit;}
+#mimaTaskCongrats .mimaTaskCongratsIcon{font-size:46px;line-height:1.2;}
+#mimaTaskCongrats .mimaTaskCongratsHeading{display:block;font-size:22px;color:#ffe299;margin:12px 0 9px;font-weight:900;}
+#mimaTaskCongrats .mimaTaskCongratsTask{font-size:15px;line-height:1.8;color:#e4eff9;margin:0;}
+#mimaTaskCongrats .mimaTaskCongratsAmount{display:inline-block;font-size:28px;font-weight:900;letter-spacing:.4px;color:#ffda72;margin:16px auto 14px;padding:11px 24px;background:rgba(255,190,47,.09);border:1px solid rgba(241,189,74,.4);border-radius:16px;direction:ltr;}
+#mimaTaskCongrats .mimaTaskCongratsBody{font-size:14px;line-height:1.9;color:#d2e6ef;margin:0 auto;max-width:315px;}
+#mimaTaskCongrats .mimaTaskCongratsSign{font-size:13px;font-weight:bold;color:#ffc856;margin:14px 0 20px;}
+#mimaTaskCongrats .mimaTaskCongratsSkip{width:100%;padding:13px;border-radius:14px;border:1.5px solid #deb14f;background:linear-gradient(180deg,#513500,#2c1d04);color:#fff0c6;font-size:16px;font-weight:900;cursor:pointer;}
+#mimaTaskCongrats .mimaTaskCongratsSkip:focus-visible{outline:3px solid #91d8ff;outline-offset:3px;}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -1031,6 +1045,7 @@ html[dir="ltr"] input{text-align:left}
   let adsgramController = null;
   let adsgramRewardBusy = false;
   let adsgramRewardWatched = 0;
+  let adsgramRewardAmount = 12;
   let adsgramRewardRemaining = 10;
   let adsgramRewardResetAt = 0;
   let adsgramRewardNextAvailableAt = 0;
@@ -1094,7 +1109,9 @@ html[dir="ltr"] input{text-align:left}
       code = '';
     }
 
-    if(!code) return 'en';
+    if(!code){
+      try{code=String(navigator.language || navigator.languages?.[0] || '').toLowerCase();}catch(e){}
+    }
     return code.startsWith('ar') ? 'ar' : 'en';
   }
 
@@ -1395,6 +1412,55 @@ html[dir="ltr"] input{text-align:left}
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'),1900);
   }
+
+
+  // Reward confirmation is purely presentational. Never adjust balances here.
+  // Called only after a task-claim response succeeds or AdsGram is verified.
+  function showMimaTaskSuccess(taskAr,taskEn,reward){
+    const amount=Number(reward);
+    if(!Number.isFinite(amount)||amount<=0) return;
+
+    let overlay=document.getElementById('mimaTaskCongrats');
+    if(!overlay){
+      overlay=document.createElement('div');
+      overlay.id='mimaTaskCongrats';
+      overlay.setAttribute('aria-hidden','true');
+      overlay.innerHTML =
+        '<div class="mimaTaskCongratsCard" role="dialog" aria-modal="true" aria-labelledby="mimaTaskCongratsHeading">' +
+          '<div class="mimaTaskCongratsIcon" aria-hidden="true">🎉🪙</div>' +
+          '<strong id="mimaTaskCongratsHeading" class="mimaTaskCongratsHeading"></strong>' +
+          '<p id="mimaTaskCongratsTask" class="mimaTaskCongratsTask"></p>' +
+          '<div id="mimaTaskCongratsAmount" class="mimaTaskCongratsAmount"></div>' +
+          '<p id="mimaTaskCongratsBody" class="mimaTaskCongratsBody"></p>' +
+          '<p class="mimaTaskCongratsSign">MIMA Team ❤️</p>' +
+          '<button id="mimaTaskCongratsSkip" class="mimaTaskCongratsSkip" type="button"></button>' +
+        '</div>';
+      document.body.appendChild(overlay);
+      const dismiss=()=>{
+        overlay.classList.remove('isOpen');
+        overlay.setAttribute('aria-hidden','true');
+      };
+      document.getElementById('mimaTaskCongratsSkip').addEventListener('click',dismiss);
+      overlay.addEventListener('click',(event)=>{if(event.target===overlay)dismiss();});
+      overlay.addEventListener('keydown',(event)=>{if(event.key==='Escape')dismiss();});
+    }
+
+    overlay.dir=currentLang==='ar'?'rtl':'ltr';
+    document.getElementById('mimaTaskCongratsHeading').textContent =
+      tx('تهانينا! تمت المهمة بنجاح','Congratulations! Task completed');
+    document.getElementById('mimaTaskCongratsTask').textContent =
+      tx('✅ أكملت مهمة: ','✅ Completed task: ') + tx(String(taskAr),String(taskEn));
+    document.getElementById('mimaTaskCongratsAmount').textContent =
+      '+' + amount.toLocaleString('en-US',{maximumFractionDigits:8}) + ' MIMA';
+    document.getElementById('mimaTaskCongratsBody').textContent =
+      tx('💛 تمت إضافة مكافأتك إلى رصيدك وتسجيلها بنجاح. شكرًا لنشاطك وثقتك بـ MIMA، يمكنك مراجعة رصيدك من المحفظة.',
+         '💛 Your reward has been added to your balance and recorded successfully. Thank you for staying active with MIMA. You can review your balance in Wallet.');
+    document.getElementById('mimaTaskCongratsSkip').textContent=tx('تخطي','Skip');
+    overlay.setAttribute('aria-hidden','false');
+    overlay.classList.add('isOpen');
+    document.getElementById('mimaTaskCongratsSkip').focus();
+  }
+  window.showMimaTaskSuccess=showMimaTaskSuccess;
 
   function go(id,el){
     screens.forEach(s=>s.classList.toggle('active',s.id===id));
@@ -2507,6 +2573,7 @@ html[dir="ltr"] input{text-align:left}
       }
 
       adsgramRewardWatched = Math.max(0,Number(data.watched || 0));
+      if(Number.isFinite(Number(data.reward_mima)) && Number(data.reward_mima)>0){adsgramRewardAmount=Number(data.reward_mima);}
       adsgramRewardRemaining = Math.max(0,Number(data.remaining ?? 0));
 
       const serverTs = Date.parse(data.server_time || '');
@@ -2615,7 +2682,7 @@ html[dir="ltr"] input{text-align:left}
 
       if(confirmed){
         startAdsgramRewardCountdown();
-        toast(tx('🎁 +4 MIMA أضيفت إلى رصيدك','🎁 +4 MIMA added to your balance'));
+        showMimaTaskSuccess('شاهد إعلان','Watch an ad',adsgramRewardAmount);
       }else{
         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
         setTimeout(async()=>{
@@ -3160,7 +3227,7 @@ html[dir="ltr"] input{text-align:left}
       try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
       render();
       renderArtAirdropPartnerTask();
-      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      showMimaTaskSuccess('انضم إلى شركائنا','Join our partners',data.reward);
     }catch(err){
       btn.disabled = false;
       btn.textContent = tx('استلم','Claim');
@@ -3317,7 +3384,7 @@ html[dir="ltr"] input{text-align:left}
         : nowMs() + 4 * 60 * 60 * 1000;
 
       try{ localStorage.removeItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY); }catch(e){}
-      toast(tx('🎁 +3 MIMA أضيفت إلى رصيدك','🎁 +3 MIMA added to your balance'));
+      showMimaTaskSuccess('انضم إلى قناة بورصة MIMA','Join MIMA Exchange channel',data.reward);
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
@@ -3424,7 +3491,7 @@ html[dir="ltr"] input{text-align:left}
         : nowMs() + 12 * 60 * 60 * 1000;
 
       try{ localStorage.removeItem(INTERACT_POST_OPENED_KEY); }catch(e){}
-      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      showMimaTaskSuccess('تفاعل مع المنشور','Interact with the post',data.reward);
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
@@ -3538,7 +3605,7 @@ html[dir="ltr"] input{text-align:left}
         : nowMs() + 4 * 60 * 60 * 1000;
 
       try{ localStorage.removeItem(VICTORS_PARTNER_OPENED_KEY); }catch(e){}
-      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      showMimaTaskSuccess('اربط المحفظة وابدأ التعدين','Connect wallet and start mining',data.reward);
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
@@ -3600,7 +3667,7 @@ html[dir="ltr"] input{text-align:left}
       const nextTs = Date.parse(data.next_available_at || '');
       setNextAt(Number.isFinite(nextTs) ? nextTs : nowMs() + TASK_COOLDOWN_MS);
 
-      toast(tx('🎁 +10 MIMA أضيفت للرصيد القابل للتبادل','🎁 +10 MIMA added to your exchangeable balance'));
+      showMimaTaskSuccess(taskCode === 'join_channel_2' ? 'انضم إلى قناة MIMACOIN2' : 'انضم إلى قناة MIMA', taskCode === 'join_channel_2' ? 'Join MIMACOIN2 channel' : 'Join MIMA channel', data.reward);
       render();
     }catch(err){
       toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
@@ -6511,10 +6578,9 @@ body.privacyModalOpen{overflow:hidden!important}
       const parsed = Date.parse(data?.next_available_at || '');
       nextAt = Number.isFinite(parsed) ? parsed : (nowMs() + 10800000);
 
-      toast(tx(
-        '🎁 +3 MIMA أضيفت إلى رصيدك',
-        '🎁 +3 MIMA added to your balance'
-      ));
+      if(typeof window.showMimaTaskSuccess === 'function'){
+        window.showMimaTaskSuccess('انضم إلى قناة سحوبات MIMA','Join MIMA Withdrawals channel',data.reward);
+      }
 
       try{ await syncServerStatus(false); }catch(e){}
     }catch(e){
