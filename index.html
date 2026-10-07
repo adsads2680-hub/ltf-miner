@@ -420,7 +420,9 @@ html[dir="ltr"] input{text-align:left}
 #mimaTaskCongrats{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(1,6,12,.84);backdrop-filter:blur(9px);}
 #mimaTaskCongrats.isOpen{display:flex;}
 #mimaTaskCongrats .mimaTaskCongratsCard{width:min(100%,390px);padding:29px 23px 24px;text-align:center;border:1px solid #e6b74a;border-radius:24px;background:radial-gradient(ellipse at top,#173349 0%,#091724 43%,#050b14 100%);box-shadow:0 18px 60px #000a,0 0 35px #dc9e2d26;color:#f7fbff;font-family:Tahoma,Arial,sans-serif;direction:inherit;}
-#mimaTaskCongrats .mimaTaskCongratsIcon{font-size:46px;line-height:1.2;}
+#mimaTaskCongrats .mimaTaskCongratsIcon{display:flex;align-items:center;justify-content:center;gap:11px;min-height:88px;line-height:1.2;}
+#mimaTaskCongrats .mimaTaskCongratsCoin{width:86px;height:86px;object-fit:cover;border-radius:50%;display:block;filter:drop-shadow(0 0 14px rgba(255,196,57,.42));}
+#mimaTaskCongrats .mimaTaskCongratsConfetti{font-size:51px;line-height:1;}
 #mimaTaskCongrats .mimaTaskCongratsHeading{display:block;font-size:22px;color:#ffe299;margin:12px 0 9px;font-weight:900;}
 #mimaTaskCongrats .mimaTaskCongratsTask{font-size:15px;line-height:1.8;color:#e4eff9;margin:0;}
 #mimaTaskCongrats .mimaTaskCongratsAmount{display:inline-block;font-size:28px;font-weight:900;letter-spacing:.4px;color:#ffda72;margin:16px auto 14px;padding:11px 24px;background:rgba(255,190,47,.09);border:1px solid rgba(241,189,74,.4);border-radius:16px;direction:ltr;}
@@ -1426,7 +1428,7 @@ html[dir="ltr"] input{text-align:left}
       overlay.setAttribute('aria-hidden','true');
       overlay.innerHTML =
         '<div class="mimaTaskCongratsCard" role="dialog" aria-modal="true" aria-labelledby="mimaTaskCongratsHeading">' +
-          '<div class="mimaTaskCongratsIcon" aria-hidden="true">🎉🪙</div>' +
+          '<div class="mimaTaskCongratsIcon" aria-hidden="true"><img id="mimaTaskCongratsCoin" class="mimaTaskCongratsCoin" alt=""><span class="mimaTaskCongratsConfetti">🎉</span></div>' +
           '<strong id="mimaTaskCongratsHeading" class="mimaTaskCongratsHeading"></strong>' +
           '<p id="mimaTaskCongratsTask" class="mimaTaskCongratsTask"></p>' +
           '<div id="mimaTaskCongratsAmount" class="mimaTaskCongratsAmount"></div>' +
@@ -1442,6 +1444,15 @@ html[dir="ltr"] input{text-align:left}
       document.getElementById('mimaTaskCongratsSkip').addEventListener('click',dismiss);
       overlay.addEventListener('click',(event)=>{if(event.target===overlay)dismiss();});
       overlay.addEventListener('keydown',(event)=>{if(event.key==='Escape')dismiss();});
+    }
+
+    // Reuse the exact approved MIMA coin already rendered in the mining view.
+    // No new asset or remote dependency is required.
+    const officialCoin=document.getElementById('mimaCoinImage');
+    const congratsCoin=document.getElementById('mimaTaskCongratsCoin');
+    if(congratsCoin && officialCoin){
+      const coinSrc=officialCoin.currentSrc || officialCoin.getAttribute('src');
+      if(coinSrc && congratsCoin.getAttribute('src')!==coinSrc) congratsCoin.setAttribute('src',coinSrc);
     }
 
     overlay.dir=currentLang==='ar'?'rtl':'ltr';
