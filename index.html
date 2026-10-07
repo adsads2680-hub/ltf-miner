@@ -665,18 +665,6 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item" id="joinChannel2TaskItem">
-      <span class="ico">✈️</span>
-      <main>
-        <b>انضم إلى قناة MIMACOIN2</b>
-        <small id="joinChannel2TaskInfo">+3 MIMA • انضم ثم تحقق</small>
-      </main>
-      <div class="taskActionGroup">
-        <button id="joinChannel2OpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel2()">انضم</button>
-        <button id="joinChannel2TaskBtn" type="button" onclick="claimTask('join_channel_2',this)">تحقق</button>
-      </div>
-    </div>
-
     <div class="item" id="mimaExchangeChannelTaskItem">
       <span class="ico">📈</span>
       <main>
@@ -1374,7 +1362,6 @@ html[dir="ltr"] input{text-align:left}
     ['مهمة القناة • تتجدد كل 3 ساعات','Channel task • refreshes every 3 hours'],
     ['انضم إلى قناة MIMA','Join the MIMA channel'],
     ['+3 MIMA • انضم ثم تحقق','+3 MIMA • join then verify'],
-    ['انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel'],
     ['انضم إلى شريك MIMA','Join a MIMA partner'],
     ['انضم إلى شريكنا','Join Our Partner'],
     ['انضم إلى شركائنا','Join Our Partners'],
@@ -2666,7 +2653,6 @@ html[dir="ltr"] input{text-align:left}
     };
 
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
-    renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v1');
   }
 
   function startAdsgramRewardCountdown(){
@@ -3464,26 +3450,6 @@ html[dir="ltr"] input{text-align:left}
     try{ localStorage.setItem('mima_join_channel_opened_v1','1'); }catch(e){}
     renderTask();
     const url = 'https://t.me/MIMA_COIN';
-
-    try{
-      if(
-        window.Telegram &&
-        Telegram.WebApp &&
-        typeof Telegram.WebApp.openTelegramLink === 'function'
-      ){
-        Telegram.WebApp.openTelegramLink(url);
-      }else{
-        window.open(url,'_blank','noopener,noreferrer');
-      }
-    }catch(e){
-      window.location.href = url;
-    }
-  }
-
-  function openMimaChannel2(){
-    try{ localStorage.setItem('mima_join_channel_2_opened_v1','1'); }catch(e){}
-    renderTask();
-    const url = 'https://t.me/MIMACOIN2';
 
     try{
       if(
