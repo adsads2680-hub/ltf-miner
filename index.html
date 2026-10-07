@@ -1311,7 +1311,7 @@ html[dir="ltr"] input{text-align:left}
       'الرصيد القابل للتبادل غير كافٍ':'Insufficient exchangeable balance',
       'الرصيد غير كافٍ':'Insufficient balance',
       'الكمية أصغر من الحد القابل للحساب':'Amount is too small to calculate',
-      'لديك طلب سحب قيد المعالجة حالياً':'You already have a withdrawal request being processed',
+      'لديك طلب سحب قيد المعالجة حالياً':'You already have a withdrawal request under review. You cannot send a new request until the first request is approved.',
       'تم إنشاء طلب التبادل':'Exchange request created',
       'لازم تنضم إلى قناة MIMA أولاً، وبعدها ارجع واضغط تحقق واستلم':'Join the MIMA channel first, then return and tap Verify to claim',
       'وصلت إلى حد 10 إعلانات لهذه الدورة':'You reached the 10-ad limit for this cycle',
@@ -4582,6 +4582,26 @@ html[dir="ltr"] input{text-align:left}
     btn.textContent = tx('⏳ جاري إرسال الطلب...','⏳ Sending request…');
 
     try{
+      // Prevent a second withdrawal request while the first one is still pending.
+      // The server remains authoritative; this pre-check gives the user a clear message immediately.
+      try{
+        const existingWithdrawals = await exchangeHistoryApiCall();
+        const hasPendingWithdrawal = existingWithdrawals.some(row =>
+          String(row?.status || '').toLowerCase() === 'pending'
+        );
+
+        if(hasPendingWithdrawal){
+          toast(tx(
+            '⏳ لديك طلب سحب قيد المراجعة حالياً. لا يمكنك إرسال طلب سحب جديد حتى تتم الموافقة على الطلب الأول.',
+            '⏳ You already have a withdrawal request under review. You cannot send a new request until the first request is approved.'
+          ));
+          return;
+        }
+      }catch(e){
+        // If history cannot be loaded, continue to the server request.
+        // The backend already rejects duplicate pending withdrawals.
+      }
+
       const data = await exchangeRequestApiCall(amount,walletAddress,memo);
 
       bal = Math.max(0,Number(data.balance ?? bal));
