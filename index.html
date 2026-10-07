@@ -1100,17 +1100,16 @@ html[dir="ltr"] input{text-align:left}
 
     if(manual === 'ar' || manual === 'en') return manual;
 
+    // Prefer device/WebView language. Telegram user language is the fallback;
+    // any explicit choice in MIMA settings still takes precedence above.
     let code = '';
     try{
-      code = String(
-        window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || ''
-      ).toLowerCase();
-    }catch(e){
-      code = '';
-    }
-
+      code = String(navigator.languages?.[0] || navigator.language || '').toLowerCase();
+    }catch(e){}
     if(!code){
-      try{code=String(navigator.language || navigator.languages?.[0] || '').toLowerCase();}catch(e){}
+      try{
+        code = String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || '').toLowerCase();
+      }catch(e){}
     }
     return code.startsWith('ar') ? 'ar' : 'en';
   }
