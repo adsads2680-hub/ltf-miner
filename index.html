@@ -715,6 +715,28 @@ html[dir="ltr"] input{text-align:left}
     </button>
   </section>
 
+  <section class="mimaAdsgramTaskCard" id="mimaAdsgramTaskCard">
+    <div class="mimaAdsgramTaskHead">
+      <div>
+        <b id="mimaAdsgramTaskHeading">مهمة إعلانية</b>
+        <small id="mimaAdsgramTaskSub">أكمل مهمة من AdsGram واحصل على 3 MIMA</small>
+      </div>
+      <span class="mimaAdsgramTaskBadge">ADS</span>
+    </div>
+
+    <adsgram-task
+      id="mimaAdsgramTaskUnit"
+      data-block-id="task-52573"
+      data-debug="false"
+      data-debug-console="false"
+      class="mimaAdsgramNativeTask">
+      <span slot="reward" class="mimaAdsgramTaskReward">+3 MIMA</span>
+      <div slot="button" class="mimaAdsgramTaskButton">ابدأ</div>
+      <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">استلم</div>
+      <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">تم</div>
+    </adsgram-task>
+  </section>
+
   <div class="mimaTaskList">
     <div class="item mimaTaskRow">
       <span class="ico">✈️</span>
@@ -8948,5 +8970,165 @@ input[type="submit"]:focus-visible{
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible') refresh(false);
   });
+})();
+</script>
+
+
+<style id="mima-adsgram-task-unit-v1">
+#tasks .mimaAdsgramTaskCard{
+  position:relative;
+  overflow:hidden;
+  margin:0 0 13px;
+  padding:13px;
+  border:1px solid rgba(217,154,36,.42);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 85% 0%,rgba(255,202,76,.08),transparent 30%),
+    linear-gradient(145deg,#090b0e 0%,#111006 58%,#080706 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,232,163,.025),0 10px 24px rgba(0,0,0,.22);
+}
+#tasks .mimaAdsgramTaskHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+#tasks .mimaAdsgramTaskHead b{
+  display:block;
+  color:#f8e6ab;
+  font-size:14px;
+  font-weight:1000;
+}
+#tasks .mimaAdsgramTaskHead small{
+  display:block;
+  margin-top:3px;
+  color:#9b875c;
+  font-size:9px;
+  line-height:1.45;
+}
+#tasks .mimaAdsgramTaskBadge{
+  flex:0 0 auto;
+  padding:5px 8px;
+  border:1px solid rgba(217,154,36,.38);
+  border-radius:9px;
+  color:#f5c958;
+  background:#151006;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.8px;
+}
+#tasks .mimaAdsgramNativeTask{
+  --adsgram-task-font-size:14px;
+  --adsgram-task-icon-size:44px;
+  --adsgram-task-icon-title-gap:10px;
+  --adsgram-task-button-width:64px;
+  --adsgram-task-icon-border-radius:12px;
+  display:block!important;
+  width:100%!important;
+  min-height:66px;
+  padding:9px!important;
+  border:1px solid rgba(217,154,36,.24)!important;
+  border-radius:14px!important;
+  background:linear-gradient(145deg,rgba(13,22,29,.98),rgba(8,10,11,.98))!important;
+  color:#f6e8bd!important;
+  box-sizing:border-box!important;
+}
+#tasks .mimaAdsgramTaskReward{
+  display:inline-block;
+  margin-top:4px;
+  color:#f4ca5c;
+  font-size:10px;
+  font-weight:1000;
+}
+#tasks .mimaAdsgramTaskButton{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:58px;
+  min-height:36px;
+  padding:7px 10px;
+  border:1.5px solid #d79b27;
+  border-radius:11px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,224,139,.16),transparent 40%),
+    linear-gradient(180deg,#251704 0%,#0e0903 52%,#1c1104 100%);
+  color:#ffe7a0;
+  font-size:9px;
+  font-weight:1000;
+  box-shadow:inset 0 0 0 1px rgba(255,240,185,.08),0 5px 12px rgba(0,0,0,.22);
+}
+#tasks .mimaAdsgramTaskClaim{
+  color:#fff1b9;
+  border-color:#e1a72a;
+}
+#tasks .mimaAdsgramTaskDone{
+  color:#62e6ac;
+  border-color:rgba(67,210,154,.48);
+  background:linear-gradient(180deg,#102119,#07110d);
+}
+</style>
+
+<script id="mima-adsgram-task-unit-script-v1">
+(function(){
+  function txSafe(ar,en){
+    try{return typeof tx==='function'?tx(ar,en):ar}catch(e){return ar}
+  }
+
+  function hideCard(){
+    const card=document.getElementById('mimaAdsgramTaskCard');
+    if(card) card.style.display='none';
+  }
+
+  function showCard(){
+    const card=document.getElementById('mimaAdsgramTaskCard');
+    if(card) card.style.display='';
+  }
+
+  function applyLanguage(){
+    const h=document.getElementById('mimaAdsgramTaskHeading');
+    const s=document.getElementById('mimaAdsgramTaskSub');
+    const task=document.getElementById('mimaAdsgramTaskUnit');
+    if(h) h.textContent=txSafe('مهمة إعلانية','Sponsored Task');
+    if(s) s.textContent=txSafe('أكمل المهمة واحصل على 3 MIMA','Complete the task and earn 3 MIMA');
+
+    if(task){
+      const b=task.querySelector('[slot="button"]');
+      const c=task.querySelector('[slot="claim"]');
+      const d=task.querySelector('[slot="done"]');
+      if(b) b.textContent=txSafe('ابدأ','Start');
+      if(c) c.textContent=txSafe('استلم','Claim');
+      if(d) d.textContent=txSafe('تم','Done');
+    }
+  }
+
+  function init(){
+    const task=document.getElementById('mimaAdsgramTaskUnit');
+    if(!task) return;
+
+    applyLanguage();
+    showCard();
+
+    task.addEventListener('reward',()=>{
+      try{
+        if(typeof window.showMimaTaskSuccess==='function'){
+          window.showMimaTaskSuccess('مهمة إعلانية','Sponsored Task',3);
+        }
+      }catch(e){}
+      try{
+        if(typeof syncServerStatus==='function') syncServerStatus(false,true);
+      }catch(e){}
+    });
+
+    task.addEventListener('onBannerNotFound',hideCard);
+    task.addEventListener('onError',hideCard);
+    task.addEventListener('onTooLongSession',hideCard);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init,{once:true});
+  }else{
+    init();
+  }
 })();
 </script>
