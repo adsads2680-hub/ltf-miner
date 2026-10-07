@@ -9071,9 +9071,9 @@ input[type="submit"]:focus-visible{
 
 <script id="mima-adsgram-task-unit-script-v1">
 (function(){
-  const COOLDOWN_MS=60*60*1000;
+  const COOLDOWN_MS=30*60*1000;
   const COOLDOWN_KEY='mima_adsgram_task_cooldown_until_v1';
-  const MIGRATION_KEY='mima_adsgram_task_cooldown_60m_migrated_v1';
+  const MIGRATION_KEY='mima_adsgram_task_cooldown_30m_visible_v1';
   let cooldownTimer=null;
 
   function txSafe(ar,en){
@@ -9100,11 +9100,6 @@ input[type="submit"]:focus-visible{
 
   function migrateOldThirtyMinuteCooldown(){
     try{
-      if(localStorage.getItem(MIGRATION_KEY)==='1') return;
-      const oldUntil=Number(localStorage.getItem(COOLDOWN_KEY)||0);
-      if(oldUntil>Date.now()){
-        localStorage.setItem(COOLDOWN_KEY,String(oldUntil+(30*60*1000)));
-      }
       localStorage.setItem(MIGRATION_KEY,'1');
     }catch(e){}
   }
@@ -9116,13 +9111,19 @@ input[type="submit"]:focus-visible{
     const until=getCooldownUntil();
     const left=until-Date.now();
 
+    card.style.display='';
     if(left>0){
-      // No countdown card: hide the sponsored task completely during cooldown.
-      card.style.display='none';
+      task.style.display='none';
+      if(sub){
+        sub.textContent=txSafe(
+          'مهمة إعلانية متاحة مرة كل 30 دقيقة',
+          'Sponsored task available once every 30 minutes'
+        );
+      }
       return true;
     }
 
-    card.style.display='';
+    task.style.display='';
     applyLanguage();
     return false;
   }
@@ -9142,7 +9143,7 @@ input[type="submit"]:focus-visible{
     const s=document.getElementById('mimaAdsgramTaskSub');
     const task=document.getElementById('mimaAdsgramTaskUnit');
     if(h) h.textContent=txSafe('مهمة إعلانية','Sponsored Task');
-    if(s) s.textContent=txSafe('أكمل المهمة واحصل على 3 MIMA • كل ساعة','Complete the task and earn 3 MIMA • every hour');
+    if(s) s.textContent=txSafe('أكمل المهمة واحصل على 3 MIMA • مرة كل 30 دقيقة','Complete the task and earn 3 MIMA • once every 30 minutes');
 
     if(task){
       const b=task.querySelector('[slot="button"]');
