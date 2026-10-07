@@ -642,13 +642,12 @@ html[dir="ltr"] input{text-align:left}
 
   <div class="mimaAdTaskCard" id="adsgramRewardTaskItem">
     <div class="mimaAdTop">
-      <div class="mimaAdIcon" aria-label="Ad video">
-        <svg class="mimaAdRealIcon" viewBox="0 0 64 64" aria-hidden="true">
-          <rect x="8" y="13" width="48" height="38" rx="10"></rect>
-          <circle cx="32" cy="32" r="12"></circle>
-          <path d="M29 25.5 40 32 29 38.5Z"></path>
-          <path class="mimaAdIconLine" d="M17 20h12"></path>
-          <circle class="mimaAdIconDot" cx="48" cy="20" r="2.4"></circle>
+      <div class="mimaAdIcon" aria-label="Advertisement">
+        <svg class="mimaAdMegaphoneIcon" viewBox="0 0 64 64" aria-hidden="true">
+          <path class="mimaAdMegaBody" d="M14 27h12l20-10v30L26 37H14z"></path>
+          <path class="mimaAdMegaHandle" d="M21 37l5 12h8l-5-12"></path>
+          <path class="mimaAdMegaWave" d="M50 24c3 2 5 5 5 8s-2 6-5 8"></path>
+          <path class="mimaAdMegaWave" d="M54 18c5 4 8 8 8 14s-3 10-8 14"></path>
         </svg>
       </div>
       <div class="mimaAdCopy">
@@ -8338,5 +8337,41 @@ input[type="submit"]:focus-visible{
     0 0 12px rgba(221,154,33,.10)!important;
   opacity:1!important;
   filter:none!important;
+}
+</style>
+
+
+<style id="mima-ad-megaphone-icon-v3">
+/* Professional advertisement icon: megaphone, no game/play-button look. */
+#tasks .mimaAdIcon{
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+#tasks .mimaAdMegaphoneIcon{
+  width:36px!important;
+  height:36px!important;
+  display:block!important;
+  overflow:visible!important;
+}
+#tasks .mimaAdMegaphoneIcon .mimaAdMegaBody{
+  fill:#241600!important;
+  stroke:#241600!important;
+  stroke-width:2!important;
+  stroke-linejoin:round!important;
+}
+#tasks .mimaAdMegaphoneIcon .mimaAdMegaHandle{
+  fill:none!important;
+  stroke:#241600!important;
+  stroke-width:3.2!important;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+#tasks .mimaAdMegaphoneIcon .mimaAdMegaWave{
+  fill:none!important;
+  stroke:#241600!important;
+  stroke-width:3!important;
+  stroke-linecap:round!important;
 }
 </style>
