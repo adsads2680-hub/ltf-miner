@@ -2673,6 +2673,7 @@ html[dir="ltr"] input{text-align:left}
     const item = $('adsgramRewardTaskItem');
     if(item){
       item.style.display = '';
+      item.classList.remove('mimaAdReady');
     }
 
     const title = $('adsgramRewardTaskTitle');
@@ -2683,6 +2684,7 @@ html[dir="ltr"] input{text-align:left}
     const leftLabel = $('adsgramRewardTaskLeft');
     if(!title || !info || !btn) return;
 
+    const rewardText = Number(adsgramRewardAmount || 5);
     const completedAds = Math.max(0,Math.min(6,6-Number(adsgramRewardRemaining || 0)));
     if(progress) progress.style.width = ((completedAds / 6) * 100).toFixed(2) + '%';
     if(count) count.textContent = completedAds + ' / 6';
@@ -2698,7 +2700,7 @@ html[dir="ltr"] input{text-align:left}
     if(!serverMode){
       btn.disabled = true;
       btn.textContent = tx('افتح داخل Telegram','Open in Telegram');
-      info.textContent = tx('+5 MIMA • إعلان اختياري','+5 MIMA • optional ad');
+      info.textContent = '+' + rewardText + tx(' MIMA • إعلان اختياري',' MIMA • optional ad');
       return;
     }
 
@@ -2707,8 +2709,8 @@ html[dir="ltr"] input{text-align:left}
       btn.textContent = tx('مكتمل','Completed');
       const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
       info.textContent = left > 0
-        ? tx('+5 MIMA • تتجدد بعد ','+5 MIMA • refreshes in ') + formatCountdown(left)
-        : tx('+5 MIMA • تتجدد قريباً','+5 MIMA • refreshes soon');
+        ? ('+' + rewardText + tx(' MIMA • تتجدد بعد ',' MIMA • refreshes in ') + formatCountdown(left))
+        : ('+' + rewardText + tx(' MIMA • تتجدد قريباً',' MIMA • refreshes soon'));
       return;
     }
 
@@ -2720,7 +2722,7 @@ html[dir="ltr"] input{text-align:left}
       btn.disabled = true;
       btn.textContent = formatCountdown(cooldownLeft);
       info.textContent =
-        tx('+5 MIMA • الإعلان التالي بعد ','+5 MIMA • next ad in ') +
+        '+' + rewardText + tx(' MIMA • الإعلان التالي بعد ',' MIMA • next ad in ') +
         formatCountdown(cooldownLeft);
       return;
     }
@@ -2729,12 +2731,15 @@ html[dir="ltr"] input{text-align:left}
       adsgramRewardNextAvailableAt = 0;
     }
 
+    if(item) item.classList.add('mimaAdReady');
     btn.disabled = adsgramRewardBusy;
     btn.innerHTML = adsgramRewardBusy
       ? '<strong>⏳</strong>'
-      : '<span>▶</span><strong>' + tx('شاهد الإعلان (+5 MIMA)','Watch Ad (+5 MIMA)') + '</strong>';
+      : '<span>▶</span><strong>' + tx('شاهد الآن (+' + rewardText + ' MIMA)','Watch now (+' + rewardText + ' MIMA)') + '</strong>';
     info.textContent =
-      tx('+5 MIMA • كل 5 دقائق • المتبقي ','+5 MIMA • every 5 minutes • remaining ') +
+      tx('جاهز الآن • ','Ready now • ') +
+      '+' + rewardText +
+      tx(' MIMA • المتبقي ',' MIMA • remaining ') +
       adsgramRewardRemaining + '/6';
   }
 
@@ -2807,6 +2812,16 @@ html[dir="ltr"] input{text-align:left}
     }
 
     return adsgramController;
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded',()=>setTimeout(warmAdsgramRewardController,900),{once:true});
+  }else{
+    setTimeout(warmAdsgramRewardController,900);
+  }
+
+  function warmAdsgramRewardController(){
+    try{ getAdsgramController(); }catch(e){}
   }
 
   async function waitForAdsgramReward(beforeCount){
@@ -8518,5 +8533,27 @@ input[type="submit"]:focus-visible{
 #tasks .mimaAdMegaphoneIcon,
 #tasks .mimaAdRealIcon{
   display:none!important;
+}
+</style>
+
+
+<style id="mima-rewarded-ad-conversion-v1">
+/* Improve rewarded-ad discoverability without adding extra forced ads. */
+#tasks #adsgramRewardTaskItem.mimaAdReady{
+  border-color:rgba(244,190,63,.72)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,229,145,.05),
+    0 12px 28px rgba(0,0,0,.25),
+    0 0 22px rgba(219,155,31,.10)!important;
+}
+#tasks #adsgramRewardTaskItem.mimaAdReady .mimaAdWatchBtn{
+  animation:mimaAdReadyPulse 2.8s ease-in-out infinite!important;
+}
+@keyframes mimaAdReadyPulse{
+  0%,100%{transform:translateY(0);box-shadow:inset 0 0 0 1px rgba(255,240,185,.10),0 7px 16px rgba(0,0,0,.24),0 0 12px rgba(221,154,33,.10)}
+  50%{transform:translateY(-1px);box-shadow:inset 0 0 0 1px rgba(255,240,185,.16),0 9px 20px rgba(0,0,0,.28),0 0 20px rgba(221,154,33,.18)}
+}
+#tasks #adsgramRewardTaskItem:not(.mimaAdReady) .mimaAdWatchBtn{
+  animation:none!important;
 }
 </style>
