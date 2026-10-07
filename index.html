@@ -3248,24 +3248,8 @@ html[dir="ltr"] input{text-align:left}
   }
 
   async function handleMiningClick(){
-    if(claiming || miningInterstitialBusy) return;
-
-    miningInterstitialBusy = true;
-
-    try{
-      const controller = await waitForMiningInterstitialController(2200);
-
-      if(controller && typeof controller.show === 'function'){
-        try{
-          await showInterstitialSilently(controller);
-        }catch(e){
-          // No-fill, cooldown, close, or provider errors must never block mining.
-        }
-      }
-    }finally{
-      miningInterstitialBusy = false;
-      await claimMiningReward();
-    }
+    if(claiming) return;
+    await claimMiningReward();
   }
 
   function toggleMining(){
@@ -3303,8 +3287,8 @@ html[dir="ltr"] input{text-align:left}
     }
   }
 
-  // Entry ad disabled so the same AdsGram interstitial is reserved
-  // for the user pressing Mining / Claim.
+  // Entry interstitial remains disabled.
+  // Mining / Claim buttons now run without any interstitial ad.
   // scheduleEntryInterstitial();
 
   const ART_AIRDROP_PARTNER_CLAIM_KEY = 'mima_art_airdrop_partner_claimed_v1';
