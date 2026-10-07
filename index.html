@@ -3177,6 +3177,20 @@ html[dir="ltr"] input{text-align:left}
     try{ getMiningInterstitialController(); }catch(e){}
   }
 
+  async function waitForMiningInterstitialController(maxWaitMs=2200){
+    const started = Date.now();
+
+    while(Date.now() - started < maxWaitMs){
+      const controller = getMiningInterstitialController();
+      if(controller && typeof controller.show === 'function'){
+        return controller;
+      }
+      await new Promise(resolve=>setTimeout(resolve,180));
+    }
+
+    return getMiningInterstitialController();
+  }
+
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded',warmMiningInterstitialController,{once:true});
   }else{
@@ -3239,20 +3253,13 @@ html[dir="ltr"] input{text-align:left}
     miningInterstitialBusy = true;
 
     try{
-      let controller = getMiningInterstitialController();
-
-      // The AdsGram SDK can finish loading a fraction after the UI.
-      // Retry on this same first tap instead of requiring a second tap.
-      if(!controller){
-        await new Promise(resolve=>setTimeout(resolve,220));
-        controller = getMiningInterstitialController();
-      }
+      const controller = await waitForMiningInterstitialController(2200);
 
       if(controller && typeof controller.show === 'function'){
         try{
           await showInterstitialSilently(controller);
         }catch(e){
-          // If there is no ad available, mining must continue normally.
+          // No-fill, cooldown, close, or provider errors must never block mining.
         }
       }
     }finally{
@@ -3296,7 +3303,9 @@ html[dir="ltr"] input{text-align:left}
     }
   }
 
-  scheduleEntryInterstitial();
+  // Entry ad disabled so the same AdsGram interstitial is reserved
+  // for the user pressing Mining / Claim.
+  // scheduleEntryInterstitial();
 
   const ART_AIRDROP_PARTNER_CLAIM_KEY = 'mima_art_airdrop_partner_claimed_v1';
   const ART_AIRDROP_PARTNER_OPENED_KEY = 'mima_art_airdrop_partner_opened_v1';
