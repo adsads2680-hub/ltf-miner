@@ -9071,6 +9071,10 @@ input[type="submit"]:focus-visible{
 
 <script id="mima-adsgram-task-unit-script-v1">
 (function(){
+  const COOLDOWN_MS=30*60*1000;
+  const COOLDOWN_KEY='mima_adsgram_task_cooldown_until_v1';
+  let cooldownTimer=null;
+
   function txSafe(ar,en){
     try{return typeof tx==='function'?tx(ar,en):ar}catch(e){return ar}
   }
@@ -9085,12 +9089,63 @@ input[type="submit"]:focus-visible{
     if(card) card.style.display='';
   }
 
+  function getCooldownUntil(){
+    try{return Number(localStorage.getItem(COOLDOWN_KEY)||0)}catch(e){return 0}
+  }
+
+  function setCooldownUntil(ts){
+    try{localStorage.setItem(COOLDOWN_KEY,String(ts))}catch(e){}
+  }
+
+  function formatLeft(ms){
+    const total=Math.max(0,Math.ceil(ms/1000));
+    const m=Math.floor(total/60);
+    const s=total%60;
+    return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  }
+
+  function renderCooldown(){
+    const card=document.getElementById('mimaAdsgramTaskCard');
+    const task=document.getElementById('mimaAdsgramTaskUnit');
+    const sub=document.getElementById('mimaAdsgramTaskSub');
+    if(!card||!task) return false;
+
+    const until=getCooldownUntil();
+    const left=until-Date.now();
+
+    if(left>0){
+      card.style.display='';
+      task.style.display='none';
+      if(sub){
+        sub.textContent=txSafe(
+          'المهمة التالية متاحة بعد '+formatLeft(left),
+          'Next task available in '+formatLeft(left)
+        );
+      }
+      return true;
+    }
+
+    task.style.display='';
+    applyLanguage();
+    return false;
+  }
+
+  function startCooldownTicker(){
+    if(cooldownTimer) clearInterval(cooldownTimer);
+    cooldownTimer=setInterval(()=>{
+      if(!renderCooldown()){
+        clearInterval(cooldownTimer);
+        cooldownTimer=null;
+      }
+    },1000);
+  }
+
   function applyLanguage(){
     const h=document.getElementById('mimaAdsgramTaskHeading');
     const s=document.getElementById('mimaAdsgramTaskSub');
     const task=document.getElementById('mimaAdsgramTaskUnit');
     if(h) h.textContent=txSafe('مهمة إعلانية','Sponsored Task');
-    if(s) s.textContent=txSafe('أكمل المهمة واحصل على 3 MIMA','Complete the task and earn 3 MIMA');
+    if(s) s.textContent=txSafe('أكمل المهمة واحصل على 3 MIMA • كل 30 دقيقة','Complete the task and earn 3 MIMA • every 30 minutes');
 
     if(task){
       const b=task.querySelector('[slot="button"]');
@@ -9109,7 +9164,16 @@ input[type="submit"]:focus-visible{
     applyLanguage();
     showCard();
 
+    if(renderCooldown()){
+      startCooldownTicker();
+    }
+
     task.addEventListener('reward',()=>{
+      const until=Date.now()+COOLDOWN_MS;
+      setCooldownUntil(until);
+      renderCooldown();
+      startCooldownTicker();
+
       try{
         if(typeof window.showMimaTaskSuccess==='function'){
           window.showMimaTaskSuccess('مهمة إعلانية','Sponsored Task',3);
@@ -9130,5 +9194,11 @@ input[type="submit"]:focus-visible{
   }else{
     init();
   }
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'){
+      if(renderCooldown()) startCooldownTicker();
+    }
+  });
 })();
 </script>
