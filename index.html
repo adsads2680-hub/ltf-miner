@@ -9232,20 +9232,47 @@ input[type="submit"]:focus-visible{
       if(renderCooldown()) startCooldownTicker();
     });
 
-    task.addEventListener('reward',()=>{
-      setCooldownUntil(Date.now()+COOLDOWN_MS);
+    let verifyingReward=false;
+    task.addEventListener('reward',async()=>{
+      if(verifyingReward)return;
+      verifyingReward=true;
+      const rewardEventAt=Date.now();
+      // Hide the native task while waiting for the signed AdsGram server callback.
+      setCooldownUntil(Math.max(getCooldownUntil(),rewardEventAt+COOLDOWN_MS));
       renderCooldown();
       startCooldownTicker();
+      const sub=document.getElementById('mimaAdsgramTaskSub');
+      if(sub)sub.textContent=txSafe('جاري تأكيد المكافأة من السيرفر…','Verifying reward with server…');
 
-      try{
-        if(typeof window.showMimaTaskSuccess==='function'){
-          window.showMimaTaskSuccess('مهمة ممولة','Sponsored Task',3);
+      let confirmed=false;
+      if(serverMode){
+        for(let attempt=0;attempt<10;attempt++){
+          if(attempt)await new Promise(resolve=>setTimeout(resolve,3000));
+          try{
+            const status=await apiCall('adsgram_task_status');
+            if(status?.success!==true)continue;
+            const next=Date.parse(status.next_available_at||'');
+            // Server has recorded a recent reward transaction; a plain
+            // AdsGram UI "done" state alone must never trigger success.
+            if(Number.isFinite(next) && next-COOLDOWN_MS>=rewardEventAt-120000){
+              confirmed=true;
+              setCooldownUntil(Math.max(getCooldownUntil(),next));
+              break;
+            }
+          }catch(e){}
         }
-      }catch(e){}
-      try{
-        if(typeof syncServerStatus==='function') syncServerStatus(false,true);
-      }catch(e){}
-      setTimeout(()=>syncServerCooldown(),1200);
+      }
+      if(confirmed){
+        try{
+          if(typeof window.showMimaTaskSuccess==='function')
+            window.showMimaTaskSuccess('مهمة ممولة','Sponsored Task',3);
+          if(typeof syncServerStatus==='function')syncServerStatus(false,true);
+        }catch(e){}
+      }else{
+        if(sub)sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
+      }
+      verifyingReward=false;
+      renderCooldown();
     });
 
     task.addEventListener('onBannerNotFound',hideCard);
