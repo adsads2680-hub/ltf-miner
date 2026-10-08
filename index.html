@@ -718,7 +718,7 @@ html[dir="ltr"] input{text-align:left}
   <section class="mimaAdsgramTaskCard" id="mimaAdsgramTaskCard">
     <div class="mimaAdsgramTaskHead">
       <div>
-        <b id="mimaAdsgramTaskHeading">مهمة AdsGram</b>
+        <b id="mimaAdsgramTaskHeading">مهمة ممولة</b>
         <small id="mimaAdsgramTaskSub">أكمل مهمة من AdsGram واحصل على 3 MIMA</small>
       </div>
       <span class="mimaAdsgramTaskBadge">ADS</span>
@@ -9098,6 +9098,29 @@ input[type="submit"]:focus-visible{
     try{localStorage.setItem(COOLDOWN_KEY,String(ts))}catch(e){}
   }
 
+  async function syncServerCooldown(){
+    if(!serverMode) return false;
+    try{
+      const data=await apiCall('adsgram_task_status');
+      if(data?.success!==true) return false;
+
+      if(data.available===true){
+        setCooldownUntil(0);
+      }else if(data.next_available_at){
+        const ts=Date.parse(data.next_available_at);
+        if(Number.isFinite(ts)) setCooldownUntil(ts);
+      }else if(data.limit_reached===true){
+        setCooldownUntil(Date.now()+30*60*1000);
+      }
+
+      renderCooldown();
+      return true;
+    }catch(e){
+      renderCooldown();
+      return false;
+    }
+  }
+
   function migrateOldThirtyMinuteCooldown(){
     try{
       localStorage.setItem(MIGRATION_KEY,'1');
@@ -9116,8 +9139,7 @@ input[type="submit"]:focus-visible{
       task.style.display='none';
       if(sub){
         sub.textContent=txSafe(
-          'مهمة AdsGram متاحة مرة كل 30 دقيقة',
-          'AdsGram task available once every 30 minutes'
+          'المهمة الممولة متاحة مرة كل 30 دقيقة','Sponsored task available once every 30 minutes'
         );
       }
       return true;
@@ -9142,7 +9164,7 @@ input[type="submit"]:focus-visible{
     const h=document.getElementById('mimaAdsgramTaskHeading');
     const s=document.getElementById('mimaAdsgramTaskSub');
     const task=document.getElementById('mimaAdsgramTaskUnit');
-    if(h) h.textContent=txSafe('مهمة AdsGram','AdsGram Task');
+    if(h) h.textContent=txSafe('مهمة ممولة','Sponsored Task');
     if(s) s.textContent=txSafe('أكمل المهمة واحصل على 3 MIMA • مرة كل 30 دقيقة','Complete the task and earn 3 MIMA • once every 30 minutes');
 
     if(task){
@@ -9161,12 +9183,11 @@ input[type="submit"]:focus-visible{
 
     migrateOldThirtyMinuteCooldown();
     applyLanguage();
-
-    if(renderCooldown()){
-      startCooldownTicker();
-    }else{
-      showCard();
-    }
+    showCard();
+    renderCooldown();
+    syncServerCooldown().then(()=>{
+      if(renderCooldown()) startCooldownTicker();
+    });
 
     task.addEventListener('reward',()=>{
       setCooldownUntil(Date.now()+COOLDOWN_MS);
@@ -9175,12 +9196,13 @@ input[type="submit"]:focus-visible{
 
       try{
         if(typeof window.showMimaTaskSuccess==='function'){
-          window.showMimaTaskSuccess('مهمة AdsGram','AdsGram Task',3);
+          window.showMimaTaskSuccess('مهمة ممولة','Sponsored Task',3);
         }
       }catch(e){}
       try{
         if(typeof syncServerStatus==='function') syncServerStatus(false,true);
       }catch(e){}
+      setTimeout(()=>syncServerCooldown(),1200);
     });
 
     task.addEventListener('onBannerNotFound',hideCard);
@@ -9196,7 +9218,9 @@ input[type="submit"]:focus-visible{
 
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='visible'){
-      if(renderCooldown()) startCooldownTicker();
+      syncServerCooldown().then(()=>{
+        if(renderCooldown()) startCooldownTicker();
+      });
     }
   });
 })();
