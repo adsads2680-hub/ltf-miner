@@ -806,6 +806,18 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
+    <div class="item mimaTaskRow" id="mimaYoutubeSubscribeTaskItem">
+      <span class="ico">▶️</span>
+      <main>
+        <b id="mimaYoutubeSubscribeTaskTitle">اشترك في قناة MIMA على يوتيوب</b>
+        <small id="mimaYoutubeSubscribeTaskInfo">+2 MIMA • مرة واحدة فقط</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="mimaYoutubeSubscribeOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaYoutubeSubscribe()">اشترك</button>
+        <button id="mimaYoutubeSubscribeClaimBtn" type="button" onclick="claimMimaYoutubeSubscribe(this)" disabled>استلم</button>
+      </div>
+    </div>
+
     <div class="item mimaTaskRow" id="artAirdropPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
@@ -7318,6 +7330,64 @@ input[type="submit"]:focus-visible{
   }
 }
 </style>
+<script id="mima-youtube-subscribe-task-v1">
+(function(){
+  const YOUTUBE_URL='https://youtube.com/@mimacoin';
+  const OPEN_KEY='mima_youtube_subscribe_opened_v1';
+  const DONE_KEY='mima_youtube_subscribe_claimed_v1';
+  const $y=id=>document.getElementById(id);
+  const tr=(ar,en)=>{try{return typeof tx==='function'?tx(ar,en):ar}catch(_){return ar}};
+  function render(){
+    const title=$y('mimaYoutubeSubscribeTaskTitle');
+    const info=$y('mimaYoutubeSubscribeTaskInfo');
+    const openBtn=$y('mimaYoutubeSubscribeOpenBtn');
+    const claim=$y('mimaYoutubeSubscribeClaimBtn');
+    if(!claim)return;
+    const done=localStorage.getItem(DONE_KEY)==='1';
+    const opened=localStorage.getItem(OPEN_KEY)==='1';
+    if(title)title.textContent=tr('اشترك في قناة MIMA على يوتيوب','Subscribe to MIMA on YouTube');
+    if(openBtn)openBtn.textContent=tr('اشترك','Subscribe');
+    claim.disabled=done||!opened;
+    claim.textContent=done?tr('تم الاستلام','Claimed'):opened?tr('تأكيد الاشتراك واستلم','Confirm & Claim'):tr('اشترك أولاً','Subscribe first');
+    if(info)info.textContent=done?tr('+2 MIMA • تم الاستلام','+2 MIMA • claimed'):tr('+2 MIMA • مرة واحدة فقط، أكّد اشتراكك بعد العودة','+2 MIMA • one-time reward, confirm after subscribing');
+  }
+  window.openMimaYoutubeSubscribe=function(){
+    try{localStorage.setItem(OPEN_KEY,'1')}catch(_){}
+    render();
+    try{
+      if(window.Telegram?.WebApp?.openLink)Telegram.WebApp.openLink(YOUTUBE_URL);
+      else window.open(YOUTUBE_URL,'_blank','noopener,noreferrer');
+    }catch(_){window.open(YOUTUBE_URL,'_blank','noopener,noreferrer')}
+  };
+  window.claimMimaYoutubeSubscribe=async function(btn){
+    if(!btn||btn.disabled)return;
+    if(localStorage.getItem(OPEN_KEY)!=='1')return;
+    if(!window.confirm(tr('هل اشتركت في قناة MIMA على يوتيوب؟','Have you subscribed to the MIMA YouTube channel?')))return;
+    btn.disabled=true;btn.textContent='⏳';
+    try{
+      if(!serverMode)throw new Error(tr('المكافأة متاحة داخل تيليغرام فقط','Reward available only inside Telegram'));
+      const data=await apiCall('claim_task',{task_code:'youtube_mima_subscribe'});
+      if(data?.success!==true){
+        if(data?.next_available_at || /غير متاحة بعد|not available yet/i.test(String(data?.message||''))){
+          localStorage.setItem(DONE_KEY,'1');
+          render();
+          return;
+        }
+        throw new Error(data?.message||tr('تعذر الاستلام','Claim failed'));
+      }
+      localStorage.setItem(DONE_KEY,'1');
+      if(typeof bal!=='undefined')bal=Number(data.balance);
+      if(typeof exchangeableBalance!=='undefined')exchangeableBalance=Number(data.exchangeable_balance);
+      if(typeof render==='function'){} // Task state is updated below.
+      if(typeof window.showMimaTaskSuccess==='function')window.showMimaTaskSuccess('اشتراك يوتيوب','YouTube subscription',2);
+      if(typeof window.syncServerStatus==='function')window.syncServerStatus(false,true);
+    }catch(e){if(typeof toast==='function')toast('⚠️ '+(e.message||tr('تعذر الاستلام','Claim failed')))}
+    finally{render()}
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')render()});
+})();
+</script>
 </body>
 </html>
 <style>
