@@ -9170,9 +9170,9 @@ input[type="submit"]:focus-visible{
       // Show clean cooldown row instead of native AdsGram loading skeleton.
       task.style.setProperty('display','none','important');
       timer.style.setProperty('display','flex','important');
-      if(label) label.textContent=txSafe('المهمة التالية بعد انتهاء الانتظار','Next task after cooldown');
+      if(label) label.textContent=txSafe('تمت المهمة • ستتاح مجدداً لاحقاً','Task completed • available again later');
       const seconds=Math.max(0,Math.ceil(left/1000));
-      if(value) value.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+      if(value) value.textContent=''; // Countdown remains enforced internally but is not displayed.
       if(sub) sub.textContent=txSafe('تمت المهمة • +3 MIMA • تتجدد كل 30 دقيقة','Task completed • +3 MIMA • refreshes every 30 minutes');
       return true;
     }
@@ -9539,4 +9539,11 @@ input[type="submit"]:focus-visible{
 #tasks .mimaDailyDay.next b,#tasks .mimaDailyDay.next small,#tasks .mimaDailyDay.next span{color:#f3d68c!important}
 #tasks .mimaDailyGiftIcon{width:20px!important;height:20px!important;margin:1px 0!important;stroke:#ebbf62!important}
 @media(max-width:390px){#tasks .mimaDailyDays{gap:3px!important}#tasks .mimaDailyDay,#tasks .mimaDailyDay.done,#tasks .mimaDailyDay.next,#tasks .mimaDailyGiftDay{min-height:80px!important;padding:5px 0!important;border-radius:12px!important}}
+</style>
+
+<style id="mima-sponsored-hide-cooldown-count-20261008">
+/* Hide only the sponsored-task countdown display; do not change cooldown enforcement. */
+#tasks #mimaAdsgramTaskCooldownValue{display:none!important}
+#tasks #mimaAdsgramTaskCooldown .mimaAdsgramCooldownDetails{flex:1 1 auto!important;align-items:center!important;text-align:center!important}
+#tasks #mimaAdsgramTaskCooldown .mimaAdsgramCooldownIcon{color:#f6cf79!important}
 </style>
