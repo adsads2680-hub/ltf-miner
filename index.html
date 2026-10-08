@@ -633,6 +633,16 @@ html[dir="ltr"] input{text-align:left}
 </section>
 
 <section id="tasks" class="screen">
+  <div id="mimaProjectAge" class="mimaProjectAge" aria-label="MIMA project age">
+    <div class="mimaProjectAgeGlyph" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="27" height="27" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.8"/><path d="M16 8v9l6 3" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M7 5l2-2m14 2 2-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="mimaProjectAgeCopy">
+      <strong id="mimaProjectAgeTitle">عمر المشروع</strong>
+      <small id="mimaProjectAgeSub">رحلة MIMA مستمرة</small>
+    </div>
+    <div class="mimaProjectAgeNumber"><b id="mimaProjectAgeDays">10</b><span id="mimaProjectAgeUnit">أيام</span></div>
+  </div>
   <div class="mimaTasksHead">
     <div>
       <h2 class="title">مهام MIMA</h2>
@@ -9547,3 +9557,35 @@ input[type="submit"]:focus-visible{
 #tasks #mimaAdsgramTaskCooldown .mimaAdsgramCooldownDetails{flex:1 1 auto!important;align-items:center!important;text-align:center!important}
 #tasks #mimaAdsgramTaskCooldown .mimaAdsgramCooldownIcon{color:#f6cf79!important}
 </style>
+
+<style id="mima-project-age-20261008">
+#tasks .mimaProjectAge{display:flex;align-items:center;gap:11px;min-width:0;margin:3px 0 18px;padding:12px 14px;border-radius:19px;border:1.5px solid #c89b42;background:radial-gradient(circle at 80% 0%,rgba(196,136,35,.18),transparent 55%),linear-gradient(135deg,#0d1010,#1e1508 65%,#090a0b);box-shadow:inset 0 1px 0 rgba(255,233,164,.16),0 7px 16px rgba(0,0,0,.20)}
+#tasks .mimaProjectAgeGlyph{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;border:1px solid #c79a3f;border-radius:14px;color:#f7d684;background:linear-gradient(145deg,#2c1d0b,#100d07)}
+#tasks .mimaProjectAgeCopy{flex:1;min-width:0}
+#tasks .mimaProjectAgeCopy strong{display:block;font-size:14px;font-weight:900;color:#ffe6ad}
+#tasks .mimaProjectAgeCopy small{display:block;margin-top:4px;font-size:10px;color:#c5a66e}
+#tasks .mimaProjectAgeNumber{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:58px;line-height:1.1}
+#tasks .mimaProjectAgeNumber b{font-size:27px;font-weight:1000;color:#f8d681;background:linear-gradient(115deg,#b17c23,#fbe1a3 45%,#e2aa42 75%,#ffedb7);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-variant-numeric:tabular-nums}
+#tasks .mimaProjectAgeNumber span{margin-top:4px;color:#f4d082;font-size:11px;font-weight:800}
+@media(max-width:390px){#tasks .mimaProjectAge{padding:11px;gap:8px}#tasks .mimaProjectAgeGlyph{width:42px;height:42px;flex-basis:42px}#tasks .mimaProjectAgeCopy strong{font-size:12px}}
+</style>
+<script>
+(function(){
+  /* Day one = September 29, 2026 in Türkiye (UTC+03:00). October 8 = day ten. */
+  const start=Date.UTC(2026,8,29);
+  function updateAge(){
+    const days=Math.max(1,Math.floor((Date.now()+3*3600000-start)/86400000)+1);
+    const lang=(document.documentElement.lang||'ar').toLowerCase();
+    const ar=lang==='ar';
+    const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
+    set('mimaProjectAgeDays',String(days));
+    set('mimaProjectAgeTitle',ar?'عمر المشروع':'Project Age');
+    set('mimaProjectAgeSub',ar?'رحلة MIMA مستمرة':'The MIMA journey continues');
+    set('mimaProjectAgeUnit',ar?'أيام':(days===1?'Day':'Days'));
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateAge,{once:true});else updateAge();
+  setInterval(updateAge,60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateAge()});
+  new MutationObserver(updateAge).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+})();
+</script>
