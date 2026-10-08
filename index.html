@@ -830,17 +830,6 @@ html[dir="ltr"] input{text-align:left}
       </div>
     </div>
 
-    <div class="item mimaTaskRow" id="artAirdropPartnerTaskItem">
-      <span class="ico">🤝</span>
-      <main>
-        <b id="artAirdropPartnerTaskTitle">انضم إلى شركائنا</b>
-        <small id="artAirdropPartnerTaskInfo">+12 MIMA • مكافأة لمرة واحدة</small>
-      </main>
-      <div class="taskActionGroup">
-        <button id="artAirdropPartnerOpenBtn" class="taskJoinBtn" type="button" onclick="openArtAirdropPartner()">انضم</button>
-        <button id="artAirdropPartnerTaskBtn" type="button" onclick="claimArtAirdropPartner(this)">استلم</button>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1661,7 +1650,6 @@ html[dir="ltr"] input{text-align:left}
     if(typeof renderMimaExchangeChannelTask === 'function') renderMimaExchangeChannelTask();
     if(typeof renderInteractPostTask === 'function') renderInteractPostTask();
     if(typeof renderVictorsPartnerTask === 'function') renderVictorsPartnerTask();
-    if(typeof renderArtAirdropPartnerTask === 'function') renderArtAirdropPartnerTask();
     if(typeof renderAdTask === 'function') renderAdTask();
     if(typeof updateExchangeEstimate === 'function') updateExchangeEstimate();
   }
@@ -2155,7 +2143,6 @@ html[dir="ltr"] input{text-align:left}
       join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
       victors_partner: tx('مهمة الشريك','Partner task'),
-      art_airdrop_partner: tx('مهمة الشريك ART','ART partner task'),
     };
     return labels[String(code || '')] || String(code || '—');
   }
@@ -3436,121 +3423,6 @@ html[dir="ltr"] input{text-align:left}
 
   // Show one AdsGram interstitial shortly after MIMA opens.
   scheduleEntryInterstitial();
-
-  const ART_AIRDROP_PARTNER_CLAIM_KEY = 'mima_art_airdrop_partner_claimed_v1';
-  const ART_AIRDROP_PARTNER_OPENED_KEY = 'mima_art_airdrop_partner_opened_v1';
-  const ART_AIRDROP_PARTNER_URL = 'https://t.me/mrgminerbot/app?startapp=ref_KTNHZX7D';
-
-  function openArtAirdropPartner(){
-    try{ localStorage.setItem(ART_AIRDROP_PARTNER_OPENED_KEY,'1'); }catch(e){}
-    renderArtAirdropPartnerTask();
-
-    try{
-      if(
-        window.Telegram &&
-        Telegram.WebApp &&
-        typeof Telegram.WebApp.openTelegramLink === 'function'
-      ){
-        Telegram.WebApp.openTelegramLink(ART_AIRDROP_PARTNER_URL);
-      }else{
-        window.open(ART_AIRDROP_PARTNER_URL,'_blank','noopener,noreferrer');
-      }
-    }catch(e){
-      window.location.href = ART_AIRDROP_PARTNER_URL;
-    }
-  }
-
-  function renderArtAirdropPartnerTask(){
-    const title = $('artAirdropPartnerTaskTitle');
-    const btn = $('artAirdropPartnerTaskBtn');
-    const openBtn = $('artAirdropPartnerOpenBtn');
-    const info = $('artAirdropPartnerTaskInfo');
-    if(!btn || !info) return;
-
-    if(title) title.textContent = tx('انضم إلى شركائنا','Join Our Partners');
-    if(openBtn) openBtn.textContent = tx('انضم','Join');
-
-    let claimed = false;
-    let opened = false;
-    try{
-      claimed = localStorage.getItem(ART_AIRDROP_PARTNER_CLAIM_KEY) === '1';
-      opened = localStorage.getItem(ART_AIRDROP_PARTNER_OPENED_KEY) === '1';
-    }catch(e){}
-
-    btn.disabled = claimed || !opened;
-    btn.textContent = claimed
-      ? tx('تم الاستلام','Claimed')
-      : opened
-      ? tx('استلم','Claim')
-      : tx('انضم أولاً','Join first');
-
-    info.textContent = claimed
-      ? tx('+12 MIMA • تم الاستلام','+12 MIMA • claimed')
-      : opened
-      ? tx('+12 MIMA • يمكنك الاستلام الآن','+12 MIMA • ready to claim')
-      : tx('+12 MIMA • انضم أولاً ثم ارجع واستلم','+12 MIMA • join first, then return and claim');
-  }
-
-  async function claimArtAirdropPartner(btn){
-    if(!btn) return;
-
-    let opened = false;
-    try{ opened = localStorage.getItem(ART_AIRDROP_PARTNER_OPENED_KEY) === '1'; }catch(e){}
-
-    if(!opened){
-      toast(tx(
-        '⚠️ انضم إلى شريكنا أولاً ثم ارجع واضغط استلم',
-        '⚠️ Join our partner first, then return and tap Claim'
-      ));
-      renderArtAirdropPartnerTask();
-      return;
-    }
-
-    if(btn.disabled) return;
-    btn.disabled = true;
-    btn.textContent = '⏳';
-
-    if(!serverMode){
-      bal += 12;
-      exchangeableBalance += 12;
-      try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
-      savePreviewState();
-      render();
-      renderArtAirdropPartnerTask();
-      showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',12);
-      return;
-    }
-
-    try{
-      const data = await apiCall('claim_task',{task_code:'art_airdrop_partner'});
-
-      if(data.success !== true){
-        const msg = localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available');
-        if(/غير متاحة بعد|not available yet/i.test(String(data.message || msg))){
-          try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
-          renderArtAirdropPartnerTask();
-          toast(tx(
-            '✅ تم استلام مكافأة هذه المهمة سابقاً',
-            '✅ This task reward was already claimed'
-          ));
-          return;
-        }
-        throw new Error(msg);
-      }
-
-      bal = Math.max(0,Number(data.balance || bal));
-      exchangeableBalance = Math.max(0,Number(data.exchangeable_balance ?? exchangeableBalance));
-      try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
-
-      render();
-      renderArtAirdropPartnerTask();
-      showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',data.reward);
-    }catch(err){
-      btn.disabled = false;
-      btn.textContent = tx('استلم','Claim');
-      toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
-    }
-  }
 
   function openMimaChannel(){
     try{ localStorage.setItem('mima_join_channel_opened_v1','1'); }catch(e){}
@@ -7117,7 +6989,6 @@ body.privacyModalOpen{overflow:hidden!important}
 #tasks .rewardAdBtn,
 #tasks button.taskJoinBtn,
 #tasks #victorsPartnerTaskBtn,
-#tasks #artAirdropPartnerTaskBtn,
 #tasks #mimaWithdrawalsVerifyBtn,
 #tasks #mimaWithdrawalsJoinBtn,
 #tasks #joinChannelTaskBtn,
@@ -7140,7 +7011,6 @@ body.privacyModalOpen{overflow:hidden!important}
 #tasks .taskActionGroup button:disabled,
 #tasks .rewardAdBtn:disabled,
 #tasks #victorsPartnerTaskBtn:disabled,
-#tasks #artAirdropPartnerTaskBtn:disabled,
 #tasks #mimaWithdrawalsVerifyBtn:disabled,
 #tasks #joinChannelTaskBtn:disabled,
 #tasks #joinChannel2TaskBtn:disabled {
