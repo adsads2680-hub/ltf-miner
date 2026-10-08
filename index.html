@@ -735,6 +735,10 @@ html[dir="ltr"] input{text-align:left}
       <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">استلم</div>
       <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">تم</div>
     </adsgram-task>
+    <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCountdown" style="display:none" role="status" aria-live="off">
+      <span id="mimaAdsgramTaskCooldownLabel">المهمة التالية بعد</span>
+      <strong id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</strong>
+    </div>
   </section>
 
   <div class="mimaTaskList">
@@ -9129,22 +9133,26 @@ input[type="submit"]:focus-visible{
 
   function renderCooldown(){
     const card=document.getElementById('mimaAdsgramTaskCard');
-    if(!card) return false;
+    const task=document.getElementById('mimaAdsgramTaskUnit');
+    const sub=document.getElementById('mimaAdsgramTaskSub');
+    const timer=document.getElementById('mimaAdsgramTaskCooldown');
+    const value=document.getElementById('mimaAdsgramTaskCooldownValue');
+    const label=document.getElementById('mimaAdsgramTaskCooldownLabel');
+    if(!card||!task||!timer) return false;
 
-    const until=getCooldownUntil();
-    const left=until-Date.now();
-
+    const left=getCooldownUntil()-Date.now();
     card.style.display='';
     if(left>0){
       task.style.display='none';
-      if(sub){
-        sub.textContent=txSafe(
-          'المهمة الممولة متاحة مرة كل 30 دقيقة','Sponsored task available once every 30 minutes'
-        );
-      }
+      timer.style.display='flex';
+      if(label) label.textContent=txSafe('المهمة التالية بعد','Next task in');
+      const seconds=Math.max(0,Math.ceil(left/1000));
+      if(value) value.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+      if(sub) sub.textContent=txSafe('تمت المهمة • +3 MIMA • تتجدد كل 30 دقيقة','Task completed • +3 MIMA • refreshes every 30 minutes');
       return true;
     }
 
+    timer.style.display='none';
     task.style.display='';
     applyLanguage();
     return false;
@@ -9157,7 +9165,7 @@ input[type="submit"]:focus-visible{
         clearInterval(cooldownTimer);
         cooldownTimer=null;
       }
-    },5000);
+    },1000);
   }
 
   function applyLanguage(){
@@ -9225,3 +9233,28 @@ input[type="submit"]:focus-visible{
   });
 })();
 </script>
+
+<style id="mima-adsgram-task-countdown-v2">
+#tasks .mimaAdsgramTaskCountdown{
+  align-items:center;
+  justify-content:space-between;
+  padding:13px 14px;
+  margin-top:8px;
+  border-radius:13px;
+  border:1px solid rgba(215,155,39,.55);
+  background:linear-gradient(180deg,#231909,#0e0b06);
+  color:#f3d387;
+  font-size:12px;
+  font-weight:800;
+}
+#tasks .mimaAdsgramTaskCountdown strong{
+  padding:6px 12px;
+  border:1px solid rgba(234,185,65,.55);
+  border-radius:9px;
+  color:#ffe7a0;
+  font-size:18px;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:1px;
+  background:rgba(0,0,0,.35);
+}
+</style>
