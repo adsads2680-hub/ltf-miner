@@ -638,7 +638,7 @@ html[dir="ltr"] input{text-align:left}
       <svg viewBox="0 0 32 32" width="27" height="27" fill="none"><circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="1.8"/><path d="M16 8v9l6 3" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M7 5l2-2m14 2 2-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </div>
     <div class="mimaProjectAgeCopy">
-      <strong id="mimaProjectAgeTitle">عمر المشروع</strong>
+      <strong id="mimaProjectAgeTitle">نحن منذ</strong>
       <small id="mimaProjectAgeSub">رحلة MIMA مستمرة</small>
     </div>
     <div class="mimaProjectAgeNumber"><b id="mimaProjectAgeDays">10</b><span id="mimaProjectAgeUnit">أيام</span></div>
@@ -9603,12 +9603,13 @@ input[type="submit"]:focus-visible{
   function updateAge(){
     const days=Math.max(1,Math.floor((Date.now()+3*3600000-start)/86400000)+1);
     const lang=(document.documentElement.lang||'ar').toLowerCase();
-    const ar=lang==='ar';
+    const ar=lang.startsWith('ar');
+    const ur=lang.startsWith('ur') || lang==='pk';
     const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
     set('mimaProjectAgeDays',String(days));
-    set('mimaProjectAgeTitle',ar?'عمر المشروع':'Project Age');
-    set('mimaProjectAgeSub',ar?'رحلة MIMA مستمرة':'The MIMA journey continues');
-    set('mimaProjectAgeUnit',ar?'أيام':(days===1?'Day':'Days'));
+    set('mimaProjectAgeTitle',ar?'نحن منذ':ur?'ہم یہاں ہیں':'We’ve Been Here For');
+    set('mimaProjectAgeSub',ar?'رحلة MIMA مستمرة':ur?'MIMA کا سفر جاری ہے':'The MIMA journey continues');
+    set('mimaProjectAgeUnit',ar?'أيام':ur?'دنوں سے':(days===1?'Day':'Days'));
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateAge,{once:true});else updateAge();
   setInterval(updateAge,60000);
