@@ -9237,10 +9237,8 @@ input[type="submit"]:focus-visible{
       if(verifyingReward)return;
       verifyingReward=true;
       const rewardEventAt=Date.now();
-      // Hide the native task while waiting for the signed AdsGram server callback.
-      setCooldownUntil(Math.max(getCooldownUntil(),rewardEventAt+COOLDOWN_MS));
-      renderCooldown();
-      startCooldownTicker();
+      // AdsGram's reward event alone is not proof of a credited MIMA reward.
+      // Never start the 30-minute cooldown before the server records payment.
       const sub=document.getElementById('mimaAdsgramTaskSub');
       if(sub)sub.textContent=txSafe('جاري تأكيد المكافأة من السيرفر…','Verifying reward with server…');
 
@@ -9263,6 +9261,8 @@ input[type="submit"]:focus-visible{
         }
       }
       if(confirmed){
+        renderCooldown();
+        startCooldownTicker();
         try{
           if(typeof window.showMimaTaskSuccess==='function')
             window.showMimaTaskSuccess('مهمة ممولة','Sponsored Task',3);
