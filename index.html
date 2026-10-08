@@ -9099,7 +9099,7 @@ input[type="submit"]:focus-visible{
       renderCooldown();
       return;
     }
-    if(task) task.style.display='none';
+    if(task) task.style.setProperty('display','none','important');
     if(sub) sub.textContent=txSafe('لا توجد مهمة متاحة الآن','No sponsored task available right now');
   }
 
@@ -9161,8 +9161,8 @@ input[type="submit"]:focus-visible{
     card.style.display='';
     if(left>0){
       // Show clean cooldown row instead of native AdsGram loading skeleton.
-      task.style.display='none';
-      timer.style.display='flex';
+      task.style.setProperty('display','none','important');
+      timer.style.setProperty('display','flex','important');
       if(label) label.textContent=txSafe('المهمة التالية بعد انتهاء الانتظار','Next task after cooldown');
       const seconds=Math.max(0,Math.ceil(left/1000));
       if(value) value.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
@@ -9170,8 +9170,8 @@ input[type="submit"]:focus-visible{
       return true;
     }
 
-    timer.style.display='none';
-    task.style.display='';
+    timer.style.setProperty('display','none','important');
+    task.style.setProperty('display','block','important');
     applyLanguage();
     return false;
   }
