@@ -9122,13 +9122,16 @@ input[type="submit"]:focus-visible{
       const data=await apiCall('adsgram_task_status');
       if(data?.success!==true) return false;
 
-      if(data.available===true){
-        setCooldownUntil(0);
-      }else if(data.next_available_at){
+      // Never clear a newly started local cooldown because an older server
+      // status response arrived before the ad reward transaction was recorded.
+      const localUntil=getCooldownUntil();
+      if(data.next_available_at){
         const ts=Date.parse(data.next_available_at);
-        if(Number.isFinite(ts)) setCooldownUntil(ts);
+        if(Number.isFinite(ts)) setCooldownUntil(Math.max(localUntil,ts));
       }else if(data.limit_reached===true){
-        setCooldownUntil(Date.now()+30*60*1000);
+        setCooldownUntil(Math.max(localUntil,Date.now()+COOLDOWN_MS));
+      }else if(data.available===true && localUntil<=Date.now()){
+        setCooldownUntil(0);
       }
 
       renderCooldown();
