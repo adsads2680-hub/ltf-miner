@@ -809,7 +809,7 @@ html[dir="ltr"] input{text-align:left}
     <div class="item mimaTaskRow" id="artAirdropPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
-        <b id="artAirdropPartnerTaskTitle">انضم إلى شريكنا</b>
+        <b id="artAirdropPartnerTaskTitle">انضم إلى شركائنا</b>
         <small id="artAirdropPartnerTaskInfo">+2 MIMA • مكافأة لمرة واحدة</small>
       </main>
       <div class="taskActionGroup">
@@ -3443,7 +3443,7 @@ html[dir="ltr"] input{text-align:left}
     const info = $('artAirdropPartnerTaskInfo');
     if(!btn || !info) return;
 
-    if(title) title.textContent = tx('انضم إلى شريكنا','Join Our Partner');
+    if(title) title.textContent = tx('انضم إلى شركائنا','Join Our Partners');
     if(openBtn) openBtn.textContent = tx('انضم','Join');
 
     let claimed = false;
@@ -3493,7 +3493,7 @@ html[dir="ltr"] input{text-align:left}
       savePreviewState();
       render();
       renderArtAirdropPartnerTask();
-      showMimaTaskSuccess('انضم إلى شريكنا','Join Our Partner',2);
+      showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',2);
       return;
     }
 
@@ -3520,7 +3520,7 @@ html[dir="ltr"] input{text-align:left}
 
       render();
       renderArtAirdropPartnerTask();
-      showMimaTaskSuccess('انضم إلى شريكنا','Join Our Partner',data.reward);
+      showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',data.reward);
     }catch(err){
       btn.disabled = false;
       btn.textContent = tx('استلم','Claim');
