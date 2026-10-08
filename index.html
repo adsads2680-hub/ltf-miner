@@ -834,7 +834,7 @@ html[dir="ltr"] input{text-align:left}
       <span class="ico">🤝</span>
       <main>
         <b id="artAirdropPartnerTaskTitle">انضم إلى شركائنا</b>
-        <small id="artAirdropPartnerTaskInfo">+2 MIMA • مكافأة لمرة واحدة</small>
+        <small id="artAirdropPartnerTaskInfo">+12 MIMA • مكافأة لمرة واحدة</small>
       </main>
       <div class="taskActionGroup">
         <button id="artAirdropPartnerOpenBtn" class="taskJoinBtn" type="button" onclick="openArtAirdropPartner()">انضم</button>
@@ -3485,10 +3485,10 @@ html[dir="ltr"] input{text-align:left}
       : tx('انضم أولاً','Join first');
 
     info.textContent = claimed
-      ? tx('+2 MIMA • تم الاستلام','+2 MIMA • claimed')
+      ? tx('+12 MIMA • تم الاستلام','+12 MIMA • claimed')
       : opened
-      ? tx('+2 MIMA • يمكنك الاستلام الآن','+2 MIMA • ready to claim')
-      : tx('+2 MIMA • انضم أولاً ثم ارجع واستلم','+2 MIMA • join first, then return and claim');
+      ? tx('+12 MIMA • يمكنك الاستلام الآن','+12 MIMA • ready to claim')
+      : tx('+12 MIMA • انضم أولاً ثم ارجع واستلم','+12 MIMA • join first, then return and claim');
   }
 
   async function claimArtAirdropPartner(btn){
@@ -3511,13 +3511,13 @@ html[dir="ltr"] input{text-align:left}
     btn.textContent = '⏳';
 
     if(!serverMode){
-      bal += 2;
-      exchangeableBalance += 2;
+      bal += 12;
+      exchangeableBalance += 12;
       try{ localStorage.setItem(ART_AIRDROP_PARTNER_CLAIM_KEY,'1'); }catch(e){}
       savePreviewState();
       render();
       renderArtAirdropPartnerTask();
-      showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',2);
+      showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',12);
       return;
     }
 
