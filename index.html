@@ -9515,3 +9515,28 @@ input[type="submit"]:focus-visible{
  #tasks .mimaDailyGiftIcon{width:17px!important;height:17px!important}
 }
 </style>
+
+<style id="mima-daily-seven-equal-cards-20261008">
+/* Consistent seven-day visual system; preserves completion state and rewards. */
+#tasks .mimaDailyDays{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:5px!important;align-items:stretch!important}
+#tasks .mimaDailyDay,#tasks .mimaDailyDay.done,#tasks .mimaDailyDay.next,#tasks .mimaDailyGiftDay{
+  box-sizing:border-box!important;min-width:0!important;width:100%!important;min-height:87px!important;
+  padding:7px 1px!important;display:flex!important;flex-direction:column!important;
+  justify-content:center!important;align-items:center!important;gap:3px!important;
+  border-radius:14px!important;border:1.4px solid #a57a2e!important;
+  background:linear-gradient(180deg,#1d160b,#0a0907)!important;
+  box-shadow:inset 0 1px 0 rgba(255,226,145,.08)!important;
+  transform:none!important;
+}
+#tasks .mimaDailyDay small{font-size:clamp(7px,1.9vw,10px)!important;color:#c8ab75!important;white-space:nowrap!important;line-height:1.15!important}
+#tasks .mimaDailyDay b,#tasks .mimaDailyGiftDay b{font-size:clamp(14px,3.5vw,19px)!important;color:#f2ce7c!important;margin:3px 0 0!important;line-height:1!important}
+#tasks .mimaDailyDay span{font-size:clamp(7px,1.75vw,9px)!important;color:#bda06c!important;margin:2px 0 0!important}
+#tasks .mimaDailyDay.done{border-color:#249a78!important;background:linear-gradient(180deg,#113c31,#081d18)!important}
+#tasks .mimaDailyDay.done b{color:#a0efd0!important}
+#tasks .mimaDailyDay.done small{color:#83d8b8!important}
+#tasks .mimaDailyDay.done::after{color:#6ce5ba!important;font-size:13px!important;margin-top:2px!important}
+#tasks .mimaDailyDay.next{border-color:#ecc066!important;background:linear-gradient(180deg,#271c0c,#0e0a06)!important}
+#tasks .mimaDailyDay.next b,#tasks .mimaDailyDay.next small,#tasks .mimaDailyDay.next span{color:#f3d68c!important}
+#tasks .mimaDailyGiftIcon{width:20px!important;height:20px!important;margin:1px 0!important;stroke:#ebbf62!important}
+@media(max-width:390px){#tasks .mimaDailyDays{gap:3px!important}#tasks .mimaDailyDay,#tasks .mimaDailyDay.done,#tasks .mimaDailyDay.next,#tasks .mimaDailyGiftDay{min-height:80px!important;padding:5px 0!important;border-radius:12px!important}}
+</style>
