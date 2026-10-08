@@ -735,9 +735,13 @@ html[dir="ltr"] input{text-align:left}
       <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">استلم</div>
       <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">تم</div>
     </adsgram-task>
-    <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCountdown" style="display:none" role="status" aria-live="off">
-      <span id="mimaAdsgramTaskCooldownLabel">المهمة التالية بعد</span>
-      <strong id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</strong>
+    <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCooldownRow" style="display:none" role="status" aria-live="off">
+      <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</span>
+      <span class="mimaAdsgramCooldownDetails">
+        <strong id="mimaAdsgramTaskCooldownLabel">المهمة التالية بعد انتهاء الانتظار</strong>
+        <small>+3 MIMA</small>
+      </span>
+      <span class="mimaAdsgramCooldownIcon" aria-hidden="true">✓</span>
     </div>
   </section>
 
@@ -9143,13 +9147,10 @@ input[type="submit"]:focus-visible{
     const left=getCooldownUntil()-Date.now();
     card.style.display='';
     if(left>0){
-      // Keep the native advertisement card in place but lock all interactions.
-      // Countdown overlays the original Start button, not a second card.
-      task.style.display='';
-      task.style.pointerEvents='none';
-      task.setAttribute('aria-disabled','true');
+      // Show clean cooldown row instead of native AdsGram loading skeleton.
+      task.style.display='none';
       timer.style.display='flex';
-      if(label) label.textContent=txSafe('المهمة التالية بعد','Next task in');
+      if(label) label.textContent=txSafe('المهمة التالية بعد انتهاء الانتظار','Next task after cooldown');
       const seconds=Math.max(0,Math.ceil(left/1000));
       if(value) value.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
       if(sub) sub.textContent=txSafe('تمت المهمة • +3 MIMA • تتجدد كل 30 دقيقة','Task completed • +3 MIMA • refreshes every 30 minutes');
@@ -9158,8 +9159,6 @@ input[type="submit"]:focus-visible{
 
     timer.style.display='none';
     task.style.display='';
-    task.style.pointerEvents='';
-    task.removeAttribute('aria-disabled');
     applyLanguage();
     return false;
   }
@@ -9277,4 +9276,32 @@ input[type="submit"]:focus-visible{
 @media(max-width:390px){
   #tasks .mimaAdsgramTaskCountdown{left:20px!important;width:105px!important}
 }
+</style>
+
+<style id="mima-adsgram-cooldown-row-clean-v3">
+#tasks #mimaAdsgramTaskCooldown.mimaAdsgramTaskCooldownRow{
+  position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;
+  width:100%!important;min-height:74px!important;margin:0!important;padding:9px 12px!important;
+  display:none;align-items:center!important;gap:12px!important;
+  border-radius:14px!important;border:1px solid rgba(217,154,36,.32)!important;
+  background:linear-gradient(145deg,#0a151d,#0c0d0b)!important;
+  box-shadow:none!important;box-sizing:border-box!important;
+}
+#tasks #mimaAdsgramTaskCooldown.mimaAdsgramTaskCooldownRow[style*="display: flex"]{display:flex!important}
+#tasks .mimaAdsgramCooldownButton{
+  display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 112px!important;
+  min-height:45px!important;border:1.5px solid #d79b27!important;border-radius:13px!important;
+  background:linear-gradient(180deg,#251704,#0e0903 52%,#1c1104)!important;
+  color:#ffe7a0!important;font-size:18px!important;font-weight:900!important;
+  font-variant-numeric:tabular-nums!important;direction:ltr!important;
+}
+#tasks .mimaAdsgramCooldownDetails{display:flex;flex:1 1 auto;min-width:0;flex-direction:column;gap:5px;text-align:right}
+#tasks .mimaAdsgramCooldownDetails strong{font-size:12px;color:#f2ddad;line-height:1.4}
+#tasks .mimaAdsgramCooldownDetails small{font-size:11px;color:#e4b955;font-weight:800}
+#tasks .mimaAdsgramCooldownIcon{
+  display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;
+  border:1px solid rgba(223,169,43,.43);border-radius:12px;color:#d9b761;
+  background:linear-gradient(145deg,#241b0b,#0d0b08);font-weight:900;
+}
+@media(max-width:390px){#tasks .mimaAdsgramCooldownButton{flex-basis:94px!important;font-size:16px!important}}
 </style>
