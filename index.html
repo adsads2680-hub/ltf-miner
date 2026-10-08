@@ -9089,8 +9089,18 @@ input[type="submit"]:focus-visible{
   }
 
   function hideCard(){
+    // Keep the sponsored task container visible even when AdsGram has no fill.
+    // In particular, a late no-banner event must never hide the cooldown.
     const card=document.getElementById('mimaAdsgramTaskCard');
-    if(card) card.style.display='none';
+    const task=document.getElementById('mimaAdsgramTaskUnit');
+    const sub=document.getElementById('mimaAdsgramTaskSub');
+    if(card) card.style.display='';
+    if(getCooldownUntil()>Date.now()){
+      renderCooldown();
+      return;
+    }
+    if(task) task.style.display='none';
+    if(sub) sub.textContent=txSafe('لا توجد مهمة متاحة الآن','No sponsored task available right now');
   }
 
   function showCard(){
