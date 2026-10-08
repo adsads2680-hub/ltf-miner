@@ -673,6 +673,36 @@ html[dir="ltr"] input{text-align:left}
     </button>
   </div>
 
+  <section class="mimaAdsgramTaskCard" id="mimaAdsgramTaskCard">
+    <div class="mimaAdsgramTaskHead">
+      <div>
+        <b id="mimaAdsgramTaskHeading">مهمة ممولة</b>
+        <small id="mimaAdsgramTaskSub">أكمل مهمة من AdsGram واحصل على 3 MIMA</small>
+      </div>
+      <span class="mimaAdsgramTaskBadge">ADS</span>
+    </div>
+
+    <adsgram-task
+      id="mimaAdsgramTaskUnit"
+      data-block-id="task-52573"
+      data-debug="false"
+      data-debug-console="false"
+      class="mimaAdsgramNativeTask">
+      <span slot="reward" class="mimaAdsgramTaskReward">+3 MIMA</span>
+      <div slot="button" class="mimaAdsgramTaskButton">ابدأ</div>
+      <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">استلم</div>
+      <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">تم</div>
+    </adsgram-task>
+    <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCooldownRow" style="display:none" role="status" aria-live="off">
+      <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</span>
+      <span class="mimaAdsgramCooldownDetails">
+        <strong id="mimaAdsgramTaskCooldownLabel">المهمة التالية بعد انتهاء الانتظار</strong>
+        <small>+3 MIMA</small>
+      </span>
+      <span class="mimaAdsgramCooldownIcon" aria-hidden="true">✓</span>
+    </div>
+  </section>
+
   <section class="mimaDailyCheckin" id="mimaDailyCheckin" aria-live="polite">
     <div class="mimaDailyHead">
       <div>
@@ -713,36 +743,6 @@ html[dir="ltr"] input{text-align:left}
     <button id="mimaDailyClaimBtn" class="mimaDailyClaimBtn" type="button" onclick="claimMimaDailyCheckin()">
       تسجيل حضور اليوم
     </button>
-  </section>
-
-  <section class="mimaAdsgramTaskCard" id="mimaAdsgramTaskCard">
-    <div class="mimaAdsgramTaskHead">
-      <div>
-        <b id="mimaAdsgramTaskHeading">مهمة ممولة</b>
-        <small id="mimaAdsgramTaskSub">أكمل مهمة من AdsGram واحصل على 3 MIMA</small>
-      </div>
-      <span class="mimaAdsgramTaskBadge">ADS</span>
-    </div>
-
-    <adsgram-task
-      id="mimaAdsgramTaskUnit"
-      data-block-id="task-52573"
-      data-debug="false"
-      data-debug-console="false"
-      class="mimaAdsgramNativeTask">
-      <span slot="reward" class="mimaAdsgramTaskReward">+3 MIMA</span>
-      <div slot="button" class="mimaAdsgramTaskButton">ابدأ</div>
-      <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">استلم</div>
-      <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">تم</div>
-    </adsgram-task>
-    <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCooldownRow" style="display:none" role="status" aria-live="off">
-      <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</span>
-      <span class="mimaAdsgramCooldownDetails">
-        <strong id="mimaAdsgramTaskCooldownLabel">المهمة التالية بعد انتهاء الانتظار</strong>
-        <small>+3 MIMA</small>
-      </span>
-      <span class="mimaAdsgramCooldownIcon" aria-hidden="true">✓</span>
-    </div>
   </section>
 
   <div class="mimaTaskList">
