@@ -9100,6 +9100,7 @@ input[type="submit"]:focus-visible{
   const COOLDOWN_KEY='mima_adsgram_task_cooldown_until_v1';
   const MIGRATION_KEY='mima_adsgram_task_cooldown_30m_visible_v1';
   let cooldownTimer=null;
+  let verificationState='idle';
 
   function txSafe(ar,en){
     try{return typeof tx==='function'?tx(ar,en):ar}catch(e){return ar}
@@ -9190,6 +9191,8 @@ input[type="submit"]:focus-visible{
     timer.style.setProperty('display','none','important');
     task.style.setProperty('display','block','important');
     applyLanguage();
+    if(verificationState==='checking' && sub) sub.textContent=txSafe('جاري تأكيد المكافأة من السيرفر…','Verifying reward with server…');
+    if(verificationState==='awaiting' && sub) sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
     return false;
   }
 
@@ -9236,6 +9239,7 @@ input[type="submit"]:focus-visible{
     task.addEventListener('reward',async()=>{
       if(verifyingReward)return;
       verifyingReward=true;
+      verificationState='checking';
       const rewardEventAt=Date.now();
       // AdsGram's reward event alone is not proof of a credited MIMA reward.
       // Never start the 30-minute cooldown before the server records payment.
@@ -9252,7 +9256,7 @@ input[type="submit"]:focus-visible{
             const next=Date.parse(status.next_available_at||'');
             // Server has recorded a recent reward transaction; a plain
             // AdsGram UI "done" state alone must never trigger success.
-            if(Number.isFinite(next) && next-COOLDOWN_MS>=rewardEventAt-120000){
+            if(Number.isFinite(next) && next-COOLDOWN_MS>=rewardEventAt-15000){
               confirmed=true;
               setCooldownUntil(Math.max(getCooldownUntil(),next));
               break;
@@ -9261,6 +9265,7 @@ input[type="submit"]:focus-visible{
         }
       }
       if(confirmed){
+        verificationState='idle';
         renderCooldown();
         startCooldownTicker();
         try{
@@ -9269,6 +9274,7 @@ input[type="submit"]:focus-visible{
           if(typeof syncServerStatus==='function')syncServerStatus(false,true);
         }catch(e){}
       }else{
+        verificationState='awaiting';
         if(sub)sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
       }
       verifyingReward=false;
