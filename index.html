@@ -586,6 +586,63 @@ header.topbar>#menuToggleBtn{
   text-align:start;
 }
 </style>
+<style id="mima-market-admin-beta-css">
+#mimaMarketBetaLaunchWrap{display:none;justify-content:center;padding:12px 0 4px}
+#mimaMarketBetaLaunch{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 14px;border:1px solid rgba(227,180,73,.73);border-radius:12px;background:linear-gradient(150deg,#251a0b,#101418 70%,#15110a);box-shadow:0 5px 18px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,231,167,.09);color:#f9d68d;font:800 12px/1.25 inherit;cursor:pointer}
+#mimaMarketBetaLaunch span:first-child{color:#f4b94e;font-size:17px}
+#mimaMarketBetaLaunch small{border:1px solid #8c7040;background:#33230b;color:#f4d494;border-radius:5px;font-size:8px;letter-spacing:.09em;padding:2px 4px}
+#mimaMarketBetaLaunch:focus-visible{outline:2px solid #ffe1a0;outline-offset:3px}
+#mimaMarketBetaOverlay{position:fixed;inset:0;z-index:200000;display:none;justify-content:center;align-items:center;padding:0;background:rgba(1,5,10,.89);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#mimaMarketBetaOverlay.mimaOpen{display:flex}
+#mimaMarketBetaDialog{box-sizing:border-box;position:relative;width:min(100%,540px);max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;border:1px solid rgba(229,183,93,.50);border-radius:20px;background:radial-gradient(circle at 80% 0%,rgba(187,132,43,.18),transparent 43%),linear-gradient(160deg,#0f161e 0%,#0a0e13 45%,#090b10 100%);box-shadow:0 16px 70px rgba(0,0,0,.68);color:#eee4d0;padding:16px 15px 25px;font-family:inherit}
+#mimaMarketBetaDialog *{box-sizing:border-box}
+#mimaMarketBetaDialog button{font:inherit;cursor:pointer}
+#mimaMarketBetaDialog button:focus-visible,#mimaMarketBetaDialog input:focus-visible{outline:2px solid #ffd282;outline-offset:2px}
+.mmb-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.mmb-brand{display:flex;align-items:center;gap:9px;text-align:start}
+.mmb-mark{width:39px;height:39px;border:1px solid #d8ad60;border-radius:11px;display:grid;place-items:center;font-weight:1000;font-size:22px;color:#f8cc6b;background:radial-gradient(circle at 40% 20%,#483015,#110f10 70%)}
+.mmb-brand b{display:block;font-size:14px;letter-spacing:.035em;color:#ffe4a2}
+.mmb-brand small{display:block;color:#98a7b8;font-size:10px;padding-top:4px}
+.mmb-close{width:35px;height:35px;border:1px solid #45505b;border-radius:10px;background:#151a21;color:#e6d1a9;font-size:22px!important}
+.mmb-notice{padding:8px 10px;border:1px solid #71603d;border-radius:10px;color:#dfbf86;background:#251c11;font-size:10px;line-height:1.5;margin:9px 0 15px;text-align:center}
+.mmb-topline,.mmb-timeframes,.mmb-pairs,.mmb-order-tabs{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.mmb-pairs{justify-content:flex-start;margin-bottom:14px}
+.mmb-pairs button,.mmb-timeframes button,.mmb-order-tabs button{border:1px solid #35414b;background:#141c25;color:#98a8b9;padding:8px 11px;border-radius:9px;font-size:11px;font-weight:750}
+.mmb-pairs button[aria-pressed=true],.mmb-timeframes button[aria-pressed=true]{border-color:#b88a42;background:#382910;color:#ffe0a0}
+.mmb-priceblock strong{display:block;font-size:30px;line-height:1.12;letter-spacing:.01em;color:#d9f5e7;font-variant-numeric:tabular-nums;text-align:start}
+.mmb-priceblock small{display:block;color:#9fa8b5;font-size:10px;margin-top:4px;text-align:start}
+.mmb-change{border:1px solid #27644b;color:#8ee5b6;background:#123c30;border-radius:9px;font-weight:850;font-size:12px;padding:8px}
+.mmb-chartpanel{border:1px solid #293644;border-radius:14px;background:linear-gradient(180deg,#101923,#0b1018);margin-top:12px;padding:9px 6px 5px}
+.mmb-chartrow{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:2px 8px 7px}
+.mmb-chartrow strong{font-size:11px;color:#cbd6e0}
+.mmb-timeframes{justify-content:flex-end}
+.mmb-timeframes button{padding:5px 8px;font-size:10px}
+#mimaMarketBetaCanvas{display:block;width:100%;height:220px;max-height:220px}
+.mmb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:11px 0 15px}
+.mmb-stats div{padding:11px 7px;border:1px solid #2e3943;border-radius:10px;background:#101923;text-align:center}
+.mmb-stats small{display:block;color:#8495a9;font-size:9px;margin-bottom:6px}
+.mmb-stats b{display:block;color:#eed3a0;font-size:12px;font-variant-numeric:tabular-nums}
+.mmb-order{padding:13px;border:1px solid #3e3b33;border-radius:14px;background:linear-gradient(160deg,#17191a,#0d1116)}
+.mmb-order-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:7px}
+.mmb-order-head b{color:#f6d28c;font-size:13px}
+.mmb-order-head span{font-size:10px;color:#9baabd}
+.mmb-order-tabs{margin-bottom:12px}
+.mmb-order-tabs button{flex:1}
+.mmb-order-tabs button[aria-pressed=true][data-side=buy]{background:#164a36;color:#a9f1c9;border-color:#328961}
+.mmb-order-tabs button[aria-pressed=true][data-side=sell]{background:#4d2529;color:#ffb5ba;border-color:#945259}
+.mmb-field-label{display:block;color:#aab3bc;font-size:11px;margin:9px 0 6px}
+.mmb-field{display:flex;align-items:center;border:1px solid #34404b;border-radius:10px;background:#0c121a;overflow:hidden}
+.mmb-field input{min-width:0;flex:1;border:0!important;background:transparent!important;color:#f1e3c6!important;padding:12px!important;box-shadow:none!important;font:700 15px/1.4 inherit!important;outline:0!important}
+.mmb-field span{padding-inline:10px;color:#c4a66f;font-size:11px;font-weight:800}
+.mmb-estimate{color:#adbfcb;font-size:11px;padding:11px 2px;min-height:34px}
+#mimaMarketBetaTrade{display:block;width:100%;min-height:44px;border:1px solid #ebc66d;border-radius:11px;background:linear-gradient(90deg,#a57522,#f5d480 52%,#996919);color:#181306;font-size:13px;font-weight:950}
+#mimaMarketBetaStatus{font-size:11px;min-height:19px;margin-top:9px;color:#f4d49b;text-align:center}
+.mmb-bottom{color:#7f94a7;font-size:10px;line-height:1.6;text-align:center;margin-top:11px}
+body.mimaMarketBetaBodyOpen{overflow:hidden!important}
+@media(min-width:560px){#mimaMarketBetaDialog{max-height:min(93dvh,890px);border-radius:21px;padding:18px 20px 25px}}
+@media(max-width:355px){#mimaMarketBetaDialog{padding:10px}#mimaMarketBetaCanvas{height:190px}.mmb-priceblock strong{font-size:25px}.mmb-pairs button{font-size:10px;padding:7px}}
+@media(prefers-reduced-motion:reduce){#mimaMarketBetaOverlay{backdrop-filter:none;-webkit-backdrop-filter:none}}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -655,6 +712,9 @@ header.topbar>#menuToggleBtn{
 </div>
 </div>
     <button id="startMining" class="start running" type="button"><span class="mineBtnIcon">M</span><span id="mineBtnText">ابدأ التعدين • 0.000000 MIMA</span></button>
+    <div id="mimaMarketBetaLaunchWrap" style="display:none">
+      <button id="mimaMarketBetaLaunch" type="button" aria-haspopup="dialog"><span aria-hidden="true">◈</span> <span id="mimaMarketBetaLaunchLabel">بورصة MIMA</span> <small>DEMO</small></button>
+    </div>
     <div class="progressWrap">
       <div class="progressTop"><span>المكتسب في الجولة</span><span id="timer">0.000000 MIMA</span></div>
       <div class="progress"><i id="mineProgress"></i></div>
@@ -7637,6 +7697,179 @@ input[type="submit"]:focus-visible{
   </div>
  </section>
 </div>
+<script id="mima-market-admin-beta-script">
+(function(){
+  'use strict';
+  // Isolated admin-only visual prototype. No order API, database writes, or wallet access.
+  const ADMIN_ID = '1035565575';
+  const MARKET_PAIRS = {
+    'MIMA/GRAM':{base:0.00285,currency:'GRAM'},
+    'MIMA/USDT':{base:0.00124,currency:'USDT'}
+  };
+  const PERIODS = {'1H':1,'4H':4,'1D':11,'1W':23};
+  let pair='MIMA/GRAM',period='1H',side='buy',lastFocus=null;
+  const get=(id)=>document.getElementById(id);
+  const isAr=()=>String(document.documentElement.lang||'').toLowerCase().startsWith('ar');
+  const trans=(ar,en)=>isAr()?ar:en;
+  function isAdmin(){
+    try{
+      return String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id||'')===ADMIN_ID && Boolean(window.Telegram?.WebApp?.initData);
+    }catch(e){return false;}
+  }
+  function makeCandles(){
+    const base=MARKET_PAIRS[pair].base, offset=PERIODS[period], list=[];
+    let prev=base*(0.985+0.011*Math.sin(offset));
+    for(let i=0;i<36;i++){
+      const change=(Math.sin(i*1.45+offset)*0.0047)+(Math.cos(i*.49+offset)*.0038)+.0005;
+      const open=prev,close=open*(1+change);
+      const spike=.0018+.0037*Math.abs(Math.sin(i*.81+offset));
+      list.push({o:open,c:close,h:Math.max(open,close)*(1+spike),l:Math.min(open,close)*(1-spike),vol:25+75*Math.abs(Math.sin(i*.47+offset))});
+      prev=close;
+    }
+    return list;
+  }
+  function paint(){
+    const canvas=get('mimaMarketBetaCanvas');
+    if(!canvas)return;
+    const width=Math.max(300,Math.round(canvas.getBoundingClientRect().width||350));
+    const height=220,ratio=Math.min(2,window.devicePixelRatio||1);
+    canvas.width=Math.round(width*ratio);canvas.height=height*ratio;
+    const ctx=canvas.getContext('2d');if(!ctx)return;
+    ctx.setTransform(ratio,0,0,ratio,0,0);
+    ctx.clearRect(0,0,width,height);
+    const cs=makeCandles();
+    const top=Math.max(...cs.map(c=>c.h))*1.0015,bot=Math.min(...cs.map(c=>c.l))*.9985;
+    const h=174, padLeft=9,padRight=53, plotWidth=width-padLeft-padRight;
+    const y=(v)=>8+(top-v)/(top-bot)*h;
+    ctx.textAlign='right';ctx.font='10px system-ui';
+    for(let i=0;i<=4;i++){
+      const gy=8+i*h/4;ctx.strokeStyle='#253443';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padLeft,gy);ctx.lineTo(width-padRight+8,gy);ctx.stroke();
+      ctx.fillStyle='#8292a0';ctx.fillText((top-(top-bot)*i/4).toFixed(5),width-3,gy+3);
+    }
+    const step=plotWidth/cs.length,candleW=Math.max(3,step*.54);
+    cs.forEach((c,i)=>{
+      const mid=padLeft+step*(i+.5),up=c.c>=c.o,color=up?'#31c79a':'#ee6670';
+      ctx.fillStyle=color;ctx.strokeStyle=color;ctx.lineWidth=1.15;
+      ctx.beginPath();ctx.moveTo(mid,y(c.h));ctx.lineTo(mid,y(c.l));ctx.stroke();
+      const bodyTop=Math.min(y(c.o),y(c.c)),bodyH=Math.max(1.6,Math.abs(y(c.o)-y(c.c)));
+      ctx.fillRect(mid-candleW/2,bodyTop,candleW,bodyH);
+      ctx.globalAlpha=.34;
+      ctx.fillRect(mid-candleW/2,203-(c.vol/100*19),candleW,c.vol/100*19);
+      ctx.globalAlpha=1;
+    });
+    const last=cs[cs.length-1].c,initial=cs[0].o,pct=(last/initial-1)*100;
+    get('mimaMarketBetaPrice').textContent=last.toFixed(6);
+    get('mimaMarketBetaQuote').textContent=MARKET_PAIRS[pair].currency;
+    get('mimaMarketBetaDelta').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';
+    get('mimaMarketBetaDelta').style.color=pct>=0?'#8ee5b6':'#ff9da7';
+    get('mimaMarketBetaDelta').style.borderColor=pct>=0?'#27644b':'#7e3540';
+    get('mimaMarketBetaDelta').style.background=pct>=0?'#123c30':'#3d1e25';
+    get('mimaMarketBetaHigh').textContent=Math.max(...cs.map(c=>c.h)).toFixed(6);
+    get('mimaMarketBetaLow').textContent=Math.min(...cs.map(c=>c.l)).toFixed(6);
+    get('mimaMarketBetaVolume').textContent='1.28M';
+    estimate();
+  }
+  function estimate(){
+    const value=Number(get('mimaMarketBetaAmount')?.value||0);
+    const candles=makeCandles();
+    const unit=candles[candles.length-1].c;
+    const result=side==='buy'?(unit>0?value/unit:0):value*unit;
+    const suffix=side==='buy'?'MIMA':MARKET_PAIRS[pair].currency;
+    get('mimaMarketBetaEstimate').textContent=trans('القيمة التقريبية التجريبية: ','Demo estimated output: ')+(Number.isFinite(result)?result.toLocaleString('en-US',{maximumFractionDigits:6}):'0')+' '+suffix;
+  }
+  function updateLabels(){
+    get('mimaMarketBetaLaunchLabel').textContent=trans('بورصة MIMA','MIMA Exchange');
+    get('mimaMarketBetaSubtitle').textContent=trans('البورصة الداخلية • نسخة تجريبية للإدارة','Internal exchange • Admin preview');
+    get('mimaMarketBetaDisclaimer').textContent=trans('تجريبي فقط — أسعار وشموع افتراضية. لا تداول حقيقي ولا تأثير على الأرصدة.','DEMO ONLY — Simulated prices and candles. No live trading or balance changes.');
+    get('mimaMarketBetaChartTitle').textContent=trans('مخطط الشموع التجريبي','Simulated candlestick chart');
+    get('mimaMarketBetaPriceLabel').textContent=trans('سعر افتراضي','Simulated price');
+    get('mimaMarketBetaHighLabel').textContent=trans('أعلى (تجريبي)','High (demo)');
+    get('mimaMarketBetaLowLabel').textContent=trans('أدنى (تجريبي)','Low (demo)');
+    get('mimaMarketBetaVolumeLabel').textContent=trans('حجم (تجريبي)','Volume (demo)');
+    get('mimaMarketBetaTradeHeading').textContent=trans('منصة التبادل','Exchange terminal');
+    get('mimaMarketBetaMode').textContent=trans('معاينة فقط','Preview only');
+    get('mimaMarketBetaBuy').textContent=trans('شراء MIMA','Buy MIMA');
+    get('mimaMarketBetaSell').textContent=trans('بيع MIMA','Sell MIMA');
+    get('mimaMarketBetaAmountLabel').textContent=trans('الكمية (للمعاينة)','Amount (preview)');
+    get('mimaMarketBetaTrade').textContent=trans('تبادل العملة','Exchange Coin');
+    get('mimaMarketBetaFooter').textContent=trans('لن يتم إرسال أي طلب أو تغيير أي رصيد. هذه مجرد معاينة خاصة بالإدارة.','No orders will be sent and no balances can change. Admin-only visual preview.');
+    get('mimaMarketBetaInputUnit').textContent=side==='buy'?MARKET_PAIRS[pair].currency:'MIMA';
+    estimate();
+  }
+  function close(){
+    get('mimaMarketBetaOverlay')?.classList.remove('mimaOpen');
+    document.body.classList.remove('mimaMarketBetaBodyOpen');
+    if(lastFocus?.focus)lastFocus.focus();
+  }
+  function open(){
+    if(!isAdmin())return;
+    lastFocus=document.activeElement;
+    updateLabels();
+    get('mimaMarketBetaOverlay').classList.add('mimaOpen');
+    document.body.classList.add('mimaMarketBetaBodyOpen');
+    get('mimaMarketBetaStatus').textContent='';
+    requestAnimationFrame(paint);
+    get('mimaMarketBetaClose').focus();
+  }
+  function init(){
+    if(!isAdmin())return;
+    const launch=get('mimaMarketBetaLaunch'),wrap=get('mimaMarketBetaLaunchWrap');
+    if(!launch||!wrap)return;
+    wrap.style.display='flex';
+    const overlay=document.createElement('div');
+    overlay.id='mimaMarketBetaOverlay';
+    overlay.setAttribute('role','presentation');
+    overlay.innerHTML=`
+      <div id="mimaMarketBetaDialog" role="dialog" aria-modal="true" aria-label="MIMA Exchange Demo" dir="ltr">
+        <div class="mmb-head"><div class="mmb-brand"><div class="mmb-mark">M</div><div><b>MIMA EXCHANGE</b><small id="mimaMarketBetaSubtitle"></small></div></div><button id="mimaMarketBetaClose" class="mmb-close" type="button" aria-label="Close">×</button></div>
+        <div id="mimaMarketBetaDisclaimer" class="mmb-notice"></div>
+        <div class="mmb-pairs"><button type="button" data-mmbpair="MIMA/GRAM" aria-pressed="true">MIMA / GRAM</button><button type="button" data-mmbpair="MIMA/USDT" aria-pressed="false">MIMA / USDT</button></div>
+        <div class="mmb-topline"><div class="mmb-priceblock"><strong id="mimaMarketBetaPrice">0.000000</strong><small><span id="mimaMarketBetaQuote">GRAM</span> · <span id="mimaMarketBetaPriceLabel"></span></small></div><div class="mmb-change" id="mimaMarketBetaDelta">+0.00%</div></div>
+        <div class="mmb-chartpanel"><div class="mmb-chartrow"><strong id="mimaMarketBetaChartTitle"></strong><div class="mmb-timeframes"><button type="button" data-mmbperiod="1H" aria-pressed="true">1H</button><button type="button" data-mmbperiod="4H" aria-pressed="false">4H</button><button type="button" data-mmbperiod="1D" aria-pressed="false">1D</button><button type="button" data-mmbperiod="1W" aria-pressed="false">1W</button></div></div><canvas id="mimaMarketBetaCanvas" width="400" height="220" aria-label="Demo candlestick chart"></canvas></div>
+        <div class="mmb-stats"><div><small id="mimaMarketBetaHighLabel"></small><b id="mimaMarketBetaHigh"></b></div><div><small id="mimaMarketBetaLowLabel"></small><b id="mimaMarketBetaLow"></b></div><div><small id="mimaMarketBetaVolumeLabel"></small><b id="mimaMarketBetaVolume"></b></div></div>
+        <div class="mmb-order"><div class="mmb-order-head"><b id="mimaMarketBetaTradeHeading"></b><span id="mimaMarketBetaMode"></span></div><div class="mmb-order-tabs"><button type="button" data-side="buy" id="mimaMarketBetaBuy" aria-pressed="true"></button><button type="button" data-side="sell" id="mimaMarketBetaSell" aria-pressed="false"></button></div><label for="mimaMarketBetaAmount" class="mmb-field-label" id="mimaMarketBetaAmountLabel"></label><div class="mmb-field"><input id="mimaMarketBetaAmount" type="number" min="0" step="any" inputmode="decimal" value="100" autocomplete="off"><span id="mimaMarketBetaInputUnit"></span></div><div id="mimaMarketBetaEstimate" class="mmb-estimate"></div><button id="mimaMarketBetaTrade" type="button"></button><div id="mimaMarketBetaStatus" role="status"></div></div>
+        <div id="mimaMarketBetaFooter" class="mmb-bottom"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+    launch.addEventListener('click',open);
+    get('mimaMarketBetaClose').addEventListener('click',close);
+    overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+    document.addEventListener('keydown',e=>{
+      if(!overlay.classList.contains('mimaOpen'))return;
+      if(e.key==='Escape'){e.preventDefault();close();}
+      if(e.key==='Tab'){
+        const focusable=Array.from(overlay.querySelectorAll('button:not([disabled]),input:not([disabled])'));
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
+        else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
+      }
+    });
+    overlay.querySelectorAll('[data-mmbpair]').forEach(b=>b.addEventListener('click',()=>{
+      pair=b.getAttribute('data-mmbpair');
+      overlay.querySelectorAll('[data-mmbpair]').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));
+      updateLabels();paint();
+    }));
+    overlay.querySelectorAll('[data-mmbperiod]').forEach(b=>b.addEventListener('click',()=>{
+      period=b.getAttribute('data-mmbperiod');
+      overlay.querySelectorAll('[data-mmbperiod]').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));
+      paint();
+    }));
+    overlay.querySelectorAll('[data-side]').forEach(b=>b.addEventListener('click',()=>{
+      side=b.getAttribute('data-side');
+      overlay.querySelectorAll('[data-side]').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));
+      updateLabels();
+    }));
+    get('mimaMarketBetaAmount').addEventListener('input',estimate);
+    get('mimaMarketBetaTrade').addEventListener('click',()=>{
+      get('mimaMarketBetaStatus').textContent=trans('🚀 قريباً — التداول الحقيقي غير مفعّل بعد.','🚀 Coming soon — Live trading is not enabled.');
+    });
+    window.addEventListener('resize',()=>{if(overlay.classList.contains('mimaOpen'))paint();});
+    new MutationObserver(()=>{updateLabels();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+    updateLabels();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
 </body>
 </html>
 <style>
