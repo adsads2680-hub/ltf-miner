@@ -592,14 +592,24 @@ header.topbar>#menuToggleBtn{
 #mimaMarketBetaLaunch span:first-child{color:#f4b94e;font-size:17px}
 #mimaMarketBetaLaunch small{border:1px solid #8c7040;background:#33230b;color:#f4d494;border-radius:5px;font-size:8px;letter-spacing:.09em;padding:2px 4px}
 #mimaMarketBetaLaunch:focus-visible{outline:2px solid #ffe1a0;outline-offset:3px}
-#mimaMarketBetaOverlay{box-sizing:border-box;position:fixed;inset:0;z-index:2147483646;display:none;justify-content:center;align-items:center;padding:0;border:0;border-radius:0;margin:0;width:100vw;max-width:none;max-height:none;height:100dvh;background:rgba(1,5,10,.89);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+/* Telegram draws its native header over the WebApp. Reserve room before
+   the exchange header and keep only the exchange content scrollable. */
+#mimaMarketBetaOverlay{
+  --mima-market-safe-top:max(88px, calc(env(safe-area-inset-top, 0px) + 76px), calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px) + 14px));
+  box-sizing:border-box;position:fixed;inset:0;z-index:2147483646;
+  display:none;justify-content:center;align-items:flex-start;
+  padding:var(--mima-market-safe-top) 0 max(18px, env(safe-area-inset-bottom, 0px));
+  border:0;border-radius:0;margin:0;width:100vw;max-width:none;max-height:none;
+  height:100dvh;overflow:hidden;
+  background:rgba(1,5,10,.89);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+}
 #mimaMarketBetaOverlay.mimaOpen{display:flex}
 #mimaMarketBetaOverlay::backdrop{background:rgba(1,5,10,.89)}
-#mimaMarketBetaDialog{box-sizing:border-box;position:relative;width:min(100%,540px);max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;border:1px solid rgba(229,183,93,.50);border-radius:20px;background:radial-gradient(circle at 80% 0%,rgba(187,132,43,.18),transparent 43%),linear-gradient(160deg,#0f161e 0%,#0a0e13 45%,#090b10 100%);box-shadow:0 16px 70px rgba(0,0,0,.68);color:#eee4d0;padding:16px 15px 25px;font-family:inherit}
+#mimaMarketBetaDialog{box-sizing:border-box;position:relative;width:min(100%,540px);min-height:0;max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border:1px solid rgba(229,183,93,.50);border-radius:20px;background:radial-gradient(circle at 80% 0%,rgba(187,132,43,.18),transparent 43%),linear-gradient(160deg,#0f161e 0%,#0a0e13 45%,#090b10 100%);box-shadow:0 16px 70px rgba(0,0,0,.68);color:#eee4d0;padding:16px 15px max(32px, env(safe-area-inset-bottom, 0px));font-family:inherit}
 #mimaMarketBetaDialog *{box-sizing:border-box}
 #mimaMarketBetaDialog button{font:inherit;cursor:pointer}
 #mimaMarketBetaDialog button:focus-visible,#mimaMarketBetaDialog input:focus-visible{outline:2px solid #ffd282;outline-offset:2px}
-.mmb-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.mmb-head{position:sticky;top:-16px;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding:2px 0 10px;background:linear-gradient(180deg,#11171c 78%,rgba(17,23,28,.96));border-bottom:1px solid rgba(228,176,71,.15)}
 .mmb-brand{display:flex;align-items:center;gap:9px;text-align:start}
 .mmb-mark{width:39px;height:39px;border:1px solid #d8ad60;border-radius:11px;display:grid;place-items:center;font-weight:1000;font-size:22px;color:#f8cc6b;background:radial-gradient(circle at 40% 20%,#483015,#110f10 70%)}
 .mmb-brand b{display:block;font-size:14px;letter-spacing:.035em;color:#ffe4a2}
@@ -640,7 +650,7 @@ header.topbar>#menuToggleBtn{
 #mimaMarketBetaStatus{font-size:11px;min-height:19px;margin-top:9px;color:#f4d49b;text-align:center}
 .mmb-bottom{color:#7f94a7;font-size:10px;line-height:1.6;text-align:center;margin-top:11px}
 body.mimaMarketBetaBodyOpen{overflow:hidden!important}
-@media(min-width:560px){#mimaMarketBetaDialog{max-height:min(93dvh,890px);border-radius:21px;padding:18px 20px 25px}}
+@media(min-width:560px){#mimaMarketBetaDialog{max-height:100%;border-radius:21px;padding:18px 20px 25px}}
 @media(max-width:355px){#mimaMarketBetaDialog{padding:10px}#mimaMarketBetaCanvas{height:190px}.mmb-priceblock strong{font-size:25px}.mmb-pairs button{font-size:10px;padding:7px}}
 @media(prefers-reduced-motion:reduce){#mimaMarketBetaOverlay{backdrop-filter:none;-webkit-backdrop-filter:none}}
 </style>
