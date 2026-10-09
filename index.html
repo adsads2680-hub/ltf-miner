@@ -488,6 +488,7 @@ html[dir="ltr"] input{text-align:left}
 <div id="topMenuBackdrop" class="topMenuBackdrop" onclick="closeTopMenu()"></div>
 <div id="topMenu" class="topMenu">
   <button type="button" onclick="openWithdrawFromMenu()">💸 سحب</button>
+  <button id="mimaTopMenuLanguageButton" type="button" onclick="openMimaLanguageFromMenu()">🌐 Language</button>
 </div>
 
 <section id="home" class="screen active">
@@ -1664,6 +1665,8 @@ html[dir="ltr"] input{text-align:left}
     if(coin) coin.setAttribute('aria-label',tx('عملة MIMA','MIMA coin'));
     const value=document.getElementById('languageValue');
     if(value) value.textContent=MIMA_LANGUAGE_NAMES[currentLang]||MIMA_LANGUAGE_NAMES.en;
+    const topLangButton=document.getElementById('mimaTopMenuLanguageButton');
+    if(topLangButton) topLangButton.textContent=currentLang==='ar'?'🌐 اللغة':'🌐 Language';
     document.querySelectorAll('.mimaLangOption').forEach(btn=>{
       btn.setAttribute('aria-checked',String(btn.dataset.lang===currentLang));
       btn.classList.toggle('selected',btn.dataset.lang===currentLang);
@@ -4753,6 +4756,13 @@ html[dir="ltr"] input{text-align:left}
     $('topMenuBackdrop').classList.remove('show');
   }
 
+  function openMimaLanguageFromMenu(){
+    closeTopMenu();
+    if(typeof window.toggleLanguage === 'function'){
+      window.toggleLanguage();
+    }
+  }
+
   function openWithdrawFromMenu(){
     closeTopMenu();
 
@@ -5215,6 +5225,21 @@ html,body{
 }
 .screen{
   padding-bottom:155px!important;
+}
+
+/* Language shortcut in the existing three-line top menu. */
+.topMenu #mimaTopMenuLanguageButton{
+  color:#ffe3a1;
+  border:1px solid rgba(231,177,59,.75);
+  background:linear-gradient(180deg,#1e1b11,#101821);
+  font-weight:800;
+  text-align:center;
+  direction:auto;
+}
+.topMenu #mimaTopMenuLanguageButton:hover,
+.topMenu #mimaTopMenuLanguageButton:focus-visible{
+  background:linear-gradient(180deg,#302309,#1b1b15);
+  border-color:#ffcf62;
 }
 </style>
 
