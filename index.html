@@ -652,6 +652,20 @@ header.topbar>#menuToggleBtn{
 body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 @media(min-width:560px){#mimaMarketBetaDialog{max-height:100%;border-radius:21px;padding:18px 20px 25px}}
 @media(max-width:355px){#mimaMarketBetaDialog{padding:10px}#mimaMarketBetaCanvas{height:190px}.mmb-priceblock strong{font-size:25px}.mmb-pairs button{font-size:10px;padding:7px}}
+/* Only the exchange preview is exposed publicly: all real-order-like controls
+   and simulated price numbers remain exclusive to the admin prototype. */
+#mimaMarketBetaOverlay.mimaMarketPublic .mmb-pairs,
+#mimaMarketBetaOverlay.mimaMarketPublic .mmb-topline,
+#mimaMarketBetaOverlay.mimaMarketPublic .mmb-stats,
+#mimaMarketBetaOverlay.mimaMarketPublic .mmb-order{display:none!important}
+.mmb-coming{display:none;margin:12px 0 14px;padding:17px 13px;text-align:center;border-radius:14px;border:1px solid rgba(232,179,77,.60);background:radial-gradient(circle at 50% 0%,rgba(238,178,64,.15),transparent 80%),linear-gradient(160deg,#22200f,#0e151c);box-shadow:inset 0 1px 0 rgba(255,227,152,.12)}
+#mimaMarketBetaOverlay.mimaMarketPublic .mmb-coming{display:block}
+.mmb-coming-icon{display:block;font-size:19px;color:#ffdc91;margin-bottom:5px}
+.mmb-coming strong{display:block;font-size:22px;line-height:1.4;font-weight:950;letter-spacing:.025em;color:#ffe4a5}
+.mmb-coming small{display:block;font-size:11px;line-height:1.7;color:#bbcad4;margin-top:6px}
+#mimaMarketBetaOverlay.mimaMarketPublic #mimaMarketBetaDialog{padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}
+#mimaMarketBetaOverlay.mimaMarketPublic .mmb-chartpanel{margin-top:13px}
+#mimaMarketBetaOverlay.mimaMarketPublic .mmb-bottom{font-size:11px;margin-top:16px;color:#d0b47f}
 @media(prefers-reduced-motion:reduce){#mimaMarketBetaOverlay{backdrop-filter:none;-webkit-backdrop-filter:none}}
 </style>
 </head>
@@ -724,7 +738,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 </div>
     <button id="startMining" class="start running" type="button"><span class="mineBtnIcon">M</span><span id="mineBtnText">ابدأ التعدين • 0.000000 MIMA</span></button>
     <div id="mimaMarketBetaLaunchWrap" style="display:none">
-      <button id="mimaMarketBetaLaunch" type="button" aria-haspopup="dialog" aria-controls="mimaMarketBetaOverlay" onclick="window.mimaOpenMarketDemo && window.mimaOpenMarketDemo(event)"><span aria-hidden="true">◈</span> <span id="mimaMarketBetaLaunchLabel">بورصة MIMA</span> <small>DEMO</small></button>
+      <button id="mimaMarketBetaLaunch" type="button" aria-haspopup="dialog" aria-controls="mimaMarketBetaOverlay" onclick="window.mimaOpenMarketDemo && window.mimaOpenMarketDemo(event)"><span aria-hidden="true">◈</span> <span id="mimaMarketBetaLaunchLabel">بورصة MIMA</span> <small id="mimaMarketBetaLaunchBadge">DEMO</small></button>
     </div>
     <div class="progressWrap">
       <div class="progressTop"><span>المكتسب في الجولة</span><span id="timer">0.000000 MIMA</span></div>
@@ -7750,12 +7764,14 @@ input[type="submit"]:focus-visible{
     ctx.clearRect(0,0,width,height);
     const cs=makeCandles();
     const top=Math.max(...cs.map(c=>c.h))*1.0015,bot=Math.min(...cs.map(c=>c.l))*.9985;
-    const h=174, padLeft=9,padRight=53, plotWidth=width-padLeft-padRight;
+    const publicView=!isAdmin();
+    const h=174, padLeft=9,padRight=publicView?13:53, plotWidth=width-padLeft-padRight;
     const y=(v)=>8+(top-v)/(top-bot)*h;
     ctx.textAlign='right';ctx.font='10px system-ui';
     for(let i=0;i<=4;i++){
       const gy=8+i*h/4;ctx.strokeStyle='#253443';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padLeft,gy);ctx.lineTo(width-padRight+8,gy);ctx.stroke();
-      ctx.fillStyle='#8292a0';ctx.fillText((top-(top-bot)*i/4).toFixed(5),width-3,gy+3);
+      // Public preview never displays synthetic numbers as real market prices.
+      if(!publicView){ctx.fillStyle='#8292a0';ctx.fillText((top-(top-bot)*i/4).toFixed(5),width-3,gy+3);}
     }
     const step=plotWidth/cs.length,candleW=Math.max(3,step*.54);
     cs.forEach((c,i)=>{
@@ -7789,10 +7805,20 @@ input[type="submit"]:focus-visible{
     get('mimaMarketBetaEstimate').textContent=trans('القيمة التقريبية التجريبية: ','Demo estimated output: ')+(Number.isFinite(result)?result.toLocaleString('en-US',{maximumFractionDigits:6}):'0')+' '+suffix;
   }
   function updateLabels(){
+    const admin=isAdmin();
     get('mimaMarketBetaLaunchLabel').textContent=trans('بورصة MIMA','MIMA Exchange');
-    get('mimaMarketBetaSubtitle').textContent=trans('البورصة الداخلية • نسخة تجريبية للإدارة','Internal exchange • Admin preview');
-    get('mimaMarketBetaDisclaimer').textContent=trans('تجريبي فقط — أسعار وشموع افتراضية. لا تداول حقيقي ولا تأثير على الأرصدة.','DEMO ONLY — Simulated prices and candles. No live trading or balance changes.');
-    get('mimaMarketBetaChartTitle').textContent=trans('مخطط الشموع التجريبي','Simulated candlestick chart');
+    get('mimaMarketBetaLaunchBadge').textContent=admin?'DEMO':trans('قريباً','SOON');
+    get('mimaMarketBetaSubtitle').textContent=admin
+      ? trans('البورصة الداخلية • نسخة تجريبية للإدارة','Internal exchange • Admin preview')
+      : trans('تداول MIMA قريباً','MIMA trading — Coming Soon');
+    get('mimaMarketBetaDisclaimer').textContent=admin
+      ? trans('تجريبي فقط — أسعار وشموع افتراضية. لا تداول حقيقي ولا تأثير على الأرصدة.','DEMO ONLY — Simulated prices and candles. No live trading or balance changes.')
+      : trans('معاينة بصرية فقط — الشموع توضيحية وليست أسعار تداول فعلية.','Visual preview only — these candles are illustrative, not real market prices.');
+    get('mimaMarketBetaComingSoonTitle').textContent=trans('تداول MIMA قريباً','MIMA Trading Coming Soon');
+    get('mimaMarketBetaComingSoonSub').textContent=trans('نجهّز تجربة التداول الخاصة بـ MIMA. التداول غير متاح حالياً.','We are preparing the MIMA trading experience. Trading is not available yet.');
+    get('mimaMarketBetaChartTitle').textContent=admin
+      ? trans('مخطط الشموع التجريبي','Simulated candlestick chart')
+      : trans('معاينة الشموع • تجريبي','Candlestick preview • DEMO');
     get('mimaMarketBetaPriceLabel').textContent=trans('سعر افتراضي','Simulated price');
     get('mimaMarketBetaHighLabel').textContent=trans('أعلى (تجريبي)','High (demo)');
     get('mimaMarketBetaLowLabel').textContent=trans('أدنى (تجريبي)','Low (demo)');
@@ -7803,7 +7829,9 @@ input[type="submit"]:focus-visible{
     get('mimaMarketBetaSell').textContent=trans('بيع MIMA','Sell MIMA');
     get('mimaMarketBetaAmountLabel').textContent=trans('الكمية (للمعاينة)','Amount (preview)');
     get('mimaMarketBetaTrade').textContent=trans('تبادل العملة','Exchange Coin');
-    get('mimaMarketBetaFooter').textContent=trans('لن يتم إرسال أي طلب أو تغيير أي رصيد. هذه مجرد معاينة خاصة بالإدارة.','No orders will be sent and no balances can change. Admin-only visual preview.');
+    get('mimaMarketBetaFooter').textContent=admin
+      ? trans('لن يتم إرسال أي طلب أو تغيير أي رصيد. هذه مجرد معاينة خاصة بالإدارة.','No orders will be sent and no balances can change. Admin-only visual preview.')
+      : trans('MIMA EXCHANGE — قريباً • لا توجد معاملات أو تداولات حالياً.','MIMA EXCHANGE — Coming Soon • No orders or trades are active.');
     get('mimaMarketBetaInputUnit').textContent=side==='buy'?MARKET_PAIRS[pair].currency:'MIMA';
     estimate();
   }
@@ -7818,9 +7846,9 @@ input[type="submit"]:focus-visible{
     if(lastFocus?.focus)lastFocus.focus();
   }
   function open(){
-    if(!isAdmin())return;
     const dialog=get('mimaMarketBetaOverlay');
     if(!dialog)return;
+    dialog.classList.toggle('mimaMarketPublic',!isAdmin());
     // Use the native dialog top layer on Telegram mobile WebViews.
     // Fall back to a high-z-index overlay on older clients.
     if(!dialog.open && !dialog.classList.contains('mimaOpen')){
@@ -7843,16 +7871,17 @@ input[type="submit"]:focus-visible{
     get('mimaMarketBetaClose')?.focus();
   }
   function init(){
-    if(!isAdmin())return;
     const launch=get('mimaMarketBetaLaunch'),wrap=get('mimaMarketBetaLaunchWrap');
     if(!launch||!wrap)return;
     const overlay=document.createElement('dialog');
     overlay.id='mimaMarketBetaOverlay';
     overlay.setAttribute('role','presentation');
+    overlay.classList.toggle('mimaMarketPublic',!isAdmin());
     overlay.innerHTML=`
       <div id="mimaMarketBetaDialog" role="dialog" aria-modal="true" aria-label="MIMA Exchange Demo" dir="ltr">
         <div class="mmb-head"><div class="mmb-brand"><div class="mmb-mark">M</div><div><b>MIMA EXCHANGE</b><small id="mimaMarketBetaSubtitle"></small></div></div><button id="mimaMarketBetaClose" class="mmb-close" type="button" aria-label="Close">×</button></div>
         <div id="mimaMarketBetaDisclaimer" class="mmb-notice"></div>
+        <div class="mmb-coming" aria-live="polite"><span class="mmb-coming-icon" aria-hidden="true">✦ ◈ ✦</span><strong id="mimaMarketBetaComingSoonTitle">تداول MIMA قريباً</strong><small id="mimaMarketBetaComingSoonSub">معاينة فقط • التداول غير متاح حالياً</small></div>
         <div class="mmb-pairs"><button type="button" data-mmbpair="MIMA/GRAM" aria-pressed="true">MIMA / GRAM</button><button type="button" data-mmbpair="MIMA/USDT" aria-pressed="false">MIMA / USDT</button></div>
         <div class="mmb-topline"><div class="mmb-priceblock"><strong id="mimaMarketBetaPrice">0.000000</strong><small><span id="mimaMarketBetaQuote">GRAM</span> · <span id="mimaMarketBetaPriceLabel"></span></small></div><div class="mmb-change" id="mimaMarketBetaDelta">+0.00%</div></div>
         <div class="mmb-chartpanel"><div class="mmb-chartrow"><strong id="mimaMarketBetaChartTitle"></strong><div class="mmb-timeframes"><button type="button" data-mmbperiod="1H" aria-pressed="true">1H</button><button type="button" data-mmbperiod="4H" aria-pressed="false">4H</button><button type="button" data-mmbperiod="1D" aria-pressed="false">1D</button><button type="button" data-mmbperiod="1W" aria-pressed="false">1W</button></div></div><canvas id="mimaMarketBetaCanvas" width="400" height="220" aria-label="Demo candlestick chart"></canvas></div>
