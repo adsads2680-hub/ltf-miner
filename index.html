@@ -830,8 +830,8 @@ header.topbar>#menuToggleBtn{
       class="mimaAdsgramNativeTask">
       <span slot="reward" class="mimaAdsgramTaskReward">+3 MIMA</span>
       <div slot="button" class="mimaAdsgramTaskButton">ابدأ</div>
-      <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">استلم</div>
-      <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">تم</div>
+      <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">تحقق</div>
+      <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">بانتظار التأكيد</div>
     </adsgram-task>
     <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCooldownRow" style="display:none" role="status" aria-live="off">
       <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</span>
@@ -9308,9 +9308,9 @@ input[type="submit"]:focus-visible{
   border-color:#e1a72a;
 }
 #tasks .mimaAdsgramTaskDone{
-  color:#62e6ac;
-  border-color:rgba(67,210,154,.48);
-  background:linear-gradient(180deg,#102119,#07110d);
+  color:#ffe7a0;
+  border-color:rgba(225,167,42,.65);
+  background:linear-gradient(180deg,#29210e,#141209);
 }
 </style>
 
@@ -9322,6 +9322,8 @@ input[type="submit"]:focus-visible{
   let cooldownTimer=null;
   let verificationState='idle';
 
+  // AdsGram controls when its native button/claim/done slots are displayed.
+  // A native "done" is NOT our evidence of a verified MIMA reward.
   function txSafe(ar,en){
     try{return typeof tx==='function'?tx(ar,en):ar}catch(e){return ar}
   }
@@ -9438,8 +9440,10 @@ input[type="submit"]:focus-visible{
       const c=task.querySelector('[slot="claim"]');
       const d=task.querySelector('[slot="done"]');
       if(b) b.textContent=txSafe('ابدأ','Start');
-      if(c) c.textContent=txSafe('استلم','Claim');
-      if(d) d.textContent=txSafe('تم','Done');
+      if(c) c.textContent=txSafe('تحقق','Verify');
+      // The server-backed cooldown row is the only "completed" confirmation
+      // in MIMA. The native AdsGram done state may precede our callback.
+      if(d) d.textContent=txSafe('بانتظار التأكيد','Awaiting confirmation');
     }
   }
 
@@ -9456,6 +9460,20 @@ input[type="submit"]:focus-visible{
     });
 
     let verifyingReward=false;
+    // Count user intent separately from AdsGram's reward event, so that
+    // unexpected immediate completion can be investigated without blocking
+    // the provider's own task navigation or reward flow.
+    task.addEventListener('click',(event)=>{
+      const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
+      const startClicked=path.some(el=>el && typeof el.getAttribute==='function' && el.getAttribute('slot')==='button');
+      if(startClicked){
+        window.mimaAdDiag?.('task','request');
+        const sub=document.getElementById('mimaAdsgramTaskSub');
+        if(sub && verificationState==='idle'){
+          sub.textContent=txSafe('افتح العرض وأكمل المطلوب، ثم تحقق من المكافأة','Open and complete the offer, then verify your reward');
+        }
+      }
+    },true);
     task.addEventListener('reward',async()=>{
       if(verifyingReward)return;
       verifyingReward=true;
