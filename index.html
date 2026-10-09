@@ -587,13 +587,14 @@ header.topbar>#menuToggleBtn{
 }
 </style>
 <style id="mima-market-admin-beta-css">
-#mimaMarketBetaLaunchWrap{display:none;justify-content:center;padding:12px 0 4px}
-#mimaMarketBetaLaunch{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 14px;border:1px solid rgba(227,180,73,.73);border-radius:12px;background:linear-gradient(150deg,#251a0b,#101418 70%,#15110a);box-shadow:0 5px 18px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,231,167,.09);color:#f9d68d;font:800 12px/1.25 inherit;cursor:pointer}
+#mimaMarketBetaLaunchWrap{display:none;justify-content:center;padding:12px 0 4px;position:relative;z-index:99;pointer-events:auto!important}
+#mimaMarketBetaLaunch{pointer-events:auto!important;touch-action:manipulation;position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 14px;border:1px solid rgba(227,180,73,.73);border-radius:12px;background:linear-gradient(150deg,#251a0b,#101418 70%,#15110a);box-shadow:0 5px 18px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,231,167,.09);color:#f9d68d;font:800 12px/1.25 inherit;cursor:pointer}
 #mimaMarketBetaLaunch span:first-child{color:#f4b94e;font-size:17px}
 #mimaMarketBetaLaunch small{border:1px solid #8c7040;background:#33230b;color:#f4d494;border-radius:5px;font-size:8px;letter-spacing:.09em;padding:2px 4px}
 #mimaMarketBetaLaunch:focus-visible{outline:2px solid #ffe1a0;outline-offset:3px}
-#mimaMarketBetaOverlay{position:fixed;inset:0;z-index:200000;display:none;justify-content:center;align-items:center;padding:0;background:rgba(1,5,10,.89);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#mimaMarketBetaOverlay{box-sizing:border-box;position:fixed;inset:0;z-index:2147483646;display:none;justify-content:center;align-items:center;padding:0;border:0;border-radius:0;margin:0;width:100vw;max-width:none;max-height:none;height:100dvh;background:rgba(1,5,10,.89);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 #mimaMarketBetaOverlay.mimaOpen{display:flex}
+#mimaMarketBetaOverlay::backdrop{background:rgba(1,5,10,.89)}
 #mimaMarketBetaDialog{box-sizing:border-box;position:relative;width:min(100%,540px);max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;border:1px solid rgba(229,183,93,.50);border-radius:20px;background:radial-gradient(circle at 80% 0%,rgba(187,132,43,.18),transparent 43%),linear-gradient(160deg,#0f161e 0%,#0a0e13 45%,#090b10 100%);box-shadow:0 16px 70px rgba(0,0,0,.68);color:#eee4d0;padding:16px 15px 25px;font-family:inherit}
 #mimaMarketBetaDialog *{box-sizing:border-box}
 #mimaMarketBetaDialog button{font:inherit;cursor:pointer}
@@ -713,7 +714,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 </div>
     <button id="startMining" class="start running" type="button"><span class="mineBtnIcon">M</span><span id="mineBtnText">ابدأ التعدين • 0.000000 MIMA</span></button>
     <div id="mimaMarketBetaLaunchWrap" style="display:none">
-      <button id="mimaMarketBetaLaunch" type="button" aria-haspopup="dialog"><span aria-hidden="true">◈</span> <span id="mimaMarketBetaLaunchLabel">بورصة MIMA</span> <small>DEMO</small></button>
+      <button id="mimaMarketBetaLaunch" type="button" aria-haspopup="dialog" aria-controls="mimaMarketBetaOverlay" onclick="window.mimaOpenMarketDemo && window.mimaOpenMarketDemo(event)"><span aria-hidden="true">◈</span> <span id="mimaMarketBetaLaunchLabel">بورصة MIMA</span> <small>DEMO</small></button>
     </div>
     <div class="progressWrap">
       <div class="progressTop"><span>المكتسب في الجولة</span><span id="timer">0.000000 MIMA</span></div>
@@ -7797,26 +7798,45 @@ input[type="submit"]:focus-visible{
     estimate();
   }
   function close(){
-    get('mimaMarketBetaOverlay')?.classList.remove('mimaOpen');
+    const dialog=get('mimaMarketBetaOverlay');
+    if(dialog && typeof dialog.close==='function' && dialog.open){
+      try{dialog.close();}catch(e){}
+    }
+    dialog?.classList.remove('mimaOpen');
+    if(dialog)dialog.style.display='';
     document.body.classList.remove('mimaMarketBetaBodyOpen');
     if(lastFocus?.focus)lastFocus.focus();
   }
   function open(){
     if(!isAdmin())return;
-    lastFocus=document.activeElement;
-    updateLabels();
-    get('mimaMarketBetaOverlay').classList.add('mimaOpen');
+    const dialog=get('mimaMarketBetaOverlay');
+    if(!dialog)return;
+    // Use the native dialog top layer on Telegram mobile WebViews.
+    // Fall back to a high-z-index overlay on older clients.
+    if(!dialog.open && !dialog.classList.contains('mimaOpen')){
+      lastFocus=document.activeElement;
+    }
+    try{
+      if(typeof dialog.showModal==='function' && !dialog.open)dialog.showModal();
+    }catch(e){}
+    dialog.classList.add('mimaOpen');
+    dialog.style.display='flex';
     document.body.classList.add('mimaMarketBetaBodyOpen');
-    get('mimaMarketBetaStatus').textContent='';
-    requestAnimationFrame(paint);
-    get('mimaMarketBetaClose').focus();
+    const status=get('mimaMarketBetaStatus');
+    if(status)status.textContent='';
+    try{
+      updateLabels();
+      requestAnimationFrame(paint);
+    }catch(e){
+      if(status)status.textContent=trans('تعذر تحديث بعض بيانات المعاينة، يرجى إعادة المحاولة.','Some preview data could not load. Please retry.');
+    }
+    get('mimaMarketBetaClose')?.focus();
   }
   function init(){
     if(!isAdmin())return;
     const launch=get('mimaMarketBetaLaunch'),wrap=get('mimaMarketBetaLaunchWrap');
     if(!launch||!wrap)return;
-    wrap.style.display='flex';
-    const overlay=document.createElement('div');
+    const overlay=document.createElement('dialog');
     overlay.id='mimaMarketBetaOverlay';
     overlay.setAttribute('role','presentation');
     overlay.innerHTML=`
@@ -7831,7 +7851,17 @@ input[type="submit"]:focus-visible{
         <div id="mimaMarketBetaFooter" class="mmb-bottom"></div>
       </div>`;
     document.body.appendChild(overlay);
-    launch.addEventListener('click',open);
+    // Provide both an inline and a normal click handler for Telegram clients.
+    window.mimaOpenMarketDemo=function(event){
+      if(event){event.preventDefault();event.stopPropagation();}
+      open();
+    };
+    launch.addEventListener('click',function(event){
+      if(overlay.open || overlay.classList.contains('mimaOpen'))return;
+      window.mimaOpenMarketDemo(event);
+    });
+    wrap.style.display='flex';
+    overlay.addEventListener('cancel',function(event){event.preventDefault();close();});
     get('mimaMarketBetaClose').addEventListener('click',close);
     overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
     document.addEventListener('keydown',e=>{
@@ -7865,7 +7895,7 @@ input[type="submit"]:focus-visible{
     });
     window.addEventListener('resize',()=>{if(overlay.classList.contains('mimaOpen'))paint();});
     new MutationObserver(()=>{updateLabels();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-    updateLabels();
+    try{updateLabels();}catch(e){}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
