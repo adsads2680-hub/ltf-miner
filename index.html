@@ -3918,6 +3918,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_v1';
 
   function openInteractPost(){
+    // Disabled by MIMA administration: the interaction task is retired.
+    return;
     try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
     renderInteractPostTask();
 
@@ -3973,6 +3975,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   }
 
   async function claimInteractPostTask(btn){
+    // Disabled by MIMA administration: no interaction rewards can be claimed here.
+    return;
     if(!btn || btn.disabled) return;
 
     let opened = false;
