@@ -568,6 +568,24 @@ header.topbar>#menuToggleBtn{
   try{window.Telegram?.WebApp?.onEvent?.('contentSafeAreaChanged',syncMimaHeader)}catch(e){}
 })();
 </script>
+
+<style id="mima-sponsored-server-verification-v1">
+#tasks #mimaAdsgramTaskServerNotice.mimaAdsgramTaskServerNotice{
+  display:none;
+  width:100%;
+  box-sizing:border-box;
+  margin-top:9px;
+  padding:11px 13px;
+  color:#f7d996;
+  background:linear-gradient(135deg,#1c160b,#0b1118);
+  border:1px solid rgba(222,170,64,.6);
+  border-radius:12px;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.55;
+  text-align:start;
+}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -833,6 +851,7 @@ header.topbar>#menuToggleBtn{
       <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">تحقق</div>
       <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">بانتظار التأكيد</div>
     </adsgram-task>
+    <div id="mimaAdsgramTaskServerNotice" class="mimaAdsgramTaskServerNotice" role="status" aria-live="polite" style="display:none"></div>
     <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCooldownRow" style="display:none" role="status" aria-live="off">
       <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</span>
       <span class="mimaAdsgramCooldownDetails">
@@ -9329,6 +9348,11 @@ input[type="submit"]:focus-visible{
   }
 
   function hideCard(){
+    // Do not let a late AdsGram no-fill/error event override verification.
+    if(verificationState!=='idle'){
+      renderCooldown();
+      return;
+    }
     // Keep the sponsored task container visible even when AdsGram has no fill.
     // In particular, a late no-banner event must never hide the cooldown.
     const card=document.getElementById('mimaAdsgramTaskCard');
@@ -9367,7 +9391,10 @@ input[type="submit"]:focus-visible{
       const localUntil=getCooldownUntil();
       if(data.next_available_at){
         const ts=Date.parse(data.next_available_at);
-        if(Number.isFinite(ts)) setCooldownUntil(Math.max(localUntil,ts));
+        if(Number.isFinite(ts)){
+        setCooldownUntil(Math.max(localUntil,ts));
+        if(ts>Date.now()) verificationState='idle';
+      }
       }else if(data.limit_reached===true){
         setCooldownUntil(Math.max(localUntil,Date.now()+COOLDOWN_MS));
       }else if(data.available===true && localUntil<=Date.now()){
@@ -9395,11 +9422,13 @@ input[type="submit"]:focus-visible{
     const timer=document.getElementById('mimaAdsgramTaskCooldown');
     const value=document.getElementById('mimaAdsgramTaskCooldownValue');
     const label=document.getElementById('mimaAdsgramTaskCooldownLabel');
+    const notice=document.getElementById('mimaAdsgramTaskServerNotice');
     if(!card||!task||!timer) return false;
 
     const left=getCooldownUntil()-Date.now();
     card.style.display='';
     if(left>0){
+      if(notice) notice.style.display='none';
       // Show clean cooldown row instead of native AdsGram loading skeleton.
       task.style.setProperty('display','none','important');
       timer.style.setProperty('display','flex','important');
@@ -9413,6 +9442,17 @@ input[type="submit"]:focus-visible{
     timer.style.setProperty('display','none','important');
     task.style.setProperty('display','block','important');
     applyLanguage();
+    if(notice){
+      if(verificationState==='checking'){
+        notice.textContent=txSafe('⏳ جارٍ التحقق من تأكيد المهمة على الخادم. لا تُحتسب المكافأة بعد.','⏳ Checking server confirmation. No reward has been credited yet.');
+        notice.style.display='block';
+      }else if(verificationState==='awaiting'){
+        notice.textContent=txSafe('⏳ لم يصل تأكيد المكافأة بعد. ظهور حالة AdsGram لا يعني إضافة 3 MIMA.','⏳ Server reward confirmation is pending. An AdsGram status does not mean 3 MIMA was credited.');
+        notice.style.display='block';
+      }else{
+        notice.style.display='none';
+      }
+    }
     if(verificationState==='checking' && sub) sub.textContent=txSafe('جاري تأكيد المكافأة من السيرفر…','Verifying reward with server…');
     if(verificationState==='awaiting' && sub) sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
     return false;
