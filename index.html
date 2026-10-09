@@ -456,6 +456,71 @@ html[dir="ltr"] input{text-align:left}
 #mimaLanguagePicker .mimaLangOption.selected .mimaLangCheck{display:flex}
 @media(max-width:340px){#mimaLanguagePicker .mimaLangPanel{padding-left:11px;padding-right:11px}#mimaLanguagePicker .mimaLangOptions{gap:8px}#mimaLanguagePicker .mimaLangFlag{font-size:21px}#mimaLanguagePicker .mimaLangWord strong{font-size:13px}}
 </style>
+
+<style id="mima-telegram-safe-header-actions-v1">
+/* Telegram displays native Close / More controls over the upper WebView.
+   Keep the hamburger and wallet shortcut in a separate, reachable row below
+   that area; let the page content begin below both rows. */
+:root{
+  --mima-native-overlay-clearance:max(78px, var(--tg-content-safe-area-inset-top, 0px));
+}
+header.topbar{
+  position:sticky!important;
+  top:0!important;
+  height:calc(var(--mima-native-overlay-clearance) + 62px)!important;
+  min-height:calc(var(--mima-native-overlay-clearance) + 62px)!important;
+  padding:0 14px!important;
+  display:block!important;
+  overflow:visible!important;
+  z-index:100!important;
+}
+header.topbar .brand{
+  position:absolute!important;
+  top:13px!important;
+  left:14px!important;
+  right:128px!important;
+  margin:0!important;
+  text-align:left!important;
+  pointer-events:none;
+}
+header.topbar>.iconBtn{
+  position:absolute!important;
+  top:calc(var(--mima-native-overlay-clearance) + 5px)!important;
+  width:49px!important;
+  height:47px!important;
+  margin:0!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#ffe5a4!important;
+  border:1px solid rgba(233,184,67,.65)!important;
+  background:linear-gradient(155deg,#0c2232,#07121d)!important;
+  box-shadow:0 3px 16px rgba(0,0,0,.3)!important;
+  cursor:pointer!important;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  z-index:102!important;
+}
+header.topbar>#menuToggleBtn{
+  right:13px!important;
+  font-size:27px!important;
+}
+header.topbar>.iconBtn:not(#menuToggleBtn){
+  right:71px!important;
+  font-size:24px!important;
+}
+.topMenu{
+  position:fixed!important;
+  top:calc(var(--mima-native-overlay-clearance) + 57px)!important;
+  left:auto!important;
+  right:max(12px,calc((100vw - 460px)/2 + 12px))!important;
+  width:205px!important;
+  z-index:105!important;
+}
+.topMenuBackdrop{z-index:104!important;}
+@media(min-width:700px){
+ header.topbar .brand{top:14px!important;}
+}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
