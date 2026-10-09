@@ -457,65 +457,71 @@ html[dir="ltr"] input{text-align:left}
 @media(max-width:340px){#mimaLanguagePicker .mimaLangPanel{padding-left:11px;padding-right:11px}#mimaLanguagePicker .mimaLangOptions{gap:8px}#mimaLanguagePicker .mimaLangFlag{font-size:21px}#mimaLanguagePicker .mimaLangWord strong{font-size:13px}}
 </style>
 
-<style id="mima-telegram-safe-header-actions-v1">
-/* Telegram displays native Close / More controls over the upper WebView.
-   Keep the hamburger button in a reachable row below that area;
-   the bottom Wallet navigation remains available. */
-:root{
-  --mima-native-overlay-clearance:max(78px, var(--tg-content-safe-area-inset-top, 0px));
-}
+<style id="mima-telegram-safe-header-actions-v2">
+/* Compact header. Telegram's real content-safe top inset handles native
+   overlay controls; never reserve a fixed 78px on clients with a titlebar. */
+:root{--mima-header-native-inset:var(--tg-content-safe-area-inset-top,0px)}
 header.topbar{
   position:sticky!important;
   top:0!important;
-  height:calc(var(--mima-native-overlay-clearance) + 62px)!important;
-  min-height:calc(var(--mima-native-overlay-clearance) + 62px)!important;
-  padding:0 14px!important;
-  display:block!important;
+  box-sizing:border-box!important;
+  height:calc(70px + var(--mima-header-native-inset))!important;
+  min-height:calc(70px + var(--mima-header-native-inset))!important;
+  padding:var(--mima-header-native-inset) 14px 0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
   overflow:visible!important;
   z-index:100!important;
 }
 header.topbar .brand{
-  position:absolute!important;
-  top:13px!important;
-  left:14px!important;
-  right:75px!important;
+  position:static!important;
+  inset:auto!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  width:auto!important;
   margin:0!important;
   text-align:left!important;
-  pointer-events:none;
+  pointer-events:auto!important;
 }
-header.topbar>.iconBtn{
-  position:absolute!important;
-  top:calc(var(--mima-native-overlay-clearance) + 5px)!important;
-  width:49px!important;
-  height:47px!important;
+header.topbar>#menuToggleBtn{
+  position:relative!important;
+  inset:auto!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  flex:0 0 52px!important;
+  width:52px!important;
+  height:52px!important;
   margin:0!important;
   display:grid!important;
   place-items:center!important;
-  color:#ffe5a4!important;
-  border:1px solid rgba(233,184,67,.65)!important;
-  background:linear-gradient(155deg,#0c2232,#07121d)!important;
-  box-shadow:0 3px 16px rgba(0,0,0,.3)!important;
+  color:#ffe1a0!important;
+  border:2px solid rgba(234,184,65,.85)!important;
+  border-radius:16px!important;
+  background:linear-gradient(145deg,#191404,#090d13)!important;
+  box-shadow:0 3px 13px rgba(0,0,0,.3)!important;
+  font-size:27px!important;
   cursor:pointer!important;
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
   z-index:102!important;
 }
-header.topbar>#menuToggleBtn{
-  right:13px!important;
-  font-size:27px!important;
-}
 .topMenu{
   position:fixed!important;
-  top:calc(var(--mima-native-overlay-clearance) + 57px)!important;
+  top:calc(75px + var(--mima-header-native-inset))!important;
   left:auto!important;
   right:max(12px,calc((100vw - 460px)/2 + 12px))!important;
   width:205px!important;
   z-index:105!important;
 }
 .topMenuBackdrop{z-index:104!important;}
-@media(min-width:700px){
- header.topbar .brand{top:14px!important;}
-}
 </style>
 <style id="mima-top-menu-black-gold-v1">
 #topMenu.topMenu{
@@ -545,6 +551,23 @@ header.topbar>#menuToggleBtn{
  box-shadow:inset 0 0 0 1px rgba(255,223,135,.12),0 3px 15px rgba(0,0,0,.38)!important;
 }
 </style>
+<script id="mima-header-content-safe-area-sync-v1">
+(function(){
+  function syncMimaHeader(){
+    try{
+      const root=document.documentElement;
+      const tg=window.Telegram?.WebApp;
+      const apiValue=Number(tg?.contentSafeAreaInset?.top || 0);
+      const cssValue=parseFloat(getComputedStyle(root).getPropertyValue('--tg-content-safe-area-inset-top')) || 0;
+      const raw=Math.max(Number.isFinite(apiValue)?apiValue:0,cssValue);
+      root.style.setProperty('--mima-header-native-inset',Math.min(110,Math.max(0,raw))+'px');
+    }catch(e){}
+  }
+  syncMimaHeader();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',syncMimaHeader,{once:true});
+  try{window.Telegram?.WebApp?.onEvent?.('contentSafeAreaChanged',syncMimaHeader)}catch(e){}
+})();
+</script>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
