@@ -459,8 +459,8 @@ html[dir="ltr"] input{text-align:left}
 
 <style id="mima-telegram-safe-header-actions-v1">
 /* Telegram displays native Close / More controls over the upper WebView.
-   Keep the hamburger and wallet shortcut in a separate, reachable row below
-   that area; let the page content begin below both rows. */
+   Keep the hamburger button in a reachable row below that area;
+   the bottom Wallet navigation remains available. */
 :root{
   --mima-native-overlay-clearance:max(78px, var(--tg-content-safe-area-inset-top, 0px));
 }
@@ -478,7 +478,7 @@ header.topbar .brand{
   position:absolute!important;
   top:13px!important;
   left:14px!important;
-  right:128px!important;
+  right:75px!important;
   margin:0!important;
   text-align:left!important;
   pointer-events:none;
@@ -503,10 +503,6 @@ header.topbar>.iconBtn{
 header.topbar>#menuToggleBtn{
   right:13px!important;
   font-size:27px!important;
-}
-header.topbar>.iconBtn:not(#menuToggleBtn){
-  right:71px!important;
-  font-size:24px!important;
 }
 .topMenu{
   position:fixed!important;
@@ -546,7 +542,6 @@ header.topbar>.iconBtn:not(#menuToggleBtn){
 <div class="app">
 <header class="topbar">
 <div class="brand"><b>MIMA</b><small>MINING BOT • NEXT GENERATION</small></div>
-  <button class="iconBtn" type="button" onclick="go('wallet', document.querySelector('.nav[data-screen=wallet]'));window.scrollTo({top:0,behavior:'smooth'});">▣</button>
   <button class="iconBtn" id="menuToggleBtn" type="button" onclick="toggleTopMenu(event)">☰</button>
 </header>
 
