@@ -917,6 +917,18 @@ header.topbar>#menuToggleBtn{
       </div>
     </div>
 
+    <div class="item mimaTaskRow" id="joinChannel2TaskItem">
+      <span class="ico">✈️</span>
+      <main>
+        <b id="joinChannel2TaskTitle">انضم إلى قناة MIMACOIN2</b>
+        <small id="joinChannel2TaskInfo">+3 MIMA • انضم ثم تحقق</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="joinChannel2OpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel2()">انضم</button>
+        <button id="joinChannel2TaskBtn" type="button" onclick="claimTask('join_channel_2',this)">تحقق</button>
+      </div>
+    </div>
+
     <div class="item mimaTaskRow" id="mimaExchangeChannelTaskItem">
       <span class="ico">📈</span>
       <main>
@@ -2919,6 +2931,11 @@ header.topbar>#menuToggleBtn{
     };
 
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
+    renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v1');
+    const task2Title = $('joinChannel2TaskTitle');
+    if(task2Title) task2Title.textContent = tx('انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel');
+    const task2OpenBtn = $('joinChannel2OpenBtn');
+    if(task2OpenBtn) task2OpenBtn.textContent = tx('انضم','Join');
   }
 
   function startAdsgramRewardCountdown(){
@@ -3652,6 +3669,23 @@ header.topbar>#menuToggleBtn{
         Telegram.WebApp &&
         typeof Telegram.WebApp.openTelegramLink === 'function'
       ){
+        Telegram.WebApp.openTelegramLink(url);
+      }else{
+        window.open(url,'_blank','noopener,noreferrer');
+      }
+    }catch(e){
+      window.location.href = url;
+    }
+  }
+
+  // MIMACOIN2 channel task: same existing verification and cooldown as other channels.
+  function openMimaChannel2(){
+    try{ localStorage.setItem('mima_join_channel_2_opened_v1','1'); }catch(e){}
+    renderTask();
+    const url = 'https://t.me/MIMACOIN2/17';
+
+    try{
+      if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function'){
         Telegram.WebApp.openTelegramLink(url);
       }else{
         window.open(url,'_blank','noopener,noreferrer');
