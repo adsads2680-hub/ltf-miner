@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -442,18 +442,8 @@ html[dir="ltr"] input{text-align:left}
   var lang='en';
   var manual='';
   try{ manual=String(localStorage.getItem('mima_language_manual_v1')||'').toLowerCase(); }catch(e){}
-  if(manual==='ar' || manual==='en'){
-    lang=manual;
-  }else{
-    try{
-      var tgLang = String(
-        (window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initDataUnsafe&&Telegram.WebApp.initDataUnsafe.user&&Telegram.WebApp.initDataUnsafe.user.language_code) || ''
-      ).toLowerCase();
-      lang = tgLang ? (tgLang.indexOf('ar')===0 ? 'ar' : 'en') : 'en';
-    }catch(e){
-      lang='en';
-    }
-  }
+  // English is the default; preserve Arabic only if the user explicitly chose it.
+  lang = manual === 'ar' ? 'ar' : 'en';
   var chosen = img.getAttribute(lang==='ar' ? 'data-ar-src' : 'data-en-src');
   if(chosen && img.src!==chosen) img.src=chosen;
 })();
@@ -1013,7 +1003,7 @@ html[dir="ltr"] input{text-align:left}
 <section id="settings" class="screen">
   <h2 class="title">⚙️ الإعدادات</h2>
   <div class="card list">
-    <div class="item" id="languageSetting" role="button" tabindex="0" onclick="toggleLanguage()" style="cursor:pointer"><span class="ico">🌐</span><main><b>اللغة</b><small id="languageValue">العربية</small></main><span>›</span></div>
+    <div class="item" id="languageSetting" role="button" tabindex="0" onclick="toggleLanguage()" style="cursor:pointer"><span class="ico">🌐</span><main><b>اللغة</b><small id="languageValue">English</small></main><span>›</span></div>
     <div class="item" role="button" tabindex="0" onclick="openPrivacyModal()" style="cursor:pointer"><span class="ico">🔐</span><main><b>سياسة الخصوصية</b><small>كيف نستخدم ونحمي بياناتك</small></main><span>›</span></div>
   </div>
 </section>
@@ -1221,20 +1211,8 @@ html[dir="ltr"] input{text-align:left}
 
     if(['ar','en','uz','ur'].includes(manual)) return manual;
 
-    // Prefer device/WebView language. Telegram user language is the fallback;
-    // any explicit choice in MIMA settings still takes precedence above.
-    let code = '';
-    try{
-      code = String(navigator.languages?.[0] || navigator.language || '').toLowerCase();
-    }catch(e){}
-    if(!code){
-      try{
-        code = String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || '').toLowerCase();
-      }catch(e){}
-    }
-    if(code.startsWith('ar')) return 'ar';
-    if(code.startsWith('uz')) return 'uz';
-    if(code.startsWith('ur')) return 'ur';
+    // Default to English on all devices unless the user chose a language
+    // in MIMA settings. Do not infer app language from Telegram/phone locale.
     return 'en';
   }
 
