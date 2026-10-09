@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src='//libtl.com/sdk.js' data-zone='11916820' data-sdk='show_11916820'></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
 :root{
@@ -1175,6 +1174,26 @@ html[dir="ltr"] input{text-align:left}
   }catch(e){}
 
   const serverMode = !!telegramInitData;
+
+  // Ad diagnostics are best-effort only; they never affect AdsGram playback or rewards.
+  const mimaAdDiagThrottle = new Map();
+  window.mimaAdDiag = function(format,event){
+    if(!serverMode) return;
+    const key=String(format)+':'+String(event);
+    const time=Date.now();
+    if(time-Number(mimaAdDiagThrottle.get(key)||0)<10000) return;
+    mimaAdDiagThrottle.set(key,time);
+    try{
+      fetch(SUPABASE_URL+'/functions/v1/mima-ad-telemetry',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-telegram-init-data':telegramInitData
+        },
+        body:JSON.stringify({format,event})
+      }).catch(()=>{});
+    }catch(e){}
+  };
 
   let currentUserFirstName = '';
   let currentUserUsername = '';
@@ -2898,10 +2917,14 @@ html[dir="ltr"] input{text-align:left}
       adsgramController &&
       typeof adsgramController.addEventListener === 'function'
     ){
-      const silentAdsgramEvent = ()=>false;
-      adsgramController.addEventListener('onBannerNotFound',silentAdsgramEvent);
-      adsgramController.addEventListener('onNonStopShow',silentAdsgramEvent);
-      adsgramController.addEventListener('onTooLongSession',silentAdsgramEvent);
+      const log=(event)=>()=>{window.mimaAdDiag?.('rewarded',event);return false;};
+      adsgramController.addEventListener('onStart',log('on_start'));
+      adsgramController.addEventListener('onReward',log('on_reward'));
+      adsgramController.addEventListener('onSkip',log('on_skip'));
+      adsgramController.addEventListener('onError',log('sdk_error'));
+      adsgramController.addEventListener('onBannerNotFound',log('no_fill'));
+      adsgramController.addEventListener('onNonStopShow',log('nonstop'));
+      adsgramController.addEventListener('onTooLongSession',log('too_long'));
     }
 
     return adsgramController;
@@ -2952,24 +2975,29 @@ html[dir="ltr"] input{text-align:left}
 
     const controller = getAdsgramController();
     if(!controller){
+      window.mimaAdDiag?.('rewarded','sdk_error');
       toast(tx('⏳ خدمة الإعلان لم تجهز بعد، حاول مرة أخرى','⏳ Ad service is not ready yet. Try again'));
       return;
     }
 
+    window.mimaAdDiag?.('rewarded','request');
     adsgramRewardBusy = true;
     renderAdTask();
     const beforeCount = adsgramRewardWatched;
 
     try{
       await controller.show();
+      window.mimaAdDiag?.('rewarded','sdk_completed');
 
       toast(tx('✅ تمت المشاهدة، جاري تأكيد المكافأة','✅ Ad completed, confirming reward'));
       const confirmed = await waitForAdsgramReward(beforeCount);
 
       if(confirmed){
+        window.mimaAdDiag?.('rewarded','reward_confirmed');
         startAdsgramRewardCountdown();
         showMimaTaskSuccess('شاهد إعلان','Watch an ad',adsgramRewardAmount);
       }else{
+        window.mimaAdDiag?.('rewarded','reward_pending');
         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
         setTimeout(async()=>{
           await refreshAdsgramRewardStatus(false);
@@ -2978,6 +3006,7 @@ html[dir="ltr"] input{text-align:left}
       }
     }catch(err){
       const desc = String(err?.description || err?.message || '');
+      window.mimaAdDiag?.('rewarded',/no ads|no banner|banner not found/i.test(desc)?'no_fill':'show_rejected');
 
       // No-ad / no-fill cases should stay completely silent.
       if(!/no ads|no banner|banner not found|not found|non.?stop|too long session/i.test(desc)){
@@ -3304,10 +3333,14 @@ html[dir="ltr"] input{text-align:left}
         miningInterstitialController &&
         typeof miningInterstitialController.addEventListener === 'function'
       ){
-        const silentAdsgramEvent = ()=>{};
-        miningInterstitialController.addEventListener('onBannerNotFound',silentAdsgramEvent);
-        miningInterstitialController.addEventListener('onNonStopShow',silentAdsgramEvent);
-        miningInterstitialController.addEventListener('onTooLongSession',silentAdsgramEvent);
+        const log=(event)=>()=>{window.mimaAdDiag?.('interstitial',event);};
+        miningInterstitialController.addEventListener('onStart',log('on_start'));
+        miningInterstitialController.addEventListener('onComplete',log('on_complete'));
+        miningInterstitialController.addEventListener('onSkip',log('on_skip'));
+        miningInterstitialController.addEventListener('onError',log('sdk_error'));
+        miningInterstitialController.addEventListener('onBannerNotFound',log('no_fill'));
+        miningInterstitialController.addEventListener('onNonStopShow',log('nonstop'));
+        miningInterstitialController.addEventListener('onTooLongSession',log('too_long'));
       }
 
       return miningInterstitialController;
@@ -3344,6 +3377,7 @@ html[dir="ltr"] input{text-align:left}
 
   async function showInterstitialSilently(controller){
     if(!controller || typeof controller.show !== 'function') return;
+    window.mimaAdDiag?.('interstitial','request');
 
     const originalAlert = window.alert;
     let originalShowPopup = null;
@@ -3382,6 +3416,10 @@ html[dir="ltr"] input{text-align:left}
       }catch(e){}
 
       await controller.show();
+      window.mimaAdDiag?.('interstitial','sdk_completed');
+    }catch(error){
+      window.mimaAdDiag?.('interstitial','show_rejected');
+      throw error;
     }finally{
       window.alert = originalAlert;
       if(originalShowPopup){
@@ -3411,6 +3449,8 @@ html[dir="ltr"] input{text-align:left}
       const controller = await waitForMiningInterstitialController(6500);
       if(controller && typeof controller.show === 'function'){
         await showInterstitialSilently(controller);
+      }else{
+        window.mimaAdDiag?.('interstitial','sdk_error');
       }
     }catch(e){
       // No-fill or ad errors stay silent so the app opens normally.
@@ -9240,6 +9280,7 @@ input[type="submit"]:focus-visible{
       if(verifyingReward)return;
       verifyingReward=true;
       verificationState='checking';
+      window.mimaAdDiag?.('task','on_reward');
       const rewardEventAt=Date.now();
       // AdsGram's reward event alone is not proof of a credited MIMA reward.
       // Never start the 30-minute cooldown before the server records payment.
@@ -9265,6 +9306,7 @@ input[type="submit"]:focus-visible{
         }
       }
       if(confirmed){
+        window.mimaAdDiag?.('task','reward_confirmed');
         verificationState='idle';
         renderCooldown();
         startCooldownTicker();
@@ -9274,6 +9316,7 @@ input[type="submit"]:focus-visible{
           if(typeof syncServerStatus==='function')syncServerStatus(false,true);
         }catch(e){}
       }else{
+        window.mimaAdDiag?.('task','reward_pending');
         verificationState='awaiting';
         if(sub)sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
       }
@@ -9281,9 +9324,9 @@ input[type="submit"]:focus-visible{
       renderCooldown();
     });
 
-    task.addEventListener('onBannerNotFound',hideCard);
-    task.addEventListener('onError',hideCard);
-    task.addEventListener('onTooLongSession',hideCard);
+    task.addEventListener('onBannerNotFound',()=>{window.mimaAdDiag?.('task','no_fill');hideCard();});
+    task.addEventListener('onError',()=>{window.mimaAdDiag?.('task','sdk_error');hideCard();});
+    task.addEventListener('onTooLongSession',()=>{window.mimaAdDiag?.('task','too_long');hideCard();});
   }
 
   if(document.readyState==='loading'){
