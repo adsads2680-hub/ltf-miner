@@ -431,14 +431,30 @@ html[dir="ltr"] input{text-align:left}
 #mimaTaskCongrats .mimaTaskCongratsSkip:focus-visible{outline:3px solid #91d8ff;outline-offset:3px;}
 </style>
 <style id="mima-multilanguage-picker-v1">
-#mimaLanguagePicker{position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.76);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}
-#mimaLanguagePicker .mimaLangPanel{width:min(100%,380px);max-height:min(82vh,640px);overflow:auto;border:1px solid rgba(255,193,61,.5);border-radius:20px;background:linear-gradient(165deg,#0b1b2a,#06090e);padding:16px;box-shadow:0 14px 48px rgba(0,0,0,.7);color:#fff}
-#mimaLanguagePicker .mimaLangHeader{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;direction:ltr}
-#mimaLanguagePicker .mimaLangHeader strong{font-size:18px;color:#ffd45c}
-#mimaLanguagePicker .mimaLangExit{width:36px;height:36px;border-radius:10px;color:#ffd45c;background:#172535;border:1px solid #70531d;font-size:19px}
-#mimaLanguagePicker .mimaLangOptions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;direction:ltr}
-#mimaLanguagePicker .mimaLangOption{width:100%;min-height:46px;word-break:normal;overflow-wrap:break-word;text-align:center;border:1px solid #35516a;border-radius:12px;background:#0d1a27;color:#f8f4e7;font-size:13px;font-weight:700;padding:8px 5px;cursor:pointer}
-#mimaLanguagePicker .mimaLangOption.selected{border-color:#ffcf62;background:#382706;color:#ffe8a0}
+#mimaLanguagePicker{position:fixed;inset:0;z-index:9999999;background:rgba(2,4,12,.77);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);overscroll-behavior:contain}
+#mimaLanguagePicker .mimaLangPanel{box-sizing:border-box;width:min(100%,540px);max-height:86dvh;display:flex;flex-direction:column;border:1.5px solid rgba(236,181,67,.78);border-bottom:0;border-radius:30px 30px 0 0;background:linear-gradient(165deg,#211908,#11100f 35%,#080e16);box-shadow:0 -15px 55px rgba(0,0,0,.8);color:#fff;padding:0 17px max(20px,env(safe-area-inset-bottom,20px));overflow:hidden}
+#mimaLanguagePicker .mimaLangHandle{width:66px;height:6px;background:#816e51;border-radius:9px;margin:12px auto 3px;flex:none}
+#mimaLanguagePicker .mimaLangHeader{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 1px 12px;direction:ltr;flex:none}
+#mimaLanguagePicker .mimaLangHeader strong{font-size:22px;font-weight:900;color:#ffe2a0;text-align:end}
+#mimaLanguagePicker .mimaLangExit{width:41px;height:41px;border-radius:50%;color:#ffe1a4;background:#34280f;border:1px solid #81642c;font-size:25px;cursor:pointer}
+#mimaLanguagePicker .mimaLangScrollable{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:0 2px 5px;min-height:0;scrollbar-width:thin;scrollbar-color:#83652a transparent}
+#mimaLanguagePicker .mimaLangFollow{width:100%;min-height:65px;display:flex;align-items:center;justify-content:space-between;padding:11px 14px;margin:0 0 12px;gap:12px;border:2px solid #65502d;border-radius:19px;background:linear-gradient(110deg,#332506,#14120d);color:#f6efde;text-align:start;direction:ltr}
+#mimaLanguagePicker .mimaLangFollow.selected{border-color:#f1bf4d;box-shadow:inset 0 0 0 1px #fcdb78}
+#mimaLanguagePicker .mimaLangFollowInfo{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+#mimaLanguagePicker .mimaLangFollowInfo strong{font-size:15px;font-weight:900;color:#ffe9aa}
+#mimaLanguagePicker .mimaLangFollowInfo small{font-size:11px;color:#b8af94}
+#mimaLanguagePicker .mimaLangIcon{font-size:26px;flex:none}
+#mimaLanguagePicker .mimaLangOptions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;direction:ltr}
+#mimaLanguagePicker .mimaLangOption{box-sizing:border-box;min-width:0;width:100%;min-height:73px;display:flex;align-items:center;gap:7px;text-align:start;border:1.5px solid rgba(157,132,83,.48);border-radius:17px;background:linear-gradient(145deg,#22232a,#151a24);color:#f8f4e7;font-size:13px;font-weight:750;padding:11px 9px;cursor:pointer;position:relative}
+#mimaLanguagePicker .mimaLangOption.selected{border-color:#f3c95d;background:linear-gradient(125deg,#4b380e,#2c250f);box-shadow:0 0 0 1px rgba(255,215,117,.5),inset 0 0 18px rgba(230,159,26,.15)}
+#mimaLanguagePicker .mimaLangFlag{font-size:27px;line-height:1;flex:none}
+#mimaLanguagePicker .mimaLangWord{display:flex;flex-direction:column;min-width:0;gap:3px;flex:1}
+#mimaLanguagePicker .mimaLangWord strong{font-size:15px;line-height:1.25;font-weight:850;overflow-wrap:anywhere;direction:auto}
+#mimaLanguagePicker .mimaLangWord small{color:#a9aab8;font-size:11px;font-weight:600}
+#mimaLanguagePicker .mimaLangOption.selected .mimaLangWord small{color:#dfc98e}
+#mimaLanguagePicker .mimaLangCheck{position:absolute;top:-8px;left:-8px;background:#ffd062;color:#1c1609;width:25px;height:25px;border-radius:50%;display:none;align-items:center;justify-content:center;font-weight:900;font-size:15px;border:2px solid #6a4a12}
+#mimaLanguagePicker .mimaLangOption.selected .mimaLangCheck{display:flex}
+@media(max-width:340px){#mimaLanguagePicker .mimaLangPanel{padding-left:11px;padding-right:11px}#mimaLanguagePicker .mimaLangOptions{gap:8px}#mimaLanguagePicker .mimaLangFlag{font-size:21px}#mimaLanguagePicker .mimaLangWord strong{font-size:13px}}
 </style>
 </head>
 <body>
@@ -453,7 +469,10 @@ html[dir="ltr"] input{text-align:left}
   var manual='';
   try{ manual=String(localStorage.getItem('mima_language_manual_v1')||'').toLowerCase(); }catch(e){}
   // English is the default; preserve Arabic only if the user explicitly chose it.
-  lang = manual === 'ar' ? 'ar' : 'en';
+  if(manual==='auto'){
+    try{var loc=String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||navigator.language||'').toLowerCase();lang=loc.startsWith('ar')?'ar':'en'}
+    catch(e){lang='en'}
+  }else{lang=manual==='ar'?'ar':'en'}
   var chosen = img.getAttribute(lang==='ar' ? 'data-ar-src' : 'data-en-src');
   if(chosen && img.src!==chosen) img.src=chosen;
 })();
@@ -1213,13 +1232,21 @@ html[dir="ltr"] input{text-align:left}
   const LANGUAGE_STORAGE_KEY = 'mima_language_v1';
   const LANGUAGE_MANUAL_KEY = 'mima_language_manual_v1';
 
+  function getMimaTelegramLanguage(){
+    let code='';
+    try{code=String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||navigator.language||'').toLowerCase()}catch(e){}
+    const base=code.split(/[-_]/)[0];
+    return MIMA_KNOWN_LANGUAGE_CODES.includes(base)?base:'en';
+  }
+  const MIMA_KNOWN_LANGUAGE_CODES=['en','ar','uz','ur','tr','id','hi','bn','fr','pt'];
   function detectInitialLanguage(){
     let manual = '';
     try{
       manual = String(localStorage.getItem(LANGUAGE_MANUAL_KEY) || '').toLowerCase();
     }catch(e){}
 
-    if(['en','ar','uz','ur','tr','id','hi','bn','fr','pt'].includes(manual)) return manual;
+    if(MIMA_KNOWN_LANGUAGE_CODES.includes(manual)) return manual;
+    if(manual==='auto') return getMimaTelegramLanguage();
 
     // Default to English on all devices unless the user chose a language
     // in MIMA settings. Do not infer app language from Telegram/phone locale.
@@ -1370,6 +1397,8 @@ html[dir="ltr"] input{text-align:left}
   Object.assign(MIMA_EXTRA_TRANSLATIONS,MIMA_NEW_TRANSLATIONS);
   const MIMA_LANGUAGES=["en","ar","uz","ur","tr","id","hi","bn","fr","pt"];
   const MIMA_LANGUAGE_NAMES={"en":"English","ar":"العربية","uz":"Oʻzbekcha","ur":"اردو","tr":"Türkçe","id":"Bahasa Indonesia","hi":"हिन्दी","bn":"বাংলা","fr":"Français","pt":"Português"};
+  const MIMA_LANGUAGE_ENGLISH={"en":"English","ar":"Arabic","uz":"Uzbek","ur":"Urdu","tr":"Turkish","id":"Indonesian","hi":"Hindi","bn":"Bangla","fr":"French","pt":"Portuguese"};
+  const MIMA_LANGUAGE_FLAGS={"en":"🇬🇧","ar":"🇸🇦","uz":"🇺🇿","ur":"🇵🇰","tr":"🇹🇷","id":"🇮🇩","hi":"🇮🇳","bn":"🇧🇩","fr":"🇫🇷","pt":"🇧🇷"};
 
   function mimaLanguageText(value, lang=currentLang){
     const english=String(value ?? '');
@@ -1663,42 +1692,50 @@ html[dir="ltr"] input{text-align:left}
   }
 
 
-  window.closeMimaLanguagePicker=function(){
-    const overlay=document.getElementById('mimaLanguagePicker');
-    if(overlay) overlay.style.display='none';
-  };
+
+  function mimaLanguageIsAuto(){try{return localStorage.getItem(LANGUAGE_MANUAL_KEY)==='auto'}catch(e){return false}}
+  window.closeMimaLanguagePicker=function(){const el=document.getElementById('mimaLanguagePicker');if(el)el.style.display='none';};
   window.chooseMimaLanguage=function(code){
-    if(!MIMA_LANGUAGES.includes(code)) return;
-    currentLang=code;
-    applyLanguage(true);
+    if(code!=='auto'&&!MIMA_LANGUAGES.includes(code))return;
+    currentLang=code==='auto'?getMimaTelegramLanguage():code;
+    applyLanguage(code!=='auto');
+    if(code==='auto')try{localStorage.setItem(LANGUAGE_MANUAL_KEY,'auto');localStorage.setItem(LANGUAGE_STORAGE_KEY,currentLang)}catch(e){}
     closeMimaLanguagePicker();
-    toast(code==='ar' ? '🌐 تم تغيير اللغة إلى العربية' : '🌐 '+(MIMA_LANGUAGE_NAMES[code]||'English'));
-    if(serverMode && typeof loadWithdrawHistory==='function') loadWithdrawHistory().catch(()=>{});
-    if(typeof loadPublicPayouts==='function') loadPublicPayouts().catch(()=>{});
+    toast(currentLang==='ar'?'🌐 تم اختيار اللغة':'🌐 '+MIMA_LANGUAGE_NAMES[currentLang]);
+    if(serverMode&&typeof loadWithdrawHistory==='function')loadWithdrawHistory().catch(()=>{});
+    if(typeof loadPublicPayouts==='function')loadPublicPayouts().catch(()=>{});
   };
   window.toggleLanguage=function toggleLanguage(){
     const overlay=document.getElementById('mimaLanguagePicker');
     const list=document.getElementById('mimaLanguageOptions');
-    if(!overlay || !list) return;
+    if(!overlay||!list)return;
     list.replaceChildren();
+    const auto=mimaLanguageIsAuto();
     for(const code of MIMA_LANGUAGES){
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.className='mimaLangOption'+(currentLang===code?' selected':'');
-      btn.dataset.lang=code;
-      btn.setAttribute('role','radio');
-      btn.setAttribute('aria-checked',String(currentLang===code));
-      btn.textContent=(currentLang===code?'✓  ':'')+MIMA_LANGUAGE_NAMES[code];
-      btn.addEventListener('click',()=>chooseMimaLanguage(code));
+      const btn=document.createElement('button');btn.type='button';
+      btn.className='mimaLangOption'+(!auto&&currentLang===code?' selected':'');
+      btn.dataset.lang=code;btn.setAttribute('role','radio');
+      btn.setAttribute('aria-checked',String(!auto&&currentLang===code));
+      const flag=document.createElement('span');flag.className='mimaLangFlag';flag.textContent=MIMA_LANGUAGE_FLAGS[code];
+      const word=document.createElement('span');word.className='mimaLangWord';
+      const title=document.createElement('strong');title.textContent=MIMA_LANGUAGE_NAMES[code];
+      const sub=document.createElement('small');sub.textContent=MIMA_LANGUAGE_ENGLISH[code];
+      word.append(title,sub);
+      const check=document.createElement('span');check.className='mimaLangCheck';check.textContent='✓';
+      btn.append(word,flag,check);btn.addEventListener('click',()=>chooseMimaLanguage(code));
       list.appendChild(btn);
     }
+    const follow=document.getElementById('mimaLangAuto');
+    if(follow)follow.classList.toggle('selected',auto);
     const title=document.getElementById('mimaLanguagePickerTitle');
-    if(title) title.textContent=currentLang==='ar'?'اختر اللغة':'Select language';
+    if(title)title.textContent=currentLang==='ar'?'اختر لغتك':'Choose your language';
+    const label=document.getElementById('mimaLangAutoLabel');
+    if(label)label.textContent=currentLang==='ar'?'مثل تيليجرام':'Follow Telegram language';
+    const sub=document.getElementById('mimaLangAutoSub');
+    if(sub)sub.textContent=currentLang==='ar'?'استخدم لغة واجهة تيليجرام':'Use your Telegram interface language';
     overlay.style.display='flex';
   };
-  document.addEventListener('keydown',(event)=>{
-    if(event.key==='Escape') closeMimaLanguagePicker();
-  });
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMimaLanguagePicker()});
 
   function nowMs(){
     return Date.now() + serverTimeOffset;
@@ -7373,10 +7410,14 @@ input[type="submit"]:focus-visible{
 })();
 </script>
 <div id="mimaLanguagePicker" role="dialog" aria-modal="true" aria-label="Choose language" onclick="if(event.target===this)closeMimaLanguagePicker()">
-  <section class="mimaLangPanel">
-    <div class="mimaLangHeader"><strong id="mimaLanguagePickerTitle">Select language</strong><button type="button" class="mimaLangExit" onclick="closeMimaLanguagePicker()" aria-label="Close">×</button></div>
-    <div class="mimaLangOptions" id="mimaLanguageOptions" role="radiogroup" aria-label="Language"></div>
-  </section>
+ <section class="mimaLangPanel">
+  <div class="mimaLangHandle" aria-hidden="true"></div>
+  <div class="mimaLangHeader"><button type="button" class="mimaLangExit" onclick="closeMimaLanguagePicker()" aria-label="Close">×</button><strong id="mimaLanguagePickerTitle">Choose your language</strong></div>
+  <div class="mimaLangScrollable">
+   <button type="button" class="mimaLangFollow" id="mimaLangAuto" onclick="chooseMimaLanguage('auto')"><span class="mimaLangFollowInfo"><strong id="mimaLangAutoLabel">Follow Telegram language</strong><small id="mimaLangAutoSub">Use your Telegram interface language</small></span><span class="mimaLangIcon">✈️</span></button>
+   <div class="mimaLangOptions" id="mimaLanguageOptions" role="radiogroup" aria-label="Language"></div>
+  </div>
+ </section>
 </div>
 </body>
 </html>
