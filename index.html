@@ -1194,8 +1194,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </div>
 
     <div class="exchangeBalanceBox gram">
-      <small>رصيد GRAM</small>
-      <b id="exchangeGramBalance">0.000000 GRAM</b>
+      <small>رصيد GRAM في المحفظة المرتبطة</small>
+      <b id="exchangeGramBalance">— GRAM</b>
     </div>
 
     <label class="exchangeLabel" for="exchangeMimaAmount">كمية MIMA المراد تبديلها</label>
@@ -2271,6 +2271,21 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   let mimaTonConnectUI = null;
   let connectedTonWalletAddress = '';
   let connectedTonWalletChain = '';
+  let connectedWalletGramBalance = null;
+  let connectedWalletBalanceAddress = '';
+  let connectedWalletReadSeq = 0;
+
+  function renderExternalGramBalance(){
+    const text = connectedTonWalletAddress &&
+      connectedWalletBalanceAddress === connectedTonWalletAddress &&
+      Number.isFinite(connectedWalletGramBalance)
+      ? Number(connectedWalletGramBalance).toLocaleString('en-US', {
+          minimumFractionDigits:4, maximumFractionDigits:9
+        }) + ' GRAM'
+      : '— GRAM';
+    if($('mimaTonWalletBalance')) $('mimaTonWalletBalance').textContent = text;
+    if($('exchangeGramBalance')) $('exchangeGramBalance').textContent = text;
+  }
 
   function shortTonAddress(value){
     const s = String(value || '').trim();
@@ -2293,21 +2308,25 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         ? tx('متصلة • قراءة فقط','Connected • Read only')
         : tx('غير متصلة','Not connected');
     }
-    if(!connectedTonWalletAddress && $('mimaTonWalletBalance')){
-      $('mimaTonWalletBalance').textContent = '— GRAM';
-    }
+    renderExternalGramBalance();
   }
 
   window.refreshConnectedGramBalance = async function(){
     const balanceEl = $('mimaTonWalletBalance');
     const stateEl = $('mimaTonWalletState');
-    if(!connectedTonWalletAddress){
+    const requestAddress = connectedTonWalletAddress;
+    const requestSeq = ++connectedWalletReadSeq;
+    if(!requestAddress){
+      connectedWalletGramBalance = null;
+      connectedWalletBalanceAddress = '';
       renderConnectedTonWallet();
       return;
     }
 
     if(connectedTonWalletChain && String(connectedTonWalletChain) !== '-239'){
-      if(balanceEl) balanceEl.textContent = '— GRAM';
+      connectedWalletGramBalance = null;
+      connectedWalletBalanceAddress = '';
+      renderExternalGramBalance();
       if(stateEl) stateEl.textContent = tx(
         'يرجى ربط محفظة الشبكة الرئيسية',
         'Please connect a mainnet wallet'
@@ -2315,27 +2334,32 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       return;
     }
 
+    connectedWalletGramBalance = null;
+    connectedWalletBalanceAddress = '';
+    renderExternalGramBalance();
     if(balanceEl) balanceEl.textContent = '…';
     if(stateEl) stateEl.textContent = tx('جاري قراءة الرصيد…','Reading balance…');
 
     try{
       const data = await apiCall('wallet_balance',{
-        wallet_address:connectedTonWalletAddress
+        wallet_address:requestAddress
       });
+      if(requestSeq !== connectedWalletReadSeq || requestAddress !== connectedTonWalletAddress) return;
       if(data?.success !== true) throw new Error(data?.message || 'wallet_balance_failed');
 
-      const value = Number(data.gram_balance || 0);
-      if(balanceEl){
-        balanceEl.textContent = value.toLocaleString('en-US',{
-          minimumFractionDigits:4,
-          maximumFractionDigits:9
-        }) + ' GRAM';
-      }
+      const value = Number(data.gram_balance);
+      if(!Number.isFinite(value) || value < 0) throw new Error('invalid_wallet_balance');
+      connectedWalletGramBalance = value;
+      connectedWalletBalanceAddress = requestAddress;
+      renderExternalGramBalance();
       if(stateEl){
         stateEl.textContent = tx('متصلة • قراءة فقط','Connected • Read only');
       }
     }catch(err){
-      if(balanceEl) balanceEl.textContent = '— GRAM';
+      if(requestSeq !== connectedWalletReadSeq || requestAddress !== connectedTonWalletAddress) return;
+      connectedWalletGramBalance = null;
+      connectedWalletBalanceAddress = '';
+      renderExternalGramBalance();
       if(stateEl) stateEl.textContent = tx('تعذر قراءة الرصيد','Could not read balance');
     }
   };
@@ -2362,6 +2386,9 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       mimaTonConnectUI.onStatusChange(wallet=>{
         connectedTonWalletAddress = String(wallet?.account?.address || '').trim();
         connectedTonWalletChain = String(wallet?.account?.chain || '').trim();
+        ++connectedWalletReadSeq;
+        connectedWalletGramBalance = null;
+        connectedWalletBalanceAddress = '';
         renderConnectedTonWallet();
 
         if(connectedTonWalletAddress){
@@ -3551,10 +3578,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         formatMima(exchangeableBalance) + ' MIMA';
     }
 
-    if($('exchangeGramBalance')){
-      $('exchangeGramBalance').textContent =
-        formatMima(gramBalance) + ' GRAM';
-    }
+    renderExternalGramBalance();
 
     if($('liveGramUsd')){
       $('liveGramUsd').textContent =
@@ -4932,6 +4956,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     document.body.classList.add('exchangeModalOpen');
     $('exchangePanel')?.classList.add('show');
     $('exchangeBackdrop')?.classList.add('show');
+    renderExternalGramBalance();
+    if(connectedTonWalletAddress) refreshConnectedGramBalance();
     updateExchangeEstimate();
   }
 
