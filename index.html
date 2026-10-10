@@ -668,6 +668,11 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 #mimaMarketBetaOverlay.mimaMarketPublic .mmb-bottom{font-size:11px;margin-top:16px;color:#d0b47f}
 @media(prefers-reduced-motion:reduce){#mimaMarketBetaOverlay{backdrop-filter:none;-webkit-backdrop-filter:none}}
 </style>
+
+<style id="mima-boost-below-coin-fix-20261011">
+#mimaBoostSafeButton{position:relative!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;transform:none!important;margin:4px 30px 16px auto!important;z-index:5!important;display:flex!important;width:72px!important;height:72px!important;border-radius:16px!important}
+@media(max-width:380px){#mimaBoostSafeButton{margin-right:15px!important}}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -8208,7 +8213,7 @@ input[type="submit"]:focus-visible{
 </script>
 
 <style id="mima-boost-safe-css-20261011">
-#mimaBoostSafeButton{position:absolute;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:68px;height:68px;padding:5px;border:1.5px solid #dba943;border-radius:15px;color:#ffdc81;background:linear-gradient(160deg,#2b1b08,#080b0e);font-weight:900;font-size:12px;line-height:1.15;box-shadow:0 3px 18px #0009,0 0 12px #dba94355;cursor:pointer}
+#mimaBoostSafeButton{position:relative;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:68px;height:68px;padding:5px;border:1.5px solid #dba943;border-radius:15px;color:#ffdc81;background:linear-gradient(160deg,#2b1b08,#080b0e);font-weight:900;font-size:12px;line-height:1.15;box-shadow:0 3px 18px #0009,0 0 12px #dba94355;cursor:pointer}
 #mimaBoostSafeButton .rocket{font-size:24px;line-height:1}
 #mimaBoostSafeButton .hours{font-size:16px;color:#fff0ad}
 #mimaBoostSafeModal{position:fixed;inset:0;display:none;z-index:100000;background:#000c;padding:16px;align-items:center;justify-content:center}
@@ -8240,16 +8245,9 @@ input[type="submit"]:focus-visible{
   scene.style.position='relative';
   b=document.createElement('button');b.id='mimaBoostSafeButton';b.type='button';
   b.onclick=e=>{e.stopPropagation();e.preventDefault();paint();modal.classList.add('open')};
-  scene.appendChild(b);return b;
+  scene.insertAdjacentElement('afterend',b);return b;
  }
- function position(){
-  const b=button(),coin=get('mainCoin');if(!b||!coin)return;
-  const scene=b.parentElement;
-  const c=coin.getBoundingClientRect(),r=scene.getBoundingClientRect();
-  // Overlay at the right gem, clamped within the scene, never changes coin layout.
-  b.style.left=Math.max(4,Math.min(r.width-72,c.right-r.left-68))+'px';
-  b.style.top=Math.max(4,Math.min(r.height-72,c.top-r.top+c.height*.52-34))+'px';
- }
+ function position(){ /* BOOST uses normal document flow; never overlaps the coin. */ }
  function paint(){
   const b=button();if(!b)return;
   const h=Math.max(0,Math.min(3,Math.round((typeof activeBoostSeconds==='number'?activeBoostSeconds:0)/3600)));
