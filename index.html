@@ -3126,8 +3126,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       info.textContent = tx('+3 MIMA • انضم ثم استلم','+3 MIMA • join then verify');
     };
 
-    renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
-    renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v1');
+    renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v2');
+    renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v2');
     const task2Title = $('joinChannel2TaskTitle');
     if(task2Title) task2Title.textContent = tx('انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel');
     const task2OpenBtn = $('joinChannel2OpenBtn');
@@ -3887,7 +3887,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         if(result?.success!==true) throw new Error('Could not open channel task');
       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
     }
-    try{ localStorage.setItem('mima_join_channel_opened_v1','1'); }catch(e){}
+    try{ localStorage.setItem('mima_join_channel_opened_v2','1'); }catch(e){}
     renderTask();
     const url = 'https://t.me/MIMA_COIN';
 
@@ -3914,7 +3914,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         if(result?.success!==true) throw new Error('Could not open channel task');
       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
     }
-    try{ localStorage.setItem('mima_join_channel_2_opened_v1','1'); }catch(e){}
+    try{ localStorage.setItem('mima_join_channel_2_opened_v2','1'); }catch(e){}
     renderTask();
     const url = 'https://t.me/MIMACOIN2/17';
 
@@ -3930,7 +3930,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   }
 
   const MIMA_EXCHANGE_CHANNEL_URL = 'https://t.me/MIMACOIN_OFFICIAL';
-  const MIMA_EXCHANGE_CHANNEL_OPENED_KEY = 'mima_exchange_channel_opened_v1';
+  const MIMA_EXCHANGE_CHANNEL_OPENED_KEY = 'mima_exchange_channel_opened_v2';
 
   async function openMimaExchangeChannel(){
     if(serverMode){
@@ -4308,6 +4308,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       const nextTs = Date.parse(data.next_available_at || '');
       setNextAt(Number.isFinite(nextTs) ? nextTs : nowMs() + TASK_COOLDOWN_MS);
 
+      try{ localStorage.removeItem(taskCode === 'join_channel_2' ? 'mima_join_channel_2_opened_v2' : 'mima_join_channel_opened_v2'); }catch(e){}
       showMimaTaskSuccess(taskCode === 'join_channel_2' ? 'انضم إلى قناة MIMACOIN2' : 'انضم إلى قناة MIMA', taskCode === 'join_channel_2' ? 'Join MIMACOIN2 channel' : 'Join MIMA channel', data.reward);
       render();
     }catch(err){
@@ -7324,7 +7325,7 @@ body.privacyModalOpen{overflow:hidden!important}
         if(result?.success!==true) throw new Error('Could not register channel opening');
       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
     }
-    try{ localStorage.setItem('mima_withdrawals_channel_opened_v1','1'); }catch(e){}
+    try{ localStorage.setItem('mima_withdrawals_channel_opened_v2','1'); }catch(e){}
     renderTask();
     try{
       if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function'){
@@ -7380,7 +7381,7 @@ body.privacyModalOpen{overflow:hidden!important}
 
     const rem = remainingMs();
     let opened = false;
-    try{ opened = localStorage.getItem('mima_withdrawals_channel_opened_v1') === '1'; }catch(e){}
+    try{ opened = localStorage.getItem('mima_withdrawals_channel_opened_v2') === '1'; }catch(e){}
 
     if(rem > 0){
       verifyBtn.disabled = true;
@@ -7441,6 +7442,7 @@ body.privacyModalOpen{overflow:hidden!important}
 
       const parsed = Date.parse(data?.next_available_at || '');
       nextAt = Number.isFinite(parsed) ? parsed : (nowMs() + 10800000);
+      try{ localStorage.removeItem('mima_withdrawals_channel_opened_v2'); }catch(e){}
 
       if(typeof window.showMimaTaskSuccess === 'function'){
         window.showMimaTaskSuccess('انضم إلى قناة سحوبات MIMA','Join MIMA Withdrawals channel',data.reward);
