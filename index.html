@@ -3122,8 +3122,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
       btn.disabled = false;
       btn.classList.remove('mimaJoinFirstLocked');
-      btn.textContent = tx('تحقق','Verify');
-      info.textContent = tx('+3 MIMA • انضم ثم تحقق','+3 MIMA • join then verify');
+      btn.textContent = tx('استلم','Claim');
+      info.textContent = tx('+3 MIMA • انضم ثم استلم','+3 MIMA • join then verify');
     };
 
     renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v1');
@@ -3880,7 +3880,13 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   // Show one AdsGram interstitial shortly after MIMA opens.
   scheduleEntryInterstitial();
 
-  function openMimaChannel(){
+  async function openMimaChannel(){
+    if(serverMode){
+      try{
+        const result=await apiCall('open_channel_task',{task_code:'join_channel'});
+        if(result?.success!==true) throw new Error('Could not open channel task');
+      }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
+    }
     try{ localStorage.setItem('mima_join_channel_opened_v1','1'); }catch(e){}
     renderTask();
     const url = 'https://t.me/MIMA_COIN';
@@ -3901,7 +3907,13 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   }
 
   // MIMACOIN2 channel task: same existing verification and cooldown as other channels.
-  function openMimaChannel2(){
+  async function openMimaChannel2(){
+    if(serverMode){
+      try{
+        const result=await apiCall('open_channel_task',{task_code:'join_channel_2'});
+        if(result?.success!==true) throw new Error('Could not open channel task');
+      }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
+    }
     try{ localStorage.setItem('mima_join_channel_2_opened_v1','1'); }catch(e){}
     renderTask();
     const url = 'https://t.me/MIMACOIN2/17';
@@ -3920,7 +3932,13 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   const MIMA_EXCHANGE_CHANNEL_URL = 'https://t.me/MIMACOIN_OFFICIAL';
   const MIMA_EXCHANGE_CHANNEL_OPENED_KEY = 'mima_exchange_channel_opened_v1';
 
-  function openMimaExchangeChannel(){
+  async function openMimaExchangeChannel(){
+    if(serverMode){
+      try{
+        const result=await apiCall('open_channel_task',{task_code:'join_mima_exchange_channel'});
+        if(result?.success!==true) throw new Error('Could not open channel task');
+      }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
+    }
     try{ localStorage.setItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY,'1'); }catch(e){}
     renderMimaExchangeChannelTask();
 
@@ -3971,7 +3989,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
 
     btn.disabled = false;
-    btn.textContent = tx('تحقق','Verify');
+    btn.textContent = tx('استلم','Claim');
     info.textContent = tx('+3 MIMA • تتجدد كل 4 ساعات','+3 MIMA • refreshes every 4 hours');
   }
 
@@ -7299,7 +7317,13 @@ body.privacyModalOpen{overflow:hidden!important}
 
   function el(id){ return document.getElementById(id); }
 
-  function openChannel(){
+  async function openChannel(){
+    if(serverMode){
+      try{
+        const result=await callTask('open');
+        if(result?.success!==true) throw new Error('Could not register channel opening');
+      }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
+    }
     try{ localStorage.setItem('mima_withdrawals_channel_opened_v1','1'); }catch(e){}
     renderTask();
     try{
@@ -7381,7 +7405,7 @@ body.privacyModalOpen{overflow:hidden!important}
 
     verifyBtn.disabled = busy;
     verifyBtn.classList.remove('mimaJoinFirstLocked');
-    verifyBtn.textContent = busy ? '⏳' : tx('تحقق','Verify');
+    verifyBtn.textContent = busy ? '⏳' : tx('استلم','Claim');
     info.textContent = tx(
       '+3 MIMA • انضم ثم تحقق • تتجدد كل 3 ساعات',
       '+3 MIMA • join then verify • refreshes every 3 hours'
