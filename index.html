@@ -920,7 +920,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <div class="mimaAdsgramTaskHead">
       <div>
         <b id="mimaAdsgramTaskHeading">مهمة ممولة</b>
-        <small id="mimaAdsgramTaskSub">أكمل مهمة من AdsGram واحصل على 3 MIMA</small>
+        <small id="mimaAdsgramTaskSub">مهمة اختيارية • المكافأة بعد تأكيد AdsGram فقط (+3 MIMA)</small>
       </div>
       <span class="mimaAdsgramTaskBadge">ADS</span>
     </div>
@@ -933,7 +933,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       class="mimaAdsgramNativeTask">
       <span slot="reward" class="mimaAdsgramTaskReward">+3 MIMA</span>
       <div slot="button" class="mimaAdsgramTaskButton">ابدأ</div>
-      <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">تحقق</div>
+      <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">تحقق من الإكمال</div>
       <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">بانتظار التأكيد</div>
     </adsgram-task>
     <div id="mimaAdsgramTaskServerNotice" class="mimaAdsgramTaskServerNotice" role="status" aria-live="polite" style="display:none"></div>
@@ -9942,7 +9942,7 @@ input[type="submit"]:focus-visible{
         notice.textContent=txSafe('⏳ لم يصل تأكيد المكافأة بعد. ظهور حالة AdsGram لا يعني إضافة 3 MIMA.','⏳ Server reward confirmation is pending. An AdsGram status does not mean 3 MIMA was credited.');
         notice.style.display='block';
       }else if(verificationState==='started'){
-        notice.textContent=txSafe('ℹ️ أكمل شروط المعلن أولاً. أزرار AdsGram وحدها لا تعني إضافة المكافأة.','ℹ️ Complete the advertiser task first. AdsGram buttons alone do not mean the reward was credited.');
+        notice.textContent=txSafe('ℹ️ المهمة اختيارية. أكمل شروط المعلن الفعلية؛ فتح الإعلان أو الرجوع فقط لا يمنح مكافأة.','ℹ️ This task is optional. Fulfil the advertiser requirements; simply opening and returning does not earn a reward.');
         notice.style.display='block';
       }else{
         notice.style.display='none';
@@ -9969,14 +9969,14 @@ input[type="submit"]:focus-visible{
     const s=document.getElementById('mimaAdsgramTaskSub');
     const task=document.getElementById('mimaAdsgramTaskUnit');
     if(h) h.textContent=txSafe('مهمة ممولة','Sponsored Task');
-    if(s) s.textContent=txSafe('أكمل المهمة واحصل على 3 MIMA • مرة كل 30 دقيقة','Complete the task and earn 3 MIMA • once every 30 minutes');
+    if(s) s.textContent=txSafe('مهمة اختيارية • أكمل شروط المعلن • +3 MIMA بعد تأكيد AdsGram','Optional sponsored task • complete advertiser requirements • +3 MIMA after AdsGram confirmation');
 
     if(task){
       const b=task.querySelector('[slot="button"]');
       const c=task.querySelector('[slot="claim"]');
       const d=task.querySelector('[slot="done"]');
       if(b) b.textContent=txSafe('ابدأ','Start');
-      if(c) c.textContent=txSafe('تحقق','Verify');
+      if(c) c.textContent=txSafe('تحقق من الإكمال','Verify completion');
       // The server-backed cooldown row is the only "completed" confirmation
       // in MIMA. The native AdsGram done state may precede our callback.
       if(d) d.textContent=txSafe('بانتظار التأكيد','Awaiting confirmation');
