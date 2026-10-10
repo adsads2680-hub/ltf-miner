@@ -4082,70 +4082,93 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   const VICTORS_PARTNER_URL = 'https://t.me/VictorsCompanybot/app?startapp=ref_5D66CA239C';
   const VICTORS_PARTNER_OPENED_KEY = 'mima_victors_partner_opened_v2';
 
-  function openVictorsPartner(){
-    try{
-      localStorage.setItem(VICTORS_PARTNER_OPENED_KEY,'1');
-    }catch(e){}
-    renderVictorsPartnerTask();
+  let victorsTimedState = 'not_started';
+  let victorsTimedReadyAt = 0;
+  let victorsTimedBusy = false;
+  let victorsLastCheckAt = 0;
 
-    try{
-      if(
-        window.Telegram &&
-        Telegram.WebApp &&
-        typeof Telegram.WebApp.openTelegramLink === 'function'
-      ){
-        Telegram.WebApp.openTelegramLink(VICTORS_PARTNER_URL);
-      }else{
-        window.open(VICTORS_PARTNER_URL,'_blank','noopener,noreferrer');
-      }
-    }catch(e){
-      window.location.href = VICTORS_PARTNER_URL;
+  function openVictorsPartner(){
+    if(serverMode){
+      apiCall('victors_timed_reward',{kind:'start'}).then(data=>{
+        if(data?.success){
+          victorsTimedState = data.state || 'waiting';
+          victorsTimedReadyAt = Date.parse(data.ready_at || '') || (Date.now()+120000);
+          if(data.next_available_at) victorsPartnerNextAvailableAt=Date.parse(data.next_available_at)||0;
+          renderVictorsPartnerTask();
+          toast(tx('⏳ جاري الانتظار لمدة دقيقتين قبل إضافة المكافأة','⏳ Two-minute reward waiting period started'));
+        }
+      }).catch(()=>toast(tx('تعذر بدء فترة الانتظار','Unable to start waiting period')));
     }
+    try{
+      if(window.Telegram?.WebApp?.openTelegramLink) Telegram.WebApp.openTelegramLink(VICTORS_PARTNER_URL);
+      else window.open(VICTORS_PARTNER_URL,'_blank','noopener,noreferrer');
+    }catch(e){window.location.href=VICTORS_PARTNER_URL;}
   }
 
   function renderVictorsPartnerTask(){
-    const title = $('victorsPartnerTaskTitle');
-    const openBtn = $('victorsPartnerOpenBtn');
-    const btn = $('victorsPartnerTaskBtn');
-    const info = $('victorsPartnerTaskInfo');
-    if(!btn || !info) return;
-
-    if(title){
-      title.textContent = tx('اربط المحفظة وابدأ التعدين','Connect Wallet & Start Mining');
+    const title=$('victorsPartnerTaskTitle'), open=$('victorsPartnerOpenBtn');
+    const btn=$('victorsPartnerTaskBtn'), info=$('victorsPartnerTaskInfo');
+    if(!btn||!info)return;
+    if(title)title.textContent=tx('اربط المحفظة وابدأ التعدين','Connect Wallet & Start Mining');
+    if(open)open.textContent=tx('ابدأ','Start');
+    const cooldown=victorsPartnerNextAvailableAt-Date.now();
+    if(cooldown>0){
+      btn.disabled=true;
+      btn.textContent=formatCountdown(cooldown);
+      info.textContent=tx('+10 MIMA • متاحة بعد ','+10 MIMA • available in ')+formatCountdown(cooldown);
+    }else if(victorsTimedState==='waiting'){
+      const seconds=Math.max(0,victorsTimedReadyAt-Date.now());
+      btn.disabled=true;
+      btn.textContent=seconds>0?formatCountdown(seconds):tx('جاري الإضافة','Crediting…');
+      info.textContent=tx('⏳ جاري الانتظار • 10 MIMA بعد دقيقتين','⏳ Waiting • 10 MIMA after two minutes');
+    }else if(victorsTimedState==='ready'){
+      btn.disabled=false;
+      btn.textContent=tx('استلم 10 MIMA','Claim 10 MIMA');
+      info.textContent=tx('انتهت فترة الانتظار','Waiting period completed');
+    }else{
+      btn.disabled=true;
+      btn.textContent=tx('ابدأ أولاً','Start first');
+      info.textContent=tx('+10 MIMA • انتظر دقيقتين بعد الضغط على ابدأ','+10 MIMA • wait two minutes after tapping Start');
     }
-    if(openBtn){
-      openBtn.textContent = tx('ابدأ','Start');
-    }
+  }
 
-    const remaining = victorsPartnerNextAvailableAt
-      ? victorsPartnerNextAvailableAt - nowMs()
-      : 0;
-
-    let opened = false;
-    try{ opened = localStorage.getItem(VICTORS_PARTNER_OPENED_KEY) === '1'; }catch(e){}
-
-    if(remaining > 0){
-      btn.disabled = true;
-      btn.textContent = formatCountdown(remaining);
-      info.textContent = tx('+10 MIMA • متاحة بعد ','+10 MIMA • available in ') + formatCountdown(remaining);
-      return;
-    }
-
-    if(!opened){
-      btn.disabled = true;
-      btn.textContent = tx('ابدأ أولاً','Start first');
-      info.textContent = tx('+10 MIMA • اربط المحفظة وابدأ التعدين ثم ارجع واستلم','+10 MIMA • connect your wallet and start mining, then return to claim');
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = tx('بانتظار التحقق','Pending verification');
-    info.textContent = tx('لن تُصرف 10 MIMA إلا بعد تأكيد الشريك، والضغط على إلغاء لا يُكمل المهمة','10 MIMA requires partner confirmation; Cancel does not complete the task');
+  async function victorsTimedCheck(force=false){
+    if(!serverMode||document.visibilityState==='hidden'||victorsTimedBusy)return;
+    if(!force&&Date.now()-victorsLastCheckAt<12000)return;
+    victorsLastCheckAt=Date.now();
+    victorsTimedBusy=true;
+    try{
+      let data=await apiCall('victors_timed_reward',{kind:'status'});
+      if(data?.success!==true)return;
+      if(data.state==='cooldown'){
+        victorsTimedState='not_started';
+        victorsPartnerNextAvailableAt=Date.parse(data.next_available_at||'')||0;
+      }else if(data.state==='waiting'){
+        victorsTimedState='waiting';
+        victorsTimedReadyAt=Date.parse(data.ready_at||'')||Date.now()+120000;
+      }else if(data.state==='ready'){
+        victorsTimedState='ready';
+        data=await apiCall('victors_timed_reward',{kind:'claim'});
+        if(data?.success&&data.state==='rewarded'){
+          victorsTimedState='not_started';
+          victorsPartnerNextAvailableAt=Date.parse(data.next_available_at||'')||Date.now()+14400000;
+          bal=Number(data.balance??bal);
+          exchangeableBalance=Number(data.exchangeable_balance??exchangeableBalance);
+          if(typeof showMimaTaskSuccess==='function')showMimaTaskSuccess('اربط المحفظة وابدأ التعدين','Connect wallet and start mining',Number(data.reward||10));
+          render();
+        }
+      }else{
+        victorsTimedState='not_started';
+      }
+    }catch(e){}finally{victorsTimedBusy=false;renderVictorsPartnerTask();}
   }
 
   async function claimVictorsPartner(btn){
-    toast(tx('⏳ بانتظار تأكيد الشريك. لن تُمنح المكافأة لمجرد فتح الرابط.','⏳ Waiting for partner verification. Opening the link alone does not earn the reward.'));
+    await victorsTimedCheck(true);
   }
+  setInterval(()=>{renderVictorsPartnerTask();victorsTimedCheck();},5000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')victorsTimedCheck(true);});
+  setTimeout(()=>victorsTimedCheck(true),1200);
 
   async function claimTask(taskCode,btn){
     if(!btn || btn.disabled) return;
