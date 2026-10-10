@@ -8208,7 +8208,8 @@ input[type="submit"]:focus-visible{
 
 <style id="mima-mining-boost-style">
 #mainCoin{position:relative}
-#mimaBoostButton{position:absolute;right:0;top:50%;bottom:auto;transform:translateY(-50%);z-index:30;width:76px;height:76px;min-width:76px;padding:8px 5px;border-radius:17px;border:1.5px solid #f3c65c;color:#ffe8ac;background:linear-gradient(160deg,#382405,#0c0b0a);box-shadow:0 0 14px #c7963b88;font-weight:900;font-size:12px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;line-height:1.1}#mimaBoostButton .boost-rocket{font-size:25px;line-height:1}
+#mimaBoostButton{position:relative!important;inset:auto!important;transform:none!important;z-index:30;width:84px!important;height:84px!important;min-width:84px!important;padding:7px 4px;border-radius:17px;border:1.5px solid #f3c65c;color:#ffe8ac;background:linear-gradient(160deg,#382405,#0c0b0a);box-shadow:0 0 14px #c7963b88;font-weight:900;font-size:13px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;line-height:1.1;margin:10px auto 14px!important;flex:none!important}#mimaBoostButton .boost-rocket{font-size:27px;line-height:1}
+
 #mimaBoostDialog{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:#000b}
 #mimaBoostDialog.open{display:flex}
 #mimaBoostPanel{width:min(410px,100%);padding:20px;border:1px solid #d8a849;border-radius:19px;background:linear-gradient(150deg,#111b23,#080909);color:#ffe8a4;box-shadow:0 20px 60px #000}
@@ -8234,6 +8235,12 @@ input[type="submit"]:focus-visible{
  function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en}catch(e){return en}}
  function render(){
    const purchased=Math.round((typeof activeBoostSeconds==='number'?activeBoostSeconds:0)/3600);
+   const button=el('mimaBoostButton');
+   if(button){
+     const tag=button.querySelector('.boost-label');
+     if(tag)tag.textContent=purchased>0?'+'+purchased+'h':'BOOST';
+     button.setAttribute('aria-label',purchased>0?'Mining boost +'+purchased+' hours':'Mining BOOST');
+   }
    const available=Math.max(0,3-purchased);
    el('mimaBoostHeading').textContent=tr('⚡ تمديد التعدين','⚡ Mining BOOST');
    el('mimaBoostDetails').textContent=tr('التمديد خلال الجلسة الحالية فقط • المستخدم يكسب بنفس معدل التعدين • تم شراء '+purchased+' من 3 ساعات','Current session only • Earnings continue at your normal mining rate • '+purchased+' of 3 extra hours purchased');
@@ -8265,10 +8272,12 @@ input[type="submit"]:focus-visible{
    const coin=el('mainCoin');
    if(coin && !el('mimaBoostButton')){
      const btn=document.createElement('button');
-     btn.id='mimaBoostButton';btn.type='button';btn.innerHTML='<span>BOOST</span><span class="boost-rocket" aria-hidden="true">🚀</span>';btn.setAttribute('aria-label','Mining BOOST');
+     btn.id='mimaBoostButton';btn.type='button';btn.innerHTML='<span class="boost-label">BOOST</span><span class="boost-rocket" aria-hidden="true">🚀</span>';btn.setAttribute('aria-label','Mining BOOST');
      btn.onclick=e=>{e.preventDefault();e.stopPropagation();open()};
-     coin.appendChild(btn);
+     coin.insertAdjacentElement('afterend',btn);
    }
+   render();
+   setInterval(()=>{if(!working)render()},5000);
    el('mimaBoostClose').onclick=close;
    dialog.onclick=e=>{if(e.target===dialog)close()};
    dialog.querySelectorAll('[data-hours]').forEach(btn=>btn.onclick=()=>purchase(Number(btn.dataset.hours)));
