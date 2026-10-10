@@ -1464,9 +1464,10 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(MIMA_KNOWN_LANGUAGE_CODES.includes(manual)) return manual;
     if(manual==='auto') return getMimaTelegramLanguage();
 
-    // Default to English on all devices unless the user chose a language
-    // in MIMA settings. Do not infer app language from Telegram/phone locale.
-    return 'en';
+    // In automatic mode, use the Telegram/device language when supported.
+    // Unknown countries/languages automatically fall back to English.
+    // Explicit manual language choices remain unchanged.
+    return getMimaTelegramLanguage();
   }
 
 
