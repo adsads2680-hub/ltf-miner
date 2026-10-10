@@ -1062,6 +1062,18 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       </div>
     </div>
 
+    <div class="item mimaTaskRow" id="poePartnerOnceTaskItem" style="display:none">
+      <span class="ico">🤝</span>
+      <main>
+        <b id="poePartnerOnceTitle">انضم إلى شركائنا</b>
+        <small id="poePartnerOnceInfo">+3 MIMA • مرة واحدة فقط</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="poePartnerOnceOpenBtn" class="taskJoinBtn" type="button" onclick="openPoePartnerOnce()">انضم</button>
+        <button id="poePartnerOnceClaimBtn" type="button" onclick="claimPoePartnerOnce()" disabled>انضم أولاً</button>
+      </div>
+    </div>
+
     <div class="item mimaTaskRow" id="vyroPartnerFiveHourTaskItem">
       <span class="ico">🤝</span>
       <main>
@@ -8114,6 +8126,79 @@ input[type="submit"]:focus-visible{
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
+})();
+</script>
+
+<script id="mima-poe-partner-once-20261011">
+(function(){
+  const URL='https://t.me/PoeMiner_Bot?start=1035565575';
+  const CODE='poe_partner_once';
+  const KEY='mima_poe_partner_progress_v1';
+  let progress=0,completed=false,busy=false;
+  function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en}catch(e){return en}}
+  function el(id){return document.getElementById(id)}
+  function paint(){
+    const row=el('poePartnerOnceTaskItem'),info=el('poePartnerOnceInfo'),claim=el('poePartnerOnceClaimBtn'),open=el('poePartnerOnceOpenBtn'),title=el('poePartnerOnceTitle');
+    if(!row)return;
+    row.style.display=completed?'none':'';
+    if(completed)return;
+    if(title)title.textContent=tr('انضم إلى شركائنا','Join Our Partners');
+    if(info)info.textContent=tr('+3 MIMA • مرة واحدة فقط','+3 MIMA • one time only');
+    if(open)open.textContent=tr('انضم','Join');
+    if(claim){
+      claim.disabled=busy||progress===0;
+      claim.textContent=busy?'⏳':progress===0?tr('انضم أولاً','Join first'):progress===1?tr('تأكيد 1/3','Confirm 1/3'):progress===2?tr('تأكيد 2/3','Confirm 2/3'):tr('استلم 3 MIMA','Claim 3 MIMA');
+    }
+  }
+  async function sync(){
+    if(typeof serverMode==='undefined'||!serverMode){paint();return;}
+    try{const r=await apiCall('poe_partner_status');if(r?.success===true)completed=r.completed===true;}catch(e){}
+    paint();
+  }
+  window.openPoePartnerOnce=async function(){
+    if(busy||completed)return;
+    if(typeof serverMode==='undefined'||!serverMode){if(typeof toast==='function')toast(tr('افتح المهمة داخل تيليغرام','Open inside Telegram'));return;}
+    busy=true;paint();
+    try{
+      const r=await apiCall('open_channel_task',{task_code:CODE});
+      if(r?.success!==true)throw new Error(r?.message||'Unable to register task opening');
+      progress=Math.max(progress,1);
+      try{localStorage.setItem(KEY,String(progress))}catch(e){}
+      try{if(window.Telegram?.WebApp?.openTelegramLink)Telegram.WebApp.openTelegramLink(URL);else window.open(URL,'_blank','noopener,noreferrer')}catch(e){window.open(URL,'_blank','noopener,noreferrer')}
+    }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
+    finally{busy=false;paint();}
+  };
+  window.claimPoePartnerOnce=async function(){
+    if(busy||completed||progress===0)return;
+    if(progress<3){
+      progress+=1;
+      try{localStorage.setItem(KEY,String(progress))}catch(e){}
+      paint();
+      if(typeof toast==='function')toast(tr('خطوة التأكيد '+(progress-1)+' من 2 اكتملت','Confirmation step '+(progress-1)+' of 2 complete'));
+      return;
+    }
+    busy=true;paint();
+    try{
+      const r=await apiCall('claim_task',{task_code:CODE});
+      if(r?.success===true){
+        completed=true;
+        try{localStorage.removeItem(KEY)}catch(e){}
+        if(typeof window.showMimaTaskSuccess==='function')window.showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',3);
+        if(typeof syncServerStatus==='function')syncServerStatus(false,true);
+      }else{
+        if(r?.next_available_at){completed=true;try{localStorage.removeItem(KEY)}catch(e){}}
+        else if(typeof toast==='function')toast('⚠️ '+String(r?.message||tr('تعذر استلام المكافأة','Could not claim reward')));
+      }
+    }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
+    finally{busy=false;paint();}
+  };
+  function init(){
+    try{progress=Math.max(0,Math.min(3,Number(localStorage.getItem(KEY)||0)))}catch(e){}
+    paint();sync();
+    new MutationObserver(()=>{if(!busy)paint()}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync();});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 </body>
