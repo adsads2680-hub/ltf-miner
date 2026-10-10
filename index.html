@@ -8208,7 +8208,7 @@ input[type="submit"]:focus-visible{
 
 <style id="mima-mining-boost-style">
 #mainCoin{position:relative}
-#mimaBoostButton{position:absolute;right:1%;bottom:13%;z-index:30;min-width:58px;padding:8px 10px;border-radius:14px;border:1.5px solid #f3c65c;color:#ffe8ac;background:linear-gradient(160deg,#382405,#0c0b0a);box-shadow:0 0 14px #c7963b88;font-weight:900;font-size:11px;cursor:pointer}
+#mimaBoostButton{position:absolute;right:0;top:50%;bottom:auto;transform:translateY(-50%);z-index:30;width:76px;height:76px;min-width:76px;padding:8px 5px;border-radius:17px;border:1.5px solid #f3c65c;color:#ffe8ac;background:linear-gradient(160deg,#382405,#0c0b0a);box-shadow:0 0 14px #c7963b88;font-weight:900;font-size:12px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;line-height:1.1}#mimaBoostButton .boost-rocket{font-size:25px;line-height:1}
 #mimaBoostDialog{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:#000b}
 #mimaBoostDialog.open{display:flex}
 #mimaBoostPanel{width:min(410px,100%);padding:20px;border:1px solid #d8a849;border-radius:19px;background:linear-gradient(150deg,#111b23,#080909);color:#ffe8a4;box-shadow:0 20px 60px #000}
@@ -8265,7 +8265,7 @@ input[type="submit"]:focus-visible{
    const coin=el('mainCoin');
    if(coin && !el('mimaBoostButton')){
      const btn=document.createElement('button');
-     btn.id='mimaBoostButton';btn.type='button';btn.textContent='⚡ BOOST';
+     btn.id='mimaBoostButton';btn.type='button';btn.innerHTML='<span>BOOST</span><span class="boost-rocket" aria-hidden="true">🚀</span>';btn.setAttribute('aria-label','Mining BOOST');
      btn.onclick=e=>{e.preventDefault();e.stopPropagation();open()};
      coin.appendChild(btn);
    }
