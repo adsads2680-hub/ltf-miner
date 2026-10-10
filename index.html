@@ -2477,6 +2477,17 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         throw new Error(data?.message || tx('المستخدم غير موجود','User not found'));
       }
 
+      // Admin-only 12-hour activity report (server independently verifies admin identity).
+      let activity12 = null;
+      try {
+        const a12 = await apiCall('admin_user_activity_12h',{
+          telegram_user_id: String(data?.user?.telegram_user_id || '')
+        });
+        if(a12?.success === true) activity12 = a12;
+      } catch(_activityError) {
+        // Existing lifetime user audit remains available if the new report is unavailable.
+      }
+
       const u = data.user || {};
       const sources = Array.isArray(data.earning_sources) ? data.earning_sources : [];
       const tasks = Array.isArray(data.tasks) ? data.tasks : [];
@@ -2493,7 +2504,22 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
       const userLabel = u.username ? '@' + String(u.username).replace(/^@/,'') : (u.first_name || 'MIMA User');
 
+      const last12Html = '<div class="adminAuditRow" style="border:1px solid rgba(212,175,55,.45);background:linear-gradient(135deg,rgba(212,175,55,.12),rgba(0,0,0,.35));border-radius:14px;padding:12px;margin:12px 0">' +
+        '<div class="adminAuditHead"><b>🔎 ' + tx('نشاط آخر 12 ساعة','Last 12 hours') + '</b><span style="color:#D9B95C">MIMA</span></div>' +
+        (activity12 ?
+          '<div class="adminUserBalanceGrid">' +
+            '<div><small>' + tx('المهام المكتملة','Tasks completed') + '</small><b>' + Number(activity12.tasks_completed || 0) + '</b></div>' +
+            '<div><small>' + tx('شاهد الإعلان','Rewarded ads') + '</small><b>' + Number(activity12.rewarded_ads || 0) + '</b></div>' +
+            '<div><small>' + tx('المهمة الممولة','Sponsored tasks') + '</small><b>' + Number(activity12.sponsored_tasks || 0) + '</b></div>' +
+            '<div><small>' + tx('MIMA المكتسبة','MIMA earned') + '</small><b>' + formatMima(activity12.mima_earned) + '</b></div>' +
+          '</div>' +
+          '<div class="adminUserLine"><span>' + tx('عدد مرات فتح البوت','App opens') + '</span><b>—</b></div>' +
+          '<small>' + tx('عدد الدخول يحتاج تسجيل فتح التطبيق؛ غير متوفر سابقاً','App opens require launch tracking; no historical count is available') + '</small>' :
+          '<small>' + tx('تعذر تحميل إحصائيات 12 ساعة حالياً','12-hour statistics are temporarily unavailable') + '</small>') +
+        '</div>';
+
       result.innerHTML =
+        last12Html +
         '<div class="adminUserIdentity">' +
           '<b>' + escapeHtml(userLabel) + '</b>' +
           '<small>ID: ' + escapeHtml(String(u.telegram_user_id || '')) + '</small>' +
