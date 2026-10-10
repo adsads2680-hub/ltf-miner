@@ -8052,6 +8052,70 @@ input[type="submit"]:focus-visible{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
+
+<script id="mima-ui-language-reconcile-20261011">
+/* UI-only reconciliation of asynchronously rendered labels; never changes task logic. */
+(function(){
+  const pairs=[
+    ['mimaDailySubtitle','7 أيام من المكافآت • اليوم السابع هدية خاصة','7 days of rewards • Day 7 is a special gift'],
+    ['mimaDailyTitle','تسجيل الحضور اليومي','Daily Check-in'],
+    ['mimaDailyClaimBtn','✓ تم تسجيل حضور اليوم','✓ Checked in today']
+  ];
+  let busy=false;
+  function reconcile(){
+    if(busy)return;
+    busy=true;
+    try{
+      const lang=(document.documentElement.lang||'en').toLowerCase();
+      if(lang!=='en')return;
+      for(const [id,ar,en] of pairs){
+        const el=document.getElementById(id);
+        if(el && (el.textContent||'').trim()===ar)el.textContent=en;
+      }
+      const days=document.querySelectorAll('#mimaDailyCheckin .mimaDailyDay small');
+      days.forEach((el,i)=>{
+        if(/^اليوم\s*\d+$/u.test((el.textContent||'').trim()))el.textContent='Day '+(i+1);
+      });
+      const status=document.getElementById('mimaDailyStatusText');
+      if(status){
+        const t=(status.textContent||'').trim();
+        let next=null;
+        let m;
+        if((m=t.match(/^تم استلام مكافأة اليوم\s*(\d+)$/u)))next='Day '+m[1]+' reward claimed';
+        else if((m=t.match(/^مكافأة اليوم\s*(\d+)\s*جاهزة للاستلام$/u)))next='Day '+m[1]+' reward is ready';
+        else if(t==='اكتملت الدورة • غداً تبدأ من اليوم 1')next='Cycle complete • Tomorrow starts Day 1';
+        else if(t==='انقطعت السلسلة • تبدأ اليوم من اليوم 1')next='Streak reset • Starting again from Day 1';
+        else if(t==='جاري تحميل حالة الحضور…')next='Loading check-in status…';
+        if(next && next!==t)status.textContent=next;
+      }
+      const btn=document.getElementById('mimaDailyClaimBtn');
+      if(btn){
+        const t=(btn.textContent||'').trim();
+        const map={'تسجيل حضور اليوم':'Check in today','✓ تم تسجيل حضور اليوم':'✓ Checked in today','جاري التحميل…':'Loading…','افتح داخل Telegram':'Open in Telegram'};
+        if(map[t])btn.textContent=map[t];
+      }
+      const badge=document.querySelector('.mimaMemberBadge');
+      if(badge && (badge.textContent||'').trim()==='معدّن نشط')badge.textContent='ACTIVE MINER';
+    }finally{busy=false;}
+  }
+  let queued=false;
+  function schedule(){
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{queued=false;reconcile();});
+  }
+  function init(){
+    schedule();
+    const root=document.getElementById('tasks');
+    if(root)new MutationObserver(schedule).observe(root,{subtree:true,childList:true,characterData:true});
+    new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+    window.addEventListener('pageshow',schedule);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule();});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();
+</script>
 </body>
 </html>
 <style>
