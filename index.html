@@ -1331,6 +1331,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
   const ROUND_MAX = 4;
   const ROUND_SECONDS = 4 * 60 * 60;
+  let activeRoundSeconds = ROUND_SECONDS;
+  let activeBoostSeconds = 0;
   const RATE_PER_HOUR = 1;
   const MIMA_PER_USD = 700;
 
@@ -2976,6 +2978,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       RATE_PER_HOUR,
       Number(data.mining_rate || RATE_PER_HOUR)
     );
+    activeBoostSeconds = Math.max(0,Math.min(10800,Number(data.mining_boost_seconds||0)));
+    activeRoundSeconds = ROUND_SECONDS + activeBoostSeconds;
     roundMax = Math.max(
       miningRate * 4,
       Number(data.mining_round_max || (miningRate * 4))
@@ -3062,7 +3066,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   function computeAccrued(){
     const elapsedSec = Math.max(
       0,
-      Math.min(ROUND_SECONDS, (nowMs() - roundStartedAt) / 1000)
+      Math.min(activeRoundSeconds, (nowMs() - roundStartedAt) / 1000)
     );
 
     earned = Math.min(
@@ -3070,7 +3074,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       elapsedSec * miningRate / 3600
     );
 
-    roundEnded = elapsedSec >= ROUND_SECONDS;
+    roundEnded = elapsedSec >= activeRoundSeconds;
   }
 
   function regenerateTapEnergy(){
@@ -8199,6 +8203,78 @@ input[type="submit"]:focus-visible{
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync();});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+<style id="mima-mining-boost-style">
+#mainCoin{position:relative}
+#mimaBoostButton{position:absolute;right:1%;bottom:13%;z-index:30;min-width:58px;padding:8px 10px;border-radius:14px;border:1.5px solid #f3c65c;color:#ffe8ac;background:linear-gradient(160deg,#382405,#0c0b0a);box-shadow:0 0 14px #c7963b88;font-weight:900;font-size:11px;cursor:pointer}
+#mimaBoostDialog{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:#000b}
+#mimaBoostDialog.open{display:flex}
+#mimaBoostPanel{width:min(410px,100%);padding:20px;border:1px solid #d8a849;border-radius:19px;background:linear-gradient(150deg,#111b23,#080909);color:#ffe8a4;box-shadow:0 20px 60px #000}
+#mimaBoostPanel h3{text-align:center;margin:0 0 7px}#mimaBoostPanel p{text-align:center;color:#cbb888;font-size:12px}
+#mimaBoostPanel .mimaBoostOption{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:10px;padding:14px;background:#17120b;border:1px solid #987334;border-radius:13px;color:#ffe4a0;font-size:14px;font-weight:800}
+#mimaBoostPanel .mimaBoostOption:disabled{opacity:.38}#mimaBoostClose{width:100%;margin-top:12px;padding:12px;background:transparent;color:#d4c6a9;border:1px solid #6c5b38;border-radius:12px}
+</style>
+<div id="mimaBoostDialog" aria-modal="true" role="dialog" aria-label="Mining boost">
+  <div id="mimaBoostPanel">
+    <h3 id="mimaBoostHeading">⚡ BOOST</h3>
+    <p id="mimaBoostDetails"></p>
+    <button class="mimaBoostOption" type="button" data-hours="1"></button>
+    <button class="mimaBoostOption" type="button" data-hours="2"></button>
+    <button class="mimaBoostOption" type="button" data-hours="3"></button>
+    <button id="mimaBoostClose" type="button"></button>
+  </div>
+</div>
+<script id="mima-mining-duration-boost-20261011">
+(function(){
+ let working=false;
+ const dialog=document.getElementById('mimaBoostDialog');
+ const el=id=>document.getElementById(id);
+ function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en}catch(e){return en}}
+ function render(){
+   const purchased=Math.round((typeof activeBoostSeconds==='number'?activeBoostSeconds:0)/3600);
+   const available=Math.max(0,3-purchased);
+   el('mimaBoostHeading').textContent=tr('⚡ تمديد التعدين','⚡ Mining BOOST');
+   el('mimaBoostDetails').textContent=tr('التمديد خلال الجلسة الحالية فقط • المستخدم يكسب بنفس معدل التعدين • تم شراء '+purchased+' من 3 ساعات','Current session only • Earnings continue at your normal mining rate • '+purchased+' of 3 extra hours purchased');
+   dialog.querySelectorAll('[data-hours]').forEach(btn=>{
+     const h=Number(btn.dataset.hours);
+     btn.textContent=tr('+'+h+' ساعة • '+(h*200)+' MIMA','+'+h+' hour'+(h===1?'':'s')+' • '+(h*200)+' MIMA');
+     btn.disabled=working||h>available||(typeof roundEnded!=='undefined'&&roundEnded);
+   });
+   el('mimaBoostClose').textContent=tr('إغلاق','Close');
+ }
+ function close(){dialog.classList.remove('open')}
+ function open(){render();dialog.classList.add('open')}
+ async function purchase(hours){
+   if(working||!([1,2,3].includes(hours)))return;
+   const msg=tr('تأكيد شراء '+hours+' ساعة تعدين إضافية مقابل خصم '+hours*200+' MIMA من رصيدك؟','Confirm '+hours+' extra mining hour(s) for '+hours*200+' MIMA deducted from your balance?');
+   if(!window.confirm(msg))return;
+   working=true;render();
+   try{
+     const id=crypto.randomUUID();
+     const result=await apiCall('buy_mining_boost',{hours,purchase_id:id});
+     if(result?.success!==true)throw new Error(result?.message||'Boost purchase failed');
+     await syncServerStatus(false,true);
+     if(typeof toast==='function')toast(tr('✅ تم تمديد التعدين وخصم '+hours*200+' MIMA','✅ Mining extended; '+hours*200+' MIMA deducted'));
+     close();
+   }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
+   finally{working=false;render()}
+ }
+ function init(){
+   const coin=el('mainCoin');
+   if(coin && !el('mimaBoostButton')){
+     const btn=document.createElement('button');
+     btn.id='mimaBoostButton';btn.type='button';btn.textContent='⚡ BOOST';
+     btn.onclick=e=>{e.preventDefault();e.stopPropagation();open()};
+     coin.appendChild(btn);
+   }
+   el('mimaBoostClose').onclick=close;
+   dialog.onclick=e=>{if(e.target===dialog)close()};
+   dialog.querySelectorAll('[data-hours]').forEach(btn=>btn.onclick=()=>purchase(Number(btn.dataset.hours)));
+   new MutationObserver(()=>{if(dialog.classList.contains('open'))render()}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 </body>
