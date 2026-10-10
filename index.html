@@ -4095,7 +4095,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
           victorsTimedReadyAt = Date.parse(data.ready_at || '') || (Date.now()+120000);
           if(data.next_available_at) victorsPartnerNextAvailableAt=Date.parse(data.next_available_at)||0;
           renderVictorsPartnerTask();
-          toast(tx('⏳ جاري الانتظار لمدة دقيقتين قبل إضافة المكافأة','⏳ Two-minute reward waiting period started'));
+          toast(tx('⏳ جاري التحقق من المهمة، يرجى الانتظار دقيقتين','⏳ Verifying task, please wait two minutes'));
         }
       }).catch(()=>toast(tx('تعذر بدء فترة الانتظار','Unable to start waiting period')));
     }
@@ -4120,7 +4120,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       const seconds=Math.max(0,victorsTimedReadyAt-Date.now());
       btn.disabled=true;
       btn.textContent=seconds>0?formatCountdown(seconds):tx('جاري الإضافة','Crediting…');
-      info.textContent=tx('⏳ جاري الانتظار • 10 MIMA بعد دقيقتين','⏳ Waiting • 10 MIMA after two minutes');
+      info.textContent=tx('⏳ جاري التحقق • 10 MIMA بعد دقيقتين','⏳ Verifying • 10 MIMA after two minutes');
     }else if(victorsTimedState==='ready'){
       btn.disabled=false;
       btn.textContent=tx('استلم 10 MIMA','Claim 10 MIMA');
