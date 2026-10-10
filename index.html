@@ -8208,7 +8208,7 @@ input[type="submit"]:focus-visible{
 
 <style id="mima-mining-boost-style">
 #mainCoin{position:relative}
-#mimaBoostButton{position:relative!important;inset:auto!important;transform:none!important;z-index:30;width:84px!important;height:84px!important;min-width:84px!important;padding:7px 4px;border-radius:17px;border:1.5px solid #f3c65c;color:#ffe8ac;background:linear-gradient(160deg,#382405,#0c0b0a);box-shadow:0 0 14px #c7963b88;font-weight:900;font-size:13px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;line-height:1.1;margin:10px auto 14px!important;flex:none!important}#mimaBoostButton .boost-rocket{font-size:27px;line-height:1}
+#mimaBoostButton{position:absolute!important;left:auto!important;right:-5px!important;top:50%!important;bottom:auto!important;inset-inline-start:auto!important;transform:translateY(-50%)!important;z-index:80!important;width:76px!important;height:76px!important;min-width:76px!important;margin:0!important;padding:6px 3px!important;border-radius:17px;border:1.5px solid #f3c65c;color:#ffe8ac;background:linear-gradient(160deg,#382405,#0c0b0a);box-shadow:0 0 14px #c7963b88;font-weight:900;font-size:12px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;line-height:1.1;flex:none!important}#mimaBoostButton .boost-rocket{font-size:27px;line-height:1}
 
 #mimaBoostDialog{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:#000b}
 #mimaBoostDialog.open{display:flex}
@@ -8274,7 +8274,7 @@ input[type="submit"]:focus-visible{
      const btn=document.createElement('button');
      btn.id='mimaBoostButton';btn.type='button';btn.innerHTML='<span class="boost-label">BOOST</span><span class="boost-rocket" aria-hidden="true">🚀</span>';btn.setAttribute('aria-label','Mining BOOST');
      btn.onclick=e=>{e.preventDefault();e.stopPropagation();open()};
-     coin.insertAdjacentElement('afterend',btn);
+     coin.appendChild(btn);
    }
    render();
    setInterval(()=>{if(!working)render()},5000);
