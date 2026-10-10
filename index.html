@@ -1042,7 +1042,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <span class="ico">🤝</span>
       <main>
         <b id="victorsPartnerTaskTitle">اربط المحفظة وابدأ التعدين</b>
-        <small id="victorsPartnerTaskInfo">+2 MIMA • تتجدد كل 4 ساعات</small>
+        <small id="victorsPartnerTaskInfo">+10 MIMA • تتجدد كل 4 ساعات</small>
       </main>
       <div class="taskActionGroup">
         <button id="victorsPartnerOpenBtn" class="taskJoinBtn" type="button" onclick="openVictorsPartner()">ابدأ</button>
@@ -4127,20 +4127,20 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(remaining > 0){
       btn.disabled = true;
       btn.textContent = formatCountdown(remaining);
-      info.textContent = tx('+2 MIMA • متاحة بعد ','+2 MIMA • available in ') + formatCountdown(remaining);
+      info.textContent = tx('+10 MIMA • متاحة بعد ','+10 MIMA • available in ') + formatCountdown(remaining);
       return;
     }
 
     if(!opened){
       btn.disabled = true;
       btn.textContent = tx('ابدأ أولاً','Start first');
-      info.textContent = tx('+2 MIMA • اربط المحفظة وابدأ التعدين ثم ارجع واستلم','+2 MIMA • connect your wallet and start mining, then return to claim');
+      info.textContent = tx('+10 MIMA • اربط المحفظة وابدأ التعدين ثم ارجع واستلم','+10 MIMA • connect your wallet and start mining, then return to claim');
       return;
     }
 
     btn.disabled = false;
     btn.textContent = tx('استلم','Claim');
-    info.textContent = tx('+2 MIMA • جاهزة للاستلام','+2 MIMA • ready to claim');
+    info.textContent = tx('+10 MIMA • جاهزة للاستلام','+10 MIMA • ready to claim');
   }
 
   async function claimVictorsPartner(btn){
@@ -4153,17 +4153,29 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       return;
     }
 
+    // Two-step confirmation to avoid treating an opened link as verified work.
+    // The first press only asks for confirmation; it never deducts or credits.
+    const confirmKey = 'mima_victors_partner_confirm_v1';
+    let confirmedOnce = false;
+    try { confirmedOnce = sessionStorage.getItem(confirmKey) === '1'; } catch(e){}
+    if(!confirmedOnce){
+      try { sessionStorage.setItem(confirmKey,'1'); } catch(e){}
+      toast(tx('⚠️ لم يكتمل التأكيد بعد. تأكد من تنفيذ المهمة ثم اضغط استلم مرة أخرى.',
+               '⚠️ Confirmation is pending. Complete the task, then tap Claim again.'));
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = '⏳';
 
     if(!serverMode){
-      bal += 2;
-      exchangeableBalance += 2;
+      bal += 10;
+      exchangeableBalance += 10;
       victorsPartnerNextAvailableAt = Date.now() + 4 * 60 * 60 * 1000;
-      try{ localStorage.removeItem(VICTORS_PARTNER_OPENED_KEY); }catch(e){}
+      try{ localStorage.removeItem(VICTORS_PARTNER_OPENED_KEY); sessionStorage.removeItem('mima_victors_partner_confirm_v1'); }catch(e){}
       savePreviewState();
       render();
-      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      toast(tx('🎁 +10 MIMA أضيفت إلى رصيدك','🎁 +10 MIMA added to your balance'));
       return;
     }
 
@@ -4184,7 +4196,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         ? nextTs
         : nowMs() + 4 * 60 * 60 * 1000;
 
-      try{ localStorage.removeItem(VICTORS_PARTNER_OPENED_KEY); }catch(e){}
+      try{ localStorage.removeItem(VICTORS_PARTNER_OPENED_KEY); sessionStorage.removeItem('mima_victors_partner_confirm_v1'); }catch(e){}
       showMimaTaskSuccess('اربط المحفظة وابدأ التعدين','Connect wallet and start mining',data.reward);
       render();
     }catch(err){
