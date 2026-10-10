@@ -2205,6 +2205,25 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     return data;
   }
 
+  // Count a real Mini App foreground entry; server deduplicates within 60 seconds.
+  // No tracking identifiers beyond the verified Telegram user ID.
+  let mimaLastOpenSignalAt = 0;
+  function mimaRecordAppOpen(){
+    if(!serverMode || document.visibilityState === 'hidden') return;
+    const now = Date.now();
+    if(now - mimaLastOpenSignalAt < 60000) return;
+    mimaLastOpenSignalAt = now;
+    apiCall('record_app_open').catch(()=>{});
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', mimaRecordAppOpen, {once:true});
+  }else{
+    mimaRecordAppOpen();
+  }
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState === 'visible') mimaRecordAppOpen();
+  });
+
   const TONCONNECT_MANIFEST_URL =
     'https://raw.githubusercontent.com/adsads2680-hub/ltf-miner/main/tonconnect-manifest.json';
   let mimaTonConnectUI = null;
@@ -2488,6 +2507,14 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         // Existing lifetime user audit remains available if the new report is unavailable.
       }
 
+      let openStats = null;
+      try {
+        const os = await apiCall('admin_app_open_stats',{
+          telegram_user_id: String(data?.user?.telegram_user_id || '')
+        });
+        if(os?.success === true) openStats = os;
+      } catch(_openStatsError){}
+
       const u = data.user || {};
       const sources = Array.isArray(data.earning_sources) ? data.earning_sources : [];
       const tasks = Array.isArray(data.tasks) ? data.tasks : [];
@@ -2513,8 +2540,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
             '<div><small>' + tx('المهمة الممولة','Sponsored tasks') + '</small><b>' + Number(activity12.sponsored_tasks || 0) + '</b></div>' +
             '<div><small>' + tx('MIMA المكتسبة','MIMA earned') + '</small><b>' + formatMima(activity12.mima_earned) + '</b></div>' +
           '</div>' +
-          '<div class="adminUserLine"><span>' + tx('عدد مرات فتح البوت','App opens') + '</span><b>—</b></div>' +
-          '<small>' + tx('عدد الدخول يحتاج تسجيل فتح التطبيق؛ غير متوفر سابقاً','App opens require launch tracking; no historical count is available') + '</small>' :
+          '<div class="adminUserLine"><span>' + tx('عدد مرات فتح البوت','App opens') + '</span><b>' + (openStats ? Number(openStats.opens_12h || 0) : '—') + '</b></div>' +
+          '<small>' + tx('يتم تسجيل مرات الفتح منذ تفعيل الميزة، دون احتساب السجلات السابقة','App opens are recorded from feature activation, not historically') + '</small>' :
           '<small>' + tx('تعذر تحميل إحصائيات 12 ساعة حالياً','12-hour statistics are temporarily unavailable') + '</small>') +
         '</div>';
 
