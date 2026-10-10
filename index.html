@@ -682,7 +682,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   try{ manual=String(localStorage.getItem('mima_language_manual_v1')||'').toLowerCase(); }catch(e){}
   // English is the default; preserve Arabic only if the user explicitly chose it.
   if(manual==='auto'){
-    try{var loc=String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||navigator.language||'').toLowerCase();lang=loc.startsWith('ar')?'ar':'en'}
+    try{var loc=String(navigator.language||window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||'').toLowerCase();lang=loc.startsWith('ar')?'ar':'en'}
     catch(e){lang='en'}
   }else{lang=manual==='ar'?'ar':'en'}
   var chosen = img.getAttribute(lang==='ar' ? 'data-ar-src' : 'data-en-src');
@@ -1450,7 +1450,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
   function getMimaTelegramLanguage(){
     let code='';
-    try{code=String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||navigator.language||'').toLowerCase()}catch(e){}
+    try{code=String(navigator.language||window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||'').toLowerCase()}catch(e){}
     const base=code.split(/[-_]/)[0];
     return MIMA_KNOWN_LANGUAGE_CODES.includes(base)?base:'en';
   }
@@ -1703,6 +1703,21 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     return raw;
   }
 
+  const MIMA_UI_MISSING_PAIRS = [
+    ['مهمة ممولة','Sponsored Task'],
+    ['أكمل مهمة من AdsGram واحصل على 3 MIMA','Complete an AdsGram task and earn 3 MIMA'],
+    ['تسجيل الحضور اليومي','Daily Check-in'],
+    ['ادخل كل يوم واحصل على مكافأة MIMA متزايدة','Log in daily to earn increasing MIMA rewards'],
+    ['تم تسجيل حضور اليوم ✓','Today’s check-in completed ✓'],
+    ['تم تسجيل حضور اليوم','Today’s check-in completed'],
+    ['تم استلام مكافأة اليوم 4','Day 4 reward claimed'],
+    ['تم استلام مكافأة اليوم 4 +8 MIMA','Day 4 reward claimed • +8 MIMA'],
+    ['ابدأ','Start'],
+    ['بانتظار التأكيد','Pending confirmation'],
+    ['المهمة التالية بعد انتهاء الانتظار','Next task after cooldown'],
+    ['اشترك في قناة MIMA على يوتيوب','Subscribe to MIMA on YouTube'],
+    ['متصل بالخادم ✓','Connected to server ✓']
+  ];
   const STATIC_TEXT_PAIRS = [
     ['سحب','Withdraw'],
     ['💸 سحب','💸 Withdraw'],
@@ -1845,6 +1860,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       }
     };
     for(const [ar,en] of STATIC_TEXT_PAIRS) put(en,ar);
+    for(const [ar,en] of MIMA_UI_MISSING_PAIRS) put(en,ar);
     for(const map of Object.values(MIMA_EXTRA_TRANSLATIONS)){
       for(const en of Object.keys(map)){
         if(!sourceMap.has(en)) put(en,en);
@@ -1888,6 +1904,32 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       btn.classList.toggle('selected',btn.dataset.lang===currentLang);
     });
   }
+
+  // Late-rendered task cards may write Arabic defaults after the main language pass.
+  // Reconcile those labels only; do not touch user names or content from partners.
+  let mimaLangCleanupPending=false;
+  function mimaFixLateTaskLabels(){
+    if(mimaLangCleanupPending)return;
+    mimaLangCleanupPending=true;
+    requestAnimationFrame(()=>{
+      mimaLangCleanupPending=false;
+      if(currentLang==='ar')return;
+      const dictionary=new Map(MIMA_UI_MISSING_PAIRS.map(([ar,en])=>[ar,mimaLanguageText(en)]));
+      const root=document.getElementById('tasks');
+      if(!root)return;
+      const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+      let node;
+      while((node=walker.nextNode())){
+        const raw=node.nodeValue||'', key=raw.trim();
+        if(dictionary.has(key))node.nodeValue=raw.replace(key,dictionary.get(key));
+      }
+    });
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const root=document.getElementById('tasks');
+    if(root)new MutationObserver(mimaFixLateTaskLabels).observe(root,{subtree:true,characterData:true,childList:true});
+    mimaFixLateTaskLabels();
+  });
 
   function applyLanguage(persist=false){
     document.documentElement.lang = currentLang;
