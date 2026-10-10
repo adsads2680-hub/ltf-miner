@@ -1050,15 +1050,15 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       </div>
     </div>
 
-    <div class="item mimaTaskRow" id="mimaYoutubeSubscribeTaskItem">
-      <span class="ico" aria-label="YouTube" style="display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 536 373" width="35" height="27" role="img" aria-label="YouTube" xmlns="http://www.w3.org/2000/svg"><path fill="#ff0000" d="M76 7 Q268 -7 460 7 Q516 11 524 68 Q540 186 524 304 Q518 359 462 366 Q268 380 74 366 Q16 359 11 304 Q-5 186 11 69 Q17 12 76 7Z"/><path fill="#fff" d="M216 107 L355 186 L216 266Z"/></svg></span>
+    <div class="item mimaTaskRow" id="interactPostTaskItem">
+      <span class="ico">📝</span>
       <main>
-        <b id="mimaYoutubeSubscribeTaskTitle">اشترك في قناة MIMA على يوتيوب</b>
-        <small id="mimaYoutubeSubscribeTaskInfo">+2 MIMA • مرة واحدة فقط</small>
+        <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
+        <small id="interactPostTaskInfo">+2 MIMA • كل 12 ساعة</small>
       </main>
       <div class="taskActionGroup">
-        <button id="mimaYoutubeSubscribeOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaYoutubeSubscribe()">اشترك</button>
-        <button id="mimaYoutubeSubscribeClaimBtn" type="button" onclick="claimMimaYoutubeSubscribe(this)" disabled>استلم</button>
+        <button id="interactPostOpenBtn" class="taskJoinBtn" type="button" onclick="openInteractPost()">فتح المنشور</button>
+        <button id="interactPostTaskBtn" type="button" onclick="claimInteractPostTask(this)" disabled>افتح المنشور أولاً</button>
       </div>
     </div>
 
@@ -4052,12 +4052,10 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
   }
 
-  const INTERACT_POST_URL = 'https://t.me/MIMACOINWITHDRAWALS/175';
-  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_v1';
+  const INTERACT_POST_URL = 'https://t.me/MIMA_COIN/3633';
+  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_3633_v2';
 
   function openInteractPost(){
-    // Disabled by MIMA administration: the interaction task is retired.
-    return;
     try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
     renderInteractPostTask();
 
@@ -4113,8 +4111,6 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   }
 
   async function claimInteractPostTask(btn){
-    // Disabled by MIMA administration: no interaction rewards can be claimed here.
-    return;
     if(!btn || btn.disabled) return;
 
     let opened = false;
