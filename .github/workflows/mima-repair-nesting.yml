@@ -1,0 +1,59 @@
+name: Repair MIMA malformed screen nesting
+on:
+  push:
+    branches: [mima-rank-friends-diagnose-20261012]
+    paths: ['.github/workflows/mima-repair-nesting.yml']
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install parser
+        run: python -m pip install -q html5lib
+      - name: Repair misplaced closing div and validate HTML structure
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          import html5lib
+          f=Path('index.html')
+          s=f.read_text(encoding='utf-8')
+          m=re.search('</div>[ \\t]*\\n[ \\t]*</section>[ \\t]*\\n[ \\t]*(?=<section id="ref" class="screen">)',s)
+          if not m or s.count('<section id="ref" class="screen">')!=1:
+            raise SystemExit('Safety stop: Tasks-to-Friends boundary does not match')
+          print('Original boundary:',repr(s[m.start()-240:m.end()+110]))
+          replacement=s[m.start():m.end()].replace('</div>','',1)
+          fixed=s[:m.start()]+replacement+s[m.end():]
+          root=html5lib.parse(fixed,namespaceHTMLElements=False)
+          parents={child:parent for parent in root.iter() for child in parent}
+          app=next((el for el in root.iter() if el.attrib.get('class')=='app'),None)
+          if app is None:raise SystemExit('Missing main app')
+          expected=['home','mine','tasks','ref','wallet','settings','rank']
+          for tid in expected:
+            candidates=[el for el in root.iter() if el.attrib.get('id')==tid]
+            if len(candidates)!=1:raise SystemExit('Wrong target count '+tid)
+            el=candidates[0]
+            p=el
+            while p is not None and p is not app:
+              p=parents.get(p)
+            if p is not app:
+              raise SystemExit('Screen still outside app: '+tid)
+          nav=next((el for el in root.iter() if el.tag=='nav' and 'bottom' in el.attrib.get('class','').split()),None)
+          if nav is None:raise SystemExit('Bottom nav missing')
+          p=nav
+          while p is not None and p is not app:
+            p=parents.get(p)
+          if p is not app:raise SystemExit('Bottom nav still outside app')
+          if len(s)-len(fixed)!=6:raise SystemExit('Unexpected change size')
+          f.write_text(fixed,encoding='utf-8')
+          print('HTML5 parser PASS; all seven screens and bottom nav inside .app')
+      - name: Commit safe HTML nesting repair
+        run: |
+          git config user.name "MIMA-Layout-Repair"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --check
+          git commit -m "Fix extra closing div that places Rank and Friends below viewport"
+          git push
