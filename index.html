@@ -1283,10 +1283,10 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
 <section id="rank" class="screen">
 <div class="mimaRankWrap">
- <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span data-rank-ar="الترتيب والمنافسة" data-rank-en="Rank & Competition">الترتيب والمنافسة</span></h2><p id="mimaRankDescription">الإحالات الحقيقية المؤهلة فقط • لا توجد جوائز</p></div>
- <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">ترتيبك</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏅 RANK</span></div>
+ <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span>Rank & Competition</span></h2><p id="mimaRankDescription">Verified referrals only • No prizes</p></div>
+ <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">Your rank</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏅 RANK</span></div>
  <div class="mimaRankPodium" id="mimaRankPodium"></div>
- <div class="mimaRankListHead"><b id="mimaRankListTitle">أفضل 100 معدّن</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
+ <div class="mimaRankListHead"><b id="mimaRankListTitle">Top 100 miners</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
  <div id="mimaRankList" class="mimaRankList">⏳</div>
 </div>
 </section>
@@ -8275,7 +8275,7 @@ input[type="submit"]:focus-visible{
  const $=id=>document.getElementById(id);
  const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const ar=()=>((document.documentElement.lang||'en').toLowerCase().startsWith('ar'));
- const words=(a,b)=>ar()?a:b;
+ const words=(a,b)=>b;
  let last=0,loading=false;
  window.mimaLoadRank=async function(force){
   if(loading||(!force&&Date.now()-last<60000))return;
