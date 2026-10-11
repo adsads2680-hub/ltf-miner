@@ -24,8 +24,8 @@ jobs:
           once('id="interactPostTaskItem" style="display:none" aria-hidden="true"',
                'id="interactPostTaskItem"')
           once("""  function openInteractPost(){
-            try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
-            renderInteractPostTask();""",
+              try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
+              renderInteractPostTask();""",
           """  async function openInteractPost(){
             if(serverMode){
               try{
@@ -42,8 +42,8 @@ jobs:
           once("try{ opened = localStorage.getItem(INTERACT_POST_OPENED_KEY) === '1'; }catch(e){}",
                "try{ opened = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)) > 1000000000000; }catch(e){}",2)
           once("""    if(!opened){
-              btn.disabled = true;
-              btn.textContent = tx('افتح المنشور أولاً','Open post first');""",
+                btn.disabled = true;
+                btn.textContent = tx('افتح المنشور أولاً','Open post first');""",
           """    let openedAt = 0;
             try{ openedAt = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)||0); }catch(e){}
             if(openedAt>1000000000000 && Date.now()-openedAt<10000){
