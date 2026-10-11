@@ -28,7 +28,7 @@ jobs:
                 if len(sel)>220:continue
                 body=m.group(2).strip()
                 if len(body)>750:body=body[:750]+'...'
-                output.append(f'STYLE[{b}]: '+sel+' {'{'}'+body+'}')
+                output.append('STYLE['+str(b)+']: '+sel+' {'+body+'}')
                 n+=1
           output.append('TOTAL MATCHING RULES '+str(n))
           for token in ['<section id="ref"','<section id="rank"','function go(id,el)','const screens','screens =','#rank','mimaRankWrap','mimaRankCrown','function renderRank','mimaRankHeader','window.scrollTo']:
