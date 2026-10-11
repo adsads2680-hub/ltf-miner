@@ -683,7 +683,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 #mimaRankMyPosition{font-size:23px;font-weight:900;background:#ffcc58;color:#1b1300;border-radius:13px;min-width:75px;padding:13px 8px;text-align:center}
 .mimaRankMe div{flex:1;min-width:0}.mimaRankMe b,.mimaRankMe small{display:block}.mimaRankMe small{font-size:12px;color:#cabf9f;margin-top:5px}
 .mimaRankNoPrizes{font-size:11px;color:#ffcc55}
-.mimaRankPodium{display:flex;align-items:flex-end;justify-content:center;gap:7px;margin-bottom:26px;min-height:192px}
+.mimaRankPodium{display:flex;direction:ltr;align-items:flex-end;justify-content:center;gap:7px;margin-bottom:26px;min-height:192px}
 .mimaRankPodium .person{flex:1;min-width:0;max-width:145px;border:1px solid #8b6c32;border-radius:18px 18px 10px 10px;padding:12px 6px;text-align:center;background:linear-gradient(175deg,#122436,#110f0b);box-shadow:0 6px 20px #0008}
 .mimaRankPodium .person.first{min-height:184px;background:linear-gradient(160deg,#372300,#0e1623);border-color:#ffcf52}
 .mimaRankPodium .person.second{min-height:151px}.mimaRankPodium .person.third{min-height:140px}
@@ -699,7 +699,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 .mimaContestTitle{font-size:15px;font-weight:900;letter-spacing:1px;color:#ffdc86}
 .mimaContestTimer{font-size:clamp(31px,8vw,48px);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px;color:#fff2b5;margin:11px 0 4px;text-shadow:0 0 15px #e4a54d66}
 #mimaContestState{display:block;color:#c5b993;font-size:11px}
-.mimaContestPrizes{display:flex;gap:8px;justify-content:space-around;margin-top:15px}
+.mimaContestPrizes{display:flex;direction:ltr;flex-direction:row;gap:8px;justify-content:space-around;margin-top:15px}
 .mimaContestPrizes span{flex:1;padding:9px 3px;border:1px solid #8b6c32;border-radius:11px;color:#ffdea1;font-size:12px;background:#101722}
 .mimaContestPrizes b{display:block;font-size:18px;margin-top:4px;color:#fff}
 </style></head>
@@ -1295,7 +1295,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 <section id="rank" class="screen">
 <div class="mimaRankWrap">
  <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span>Rank & Competition</span></h2><p id="mimaRankDescription">Verified referrals only • $35 prize pool</p>
- <div class="mimaContestClock"><div class="mimaContestTitle">🏆 48-HOUR RANK CHALLENGE</div><div class="mimaContestTimer" id="mimaContestTimer">--:--:--</div><small id="mimaContestState">Time remaining · Winners verified at the end</small><div class="mimaContestPrizes"><span>🥇 1st <b>$20</b></span><span>🥈 2nd <b>$10</b></span><span>🥉 3rd <b>$5</b></span></div></div></div>
+ <div class="mimaContestClock"><div class="mimaContestTitle">🏆 48-HOUR RANK CHALLENGE</div><div class="mimaContestTimer" id="mimaContestTimer">--:--:--</div><small id="mimaContestState">Time remaining · Winners verified at the end</small><div class="mimaContestPrizes" dir="ltr"><span>🥈 2nd <b>$10</b></span><span>🥇 1st <b>$20</b></span><span>🥉 3rd <b>$5</b></span></div></div></div>
  <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">Your rank</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏆 TOP 3</span></div>
  <div class="mimaRankPodium" id="mimaRankPodium"></div>
  <div class="mimaRankListHead"><b id="mimaRankListTitle">Top 100 miners</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
