@@ -8257,7 +8257,7 @@ input[type="submit"]:focus-visible{
  function paint(){
   const b=button();if(!b)return;
   const h=Math.max(0,Math.min(3,Math.round((typeof activeBoostSeconds==='number'?activeBoostSeconds:0)/3600)));
-  b.innerHTML='<span>'+(h>0?'+'+h+'h':'BOOST')+'</span><span class="rocket" aria-hidden="true">🚀</span>';
+  b.innerHTML='<span class="hours">'+(h>0?'+'+h+'h':'BOOST')+'</span><span class="rocket" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="29" height="29" aria-hidden="true"><defs><linearGradient id="mimaGoldRocket" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff4b8"/><stop offset=".28" stop-color="#fbd96d"/><stop offset=".65" stop-color="#ba7b19"/><stop offset="1" stop-color="#ffe6a0"/></linearGradient></defs><g transform="rotate(35 32 32)" stroke="#86530d" stroke-width="1.5" stroke-linejoin="round"><path fill="url(#mimaGoldRocket)" d="M32 4C22 13 19 24 22 42h20c3-18 0-29-10-38Z"/><path fill="#dca537" d="M22 29 13 42l9-3ZM42 29l9 13-9-3Z"/><circle cx="32" cy="24" r="6" fill="#202332" stroke="#ffe6a0" stroke-width="2"/><path fill="#ffe8a0" d="M26 42h12l-3 8h-6Z"/><path fill="#f5b542" stroke="none" d="M28 51 32 63l4-12-4 4Z"/></g></svg></span>';
   b.setAttribute('aria-label','Mining BOOST '+h+' hours');
   get('mimaBoostSafeTitle').textContent=tr('🚀 تعزيز التعدين','🚀 Mining BOOST');
   get('mimaBoostSafeInfo').textContent=tr('تمديد الجلسة الحالية فقط، والربح يستمر بمعدلك المعتاد • المشتَرى: +'+h+'h','Extends the current session at your normal mining rate • Purchased: +'+h+'h');
@@ -8298,82 +8298,11 @@ input[type="submit"]:focus-visible{
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
-<style id="mima-permanent-boost-ui-20261011">
-.miningScene{position:relative}
-#mimaPermanentBoostBtn{position:absolute;right:3px;top:49%;transform:translateY(-50%);width:76px;height:78px;z-index:35;border:1.5px solid #e4b65c;border-radius:17px;background:linear-gradient(145deg,#2c1c08,#0a0d10);color:#f6d88e;box-shadow:0 3px 16px #000a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;font-weight:800;font-size:12px;cursor:pointer}
-#mimaPermanentBoostBtn .boost-rocket{font-size:23px;line-height:1}
-#mimaPermanentBoostBtn .boost-badge{font-size:15px;color:#f6dd9b}
-#mimaPermanentBoostModal{display:none;position:fixed;inset:0;z-index:99999;background:#000b;align-items:center;justify-content:center;padding:18px}
-#mimaPermanentBoostModal.open{display:flex}
-#mimaPermanentBoostPanel{width:min(390px,100%);padding:16px;border:1.5px solid #dcaf55;border-radius:18px;background:#08131d;box-shadow:0 12px 50px #000;color:#ffe2a4}
-#mimaPermanentBoostPanel button{display:block;width:100%;padding:15px 12px;margin:9px 0;border-radius:13px;background:linear-gradient(140deg,#3b230e,#15100c);border:1px solid #bb914b;color:#ffdf97;font-size:16px;font-weight:800}
-#mimaPermanentBoostPanel button:disabled{opacity:.4}
-@media(max-width:380px){#mimaPermanentBoostBtn{right:0;width:65px;height:70px}}
-</style>
-<div id="mimaPermanentBoostModal" role="dialog" aria-modal="true" aria-label="BOOST">
-  <div id="mimaPermanentBoostPanel">
-    <button type="button" data-permanent-boost="1">+1h — 200 MIMA</button>
-    <button type="button" data-permanent-boost="2">+2h — 400 MIMA</button>
-    <button type="button" data-permanent-boost="3">+3h — 600 MIMA</button>
-    <button type="button" id="mimaPermanentBoostClose">Close</button>
-  </div>
-</div>
-<script id="mima-permanent-boost-behavior-20261011">
-(function(){
- let busy=false;
- const $b=id=>document.getElementById(id);
- const modal=$b('mimaPermanentBoostModal');
- const tr=(a,e)=>{try{return typeof tx==='function'?tx(a,e):e}catch(_){return e}};
- function purchased(){try{return Math.max(0,Math.min(3,Math.round(activeBoostSeconds/3600)))}catch(_){return 0}}
- function paint(){
-   const h=purchased();
-   const b=$b('mimaPermanentBoostBtn');
-   if(!b)return;
-   b.innerHTML='<span>'+(h?'+'+h+'h':'BOOST')+'</span><span class="boost-rocket">🚀</span>';
-   b.setAttribute('aria-label','BOOST '+h+'h');
-   modal.querySelectorAll('[data-permanent-boost]').forEach(x=>{
-     let n=Number(x.dataset.permanentBoost);
-     x.textContent='+'+n+'h — '+(n*200)+' MIMA';
-     x.disabled=busy||h+n>3;
-   });
-   $b('mimaPermanentBoostClose').textContent=tr('إغلاق','Close');
- }
- function close(){modal.classList.remove('open')}
- async function buy(hours){
-   if(busy||hours+purchased()>3)return;
-   if(typeof serverMode==='undefined'||!serverMode){if(typeof toast==='function')toast(tr('افتح داخل تيليغرام','Open inside Telegram'));return}
-   if(!window.confirm(tr('تأكيد خصم '+hours*200+' MIMA لتمديد كل جلسات التعدين القادمة '+hours+' ساعة بشكل دائم؟','Spend '+hours*200+' MIMA for +'+hours+'h permanently on every mining session?')))return;
-   busy=true;paint();
-   try{
-     const result=await apiCall('buy_mining_boost',{hours,purchase_id:crypto.randomUUID()});
-     if(result?.success!==true)throw Error(result?.message||'Boost failed');
-     if(typeof syncServerStatus==='function')await syncServerStatus(false,true);
-     if(typeof toast==='function')toast(tr('✅ تم تفعيل التمديد الدائم','✅ Permanent boost activated'));
-     close();
-   }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
-   finally{busy=false;paint()}
- }
- function init(){
-   const area=document.querySelector('.miningScene');
-   if(area&&!$b('mimaPermanentBoostBtn')){
-     const b=document.createElement('button');b.id='mimaPermanentBoostBtn';b.type='button';
-     b.onclick=e=>{e.preventDefault();e.stopPropagation();paint();modal.classList.add('open')};
-     area.appendChild(b);
-   }
-   $b('mimaPermanentBoostClose').onclick=close;
-   modal.onclick=e=>{if(e.target===modal)close()};
-   modal.querySelectorAll('[data-permanent-boost]').forEach(b=>b.onclick=()=>buy(Number(b.dataset.permanentBoost)));
-   window.mimaBoostBadgeRefresh=paint;
-   paint();
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script>
 </body>
 
 <style id="mima-boost-right-edge-alignment-20261011">
-/* Keep both legacy boost implementations within the gold-bordered MIMA panel. */
-#mimaBoostSafeButton,#mimaPermanentBoostBtn{box-sizing:border-box!important;margin-right:0!important;max-width:calc(100% - 10px)!important;}
+/* Keep the single BOOST button inside the gold-bordered MIMA panel. */
+#mimaBoostSafeButton{box-sizing:border-box!important;margin-right:0!important;max-width:calc(100% - 10px)!important;}
 </style>
 <script id="mima-boost-right-edge-alignment-script-20261011">
 (function(){
@@ -8385,7 +8314,7 @@ input[type="submit"]:focus-visible{
    const sceneRect=scene.getBoundingClientRect();
    const frameRect=frame.getBoundingClientRect();
    if(!sceneRect.width||!frameRect.width)return;
-   ['mimaBoostSafeButton','mimaPermanentBoostBtn'].forEach(id=>{
+   ['mimaBoostSafeButton'].forEach(id=>{
      const btn=document.getElementById(id);
      if(!btn||!btn.getBoundingClientRect().width)return;
      const width=btn.getBoundingClientRect().width;
