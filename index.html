@@ -8259,8 +8259,8 @@ input[type="submit"]:focus-visible{
   const h=Math.max(0,Math.min(3,Math.round((typeof activeBoostSeconds==='number'?activeBoostSeconds:0)/3600)));
   b.innerHTML='<span class="hours">'+(h>0?'+'+h+'h':'BOOST')+'</span><span class="rocket" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 92" width="35" height="40" aria-hidden="true"><defs><linearGradient id="mimaRoyalGold" x1="0" y1="0" x2="1" y2=".9"><stop offset="0" stop-color="#fff9dc"/><stop offset=".17" stop-color="#f9db78"/><stop offset=".38" stop-color="#f2b842"/><stop offset=".6" stop-color="#9a590e"/><stop offset=".79" stop-color="#edbb54"/><stop offset="1" stop-color="#fff4bb"/></linearGradient><linearGradient id="mimaGoldFlame" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff9e2"/><stop offset=".5" stop-color="#ffd46a"/><stop offset="1" stop-color="#a86619" stop-opacity="0"/></linearGradient><radialGradient id="mimaRocketGlass"><stop stop-color="#c8f9ff"/><stop offset=".45" stop-color="#4481a0"/><stop offset="1" stop-color="#07141b"/></radialGradient></defs><g transform="rotate(37 40 46)"><path d="M32 59 40 88 48 59Z" fill="url(#mimaGoldFlame)" opacity=".9"/><path d="M30 57 40 76 50 57Z" fill="#ffdf80" opacity=".85"/><path d="M24 43 11 63 27 57ZM56 43 69 63 53 57Z" fill="url(#mimaRoyalGold)" stroke="#8d5c20" stroke-width="1.5"/><path d="M40 6C26 18 23 34 27 61h26c4-27 1-43-13-55Z" fill="url(#mimaRoyalGold)" stroke="#ffeab0" stroke-width="1.5"/><path d="M40 6C35 11 31 17 29 23h22C49 17 45 11 40 6Z" fill="#fff3ba"/><path d="M32 26c-3 11-3 22-1 33" fill="none" stroke="#fff7c8" stroke-width="2" opacity=".9"/><path d="M48 25c3 12 3 23 1 33" fill="none" stroke="#7d4910" stroke-width="2" opacity=".7"/><circle cx="40" cy="36" r="10" fill="#a56a20" stroke="#fff1ba" stroke-width="2.5"/><circle cx="40" cy="36" r="7" fill="url(#mimaRocketGlass)" stroke="#392914" stroke-width="1"/><path d="M37 32q3-4 7-1" fill="none" stroke="#d5ffff" stroke-width="2" stroke-linecap="round"/><path d="M32 61h16l-3 9H35Z" fill="url(#mimaRoyalGold)" stroke="#b87b21"/><path d="M30 54h20" stroke="#fff3bc" stroke-width="1.5"/></g><path d="m9 16 2 4 4 2-4 2-2 4-2-4-4-2 4-2Z" fill="#fff6c6"/><circle cx="69" cy="16" r="1.5" fill="#fff2ad"/><circle cx="8" cy="73" r="1.2" fill="#ffcf75"/></svg></span>';
   b.setAttribute('aria-label','Mining BOOST '+h+' hours');
-  get('mimaBoostSafeTitle').textContent=tr('🚀 تعزيز التعدين','🚀 Mining BOOST');
-  get('mimaBoostSafeInfo').textContent=tr('تمديد الجلسة الحالية فقط، والربح يستمر بمعدلك المعتاد • المشتَرى: +'+h+'h','Extends the current session at your normal mining rate • Purchased: +'+h+'h');
+  get('mimaBoostSafeTitle').textContent=tr('تعزيز التعدين الدائم','Permanent mining BOOST');
+  get('mimaBoostSafeInfo').textContent=tr('تعزيز دائم لكل جلسات التعدين القادمة، بنفس معدل التعدين • المشتَرى: +'+h+'h','Permanent upgrade for all future sessions at your normal mining rate • Owned: +'+h+'h');
   modal.querySelectorAll('[data-boost-hours]').forEach(o=>{
    const hours=Number(o.dataset.boostHours);
    o.textContent='+'+hours+'h  —  '+hours*200+' MIMA';
@@ -8271,7 +8271,7 @@ input[type="submit"]:focus-visible{
  }
  async function buy(hours){
   if(busy)return;
-  const msg=tr('تأكيد تمديد التعدين '+hours+' ساعة مقابل خصم '+hours*200+' MIMA؟','Confirm '+hours+' extra hour(s) for '+hours*200+' MIMA?');
+  const msg=tr('تأكيد شراء تعزيز دائم +'+hours+' ساعة لكل جلسة تعدين مقابل خصم '+hours*200+' MIMA؟','Permanently add '+hours+' hour(s) to every mining session for '+hours*200+' MIMA?');
   if(!window.confirm(msg))return;
   busy=true;paint();
   try{
@@ -8280,7 +8280,7 @@ input[type="submit"]:focus-visible{
    if(r?.success!==true)throw Error(r?.message||'Purchase failed');
    activeBoostSeconds=Number(r.boost_seconds||0);
    await syncServerStatus(false,true);
-   if(typeof toast==='function')toast(tr('✅ تم تمديد التعدين','✅ Mining extended'));
+   if(typeof toast==='function')toast(tr('✅ تم تفعيل التعزيز الدائم','✅ Permanent boost activated'));
    modal.classList.remove('open');
   }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
   finally{busy=false;paint()}
