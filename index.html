@@ -1087,7 +1087,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       </div>
     </div>
 
-    <div class="item mimaTaskRow" id="interactPostTaskItem" style="display:none" aria-hidden="true">
+    <div class="item mimaTaskRow" id="interactPostTaskItem">
       <span class="ico">📄</span>
       <main>
         <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
@@ -4116,9 +4116,19 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   const INTERACT_POST_URL = 'https://t.me/MIMACOIN2/37?single';
   const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_mimacoin2_37_v1';
 
-  function openInteractPost(){
-    try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
-    renderInteractPostTask();
+  async function openInteractPost(){
+  if(serverMode){
+    try{
+      const result=await apiCall('open_channel_task',{task_code:'interact_mimacoin2_post'});
+      if(result?.success!==true) throw new Error('Post open registration failed');
+    }catch(e){
+      toast(tx('تعذّر تسجيل فتح المنشور، حاول مرة أخرى','Could not register post opening. Please try again.'));
+      return;
+    }
+  }
+  try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,String(Date.now())); }catch(e){}
+  renderInteractPostTask();
+  setTimeout(renderInteractPostTask,10100);
 
     try{
       if(
@@ -4150,7 +4160,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       : 0;
 
     let opened = false;
-    try{ opened = localStorage.getItem(INTERACT_POST_OPENED_KEY) === '1'; }catch(e){}
+    try{ opened = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)) > 1000000000000; }catch(e){}
 
     if(remaining > 0){
       btn.disabled = true;
@@ -4159,9 +4169,17 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       return;
     }
 
-    if(!opened){
-      btn.disabled = true;
-      btn.textContent = tx('افتح المنشور أولاً','Open post first');
+    let openedAt = 0;
+  try{ openedAt = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)||0); }catch(e){}
+  if(openedAt>1000000000000 && Date.now()-openedAt<10000){
+    btn.disabled = true;
+    btn.textContent = tx('تحقق','Verify');
+    info.textContent = tx('+5 MIMA • جار التحقق من فتح المنشور','+5 MIMA • verifying post opening');
+    return;
+  }
+  if(!opened){
+    btn.disabled = true;
+    btn.textContent = tx('افتح المنشور أولاً','Open post first');
       info.textContent = tx('+5 MIMA • افتح المنشور ثم أكمل المهمة','+5 MIMA • open the post, then complete the task');
       return;
     }
@@ -4175,7 +4193,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(!btn || btn.disabled) return;
 
     let opened = false;
-    try{ opened = localStorage.getItem(INTERACT_POST_OPENED_KEY) === '1'; }catch(e){}
+    try{ opened = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)) > 1000000000000; }catch(e){}
     if(!opened){
       renderInteractPostTask();
       return;
