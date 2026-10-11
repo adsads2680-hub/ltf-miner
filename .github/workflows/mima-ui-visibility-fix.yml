@@ -1,0 +1,58 @@
+name: MIMA display repair
+on:
+  push:
+    branches: [mima-ui-visibility-fix-20261012]
+    paths: ['.github/workflows/mima-ui-visibility-fix.yml']
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Correct screen positioning and hide 10s countdown (do not change wait)
+        shell: python
+        run: |
+          from pathlib import Path
+          f=Path('index.html')
+          s=f.read_text(encoding='utf-8')
+          patches=[
+            ("if(waitMs>0){btn.disabled=true;btn.textContent=Math.ceil(waitMs/1000)+'s';info.textContent=tx('+5 MIMA • انتظر 10 ثوانٍ بعد الانضمام','+5 MIMA • wait 10 seconds after joining');return;}",
+             "if(waitMs>0){btn.disabled=true;btn.textContent=tx('استلم','Claim');info.textContent=tx('+5 MIMA • انضم ثم استلم','+5 MIMA • join then claim');return;}"),
+            ("if(waitMs>0){btn.disabled=true;btn.textContent=Math.ceil(waitMs/1000)+'s';info.textContent=tx('+5 MIMA • انتظر 10 ثوانٍ','+5 MIMA • wait 10 seconds');return;}",
+             "if(waitMs>0){btn.disabled=true;btn.textContent=tx('استلم','Claim');info.textContent=tx('+5 MIMA • انضم ثم استلم','+5 MIMA • join then claim');return;}"),
+            ("if(waitMs>0){verifyBtn.disabled=true;verifyBtn.textContent=Math.ceil(waitMs/1000)+'s';info.textContent=tx('انتظر 10 ثوانٍ بعد الانضمام','Wait 10 seconds after joining');return;}",
+             "if(waitMs>0){verifyBtn.disabled=true;verifyBtn.textContent=tx('استلم','Claim');info.textContent=tx('+5 MIMA • انضم ثم استلم','+5 MIMA • join then claim');return;}")
+          ]
+          for before,after in patches:
+            if s.count(before)!=1:
+              raise SystemExit('STOP: expected exactly one wait branch, found '+str(s.count(before)))
+            s=s.replace(before,after,1)
+          start=s.find('function go(id,el){')
+          search="window.scrollTo({top:0,behavior:'smooth'});"
+          pos=s.find(search,start)
+          if start<0 or pos<start or pos-start>1300:
+            raise SystemExit('STOP: navigation function differs from checked source')
+          replacement="window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;requestAnimationFrame(()=>{window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;});"
+          s=s[:pos]+replacement+s[pos+len(search):]
+          if '<section id="rank" class="screen"' not in s or '<section id="ref" class="screen"' not in s:
+            raise SystemExit('STOP: Rank or Friends screen not found')
+          css='''<style id="mima-rank-friends-viewport-fix-20261012">
+          #rank.screen.active,#ref.screen.active{margin-top:0!important;scroll-margin-top:0!important;transform:none!important}
+          #rank.screen.active>.mimaRankWrap,#ref.screen.active>.card{margin-top:0!important}
+          </style>'''
+          if '</head>' not in s:
+            raise SystemExit('STOP: head not found')
+          s=s.replace('</head>',css+'</head>',1)
+          if len(s)<1000000:
+            raise SystemExit('STOP: suspiciously small file')
+          f.write_text(s,encoding='utf-8')
+          print('Applied UI-only fixes; preserved full source.')
+      - name: Commit to fix branch
+        run: |
+          git config user.name "mima-ui-fix"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --check
+          git commit -m "Fix Friends/Rank viewport and hide 10s countdown display"
+          git push
