@@ -8370,6 +8370,34 @@ input[type="submit"]:focus-visible{
 })();
 </script>
 </body>
+
+<style id="mima-boost-right-edge-alignment-20261011">
+/* Keep both legacy boost implementations within the gold-bordered MIMA panel. */
+#mimaBoostSafeButton,#mimaPermanentBoostBtn{box-sizing:border-box!important;margin-right:0!important;max-width:calc(100% - 10px)!important;}
+</style>
+<script id="mima-boost-right-edge-alignment-script-20261011">
+(function(){
+ function alignBoost(){
+   const scene=document.querySelector('.miningScene');
+   if(!scene)return;
+   const frame=scene.parentElement;
+   if(!frame)return;
+   const sceneRect=scene.getBoundingClientRect();
+   const frameRect=frame.getBoundingClientRect();
+   if(!sceneRect.width||!frameRect.width)return;
+   ['mimaBoostSafeButton','mimaPermanentBoostBtn'].forEach(id=>{
+     const btn=document.getElementById(id);
+     if(!btn||!btn.getBoundingClientRect().width)return;
+     const width=btn.getBoundingClientRect().width;
+     const left=Math.max(4,Math.min(sceneRect.width-width-4,frameRect.right-sceneRect.left-width-6));
+     btn.style.setProperty('left',left+'px','important');
+     btn.style.setProperty('right','auto','important');
+   });
+ }
+ function start(){alignBoost();requestAnimationFrame(alignBoost);window.addEventListener('resize',alignBoost,{passive:true});window.addEventListener('orientationchange',alignBoost,{passive:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
 </html>
 <style>
 .coin.exactCoinHost{
