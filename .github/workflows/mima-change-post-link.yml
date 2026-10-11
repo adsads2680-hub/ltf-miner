@@ -1,0 +1,47 @@
+name: Set MIMA interact post link
+on:
+  push:
+    branches: [mima-interact-post-link-20261012]
+    paths: ['.github/workflows/mima-change-post-link.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update ONLY post interaction link and per-post local state
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          file=Path('index.html')
+          original=file.read_text(encoding='utf-8')
+          replacements=[
+            ("const INTERACT_POST_URL = 'https://t.me/MIMA_COIN/3635';",
+             "const INTERACT_POST_URL = 'https://t.me/MIMACOIN2/37?single';"),
+            ("const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_3635_v1';",
+             "const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_mimacoin2_37_v1';"),
+          ]
+          patched=original
+          for old,new in replacements:
+            occurrences=patched.count(old)
+            if occurrences!=1:
+              raise SystemExit('Safety check stopped: expected exactly 1 match, found '+str(occurrences)+': '+old)
+            patched=patched.replace(old,new)
+          if patched.count('https://t.me/MIMACOIN2/37?single')!=1:
+            raise SystemExit('Safety check stopped: unexpected new URL count')
+          if 'id="interactPostTaskItem" style="display:none" aria-hidden="true"' not in patched:
+            raise SystemExit('Safety check stopped: task visibility changed unexpectedly')
+          if len(patched)<1000000:
+            raise SystemExit('Safety check stopped: file unexpectedly small')
+          file.write_text(patched,encoding='utf-8')
+          print('OK: only interaction post URL and key changed; task visibility and rewards unchanged.')
+      - name: Commit task link
+        run: |
+          git config user.name "MIMA safe update"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --check
+          git commit -m "Replace interact with post URL with MIMACOIN2 post 37"
+          git push
