@@ -1096,16 +1096,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       </div>
     </div>
 
-    <div class="item mimaTaskRow" id="poePartnerOnceTaskItem" style="display:none">
-      <span class="ico">🤝</span>
-      <main>
-        <b id="poePartnerOnceTitle">انضم إلى شركائنا</b>
-        <small id="poePartnerOnceInfo">+5 MIMA • مرة واحدة فقط</small>
-      </main>
-      <div class="taskActionGroup">
-        <button id="poePartnerOnceOpenBtn" class="taskJoinBtn" type="button" onclick="openPoePartnerOnce()">انضم</button>
-        <button id="poePartnerOnceClaimBtn" type="button" onclick="claimPoePartnerOnce()" disabled>انضم أولاً</button>
-      </div>
+
     </div>
 
     
@@ -8123,70 +8114,7 @@ input[type="submit"]:focus-visible{
 })();
 </script>
 
-<script id="mima-poe-partner-once-20261011">
-(function(){
- const URL='https://t.me/Diggominer_bot?startapp=ref_cced0a23bfd65b5e54e1c8b6',CODE='poe_partner_once',KEY='mima_poe_partner_progress_v1';
- let progress=0,busy=false,nextAt=0,ready=true;
- const tr=(ar,en)=>{try{return typeof tx==='function'?tx(ar,en):en}catch(e){return en}};
- const el=id=>document.getElementById(id);
- const fmt=ms=>{const v=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(v/3600),m=Math.floor((v%3600)/60),sec=v%60;return [h,m,sec].map(x=>String(x).padStart(2,'0')).join(':')};
- function paint(){
-  const row=el('poePartnerOnceTaskItem'),info=el('poePartnerOnceInfo'),claim=el('poePartnerOnceClaimBtn'),open=el('poePartnerOnceOpenBtn'),title=el('poePartnerOnceTitle');
-  if(!row)return;
-  row.style.display='';
-  const remaining=Math.max(0,nextAt-Date.now());
-  if(title)title.textContent=tr('انضم إلى شركائنا','Join Our Partners');
-  if(info)info.textContent=remaining?tr('متاحة بعد ','Available in ')+fmt(remaining):tr('+5 MIMA • كل 6 ساعات','+5 MIMA • every 6 hours');
-  if(open){open.disabled=busy||remaining>0;open.textContent=tr('انضم','Join')}
-  if(claim){
-   claim.disabled=busy||remaining>0||!ready||progress===0;
-   claim.textContent=busy?'⏳':remaining?fmt(remaining):!ready?tr('جار التحقق','Checking'):progress===0?tr('انضم أولاً','Join first'):progress===1?tr('تأكيد 1/3','Confirm 1/3'):progress===2?tr('تأكيد 2/3','Confirm 2/3'):tr('استلم 5 MIMA','Claim 5 MIMA');
-  }
- }
- async function sync(){
-  if(typeof serverMode==='undefined'||!serverMode){paint();return;}
-  try{const r=await apiCall('poe_partner_status');if(r?.success===true){nextAt=r.next_available_at?Date.parse(r.next_available_at)||0:0;ready=true; if(nextAt>Date.now()){progress=0;try{localStorage.removeItem(KEY)}catch(e){}}}}catch(e){ready=false}
-  paint();
- }
- window.openPoePartnerOnce=async function(){
-  if(busy||nextAt>Date.now())return;
-  if(typeof serverMode==='undefined'||!serverMode){if(typeof toast==='function')toast(tr('افتح المهمة داخل تيليغرام','Open inside Telegram'));return;}
-  busy=true;paint();
-  try{
-   const r=await apiCall('open_channel_task',{task_code:CODE});
-   if(r?.success!==true)throw new Error(r?.message||'Unable to register task opening');
-   progress=Math.max(progress,1);
-   try{localStorage.setItem(KEY,String(progress))}catch(e){}
-   try{if(window.Telegram?.WebApp?.openTelegramLink)Telegram.WebApp.openTelegramLink(URL);else window.open(URL,'_blank','noopener,noreferrer')}catch(e){window.open(URL,'_blank','noopener,noreferrer')}
-  }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
-  finally{busy=false;paint()}
- };
- window.claimPoePartnerOnce=async function(){
-  if(busy||nextAt>Date.now()||!ready||progress===0)return;
-  if(progress<3){progress++;try{localStorage.setItem(KEY,String(progress))}catch(e){}paint();return;}
-  busy=true;paint();
-  try{
-   const r=await apiCall('claim_task',{task_code:CODE});
-   if(r?.success===true){
-    progress=0;nextAt=r.next_available_at?Date.parse(r.next_available_at)||0:Date.now()+21600000;
-    try{localStorage.removeItem(KEY)}catch(e){}
-    if(typeof window.showMimaTaskSuccess==='function')window.showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',5);
-    if(typeof syncServerStatus==='function')syncServerStatus(false,true);
-   }else if(r?.next_available_at){
-    nextAt=Date.parse(r.next_available_at)||0;progress=0;try{localStorage.removeItem(KEY)}catch(e){}
-   }else if(typeof toast==='function')toast('⚠️ '+String(r?.message||tr('تعذر استلام المكافأة','Could not claim reward')));
-  }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
-  finally{busy=false;paint();sync()}
- };
- function init(){
-  try{progress=Math.max(0,Math.min(3,Number(localStorage.getItem(KEY)||0)))}catch(e){}
-  ready=false;paint();sync();setInterval(paint,1000);
-  new MutationObserver(()=>{if(!busy)paint()}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script>
+
 
 <style id="mima-boost-safe-css-20261011">
 #mimaBoostSafeButton{position:relative;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:68px;height:68px;padding:5px;border:1.5px solid #dba943;border-radius:15px;color:#ffdc81;background:linear-gradient(160deg,#2b1b08,#080b0e);font-weight:900;font-size:12px;line-height:1.15;box-shadow:0 3px 18px #0009,0 0 12px #dba94355;cursor:pointer}
