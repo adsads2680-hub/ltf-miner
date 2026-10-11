@@ -1,0 +1,428 @@
+FILE_LENGTH 1648651\nSTYLE BLOCKS 0\nTOTAL MATCHING RULES 0\nTOKEN '<section id="ref"' COUNT 1\nAT 1125517:  id="interactPostTaskBtn" type="button" onclick="claimInteractPostTask(this)" disabled>افتح المنشور أولاً</button>
+      </div>
+    </div>
+
+
+    </div>
+
+    
+
+  </div>
+</section>
+
+<section id="ref" class="screen">
+  <h2 class="title">👥 الإحالات</h2>
+  <div class="card center">
+    <div style="font-size:45px">👥</div>
+    <h3>ادعُ أصدقاءك واكسب</h3>
+    <p class="sub" id="mimaReferralQualificationIntro">🎁 +20 MIMA للمُحيل عند تأهيل الإحالة، وليس بمجرد التسجيل.</p>
+    <div class="refRule" id="mimaReferralQualificationRules" style="text-align:right;line-height:1.9">
+      <b class="gold">✅ شروط قبول الإحالة</b>
+      <span>1. يدخل الصديق الجديد عبر رابط دعوتك.</span>
+      <span>2. يربط الصديق محفظته داخل MIMA.</span>
+      <span>3. يُكمل نشاطين مختلفين مؤهلين (مثل مشاهدة إعلان وإتمام مهمة).</span>
+      <span>🪙 بعدها تضاف 20 MIMA تلقائياً لرصيد المُحيل مرة واحدة لكل إحالة مؤهلة.</span>
+      <span>⛏️ مكافأة تعدين الإحالات 10% من النظام، دون خصم من رصيد الصديق.</span>
+    </div>
+
+    <div class="card" style="text-align:right;background:#041421">
+      <small>رابط الإحالة</small>
+      <div class="row" style="margin-top:8px;gap:8px">
+        <b id="referralLinkText" class="referralLinkText">جاري تجهيز الرابط…</b>
+        <button class="iconBtn" onclick="copyLink()">⧉</button>
+      </div>
+    </div>
+
+    <button class="primary" onclick="shareReferral()">مشاركة الرابط 🔗</button>
+  </div>
+
+  <div class="refStats"\nTOKEN '<section id="rank"' COUNT 1\nAT 1133117: PrivacyModal()" style="cursor:pointer"><span class="ico">🔐</span><main><b>سياسة الخصوصية</b><small>كيف نستخدم ونحمي بياناتك</small></main><span>›</span></div>
+  </div>
+</section>
+
+<section id="rank" class="screen">
+<div class="mimaRankWrap">
+ <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span>Rank & Competition</span></h2><p id="mimaRankDescription">Verified referrals only • $35 prize pool</p>
+ <div class="mimaContestClock"><div class="mimaContestTitle">🏆 48-HOUR RANK CHALLENGE</div><div class="mimaContestTimer" id="mimaContestTimer">--:--:--</div><small id="mimaContestState">Time remaining · Winners verified at the end</small><div class="mimaContestPrizes" dir="ltr"><span>🥈 2nd <b>$10</b></span><span>🥇 1st <b>$20</b></span><span>🥉 3rd <b>$5</b></span></div></div></div>
+ <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">Your rank</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏆 TOP 3</span></div>
+ <div class="mimaRankPodium" id="mimaRankPodium"></div>
+ <div class="mimaRankListHead"><b id="mimaRankListTitle">Top 100 miners</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
+ <div id="mimaRankList" class="mimaRankList">⏳</div>
+</div>
+</section>
+
+<nav class="bottom">
+  <button class="nav" data-screen="tasks" onclick="go('tasks',this)">
+    <span class="navIcon">
+      \nTOKEN 'function go(id,el)' COUNT 1\nAT 1288006: ('aria-hidden','false');
+    overlay.classList.add('isOpen');
+    document.getElementById('mimaTaskCongratsSkip').focus();
+  }
+  window.showMimaTaskSuccess=showMimaTaskSuccess;
+
+  function go(id,el){
+    screens.forEach(s=>s.classList.toggle('active',s.id===id));
+
+    if(el && el.classList && el.classList.contains('nav')){
+      navs.forEach(n=>n.classList.remove('active'));
+      el.classList.add('active');
+    }else{
+      navs.forEach(n=>n.classList.toggle('active', n.dataset.screen===id));
+    }
+
+    window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;requestAnimationFrame(()=>{window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;});
+
+    if(id === 'home'){
+      loadPublicPayouts();
+    }
+
+    if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
+      refreshAdsgramRewardStatus(false).catch(()=>{});
+    }
+  }
+
+  function formatMima(value){
+    return Number(value || 0).toLocaleString('en-US',{
+      minimumFractionDigits:6,
+      maximumFractionDigits:6
+    });
+  }
+
+  function formatUsd(value){
+    return Number(value || 0).toLocaleString('en-US',{
+      minimumFractionDigits:6,
+      maximumFractionDigits:6
+    });
+  }
+
+  function usdFromMima(value){
+    return Number(value || 0) / MIMA_PER_USD;
+  }
+
+  function formatCountdown(ms){
+    const total = Math.max(0, Math.ceil(ms / 1000));
+    const h = Math.floor(total / 3600\nTOKEN 'const screens' COUNT 1\nAT 1137044: xchange-request';
+  const EXCHANGE_MIN_MIMA = 200;
+  const EXCHANGE_FEE_MIMA = 15;
+  const ADMIN_TELEGRAM_USER_ID = '1035565575';
+
+  const $ = id => document.getElementById(id);
+  const screens = [...document.querySelectorAll('.screen')];
+  const navs = [...document.querySelectorAll('.nav')];
+
+  let bal = 0;
+  let miningBalance = 0;
+  let exchangeableBalance = 0;
+  let gramBalance = 0;
+  let exchangeEnabled = false;
+  let mimaPerGram = 0;
+  let gramPriceUsd = 0;
+  let gramPriceSource = 'CoinGecko';
+  let gramPriceUpdatedAt = '';
+  let earned = 0;
+  let miningRate = RATE_PER_HOUR;
+  let roundMax = ROUND_MAX;
+  let activeBoostSeconds = 0;
+  let activeRoundSeconds = ROUND_SECONDS;
+  let roundStartedAt = Date.now();
+  let roundEnded = false;
+
+  let miningPoints = 0;
+  let tapEnergy = MAX_TAP_ENERGY;
+  let tapRewardProgress = 0;
+  let tapLastRegenAt = Date.now();
+
+  let referralCode = '';
+  let referralCount = 0;
+  let referralPoints = 0;
+  let referralBonusTotal = 0;
+
+  let taskNextAvailableAt = 0;
+  let task2NextAvailableAt = 0;
+  let mimaExchangeChannelNextAvailableAt = 0;
+  let interactPostNextAvailableAt = 0;
+  let victorsPartnerNextAvailableAt = 0;
+
+  const ADSGRAM_BLOCK_ID = '51807';
+  let adsgramController = null;
+  let adsgramRewardBusy = false;
+  let adsgramRewardWatched = 0;
+  let adsgramRewardAmount = 5;
+  let adsgramRewardRemaining = 6;
+  let adsgramRewardResetAt = 0;
+  let adsgramRewardNextAvailabl\nTOKEN 'screens =' COUNT 1\nAT 1137050: e-request';
+  const EXCHANGE_MIN_MIMA = 200;
+  const EXCHANGE_FEE_MIMA = 15;
+  const ADMIN_TELEGRAM_USER_ID = '1035565575';
+
+  const $ = id => document.getElementById(id);
+  const screens = [...document.querySelectorAll('.screen')];
+  const navs = [...document.querySelectorAll('.nav')];
+
+  let bal = 0;
+  let miningBalance = 0;
+  let exchangeableBalance = 0;
+  let gramBalance = 0;
+  let exchangeEnabled = false;
+  let mimaPerGram = 0;
+  let gramPriceUsd = 0;
+  let gramPriceSource = 'CoinGecko';
+  let gramPriceUpdatedAt = '';
+  let earned = 0;
+  let miningRate = RATE_PER_HOUR;
+  let roundMax = ROUND_MAX;
+  let activeBoostSeconds = 0;
+  let activeRoundSeconds = ROUND_SECONDS;
+  let roundStartedAt = Date.now();
+  let roundEnded = false;
+
+  let miningPoints = 0;
+  let tapEnergy = MAX_TAP_ENERGY;
+  let tapRewardProgress = 0;
+  let tapLastRegenAt = Date.now();
+
+  let referralCode = '';
+  let referralCount = 0;
+  let referralPoints = 0;
+  let referralBonusTotal = 0;
+
+  let taskNextAvailableAt = 0;
+  let task2NextAvailableAt = 0;
+  let mimaExchangeChannelNextAvailableAt = 0;
+  let interactPostNextAvailableAt = 0;
+  let victorsPartnerNextAvailableAt = 0;
+
+  const ADSGRAM_BLOCK_ID = '51807';
+  let adsgramController = null;
+  let adsgramRewardBusy = false;
+  let adsgramRewardWatched = 0;
+  let adsgramRewardAmount = 5;
+  let adsgramRewardRemaining = 6;
+  let adsgramRewardResetAt = 0;
+  let adsgramRewardNextAvailableAt = \nTOKEN '#rank' COUNT 2\nAT 46568: fset:3px;font-weight:800;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}</style><style id="mima-rank-friends-viewport-fix-20261012">
+#rank.screen.active,#ref.screen.active{margin-top:0!important;scroll-margin-top:0!important;transform:none!important}
+#rank.screen.active>.mimaRankWrap,#ref.screen.active>.card{margin-top:0!important}
+</style></head>
+<body>
+<div id="mimaSplash" aria-label="MIMA loading screen">
+  <img id="mimaSplashImage" src="data:image/webp;base64,UklGRibcAwBXRUJQVlA4IBrcAwDw2gqdASqEAz8GPj0ci0QiIaKjJ3VboGAHiU3fd1Nx+Z84z3Tnrj9haLB9b4pEkzyuK7b5zH5PzzHNyWf8X8w+5Hjf3v/L/z37o/4/9tvlj497KPYP3b/Kf8v/Ce7D/0f6P8xfKz2f/Vf+X/N/lz73HOv/Z/x3+z/+3+1/////+6P+a/7/+Z/3fxT/rH+I/8X+W/f3/cfYh/Rv6v/1/8F/tP2/+m/+5/+3+i/3///+bn+M/2f/r/0/+7//Xya/t3+Y/9H+U/2P/4/6X1A/73/2/6f/X///5af4D/X/+v/Pf63/4/QX/Yf8P/7P2x/9vzp/9v/5/9D4V/8l/1v/v/xf+v8jX9c/13/x/2f+2///zH/9X9wf+l///pa/tn/F/+/+y/4n///9P2V/2H/Rf/P/Vf8H/+f9T6AP/v///e+/gH/y////09wD/t9wh+1X+O/Yb9tvl18c/ov9t/iP2w/eX11/Gvp/8b/df8x/t/77/9/+B9ff4T/l/5n90vZ36l/Wf9T/J/7v/w/v/8nfy378fpP7T/pP+P/h/3N+1v81/wf8P/sP+f/kf3c+Ifzj+B/3H94/2X/W/wf7z/Y7+V/zv/I/1z9uP7z+6X26fN/8v/B/73/q+jvxX+W/5393/e79//og94Ppn+g/sH+f/6P+C/eH20/9X/Cf67/0f5v///On7L/hP+P/dP9V/6v8N///wF/rH9I/1H9a/dr++f/z/8fkX+j/9H+L9BP8h/uv/f/jPzH+w7+o/3j/rf3D/j//P/hf///6/jX/M/9/+4/8D/5/63///9r52fnX+V/6n9W/2//z/zX////v6LfzP+rf7v+t/63/1f5T////H76P/F++Pzj/c7/+e89+13/q/P86tWHuvY/E0g7\nAT 46686: }</style><style id="mima-rank-friends-viewport-fix-20261012">
+#rank.screen.active,#ref.screen.active{margin-top:0!important;scroll-margin-top:0!important;transform:none!important}
+#rank.screen.active>.mimaRankWrap,#ref.screen.active>.card{margin-top:0!important}
+</style></head>
+<body>
+<div id="mimaSplash" aria-label="MIMA loading screen">
+  <img id="mimaSplashImage" src="data:image/webp;base64,UklGRibcAwBXRUJQVlA4IBrcAwDw2gqdASqEAz8GPj0ci0QiIaKjJ3VboGAHiU3fd1Nx+Z84z3Tnrj9haLB9b4pEkzyuK7b5zH5PzzHNyWf8X8w+5Hjf3v/L/z37o/4/9tvlj497KPYP3b/Kf8v/Ce7D/0f6P8xfKz2f/Vf+X/N/lz73HOv/Z/x3+z/+3+1/////+6P+a/7/+Z/3fxT/rH+I/8X+W/f3/cfYh/Rv6v/1/8F/tP2/+m/+5/+3+i/3///+bn+M/2f/r/0/+7//Xya/t3+Y/9H+U/2P/4/6X1A/73/2/6f/X///5af4D/X/+v/Pf63/4/QX/Yf8P/7P2x/9vzp/9v/5/9D4V/8l/1v/v/xf+v8jX9c/13/x/2f+2///zH/9X9wf+l///pa/tn/F/+/+y/4n///9P2V/2H/Rf/P/Vf8H/+f9T6AP/v///e+/gH/y////09wD/t9wh+1X+O/Yb9tvl18c/ov9t/iP2w/eX11/Gvp/8b/df8x/t/77/9/+B9ff4T/l/5n90vZ36l/Wf9T/J/7v/w/v/8nfy378fpP7T/pP+P/h/3N+1v81/wf8P/sP+f/kf3c+Ifzj+B/3H94/2X/W/wf7z/Y7+V/zv/I/1z9uP7z+6X26fN/8v/B/73/q+jvxX+W/5393/e79//og94Ppn+g/sH+f/6P+C/eH20/9X/Cf67/0f5v///On7L/hP+P/dP9V/6v8N///wF/rH9I/1H9a/dr++f/z/8fkX+j/9H+L9BP8h/uv/f/jPzH+w7+o/3j/rf3D/j//P/hf///6/jX/M/9/+4/8D/5/63///9r52fnX+V/6n9W/2//z/zX////v6LfzP+rf7v+t/63/1f5T////H76P/F++Pzj/c7/+e89+13/q/P86tWHuvY/E0g76UsSFudfRTCQ2SPSUB2chm6iTO0oAXxJZEEvPQMkVWWtqGAmffw26PtT9/yGPxfN64BLgiqq3XY84Nabq5Btdl37o48YjKFJ72TkVYX4+CGV1MqxVhuGPN\nTOKEN 'mimaRankWrap' COUNT 3\nAT 42725: dia(max-width:380px){#mimaBoostSafeButton{margin-right:15px!important}}
+</style>
+<style id="mima-rank-gold-css">
+#mimaRankDescription{font-size:12px;color:#e0c991;margin:8px 0 0}
+.mimaRankWrap{padding:14px 16px 110px;max-width:720px;margin:auto;color:#ffedc8}
+.mimaRankHeader{text-align:center;padding:22px 8px 18px}
+.mimaRankHeader h2{font-size:23px;color:#ffd878;margin:4px 0}
+.mimaRankCrown{font-size:36px;color:#ffcb40}
+.mimaRankMe{display:flex;align-items:center;gap:13px;background:linear-gradient(130deg,#211806,#0a1522);border:1px solid #a88132;border-radius:18px;padding:16px;margin-bottom:24px;box-shadow:0 6px 24px #0007}
+#mimaRankMyPosition{font-size:23px;font-weight:900;background:#ffcc58;color:#1b1300;border-radius:13px;min-width:75px;padding:13px 8px;text-align:center}
+.mimaRankMe div{flex:1;min-width:0}.mimaRankMe b,.mimaRankMe small{display:block}.mimaRankMe small{font-size:12px;color:#cabf9f;margin-top:5px}
+.mimaRankNoPrizes{font-size:11px;color:#ffcc55}
+.mimaRankPodium{display:flex;direction:ltr;align-items:flex-end;justify-content:center;gap:7px;margin-bottom:26px;min-height:192px}
+.mimaRankPodium .person{flex:1;min-width:0;max-width:145px;border:1px solid #8b6c32;border-radius:18px 18px 10px 10px;padding:12px 6px;text-align:center;background:linear-gradient(175deg,#122436,#110f0b);box-shadow:0 6px 20px #0008}
+.mimaRankPodium .person.first{min-height:184px;background:linear-gradient(160deg,#3723\nAT 46707: ima-rank-friends-viewport-fix-20261012">
+#rank.screen.active,#ref.screen.active{margin-top:0!important;scroll-margin-top:0!important;transform:none!important}
+#rank.screen.active>.mimaRankWrap,#ref.screen.active>.card{margin-top:0!important}
+</style></head>
+<body>
+<div id="mimaSplash" aria-label="MIMA loading screen">
+  <img id="mimaSplashImage" src="data:image/webp;base64,UklGRibcAwBXRUJQVlA4IBrcAwDw2gqdASqEAz8GPj0ci0QiIaKjJ3VboGAHiU3fd1Nx+Z84z3Tnrj9haLB9b4pEkzyuK7b5zH5PzzHNyWf8X8w+5Hjf3v/L/z37o/4/9tvlj497KPYP3b/Kf8v/Ce7D/0f6P8xfKz2f/Vf+X/N/lz73HOv/Z/x3+z/+3+1/////+6P+a/7/+Z/3fxT/rH+I/8X+W/f3/cfYh/Rv6v/1/8F/tP2/+m/+5/+3+i/3///+bn+M/2f/r/0/+7//Xya/t3+Y/9H+U/2P/4/6X1A/73/2/6f/X///5af4D/X/+v/Pf63/4/QX/Yf8P/7P2x/9vzp/9v/5/9D4V/8l/1v/v/xf+v8jX9c/13/x/2f+2///zH/9X9wf+l///pa/tn/F/+/+y/4n///9P2V/2H/Rf/P/Vf8H/+f9T6AP/v///e+/gH/y////09wD/t9wh+1X+O/Yb9tvl18c/ov9t/iP2w/eX11/Gvp/8b/df8x/t/77/9/+B9ff4T/l/5n90vZ36l/Wf9T/J/7v/w/v/8nfy378fpP7T/pP+P/h/3N+1v81/wf8P/sP+f/kf3c+Ifzj+B/3H94/2X/W/wf7z/Y7+V/zv/I/1z9uP7z+6X26fN/8v/B/73/q+jvxX+W/5393/e79//og94Ppn+g/sH+f/6P+C/eH20/9X/Cf67/0f5v///On7L/hP+P/dP9V/6v8N///wF/rH9I/1H9a/dr++f/z/8fkX+j/9H+L9BP8h/uv/f/jPzH+w7+o/3j/rf3D/j//P/hf///6/jX/M/9/+4/8D/5/63///9r52fnX+V/6n9W/2//z/zX////v6LfzP+rf7v+t/63/1f5T////H76P/F++Pzj/c7/+e89+13/q/P86tWHuvY/E0g76UsSFudfRTCQ2SPSUB2chm6iTO0oAXxJZEEvPQMkVWWtqGAmffw26PtT9/yGPxfN64BLgiqq3XY84Nabq5Btdl37o48YjKFJ72TkVYX4+CGV1MqxVhuGPNtNOIYyHT3eMmBnPXCLsH3\nAT 1133164: ass="ico">🔐</span><main><b>سياسة الخصوصية</b><small>كيف نستخدم ونحمي بياناتك</small></main><span>›</span></div>
+  </div>
+</section>
+
+<section id="rank" class="screen">
+<div class="mimaRankWrap">
+ <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span>Rank & Competition</span></h2><p id="mimaRankDescription">Verified referrals only • $35 prize pool</p>
+ <div class="mimaContestClock"><div class="mimaContestTitle">🏆 48-HOUR RANK CHALLENGE</div><div class="mimaContestTimer" id="mimaContestTimer">--:--:--</div><small id="mimaContestState">Time remaining · Winners verified at the end</small><div class="mimaContestPrizes" dir="ltr"><span>🥈 2nd <b>$10</b></span><span>🥇 1st <b>$20</b></span><span>🥉 3rd <b>$5</b></span></div></div></div>
+ <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">Your rank</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏆 TOP 3</span></div>
+ <div class="mimaRankPodium" id="mimaRankPodium"></div>
+ <div class="mimaRankListHead"><b id="mimaRankListTitle">Top 100 miners</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
+ <div id="mimaRankList" class="mimaRankList">⏳</div>
+</div>
+</section>
+
+<nav class="bottom">
+  <button class="nav" data-screen="tasks" onclick="go('tasks',this)">
+    <span class="navIcon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+  \nTOKEN 'mimaRankCrown' COUNT 2\nAT 42925: :14px 16px 110px;max-width:720px;margin:auto;color:#ffedc8}
+.mimaRankHeader{text-align:center;padding:22px 8px 18px}
+.mimaRankHeader h2{font-size:23px;color:#ffd878;margin:4px 0}
+.mimaRankCrown{font-size:36px;color:#ffcb40}
+.mimaRankMe{display:flex;align-items:center;gap:13px;background:linear-gradient(130deg,#211806,#0a1522);border:1px solid #a88132;border-radius:18px;padding:16px;margin-bottom:24px;box-shadow:0 6px 24px #0007}
+#mimaRankMyPosition{font-size:23px;font-weight:900;background:#ffcc58;color:#1b1300;border-radius:13px;min-width:75px;padding:13px 8px;text-align:center}
+.mimaRankMe div{flex:1;min-width:0}.mimaRankMe b,.mimaRankMe small{display:block}.mimaRankMe small{font-size:12px;color:#cabf9f;margin-top:5px}
+.mimaRankNoPrizes{font-size:11px;color:#ffcc55}
+.mimaRankPodium{display:flex;direction:ltr;align-items:flex-end;justify-content:center;gap:7px;margin-bottom:26px;min-height:192px}
+.mimaRankPodium .person{flex:1;min-width:0;max-width:145px;border:1px solid #8b6c32;border-radius:18px 18px 10px 10px;padding:12px 6px;text-align:center;background:linear-gradient(175deg,#122436,#110f0b);box-shadow:0 6px 20px #0008}
+.mimaRankPodium .person.first{min-height:184px;background:linear-gradient(160deg,#372300,#0e1623);border-color:#ffcf52}
+.mimaRankPodium .person.second{min-height:151px}.mimaRankPodium .person.third{min-height:140px}
+.mimaRankPodium .medal{font-size:28px;margin-bottom:10px}.mimaRankPodi\nAT 1133220: نستخدم ونحمي بياناتك</small></main><span>›</span></div>
+  </div>
+</section>
+
+<section id="rank" class="screen">
+<div class="mimaRankWrap">
+ <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span>Rank & Competition</span></h2><p id="mimaRankDescription">Verified referrals only • $35 prize pool</p>
+ <div class="mimaContestClock"><div class="mimaContestTitle">🏆 48-HOUR RANK CHALLENGE</div><div class="mimaContestTimer" id="mimaContestTimer">--:--:--</div><small id="mimaContestState">Time remaining · Winners verified at the end</small><div class="mimaContestPrizes" dir="ltr"><span>🥈 2nd <b>$10</b></span><span>🥇 1st <b>$20</b></span><span>🥉 3rd <b>$5</b></span></div></div></div>
+ <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">Your rank</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏆 TOP 3</span></div>
+ <div class="mimaRankPodium" id="mimaRankPodium"></div>
+ <div class="mimaRankListHead"><b id="mimaRankListTitle">Top 100 miners</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
+ <div id="mimaRankList" class="mimaRankList">⏳</div>
+</div>
+</section>
+
+<nav class="bottom">
+  <button class="nav" data-screen="tasks" onclick="go('tasks',this)">
+    <span class="navIcon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="6" y="4" width="12" height="16" rx="2"></\nTOKEN 'function renderRank' COUNT 0\nTOKEN 'mimaRankHeader' COUNT 3\nAT 42806: <style id="mima-rank-gold-css">
+#mimaRankDescription{font-size:12px;color:#e0c991;margin:8px 0 0}
+.mimaRankWrap{padding:14px 16px 110px;max-width:720px;margin:auto;color:#ffedc8}
+.mimaRankHeader{text-align:center;padding:22px 8px 18px}
+.mimaRankHeader h2{font-size:23px;color:#ffd878;margin:4px 0}
+.mimaRankCrown{font-size:36px;color:#ffcb40}
+.mimaRankMe{display:flex;align-items:center;gap:13px;background:linear-gradient(130deg,#211806,#0a1522);border:1px solid #a88132;border-radius:18px;padding:16px;margin-bottom:24px;box-shadow:0 6px 24px #0007}
+#mimaRankMyPosition{font-size:23px;font-weight:900;background:#ffcc58;color:#1b1300;border-radius:13px;min-width:75px;padding:13px 8px;text-align:center}
+.mimaRankMe div{flex:1;min-width:0}.mimaRankMe b,.mimaRankMe small{display:block}.mimaRankMe small{font-size:12px;color:#cabf9f;margin-top:5px}
+.mimaRankNoPrizes{font-size:11px;color:#ffcc55}
+.mimaRankPodium{display:flex;direction:ltr;align-items:flex-end;justify-content:center;gap:7px;margin-bottom:26px;min-height:192px}
+.mimaRankPodium .person{flex:1;min-width:0;max-width:145px;border:1px solid #8b6c32;border-radius:18px 18px 10px 10px;padding:12px 6px;text-align:center;background:linear-gradient(175deg,#122436,#110f0b);box-shadow:0 6px 20px #0008}
+.mimaRankPodium .person.first{min-height:184px;background:linear-gradient(160deg,#372300,#0e1623);border-color:#ffcf52}
+.mimaRankPodium .person.second{min-height:151px\nAT 42863: -size:12px;color:#e0c991;margin:8px 0 0}
+.mimaRankWrap{padding:14px 16px 110px;max-width:720px;margin:auto;color:#ffedc8}
+.mimaRankHeader{text-align:center;padding:22px 8px 18px}
+.mimaRankHeader h2{font-size:23px;color:#ffd878;margin:4px 0}
+.mimaRankCrown{font-size:36px;color:#ffcb40}
+.mimaRankMe{display:flex;align-items:center;gap:13px;background:linear-gradient(130deg,#211806,#0a1522);border:1px solid #a88132;border-radius:18px;padding:16px;margin-bottom:24px;box-shadow:0 6px 24px #0007}
+#mimaRankMyPosition{font-size:23px;font-weight:900;background:#ffcc58;color:#1b1300;border-radius:13px;min-width:75px;padding:13px 8px;text-align:center}
+.mimaRankMe div{flex:1;min-width:0}.mimaRankMe b,.mimaRankMe small{display:block}.mimaRankMe small{font-size:12px;color:#cabf9f;margin-top:5px}
+.mimaRankNoPrizes{font-size:11px;color:#ffcc55}
+.mimaRankPodium{display:flex;direction:ltr;align-items:flex-end;justify-content:center;gap:7px;margin-bottom:26px;min-height:192px}
+.mimaRankPodium .person{flex:1;min-width:0;max-width:145px;border:1px solid #8b6c32;border-radius:18px 18px 10px 10px;padding:12px 6px;text-align:center;background:linear-gradient(175deg,#122436,#110f0b);box-shadow:0 6px 20px #0008}
+.mimaRankPodium .person.first{min-height:184px;background:linear-gradient(160deg,#372300,#0e1623);border-color:#ffcf52}
+.mimaRankPodium .person.second{min-height:151px}.mimaRankPodium .person.third{min-height:140px}
+.mimaRan\nAT 1133192: ياسة الخصوصية</b><small>كيف نستخدم ونحمي بياناتك</small></main><span>›</span></div>
+  </div>
+</section>
+
+<section id="rank" class="screen">
+<div class="mimaRankWrap">
+ <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span>Rank & Competition</span></h2><p id="mimaRankDescription">Verified referrals only • $35 prize pool</p>
+ <div class="mimaContestClock"><div class="mimaContestTitle">🏆 48-HOUR RANK CHALLENGE</div><div class="mimaContestTimer" id="mimaContestTimer">--:--:--</div><small id="mimaContestState">Time remaining · Winners verified at the end</small><div class="mimaContestPrizes" dir="ltr"><span>🥈 2nd <b>$10</b></span><span>🥇 1st <b>$20</b></span><span>🥉 3rd <b>$5</b></span></div></div></div>
+ <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">Your rank</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏆 TOP 3</span></div>
+ <div class="mimaRankPodium" id="mimaRankPodium"></div>
+ <div class="mimaRankListHead"><b id="mimaRankListTitle">Top 100 miners</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
+ <div id="mimaRankList" class="mimaRankList">⏳</div>
+</div>
+</section>
+
+<nav class="bottom">
+  <button class="nav" data-screen="tasks" onclick="go('tasks',this)">
+    <span class="navIcon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="6" y="4" widt\nTOKEN 'window.scrollTo' COUNT 2\nAT 1288336:  navs.forEach(n=>n.classList.remove('active'));
+      el.classList.add('active');
+    }else{
+      navs.forEach(n=>n.classList.toggle('active', n.dataset.screen===id));
+    }
+
+    window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;requestAnimationFrame(()=>{window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;});
+
+    if(id === 'home'){
+      loadPublicPayouts();
+    }
+
+    if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
+      refreshAdsgramRewardStatus(false).catch(()=>{});
+    }
+  }
+
+  function formatMima(value){
+    return Number(value || 0).toLocaleString('en-US',{
+      minimumFractionDigits:6,
+      maximumFractionDigits:6
+    });
+  }
+
+  function formatUsd(value){
+    return Number(value || 0).toLocaleString('en-US',{
+      minimumFractionDigits:6,
+      maximumFractionDigits:6
+    });
+  }
+
+  function usdFromMima(value){
+    return Number(value || 0) / MIMA_PER_USD;
+  }
+
+  function formatCountdown(ms){
+    const total = Math.max(0, Math.ceil(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+  }
+
+  function getMiningLevel(){
+    return Math.min(
+      MAX_MINING_LEVEL,
+      Math.floor(Math.max(0,Number(bal || 0)) / POINTS_PER_LEVEL) + 1
+    );
+  }
+
+  function getMiningRateForLe\nAT 1288447: (n=>n.classList.toggle('active', n.dataset.screen===id));
+    }
+
+    window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;requestAnimationFrame(()=>{window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;});
+
+    if(id === 'home'){
+      loadPublicPayouts();
+    }
+
+    if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
+      refreshAdsgramRewardStatus(false).catch(()=>{});
+    }
+  }
+
+  function formatMima(value){
+    return Number(value || 0).toLocaleString('en-US',{
+      minimumFractionDigits:6,
+      maximumFractionDigits:6
+    });
+  }
+
+  function formatUsd(value){
+    return Number(value || 0).toLocaleString('en-US',{
+      minimumFractionDigits:6,
+      maximumFractionDigits:6
+    });
+  }
+
+  function usdFromMima(value){
+    return Number(value || 0) / MIMA_PER_USD;
+  }
+
+  function formatCountdown(ms){
+    const total = Math.max(0, Math.ceil(ms / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+  }
+
+  function getMiningLevel(){
+    return Math.min(
+      MAX_MINING_LEVEL,
+      Math.floor(Math.max(0,Number(bal || 0)) / POINTS_PER_LEVEL) + 1
+    );
+  }
+
+  function getMiningRateForLevel(level=getMiningLevel()){
+    return Number(
+      (RATE_PER_HOUR + (Math.max(1,level)-1) * 0.05).toFixed(2)
