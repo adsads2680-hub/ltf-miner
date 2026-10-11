@@ -8181,6 +8181,13 @@ input[type="submit"]:focus-visible{
  const get=id=>document.getElementById(id);
  const tr=(ar,en)=>{try{return typeof tx==='function'?tx(ar,en):en}catch(e){return en}};
  let busy=false;
+ let pendingHours=0;
+ let pendingPurchaseId='';
+ function boostMessage(message,isError=false){
+   let el=get('mimaBoostSafeFeedback');
+   if(!el){el=document.createElement('p');el.id='mimaBoostSafeFeedback';el.setAttribute('role','status');modal.querySelector('.panel').insertBefore(el,get('mimaBoostSafeClose'));}
+   el.style.color=isError?'#ff9b9b':'#ffe4a0';el.textContent=message;
+ }
  function button(){
   let b=get('mimaBoostSafeButton');if(b)return b;
   const coin=get('mainCoin'); const scene=coin?.closest('.miningScene');if(!scene)return null;
@@ -8199,7 +8206,7 @@ input[type="submit"]:focus-visible{
   get('mimaBoostSafeInfo').textContent=tr('تعزيز دائم لكل جلسات التعدين القادمة، بنفس معدل التعدين • المشتَرى: +'+h+'h','Permanent upgrade for all future sessions at your normal mining rate • Owned: +'+h+'h');
   modal.querySelectorAll('[data-boost-hours]').forEach(o=>{
    const hours=Number(o.dataset.boostHours);
-   o.textContent='+'+hours+'h  —  '+hours*200+' MIMA';
+   o.textContent= pendingHours===hours ? tr('تأكيد خصم ','Confirm deduct ') + hours*200 + ' MIMA ✓' : '+'+hours+'h  —  '+hours*200+' MIMA';
    o.disabled=busy||hours+h>3;
   });
   get('mimaBoostSafeClose').textContent=tr('إغلاق','Close');
@@ -8207,19 +8214,34 @@ input[type="submit"]:focus-visible{
  }
  async function buy(hours){
   if(busy)return;
-  const msg=tr('تأكيد شراء تعزيز دائم +'+hours+' ساعة لكل جلسة تعدين مقابل خصم '+hours*200+' MIMA؟','Permanently add '+hours+' hour(s) to every mining session for '+hours*200+' MIMA?');
-  if(!window.confirm(msg))return;
+  if(pendingHours!==hours){
+    pendingHours=hours;pendingPurchaseId='';
+    boostMessage(tr('للتأكيد: اضغط نفس الخيار مرة ثانية. سيتم خصم ','To confirm, tap the same option again. Deducting ')+hours*200+' MIMA '+tr('من الرصيد القابل للسحب.','from withdrawable balance.'));
+    paint();return;
+  }
   busy=true;paint();
   try{
-   if(typeof serverMode==='undefined'||!serverMode)throw Error('Open inside Telegram');
-   const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;const id=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');const uuid=id.slice(0,8)+'-'+id.slice(8,12)+'-'+id.slice(12,16)+'-'+id.slice(16,20)+'-'+id.slice(20);const r=await apiCall('buy_mining_boost',{hours,purchase_id:uuid});
-   if(r?.success!==true)throw Error(r?.message||'Purchase failed');
-   activeBoostSeconds=Number(r.boost_seconds||0);
+   if(typeof serverMode==='undefined'||!serverMode)throw Error(tr('افتح التطبيق من داخل تيليغرام','Open inside Telegram'));
+   if(!pendingPurchaseId){
+     const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+     const id=Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('');
+     pendingPurchaseId=id.slice(0,8)+'-'+id.slice(8,12)+'-'+id.slice(12,16)+'-'+id.slice(16,20)+'-'+id.slice(20);
+   }
+   boostMessage(tr('جارٍ تنفيذ الشراء، يرجى الانتظار...','Processing purchase, please wait...'));
+   const result=await apiCall('buy_mining_boost',{hours,purchase_id:pendingPurchaseId});
+   if(result?.success!==true)throw Error(result?.message||tr('تعذر تنفيذ الشراء','Purchase failed'));
+   activeBoostSeconds=Number(result.boost_seconds||0);
+   if(Number.isFinite(Number(result.balance)))bal=Number(result.balance);
+   if(Number.isFinite(Number(result.exchangeable_balance)))exchangeableBalance=Number(result.exchangeable_balance);
+   pendingHours=0;pendingPurchaseId='';
+   boostMessage(tr('تم الشراء وخصم الرصيد القابل للسحب بنجاح','Purchase completed; withdrawable balance deducted'));
+   render();
    await syncServerStatus(false,true);
-   if(typeof toast==='function')toast(tr('✅ تم تفعيل التعزيز الدائم','✅ Permanent boost activated'));
    modal.classList.remove('open');
-  }catch(e){if(typeof toast==='function')toast('⚠️ '+String(e?.message||e))}
-  finally{busy=false;paint()}
+   if(typeof toast==='function')toast(tr('تم تفعيل التعزيز الدائم','Permanent boost activated'));
+  }catch(e){
+   boostMessage(String(e?.message||e),true);
+  }finally{busy=false;paint()}
  }
  window.mimaBoostBadgeRefresh=paint;
  function init(){
