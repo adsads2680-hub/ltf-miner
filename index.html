@@ -1056,10 +1056,10 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </div>
 
     <div class="item mimaTaskRow" id="interactPostTaskItem">
-      <span class="ico">📝</span>
+      <span class="ico">📄</span>
       <main>
         <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
-        <small id="interactPostTaskInfo">+2 MIMA • كل 12 ساعة</small>
+        <small id="interactPostTaskInfo">+5 MIMA • كل 4 ساعات</small>
       </main>
       <div class="taskActionGroup">
         <button id="interactPostOpenBtn" class="taskJoinBtn" type="button" onclick="openInteractPost()">فتح المنشور</button>
@@ -4064,8 +4064,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
   }
 
-  const INTERACT_POST_URL = 'https://t.me/MIMA_COIN/3633';
-  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_3633_v2';
+  const INTERACT_POST_URL = 'https://t.me/MIMA_COIN/3634';
+  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_3634_v1';
 
   function openInteractPost(){
     try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,'1'); }catch(e){}
@@ -4106,20 +4106,20 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(remaining > 0){
       btn.disabled = true;
       btn.textContent = formatCountdown(remaining);
-      info.textContent = tx('+2 MIMA • متاحة بعد ','+2 MIMA • available in ') + formatCountdown(remaining);
+      info.textContent = tx('+5 MIMA • متاحة بعد ','+5 MIMA • available in ') + formatCountdown(remaining);
       return;
     }
 
     if(!opened){
       btn.disabled = true;
       btn.textContent = tx('افتح المنشور أولاً','Open post first');
-      info.textContent = tx('+2 MIMA • افتح المنشور ثم أكمل المهمة','+2 MIMA • open the post, then complete the task');
+      info.textContent = tx('+5 MIMA • افتح المنشور ثم أكمل المهمة','+5 MIMA • open the post, then complete the task');
       return;
     }
 
     btn.disabled = false;
     btn.textContent = tx('إكمال المهمة','Complete Task');
-    info.textContent = tx('+2 MIMA • جاهزة للاستلام','+2 MIMA • ready to claim');
+    info.textContent = tx('+5 MIMA • جاهزة للاستلام','+5 MIMA • ready to claim');
   }
 
   async function claimInteractPostTask(btn){
@@ -4136,12 +4136,12 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     btn.textContent = '⏳';
 
     if(!serverMode){
-      bal += 2;
-      exchangeableBalance += 2;
-      interactPostNextAvailableAt = Date.now() + 12 * 60 * 60 * 1000;
+      bal += 5;
+      exchangeableBalance += 5;
+      interactPostNextAvailableAt = Date.now() + 4 * 60 * 60 * 1000;
       savePreviewState();
       render();
-      toast(tx('🎁 +2 MIMA أضيفت إلى رصيدك','🎁 +2 MIMA added to your balance'));
+      toast(tx('🎁 +5 MIMA أضيفت إلى رصيدك','🎁 +5 MIMA added to your balance'));
       return;
     }
 
@@ -4160,7 +4160,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       const nextTs = Date.parse(data.next_available_at || '');
       interactPostNextAvailableAt = Number.isFinite(nextTs)
         ? nextTs
-        : nowMs() + 12 * 60 * 60 * 1000;
+        : nowMs() + 4 * 60 * 60 * 1000;
 
       try{ localStorage.removeItem(INTERACT_POST_OPENED_KEY); }catch(e){}
       showMimaTaskSuccess('تفاعل مع المنشور','Interact with the post',data.reward);
@@ -8200,7 +8200,7 @@ input[type="submit"]:focus-visible{
   modal.querySelectorAll('[data-boost-hours]').forEach(o=>{
    const hours=Number(o.dataset.boostHours);
    o.textContent='+'+hours+'h  —  '+hours*200+' MIMA';
-   o.disabled=busy||hours+h>3||(typeof roundEnded!=='undefined'&&roundEnded);
+   o.disabled=busy||hours+h>3;
   });
   get('mimaBoostSafeClose').textContent=tr('إغلاق','Close');
   position();
@@ -8212,7 +8212,7 @@ input[type="submit"]:focus-visible{
   busy=true;paint();
   try{
    if(typeof serverMode==='undefined'||!serverMode)throw Error('Open inside Telegram');
-   const r=await apiCall('buy_mining_boost',{hours,purchase_id:crypto.randomUUID()});
+   const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;const id=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');const uuid=id.slice(0,8)+'-'+id.slice(8,12)+'-'+id.slice(12,16)+'-'+id.slice(16,20)+'-'+id.slice(20);const r=await apiCall('buy_mining_boost',{hours,purchase_id:uuid});
    if(r?.success!==true)throw Error(r?.message||'Purchase failed');
    activeBoostSeconds=Number(r.boost_seconds||0);
    await syncServerStatus(false,true);
