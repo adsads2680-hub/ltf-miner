@@ -28,7 +28,11 @@ jobs:
           if section_end<0 or closing<0 or (ref-section_end)>150 or s[closing+6:section_end].strip():
             raise SystemExit('Safety stop: Unexpected closing structure at Tasks end')
           print('Original boundary:',repr(s[closing-240:ref+80]))
-          fixed=s[:closing]+s[closing+6:]
+          line_start=s.rfind(chr(10),0,closing)+1
+          line_end=s.find(chr(10),closing)+1
+          if s[line_start:closing].strip() or s[closing+6:line_end].strip() or line_end<=closing:
+            raise SystemExit('Safety stop: Unexpected content on closing-div line')
+          fixed=s[:line_start]+s[line_end:]
           root=html5lib.parse(fixed,namespaceHTMLElements=False)
           parents={child:parent for parent in root.iter() for child in parent}
           app=next((el for el in root.iter() if el.attrib.get('class')=='app'),None)
@@ -49,7 +53,7 @@ jobs:
           while p is not None and p is not app:
             p=parents.get(p)
           if p is not app:raise SystemExit('Bottom nav still outside app')
-          if len(s)-len(fixed)!=6:raise SystemExit('Unexpected change size')
+          if not 7<=len(s)-len(fixed)<=12:raise SystemExit('Unexpected change size')
           f.write_text(fixed,encoding='utf-8')
           print('HTML5 parser PASS; all seven screens and bottom nav inside .app')
       - name: Commit safe HTML nesting repair
