@@ -673,6 +673,27 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 #mimaBoostSafeButton{position:relative!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;transform:none!important;margin:4px 30px 16px auto!important;z-index:5!important;display:flex!important;width:72px!important;height:72px!important;border-radius:16px!important}
 @media(max-width:380px){#mimaBoostSafeButton{margin-right:15px!important}}
 </style>
+<style id="mima-rank-gold-css">
+#mimaRankDescription{font-size:12px;color:#e0c991;margin:8px 0 0}
+.mimaRankWrap{padding:14px 16px 110px;max-width:720px;margin:auto;color:#ffedc8}
+.mimaRankHeader{text-align:center;padding:22px 8px 18px}
+.mimaRankHeader h2{font-size:23px;color:#ffd878;margin:4px 0}
+.mimaRankCrown{font-size:36px;color:#ffcb40}
+.mimaRankMe{display:flex;align-items:center;gap:13px;background:linear-gradient(130deg,#211806,#0a1522);border:1px solid #a88132;border-radius:18px;padding:16px;margin-bottom:24px;box-shadow:0 6px 24px #0007}
+#mimaRankMyPosition{font-size:23px;font-weight:900;background:#ffcc58;color:#1b1300;border-radius:13px;min-width:75px;padding:13px 8px;text-align:center}
+.mimaRankMe div{flex:1;min-width:0}.mimaRankMe b,.mimaRankMe small{display:block}.mimaRankMe small{font-size:12px;color:#cabf9f;margin-top:5px}
+.mimaRankNoPrizes{font-size:11px;color:#ffcc55}
+.mimaRankPodium{display:flex;align-items:flex-end;justify-content:center;gap:7px;margin-bottom:26px;min-height:192px}
+.mimaRankPodium .person{flex:1;min-width:0;max-width:145px;border:1px solid #8b6c32;border-radius:18px 18px 10px 10px;padding:12px 6px;text-align:center;background:linear-gradient(175deg,#122436,#110f0b);box-shadow:0 6px 20px #0008}
+.mimaRankPodium .person.first{min-height:184px;background:linear-gradient(160deg,#372300,#0e1623);border-color:#ffcf52}
+.mimaRankPodium .person.second{min-height:151px}.mimaRankPodium .person.third{min-height:140px}
+.mimaRankPodium .medal{font-size:28px;margin-bottom:10px}.mimaRankPodium .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:700}.mimaRankPodium .count{font-size:11px;color:#ffdf9b;margin-top:8px}
+.mimaRankListHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#ffdd7a}
+#mimaRankRefresh{background:#172537;color:#ffd878;border:1px solid #9c7b36;border-radius:9px;font-size:20px;padding:4px 12px}
+.mimaRankList{display:grid;gap:9px}
+.mimaRankItem{display:flex;align-items:center;gap:12px;padding:13px;background:#0c1927;border:1px solid #294053;border-radius:13px;min-width:0}
+.mimaRankNumber{font-weight:900;min-width:37px;color:#ffcf6b}.mimaRankName{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.mimaRankCount{font-size:12px;color:#ffda86;white-space:nowrap}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -1260,6 +1281,16 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   </div>
 </section>
 
+<section id="rank" class="screen">
+<div class="mimaRankWrap">
+ <div class="mimaRankHeader"><div class="mimaRankCrown">♛</div><h2>🏆 <span data-rank-ar="الترتيب والمنافسة" data-rank-en="Rank & Competition">الترتيب والمنافسة</span></h2><p id="mimaRankDescription">الإحالات الحقيقية المؤهلة فقط • لا توجد جوائز</p></div>
+ <div class="mimaRankMe"><span id="mimaRankMyPosition">—</span><div><b id="mimaRankYouLabel">ترتيبك</b><small id="mimaRankMyInvites">—</small></div><span class="mimaRankNoPrizes">🏅 RANK</span></div>
+ <div class="mimaRankPodium" id="mimaRankPodium"></div>
+ <div class="mimaRankListHead"><b id="mimaRankListTitle">أفضل 100 معدّن</b><button type="button" onclick="window.mimaLoadRank(true)" id="mimaRankRefresh">↻</button></div>
+ <div id="mimaRankList" class="mimaRankList">⏳</div>
+</div>
+</section>
+
 <nav class="bottom">
   <button class="nav" data-screen="tasks" onclick="go('tasks',this)">
     <span class="navIcon">
@@ -1289,6 +1320,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <span>التعدين</span>
   </button>
 
+  <button class="nav" data-screen="rank" onclick="go('rank',this);window.mimaLoadRank()"><span class="navIcon">🏆</span><span>Rank</span></button>
   <button class="nav" data-screen="ref" onclick="go('ref',this)">
     <span class="navIcon">
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -8248,7 +8280,33 @@ input[type="submit"]:focus-visible{
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
-</body>
+<script id="mima-rank-script">
+(function(){
+ const $=id=>document.getElementById(id);
+ const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const ar=()=>((document.documentElement.lang||'en').toLowerCase().startsWith('ar'));
+ const words=(a,b)=>ar()?a:b;
+ let last=0,loading=false;
+ window.mimaLoadRank=async function(force){
+  if(loading||(!force&&Date.now()-last<60000))return;
+  loading=true; $('mimaRankList').textContent=words('جار تحميل الترتيب…','Loading leaderboard…');
+  try{
+   const r=await apiCall('rank_leaderboard');
+   if(!r?.success)throw Error(r?.message||'Unable to load rank');
+   const all=Array.isArray(r.top)?r.top:[];last=Date.now();
+   $('mimaRankDescription').textContent=words('إحالات حقيقية مؤهلة فقط • بدون جوائز','Verified referrals only • No prizes');
+   $('mimaRankYouLabel').textContent=words('ترتيبك','Your rank');
+   $('mimaRankListTitle').textContent=words('أفضل 100 معدّن','Top 100 miners');
+   $('mimaRankMyPosition').textContent=r.me?.rank?'#'+r.me.rank:'—';
+   $('mimaRankMyInvites').textContent=r.me?words(r.me.invites+' إحالة مؤهلة',r.me.invites+' qualified invites'):words('لا توجد إحالات مؤهلة بعد','No qualified invites yet');
+   const top=all.slice(0,3);
+   $('mimaRankPodium').innerHTML=[top[1],top[0],top[2]].map((p,i)=>p?'<div class="person '+(['second','first','third'][i])+'"><div class="medal">'+(['🥈','👑','🥉'][i])+'</div><div class="name">'+safe(p.name)+'</div><div class="count">'+safe(p.invites)+' '+words('إحالة','invites')+'</div></div>':'').join('');
+   $('mimaRankList').innerHTML=all.length?all.map(p=>'<div class="mimaRankItem"><span class="mimaRankNumber">#'+safe(p.rank)+'</span><span class="mimaRankName">'+safe(p.name)+'</span><span class="mimaRankCount">'+safe(p.invites)+' '+words('إحالة','invites')+'</span></div>').join(''):'<div class="mimaRankItem">'+words('لا توجد إحالات مؤهلة بعد','No qualified referrals yet')+'</div>';
+  }catch(e){$('mimaRankList').textContent=words('تعذّر جلب الترتيب، حاول مجدداً','Could not load ranks, please retry');}
+  finally{loading=false;}
+ };
+})();
+</script></body>
 
 <style id="mima-boost-right-edge-alignment-20261011">
 /* Keep the single BOOST button inside the gold-bordered MIMA panel. */
