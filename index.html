@@ -8333,7 +8333,7 @@ input[type="submit"]:focus-visible{
    $('mimaRankMyPosition').textContent=r.me?.rank?'#'+r.me.rank:'—';
    $('mimaRankMyInvites').textContent=r.me?words(r.me.invites+' إحالة مؤهلة',r.me.invites+' qualified invites'):words('لا توجد إحالات مؤهلة بعد','No qualified invites yet');
    const top=all.slice(0,3);
-   $('mimaRankPodium').innerHTML=[top[1],top[0],top[2]].map((p,i)=>p?'<div class="person '+(['second','first','third'][i])+'"><div class="medal">'+(['🥈','👑','🥉'][i])+'</div><div class="name">'+safe(p.name)+'</div><div class="count">'+safe(p.invites)+' '+words('إحالة','invites')+'</div></div>':'').join('');
+   $('mimaRankPodium').innerHTML=[top[1],top[0],top[2]].map((p,i)=>p?'<div class="person '+(['second','first','third'][i])+'"><div class="medal">'+(['🥈 #2','🥇 #1','🥉 #3'][i])+'</div><div class="name">'+safe(p.name)+'</div><div class="count">'+safe(p.invites)+' '+words('إحالة','invites')+'</div></div>':'').join('');
    $('mimaRankList').innerHTML=all.length?all.map(p=>'<div class="mimaRankItem"><span class="mimaRankNumber">#'+safe(p.rank)+'</span><span class="mimaRankName">'+safe(p.name)+'</span><span class="mimaRankCount">'+safe(p.invites)+' '+words('إحالة','invites')+'</span></div>').join(''):'<div class="mimaRankItem">'+words('لا توجد إحالات مؤهلة بعد','No qualified referrals yet')+'</div>';
   }catch(e){$('mimaRankList').textContent=words('تعذّر جلب الترتيب، حاول مجدداً','Could not load ranks, please retry');}
   finally{loading=false;}
