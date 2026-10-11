@@ -18,11 +18,11 @@ jobs:
           s=Path('index.html').read_text(encoding='utf-8')
           output=['FILE_LENGTH '+str(len(s))]
           selectors=('screen','mimaRank','rank','ref','friend','app','topbar','nav','page','scroll','viewport','position','height')
-          styles=re.findall(r'<style\\b[^>]*>(.*?)</style>',s,re.S|re.I)
+          styles=re.findall('<style.*?>(.*?)</style>',s,re.S|re.I)
           output.append('STYLE BLOCKS '+str(len(styles)))
           n=0
           for b,css in enumerate(styles):
-            for m in re.finditer(r'([^{}]+)\\{([^{}]*)\\}',css):
+            for m in re.finditer('([^{}]+)[{]([^{}]*)[}]',css):
               sel=m.group(1).strip()
               if any(term.lower() in sel.lower() for term in selectors):
                 if len(sel)>220:continue
@@ -35,8 +35,8 @@ jobs:
             starts=[m.start() for m in re.finditer(re.escape(token),s)]
             output.append('TOKEN '+repr(token)+' COUNT '+str(len(starts)))
             for i in starts[:8]:
-              output.append(f'AT {i}: '+s[max(0,i-180):i+1250].replace('\\n',' '))
-          res='\\n'.join(output)
+              output.append(f'AT {i}: '+s[max(0,i-180):i+1250].replace(chr(10),' '))
+          res=chr(10).join(output)
           Path('mima-layout-diagnostics.txt').write_text(res[:110000],encoding='utf-8')
           print('Diagnostic length',len(res),'saved',len(res[:110000]))
       - name: Save branch diagnostics
