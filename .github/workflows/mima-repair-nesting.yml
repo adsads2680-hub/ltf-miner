@@ -20,12 +20,15 @@ jobs:
           import html5lib
           f=Path('index.html')
           s=f.read_text(encoding='utf-8')
-          m=re.search('</div>[ \\t]*\\n[ \\t]*</section>[ \\t]*\\n[ \\t]*(?=<section id="ref" class="screen">)',s)
-          if not m or s.count('<section id="ref" class="screen">')!=1:
-            raise SystemExit('Safety stop: Tasks-to-Friends boundary does not match')
-          print('Original boundary:',repr(s[m.start()-240:m.end()+110]))
-          replacement=s[m.start():m.end()].replace('</div>','',1)
-          fixed=s[:m.start()]+replacement+s[m.end():]
+          if s.count('<section id="ref" class="screen">')!=1:
+            raise SystemExit('Safety stop: Friends screen mismatch')
+          ref=s.index('<section id="ref" class="screen">')
+          section_end=s.rfind('</section>',0,ref)
+          closing=s.rfind('</div>',0,section_end)
+          if section_end<0 or closing<0 or (ref-section_end)>150 or s[closing+6:section_end].strip():
+            raise SystemExit('Safety stop: Unexpected closing structure at Tasks end')
+          print('Original boundary:',repr(s[closing-240:ref+80]))
+          fixed=s[:closing]+s[closing+6:]
           root=html5lib.parse(fixed,namespaceHTMLElements=False)
           parents={child:parent for parent in root.iter() for child in parent}
           app=next((el for el in root.iter() if el.attrib.get('class')=='app'),None)
