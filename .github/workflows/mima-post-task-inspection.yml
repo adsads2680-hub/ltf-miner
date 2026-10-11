@@ -1,0 +1,33 @@
+name: Inspect MIMA interaction task
+on:
+  push:
+    branches: [mima-interact-post-link-20261012]
+    paths: ['.github/workflows/mima-post-task-inspection.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect post interaction references
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8')
+          tokens=['openInteractPost','claimInteractPost','renderInteractPost','interactPostTaskItem','interactPostTaskTitle','interactPostTaskBtn','interact_mimacoin2_post','t.me/MIMA_COIN/','t.me/MIMACOIN2/','3636','3633','3631']
+          out=[]
+          for token in tokens:
+            matches=list(re.finditer(re.escape(token),s))
+            out.append('TOKEN '+token+' COUNT '+str(len(matches)))
+            for m in matches[:9]:
+              out.append(s[max(0,m.start()-500):m.end()+750])
+          Path('mima-post-task-inspection.txt').write_text('\n\n-------\n'.join(out)[:100000],encoding='utf-8')
+      - name: Save report to temporary branch
+        run: |
+          git config user.name "MIMA Inspector"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add mima-post-task-inspection.txt
+          git commit -m "Inspect interact-with-post source before editing"
+          git push
