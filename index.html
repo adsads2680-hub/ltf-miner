@@ -3141,6 +3141,10 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     return true;
   }
 
+  function mimaChannelTenSeconds(key){
+    try{const openedAt=Number(localStorage.getItem(key));return openedAt>1000000000000?Math.max(0,10000-(Date.now()-openedAt)):0;}catch(e){return 0}
+  }
+  
   function renderTask(){
     const renderOne = (taskCode, btnId, infoId, openedKey) => {
       const btn = $(btnId);
@@ -3171,6 +3175,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         return;
       }
 
+      const waitMs=mimaChannelTenSeconds(openedKey);
+      if(waitMs>0){btn.disabled=true;btn.textContent=Math.ceil(waitMs/1000)+'s';info.textContent=tx('+5 MIMA • انتظر 10 ثوانٍ بعد الانضمام','+5 MIMA • wait 10 seconds after joining');return;}
       btn.disabled = false;
       btn.classList.remove('mimaJoinFirstLocked');
       btn.textContent = tx('استلم','Claim');
@@ -3938,7 +3944,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         if(result?.success!==true) throw new Error('Could not open channel task');
       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
     }
-    try{ localStorage.setItem('mima_join_channel_opened_v2','1'); }catch(e){}
+    try{ localStorage.setItem('mima_join_channel_opened_v2',String(Date.now())); }catch(e){}
     renderTask();
     const url = 'https://t.me/MIMA_COIN';
 
@@ -3965,7 +3971,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         if(result?.success!==true) throw new Error('Could not open channel task');
       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
     }
-    try{ localStorage.setItem('mima_join_channel_2_opened_v2','1'); }catch(e){}
+    try{ localStorage.setItem('mima_join_channel_2_opened_v2',String(Date.now())); }catch(e){}
     renderTask();
     const url = 'https://t.me/MIMACOIN2/17';
 
@@ -3990,7 +3996,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         if(result?.success!==true) throw new Error('Could not open channel task');
       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
     }
-    try{ localStorage.setItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY,'1'); }catch(e){}
+    try{ localStorage.setItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY,String(Date.now())); }catch(e){}
     renderMimaExchangeChannelTask();
 
     try{
@@ -4023,7 +4029,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       : 0;
 
     let opened = false;
-    try{ opened = localStorage.getItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY) === '1'; }catch(e){}
+    try{ opened = Number(localStorage.getItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY)) > 1000000000000; }catch(e){}
 
     if(remaining > 0){
       btn.disabled = true;
@@ -4039,6 +4045,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       return;
     }
 
+    const waitMs=mimaChannelTenSeconds(MIMA_EXCHANGE_CHANNEL_OPENED_KEY);
+    if(waitMs>0){btn.disabled=true;btn.textContent=Math.ceil(waitMs/1000)+'s';info.textContent=tx('+5 MIMA • انتظر 10 ثوانٍ','+5 MIMA • wait 10 seconds');return;}
     btn.disabled = false;
     btn.textContent = tx('استلم','Claim');
     info.textContent = tx('+5 MIMA • تتجدد كل 4 ساعات','+5 MIMA • refreshes every 4 hours');
@@ -4048,7 +4056,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(!btn || btn.disabled) return;
 
     let opened = false;
-    try{ opened = localStorage.getItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY) === '1'; }catch(e){}
+    try{ opened = Number(localStorage.getItem(MIMA_EXCHANGE_CHANNEL_OPENED_KEY)) > 1000000000000; }catch(e){}
     if(!opened){
       renderMimaExchangeChannelTask();
       return;
@@ -7372,7 +7380,7 @@ body.privacyModalOpen{overflow:hidden!important}
         if(result?.success!==true) throw new Error('Could not register channel opening');
       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
     }
-    try{ localStorage.setItem('mima_withdrawals_channel_opened_v2','1'); }catch(e){}
+    try{ localStorage.setItem('mima_withdrawals_channel_opened_v2',String(Date.now())); }catch(e){}
     renderTask();
     try{
       if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function'){
@@ -7428,7 +7436,7 @@ body.privacyModalOpen{overflow:hidden!important}
 
     const rem = remainingMs();
     let opened = false;
-    try{ opened = localStorage.getItem('mima_withdrawals_channel_opened_v2') === '1'; }catch(e){}
+    try{ opened = Number(localStorage.getItem('mima_withdrawals_channel_opened_v2')) > 1000000000000; }catch(e){}
 
     if(rem > 0){
       verifyBtn.disabled = true;
@@ -7451,6 +7459,9 @@ body.privacyModalOpen{overflow:hidden!important}
       return;
     }
 
+    const openedAt=Number(localStorage.getItem('mima_withdrawals_channel_opened_v2')||0);
+    const waitMs=openedAt>1000000000000?Math.max(0,10000-(Date.now()-openedAt)):0;
+    if(waitMs>0){verifyBtn.disabled=true;verifyBtn.textContent=Math.ceil(waitMs/1000)+'s';info.textContent=tx('انتظر 10 ثوانٍ بعد الانضمام','Wait 10 seconds after joining');return;}
     verifyBtn.disabled = busy;
     verifyBtn.classList.remove('mimaJoinFirstLocked');
     verifyBtn.textContent = busy ? '⏳' : tx('استلم','Claim');
@@ -8267,7 +8278,7 @@ input[type="submit"]:focus-visible{
   finally{loading=false;}
  };
 })();
-</script></body>
+</script><script id="mima-channel-ten-second-refresh">setInterval(function(){try{if(typeof renderTask==='function')renderTask();if(typeof renderMimaExchangeChannelTask==='function')renderMimaExchangeChannelTask();}catch(e){}},1000);</script></body>
 
 <style id="mima-boost-right-edge-alignment-20261011">
 /* Keep the single BOOST button inside the gold-bordered MIMA panel. */
