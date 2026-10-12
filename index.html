@@ -920,6 +920,11 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </div>
   </div>
 
+  <div id="mimaAdEarnedNotice" class="mimaAdEarnedNotice" role="status" aria-live="polite">
+    <span class="mimaAdEarnedIcon" aria-hidden="true">✓</span>
+    <strong id="mimaAdEarnedNoticeText">+5 MIMA</strong>
+  </div>
+
   <div class="mimaAdTaskCard" id="adsgramRewardTaskItem">
     <div class="mimaAdTop">
       <div class="mimaAdIcon" aria-label="Advertisement">
@@ -934,8 +939,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         </svg>
       </div>
       <div class="mimaAdCopy">
-        <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
-        <small id="adsgramRewardTaskInfo">+5 MIMA • إعلان كل 5 دقائق • حد أقصى 6 كل 4 ساعات</small>
+        <b id="adsgramRewardTaskTitle">شاهد الإعلانات</b>
+        <small id="adsgramRewardTaskInfo">+5 MIMA لكل إعلان • 0/7 خلال 24 ساعة</small>
       </div>
     </div>
 
@@ -943,8 +948,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <i id="adsgramRewardProgress"></i>
     </div>
     <div class="mimaAdProgressMeta">
-      <span id="adsgramRewardTaskCount">0 / 6</span>
-      <span id="adsgramRewardTaskLeft">6 متبقية</span>
+      <span id="adsgramRewardTaskCount">0 / 7</span>
+      <span id="adsgramRewardTaskLeft">7 متبقية خلال 24 ساعة</span>
     </div>
 
     <button id="adsgramRewardTaskBtn" class="mimaAdWatchBtn" type="button" onclick="showAdsgramRewardAd()">
@@ -1418,7 +1423,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   let adsgramRewardBusy = false;
   let adsgramRewardWatched = 0;
   let adsgramRewardAmount = 5;
-  let adsgramRewardRemaining = 6;
+  let adsgramRewardRemaining = 7;
+  let adsgramRewardLimit = 7;
   let adsgramRewardResetAt = 0;
   let adsgramRewardNextAvailableAt = 0;
   let adsgramRewardCountdownTimer = null;
@@ -3220,6 +3226,28 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     },1000);
   }
 
+  
+  // Visible only after the balance increase has been confirmed by the backend.
+  let mimaAdEarnedNoticeTimer = null;
+  function showMimaAdEarnedNotice(amount){
+    const panel = $('mimaAdEarnedNotice');
+    const label = $('mimaAdEarnedNoticeText');
+    if(!panel || !label) return;
+    const limit = Math.max(1, Number(adsgramRewardLimit) || 7);
+    const completed = Math.max(0, Math.min(limit,Number(adsgramRewardWatched) || 0));
+    const reward = Number(amount || 5).toLocaleString('en-US',{maximumFractionDigits:8});
+    label.textContent = tx(
+      'تمت إضافة +' + reward + ' MIMA من الإعلان! (' + completed + '/' + limit + ' خلال 24 ساعة)',
+      '+' + reward + ' MIMA earned from ad! (' + completed + '/' + limit + ' in 24h)'
+    );
+    panel.classList.add('isVisible');
+    if(mimaAdEarnedNoticeTimer) clearTimeout(mimaAdEarnedNoticeTimer);
+    mimaAdEarnedNoticeTimer = setTimeout(()=>{
+      panel.classList.remove('isVisible');
+      mimaAdEarnedNoticeTimer = null;
+    },12000);
+  }
+
   function renderAdTask(){
     const item = $('adsgramRewardTaskItem');
     if(item){
@@ -3235,33 +3263,37 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     const leftLabel = $('adsgramRewardTaskLeft');
     if(!title || !info || !btn) return;
 
+    const limit = Math.max(1,Number(adsgramRewardLimit) || 7);
+    const remaining = Math.max(0,Math.min(limit,Number(adsgramRewardRemaining) || 0));
+    const completed = Math.max(0,Math.min(limit,limit-remaining));
     const rewardText = Number(adsgramRewardAmount || 5);
-    const completedAds = Math.max(0,Math.min(6,6-Number(adsgramRewardRemaining || 0)));
-    if(progress) progress.style.width = ((completedAds / 6) * 100).toFixed(2) + '%';
-    if(count) count.textContent = completedAds + ' / 6';
+    if(progress) progress.style.width = ((completed/limit)*100).toFixed(2) + '%';
+    if(count) count.textContent = completed + ' / ' + limit;
     if(leftLabel){
       leftLabel.textContent = tx(
-        adsgramRewardRemaining + ' متبقية',
-        adsgramRewardRemaining + ' left'
+        remaining + ' متبقية خلال 24 ساعة',
+        remaining + ' left in 24h'
       );
     }
 
-    title.textContent = tx('شاهد إعلان','Watch an ad');
+    title.textContent = tx('شاهد الإعلانات','Watch Ads');
+    info.textContent = tx(
+      '+' + rewardText + ' MIMA لكل إعلان • ' + completed + '/' + limit + ' خلال 24 ساعة',
+      '+' + rewardText + ' MIMA per ad · ' + completed + '/' + limit + ' in 24h'
+    );
 
     if(!serverMode){
       btn.disabled = true;
       btn.textContent = tx('افتح داخل Telegram','Open in Telegram');
-      info.textContent = '+' + rewardText + tx(' MIMA • إعلان اختياري',' MIMA • optional ad');
       return;
     }
 
-    if(adsgramRewardRemaining <= 0){
+    if(remaining <= 0){
       btn.disabled = true;
-      btn.textContent = tx('مكتمل','Completed');
       const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
-      info.textContent = left > 0
-        ? ('+' + rewardText + tx(' MIMA • تتجدد بعد ',' MIMA • refreshes in ') + formatCountdown(left))
-        : ('+' + rewardText + tx(' MIMA • تتجدد قريباً',' MIMA • refreshes soon'));
+      btn.textContent = left>0
+        ? tx('اكتملت 7 إعلانات • التالي بعد ','7 ads completed · next in ') + formatCountdown(left)
+        : tx('اكتملت إعلانات 24 ساعة','24-hour ad limit reached');
       return;
     }
 
@@ -3269,44 +3301,34 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       ? Math.max(0,adsgramRewardNextAvailableAt-nowMs())
       : 0;
 
-    if(cooldownLeft > 0){
+    if(cooldownLeft>0){
       btn.disabled = true;
-      btn.textContent = formatCountdown(cooldownLeft);
-      info.textContent =
-        '+' + rewardText + tx(' MIMA • الإعلان التالي بعد ',' MIMA • next ad in ') +
-        formatCountdown(cooldownLeft);
+      btn.textContent = tx('الإعلان التالي بعد ','Next ad in ') + formatCountdown(cooldownLeft);
       return;
     }
 
-    if(adsgramRewardNextAvailableAt){
-      adsgramRewardNextAvailableAt = 0;
-    }
-
+    if(adsgramRewardNextAvailableAt) adsgramRewardNextAvailableAt = 0;
     if(item) item.classList.add('mimaAdReady');
     btn.disabled = adsgramRewardBusy;
     btn.innerHTML = adsgramRewardBusy
-      ? '<strong>⏳</strong>'
-      : '<span>▶</span><strong>' + tx('شاهد الآن (+' + rewardText + ' MIMA)','Watch now (+' + rewardText + ' MIMA)') + '</strong>';
-    info.textContent =
-      tx('جاهز الآن • ','Ready now • ') +
-      '+' + rewardText +
-      tx(' MIMA • المتبقي ',' MIMA • remaining ') +
-      adsgramRewardRemaining + '/6';
+      ? '<strong>' + tx('⏳ جاري التحميل','⏳ Loading') + '</strong>'
+      : '<span aria-hidden="true">▶</span><strong>' + tx('شاهد إعلان (+' + rewardText + ' MIMA)','Watch Ad (+' + rewardText + ' MIMA)') + '</strong>';
   }
 
-  async function refreshAdsgramRewardStatus(showError=false){
+  async function refreshAdsgramRewardStatus(showError=false,forceRefresh=false){
     if(!serverMode){
       renderAdTask();
       return false;
     }
 
     try{
-      const data = await apiCall('ad_status');
+      const data = await apiCall('ad_status',forceRefresh ? {force_refresh:true} : {});
       if(data?.success !== true){
         throw new Error(localizeServerMessage(data?.message) || tx('تعذر تحميل حالة الإعلان','Could not load ad status'));
       }
 
       adsgramRewardWatched = Math.max(0,Number(data.watched || 0));
+      adsgramRewardLimit = Math.max(1,Number(data.limit || 7));
       if(Number.isFinite(Number(data.reward_mima)) && Number(data.reward_mima)>0){adsgramRewardAmount=Number(data.reward_mima);}
       adsgramRewardRemaining = Math.max(0,Number(data.remaining ?? 0));
 
@@ -3382,7 +3404,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   async function waitForAdsgramReward(beforeCount){
     for(let i=0;i<12;i++){
       await new Promise(resolve=>setTimeout(resolve,800));
-      await refreshAdsgramRewardStatus(false);
+      await refreshAdsgramRewardStatus(false,true);
       if(adsgramRewardWatched > beforeCount){
         await syncServerStatus(false,true);
         return true;
@@ -3408,7 +3430,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     if(adsgramRewardRemaining <= 0){
       renderAdTask();
-      toast(tx('⏳ أكملت إعلانات هذه الدورة','⏳ You completed the ads for this cycle'));
+      toast(tx('⏳ أكملت 7 إعلانات خلال 24 ساعة','⏳ You completed 7 ads in 24 hours'));
       return;
     }
 
@@ -3434,7 +3456,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       if(confirmed){
         window.mimaAdDiag?.('rewarded','reward_confirmed');
         startAdsgramRewardCountdown();
-        showMimaTaskSuccess('شاهد إعلان','Watch an ad',adsgramRewardAmount);
+        showMimaAdEarnedNotice(adsgramRewardAmount);
       }else{
         window.mimaAdDiag?.('rewarded','reward_pending');
         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
@@ -10681,3 +10703,89 @@ input[type="submit"]:focus-visible{
   new MutationObserver(updateAge).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 })();
 </script>
+
+
+<style id="mima-daily-watch-ads-20261012">
+/* MIMA rewarded-ad task: premium daily progress, separate from sponsored tasks. */
+#tasks .mimaAdEarnedNotice{
+  display:none;
+  align-items:center;
+  gap:12px;
+  margin:8px 0 16px;
+  padding:14px 16px;
+  min-height:54px;
+  box-sizing:border-box;
+  border:1px solid rgba(41,196,132,.54);
+  border-radius:17px;
+  background:linear-gradient(120deg,#0c3026,#0a211c 75%,#0c2c25);
+  color:#75f0b5;
+  box-shadow:inset 0 1px 0 rgba(131,255,196,.08),0 8px 22px rgba(0,0,0,.23);
+}
+#tasks .mimaAdEarnedNotice.isVisible{display:flex;}
+#tasks .mimaAdEarnedIcon{
+  display:grid;place-items:center;flex:0 0 30px;
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(34,181,117,.17);color:#81ffb7;
+  font-size:19px;font-weight:900;
+}
+#tasks .mimaAdEarnedNotice strong{
+  font-size:13px;line-height:1.5;letter-spacing:.1px;text-align:start;
+}
+#tasks .mimaAdTaskCard{
+  border-radius:23px!important;
+  padding:20px 18px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(244,185,62,.10),transparent 44%),
+    linear-gradient(140deg,#16130f,#111013 55%,#171109)!important;
+  border:1px solid rgba(238,181,70,.48)!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.31),inset 0 1px 0 rgba(255,237,162,.045)!important;
+}
+#tasks .mimaAdTaskCard .mimaAdTop{gap:14px!important;}
+#tasks .mimaAdTaskCard .mimaAdIcon{
+  width:58px!important;height:58px!important;flex:0 0 58px!important;
+  border-radius:18px!important;
+}
+#tasks .mimaAdTaskCard .mimaAdCopy b{
+  font-size:19px!important;font-weight:850!important;color:#fff0bd!important;
+}
+#tasks .mimaAdTaskCard .mimaAdCopy small{
+  margin-top:6px!important;font-size:12px!important;
+  color:#bfae88!important;line-height:1.45!important;
+}
+#tasks .mimaAdTaskCard .mimaAdProgressTrack{
+  height:10px!important;margin:18px 0 10px!important;
+  border:1px solid rgba(210,158,46,.21)!important;
+  background:#07080a!important;
+}
+#tasks .mimaAdTaskCard .mimaAdProgressTrack i{
+  background:linear-gradient(90deg,#bf8118,#efbd58,#ffe6a4)!important;
+  box-shadow:0 0 12px rgba(255,196,65,.18)!important;
+}
+#tasks .mimaAdTaskCard .mimaAdProgressMeta{
+  font-size:12px!important;color:#bcb1a0!important;
+  font-variant-numeric:tabular-nums;
+  direction:ltr!important;
+}
+#tasks .mimaAdTaskCard .mimaAdWatchBtn{
+  width:100%!important;min-height:56px!important;
+  margin-top:20px!important;border-radius:16px!important;
+  font-size:16px!important;line-height:1.25!important;
+  border:1px solid #f8d889!important;
+  background:linear-gradient(110deg,#ac7215 0%,#f7cf70 55%,#edb842 100%)!important;
+  color:#1d1406!important;
+  box-shadow:0 8px 22px rgba(211,149,41,.21),inset 0 1px 0 rgba(255,255,255,.37)!important;
+  text-align:center!important;
+  white-space:normal!important;
+  padding:10px 12px!important;
+}
+#tasks .mimaAdTaskCard .mimaAdWatchBtn strong{font-size:inherit!important;}
+#tasks .mimaAdTaskCard .mimaAdWatchBtn:disabled{
+  opacity:.62!important;filter:saturate(.65)!important;
+}
+@media(max-width:390px){
+  #tasks .mimaAdTaskCard{padding:16px 14px!important;}
+  #tasks .mimaAdTaskCard .mimaAdCopy small{font-size:11px!important;}
+  #tasks .mimaAdTaskCard .mimaAdProgressMeta{font-size:11px!important;}
+  #tasks .mimaAdEarnedNotice strong{font-size:12px;}
+}
+</style>
