@@ -2934,6 +2934,33 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     return data;
   }
 
+  // mima-withdraw-cancel-restore-20261012: authenticated server-side cancellation.
+  async function cancelWithdrawalApiCall(requestId){
+    if(!serverMode){
+      throw new Error(tx('افتح MIMA داخل Telegram لإلغاء الطلب','Open MIMA inside Telegram to cancel your request'));
+    }
+
+    const response = await fetch(MIMA_EXCHANGE_REQUEST_URL,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPABASE_PUBLISHABLE_KEY,
+        'x-telegram-init-data':telegramInitData
+      },
+      body:JSON.stringify({action:'cancel',request_id:requestId})
+    });
+
+    let data = null;
+    try{data = await response.json();}catch(e){}
+    if(!response.ok || data?.success !== true || String(data?.status || '') !== 'cancelled'){
+      throw new Error(
+        localizeServerMessage(data?.message) ||
+        tx('تعذر إلغاء طلب السحب، حاول مرة أخرى','Could not cancel withdrawal, please try again')
+      );
+    }
+    return data;
+  }
+
   async function exchangeHistoryApiCall(){
     if(!serverMode){
       throw new Error(tx('افتح البوت داخل Telegram لعرض السحوبات','Open MIMA inside Telegram to view withdrawals'));
@@ -4931,6 +4958,64 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     );
   };
 
+  // A pending withdrawal can be cancelled only once by its owner; the server
+  // validates Telegram initData, locks the request and refunds atomically.
+  let cancellingWithdrawRequestId = 0;
+  window.cancelWithdrawRequest = async function(button){
+    const requestId = Number(button?.dataset?.requestId || 0);
+    if(!button || !Number.isSafeInteger(requestId) || requestId <= 0 || cancellingWithdrawRequestId) return;
+
+    const promptText = tx(
+      'هل تريد إلغاء طلب السحب؟ سيتم إعادة مبلغ MIMA بالكامل إلى رصيدك إذا كان الطلب لا يزال قيد المراجعة.',
+      'Cancel this withdrawal? Your full MIMA amount will be refunded if the request is still pending review.'
+    );
+    let accepted = false;
+    try{
+      const tg = window.Telegram?.WebApp;
+      if(typeof tg?.showConfirm === 'function'){
+        accepted = await new Promise(resolve=>tg.showConfirm(promptText,resolve));
+      }else{
+        accepted = window.confirm(promptText);
+      }
+    }catch(e){
+      accepted = window.confirm(promptText);
+    }
+    if(!accepted) return;
+
+    cancellingWithdrawRequestId = requestId;
+    button.disabled = true;
+    button.textContent = tx('⏳ جاري إلغاء الطلب…','⏳ Cancelling request…');
+
+    try{
+      const result = await cancelWithdrawalApiCall(requestId);
+      bal = Math.max(0,Number(result.balance ?? bal));
+      exchangeableBalance = Math.max(0,Number(result.exchangeable_balance ?? exchangeableBalance));
+      miningBalance = Math.max(0,Number(result.mining_balance ?? miningBalance));
+      render();
+
+      const item = button.closest('.withdrawHistoryItem');
+      const statusNode = item?.querySelector('.withdrawStatus');
+      if(statusNode){
+        const state = withdrawalStatusInfo('cancelled');
+        statusNode.className = 'withdrawStatus ' + state.cls;
+        statusNode.textContent = state.icon + ' ' + state.label;
+      }
+      button.remove();
+      toast(tx('✅ تم إلغاء الطلب وإعادة رصيد MIMA','✅ Withdrawal cancelled and MIMA refunded'));
+
+      // Refresh the history from the database without resetting the open panel.
+      exchangeHistoryApiCall().then(renderWithdrawHistory).catch(()=>{});
+    }catch(err){
+      toast('⚠️ ' + (err?.message || tx('تعذر إلغاء الطلب','Could not cancel request')));
+      button.disabled = false;
+      button.textContent = tx('🚫 إلغاء طلب السحب','🚫 Cancel withdrawal request');
+      // Another device or an administrator may have changed the request status.
+      exchangeHistoryApiCall().then(renderWithdrawHistory).catch(()=>{});
+    }finally{
+      cancellingWithdrawRequestId = 0;
+    }
+  };
+
   function renderWithdrawHistory(rows){
     const list = $('withdrawHistoryList');
     if(!list) return;
@@ -5014,6 +5099,11 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
             </div>
           ` : ''}
 
+          ${String(row.status || '').toLowerCase() === 'pending' &&
+            Number.isSafeInteger(Number(row.id)) && Number(row.id) > 0 ? `
+            <button type="button" class="withdrawCancelBtn" data-request-id="${Number(row.id)}"
+              onclick="cancelWithdrawRequest(this)">${tx('🚫 إلغاء طلب السحب','🚫 Cancel withdrawal request')}</button>
+          ` : ''}
           <div class="withdrawDate">
             ${formatWithdrawalDate(row.created_at)}
           </div>
@@ -6663,6 +6753,19 @@ body.exchangeModalOpen .bottom{
   font-size:10px;
   line-height:1.5;
   word-break:break-all;
+}
+.withdrawCancelBtn{
+  display:block;width:100%;min-height:46px;margin-top:12px;padding:11px 12px;
+  border:1.5px solid #c69c43;border-radius:13px;
+  background:linear-gradient(150deg,#2b1d0c,#101922 68%,#23180d);
+  color:#ffe3a8;font-size:13px;font-weight:900;text-align:center;
+  box-shadow:inset 0 1px 0 rgba(255,225,161,.13),0 4px 14px rgba(0,0,0,.20);
+  cursor:pointer;touch-action:manipulation;
+}
+.withdrawCancelBtn:disabled{opacity:.55;cursor:wait;}
+.withdrawStatus.cancelled{
+  color:#f3c28e;background:rgba(186,111,49,.11);
+  border:1px solid rgba(227,163,86,.28);
 }
 .withdrawDate{
   margin-top:8px;
