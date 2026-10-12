@@ -1,0 +1,2233 @@
+Total lines: 10683
+Matching lines: 405
+LINE 8 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+LINE 573 #tasks #mimaAdsgramTaskServerNotice.mimaAdsgramTaskServerNotice{
+LINE 923   <div class="mimaAdTaskCard" id="adsgramRewardTaskItem">
+LINE 924     <div class="mimaAdTop">
+LINE 925       <div class="mimaAdIcon" aria-label="Advertisement">
+LINE 926         <svg class="mimaAdPremiumIcon" viewBox="0 0 64 64" aria-hidden="true">
+LINE 927           <rect class="mimaAdScreen" x="10" y="14" width="44" height="30" rx="8"></rect>
+LINE 928           <path class="mimaAdPlay" d="M29 23.5L40 29L29 34.5Z"></path>
+LINE 929           <path class="mimaAdStem" d="M32 44v5"></path>
+LINE 930           <path class="mimaAdStand" d="M24 50h16"></path>
+LINE 931           <circle class="mimaAdSpark" cx="49" cy="19" r="2.1"></circle>
+LINE 932           <path class="mimaAdSparkLine1" d="M49 13v3"></path>
+LINE 933           <path class="mimaAdSparkLine2" d="M54 19h-3"></path>
+LINE 936       <div class="mimaAdCopy">
+LINE 937         <b id="adsgramRewardTaskTitle">شاهد إعلان</b>
+LINE 938         <small id="adsgramRewardTaskInfo">+5 MIMA • إعلان كل 5 دقائق • حد أقصى 6 كل 4 ساعات</small>
+LINE 942     <div class="mimaAdProgressTrack" aria-hidden="true">
+LINE 943       <i id="adsgramRewardProgress"></i>
+LINE 945     <div class="mimaAdProgressMeta">
+LINE 946       <span id="adsgramRewardTaskCount">0 / 6</span>
+LINE 947       <span id="adsgramRewardTaskLeft">6 متبقية</span>
+LINE 950     <button id="adsgramRewardTaskBtn" class="mimaAdWatchBtn" type="button" onclick="showAdsgramRewardAd()">
+LINE 956   <section class="mimaAdsgramTaskCard" id="mimaAdsgramTaskCard">
+LINE 957     <div class="mimaAdsgramTaskHead">
+LINE 959         <b id="mimaAdsgramTaskHeading">مهمة ممولة</b>
+LINE 960         <small id="mimaAdsgramTaskSub">مهمة اختيارية • المكافأة بعد تأكيد AdsGram فقط (+5 MIMA)</small>
+LINE 962       <span class="mimaAdsgramTaskBadge">ADS</span>
+LINE 965     <adsgram-task
+LINE 966       id="mimaAdsgramTaskUnit"
+LINE 970       class="mimaAdsgramNativeTask">
+LINE 971       <span slot="reward" class="mimaAdsgramTaskReward">+5 MIMA</span>
+LINE 972       <div slot="button" class="mimaAdsgramTaskButton">ابدأ</div>
+LINE 973       <div slot="claim" class="mimaAdsgramTaskButton mimaAdsgramTaskClaim">تحقق من الإكمال</div>
+LINE 974       <div slot="done" class="mimaAdsgramTaskButton mimaAdsgramTaskDone">بانتظار التأكيد</div>
+LINE 975     </adsgram-task>
+LINE 976     <div id="mimaAdsgramTaskServerNotice" class="mimaAdsgramTaskServerNotice" role="status" aria-live="polite" style="display:none"></div>
+LINE 977     <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCooldownRow" style="display:none" role="status" aria-live="off">
+LINE 978       <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</span>
+LINE 979       <span class="mimaAdsgramCooldownDetails">
+LINE 980         <strong id="mimaAdsgramTaskCooldownLabel">المهمة التالية بعد انتهاء الانتظار</strong>
+LINE 983       <span class="mimaAdsgramCooldownIcon" aria-hidden="true">✓</span>
+LINE 1416   const ADSGRAM_BLOCK_ID = '51807';
+LINE 1417   let adsgramController = null;
+LINE 1418   let adsgramRewardBusy = false;
+LINE 1419   let adsgramRewardWatched = 0;
+LINE 1420   let adsgramRewardAmount = 5;
+LINE 1421   let adsgramRewardRemaining = 6;
+LINE 1422   let adsgramRewardResetAt = 0;
+LINE 1423   let adsgramRewardNextAvailableAt = 0;
+LINE 1424   let adsgramRewardCountdownTimer = null;
+LINE 1449   // Ad diagnostics are best-effort only; they never affect AdsGram playback or rewards.
+LINE 1450   const mimaAdDiagThrottle = new Map();
+LINE 1451   window.mimaAdDiag = function(format,event){
+LINE 1455     if(time-Number(mimaAdDiagThrottle.get(key)||0)<10000) return;
+LINE 1456     mimaAdDiagThrottle.set(key,time);
+LINE 1650   Object.assign(MIMA_EXTRA_TRANSLATIONS,MIMA_NEW_TRANSLATIONS,{"ru":{"Language":"Язык","Settings":"Настройки","Mining":"Майнинг","Tasks":"Задания","Wallet":"Кошелёк","Friends":"Друзья","Referrals":"Рефералы","Withdraw":"Вывод","Welcome to the ecosystem":"Добро пожаловать в экосистему","Your current balance":"Ваш текущий баланс","Mining rate":"Скоро
+LINE 1744     ['أكمل مهمة من AdsGram واحصل على 5 MIMA','Complete an AdsGram task and earn 5 MIMA'],
+LINE 2001     if(typeof renderAdTask === 'function') renderAdTask();
+LINE 2067   // Called only after a task-claim response succeeds or AdsGram is verified.
+LINE 2136     if(id === 'tasks' && typeof refreshAdsgramRewardStatus === 'function'){
+LINE 2137       refreshAdsgramRewardStatus(false).catch(()=>{});
+LINE 2465   function isMimaAdmin(){
+LINE 2473     if(!serverMode || !isMimaAdmin()){
+LINE 2547       adsgram_reward: tx('إعلانات AdsGram','AdsGram ads'),
+LINE 2645         .filter(x => x.transaction_type === 'adsgram_reward' || x.transaction_type === 'monetag_reward')
+LINE 2648         .filter(x => x.transaction_type === 'adsgram_reward' || x.transaction_type === 'monetag_reward')
+LINE 3086       if(isMimaAdmin()){
+LINE 3196   function startAdsgramRewardCountdown(){
+LINE 3197     if(adsgramRewardCountdownTimer){
+LINE 3198       clearInterval(adsgramRewardCountdownTimer);
+LINE 3199       adsgramRewardCountdownTimer = null;
+LINE 3202     if(!adsgramRewardNextAvailableAt) return;
+LINE 3204     adsgramRewardCountdownTimer = setInterval(async ()=>{
+LINE 3205       const left = Math.max(0,adsgramRewardNextAvailableAt-nowMs());
+LINE 3208         clearInterval(adsgramRewardCountdownTimer);
+LINE 3209         adsgramRewardCountdownTimer = null;
+LINE 3210         adsgramRewardNextAvailableAt = 0;
+LINE 3211         renderAdTask();
+LINE 3214           await refreshAdsgramRewardStatus(false);
+LINE 3219       renderAdTask();
+LINE 3223   function renderAdTask(){
+LINE 3224     const item = $('adsgramRewardTaskItem');
+LINE 3227       item.classList.remove('mimaAdReady');
+LINE 3230     const title = $('adsgramRewardTaskTitle');
+LINE 3231     const info = $('adsgramRewardTaskInfo');
+LINE 3232     const btn = $('adsgramRewardTaskBtn');
+LINE 3233     const progress = $('adsgramRewardProgress');
+LINE 3234     const count = $('adsgramRewardTaskCount');
+LINE 3235     const leftLabel = $('adsgramRewardTaskLeft');
+LINE 3238     const rewardText = Number(adsgramRewardAmount || 5);
+LINE 3239     const completedAds = Math.max(0,Math.min(6,6-Number(adsgramRewardRemaining || 0)));
+LINE 3244         adsgramRewardRemaining + ' متبقية',
+LINE 3245         adsgramRewardRemaining + ' left'
+LINE 3258     if(adsgramRewardRemaining <= 0){
+LINE 3261       const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
+LINE 3268     const cooldownLeft = adsgramRewardNextAvailableAt
+LINE 3269       ? Math.max(0,adsgramRewardNextAvailableAt-nowMs())
+LINE 3281     if(adsgramRewardNextAvailableAt){
+LINE 3282       adsgramRewardNextAvailableAt = 0;
+LINE 3285     if(item) item.classList.add('mimaAdReady');
+LINE 3286     btn.disabled = adsgramRewardBusy;
+LINE 3287     btn.innerHTML = adsgramRewardBusy
+LINE 3294       adsgramRewardRemaining + '/6';
+LINE 3297   async function refreshAdsgramRewardStatus(showError=false){
+LINE 3299       renderAdTask();
+LINE 3309       adsgramRewardWatched = Math.max(0,Number(data.watched || 0));
+LINE 3310       if(Number.isFinite(Number(data.reward_mima)) && Number(data.reward_mima)>0){adsgramRewardAmount=Number(data.reward_mima);}
+LINE 3311       adsgramRewardRemaining = Math.max(0,Number(data.remaining ?? 0));
+LINE 3319       adsgramRewardResetAt = Number.isFinite(resetTs) ? resetTs : 0;
+LINE 3322         adsgramRewardNextAvailableAt = 0;
+LINE 3325         adsgramRewardNextAvailableAt = Number.isFinite(nextTs) ? nextTs : 0;
+LINE 3330           adsgramRewardNextAvailableAt &&
+LINE 3331           adsgramRewardNextAvailableAt - nowMs() <= 1500
+LINE 3333           adsgramRewardNextAvailableAt = 0;
+LINE 3337       renderAdTask();
+LINE 3338       startAdsgramRewardCountdown();
+LINE 3341       renderAdTask();
+LINE 3349   function getAdsgramController(){
+LINE 3350     if(adsgramController) return adsgramController;
+LINE 3351     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
+LINE 3353     adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+LINE 3356       adsgramController &&
+LINE 3357       typeof adsgramController.addEventListener === 'function'
+LINE 3359       const log=(event)=>()=>{window.mimaAdDiag?.('rewarded',event);return false;};
+LINE 3360       adsgramController.addEventListener('onStart',log('on_start'));
+LINE 3361       adsgramController.addEventListener('onReward',log('on_reward'));
+LINE 3362       adsgramController.addEventListener('onSkip',log('on_skip'));
+LINE 3363       adsgramController.addEventListener('onError',log('sdk_error'));
+LINE 3364       adsgramController.addEventListener('onBannerNotFound',log('no_fill'));
+LINE 3365       adsgramController.addEventListener('onNonStopShow',log('nonstop'));
+LINE 3366       adsgramController.addEventListener('onTooLongSession',log('too_long'));
+LINE 3369     return adsgramController;
+LINE 3373     document.addEventListener('DOMContentLoaded',()=>setTimeout(warmAdsgramRewardController,900),{once:true});
+LINE 3375     setTimeout(warmAdsgramRewardController,900);
+LINE 3378   function warmAdsgramRewardController(){
+LINE 3379     try{ getAdsgramController(); }catch(e){}
+LINE 3382   async function waitForAdsgramReward(beforeCount){
+LINE 3385       await refreshAdsgramRewardStatus(false);
+LINE 3386       if(adsgramRewardWatched > beforeCount){
+LINE 3394   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+LINE 3395     if(adsgramRewardBusy) return;
+LINE 3397     if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
+LINE 3398       renderAdTask();
+LINE 3407     await refreshAdsgramRewardStatus(false);
+LINE 3409     if(adsgramRewardRemaining <= 0){
+LINE 3410       renderAdTask();
+LINE 3415     const controller = getAdsgramController();
+LINE 3417       window.mimaAdDiag?.('rewarded','sdk_error');
+LINE 3422     window.mimaAdDiag?.('rewarded','request');
+LINE 3423     adsgramRewardBusy = true;
+LINE 3424     renderAdTask();
+LINE 3425     const beforeCount = adsgramRewardWatched;
+LINE 3429       window.mimaAdDiag?.('rewarded','sdk_completed');
+LINE 3432       const confirmed = await waitForAdsgramReward(beforeCount);
+LINE 3435         window.mimaAdDiag?.('rewarded','reward_confirmed');
+LINE 3436         startAdsgramRewardCountdown();
+LINE 3437         showMimaTaskSuccess('شاهد إعلان','Watch an ad',adsgramRewardAmount);
+LINE 3439         window.mimaAdDiag?.('rewarded','reward_pending');
+LINE 3442           await refreshAdsgramRewardStatus(false);
+LINE 3448       window.mimaAdDiag?.('rewarded',/no ads|no banner|banner not found/i.test(desc)?'no_fill':'show_rejected');
+LINE 3457       adsgramRewardBusy = false;
+LINE 3458       renderAdTask();
+LINE 3459       startAdsgramRewardCountdown();
+LINE 3753       // session. Attempt one skippable interstitial AFTER the payout, never
+LINE 3757           const controller = getMiningInterstitialController();
+LINE 3759             showInterstitialSilently(controller).catch(()=>{});
+LINE 3766   const MINING_INTERSTITIAL_BLOCK_ID = 'int-51808';
+LINE 3767   let miningInterstitialController = null;
+LINE 3768   let miningInterstitialBusy = false;
+LINE 3771   const MIMA_INTERSTITIAL_COOLDOWN_MS = 60 * 60 * 1000;
+LINE 3772   const MIMA_INTERSTITIAL_LAST_AT_KEY = 'mima_interstitial_last_attempt_v1';
+LINE 3774   function getMiningInterstitialController(){
+LINE 3775     if(miningInterstitialController) return miningInterstitialController;
+LINE 3776     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
+LINE 3779       miningInterstitialController = window.Adsgram.init({
+LINE 3780         blockId: MINING_INTERSTITIAL_BLOCK_ID
+LINE 3783       // AdsGram shows its own alert when no banner is available unless
+LINE 3786         miningInterstitialController &&
+LINE 3787         typeof miningInterstitialController.addEventListener === 'function'
+LINE 3789         const log=(event)=>()=>{window.mimaAdDiag?.('interstitial',event);};
+LINE 3790         miningInterstitialController.addEventListener('onStart',log('on_start'));
+LINE 3791         miningInterstitialController.addEventListener('onComplete',log('on_complete'));
+LINE 3792         miningInterstitialController.addEventListener('onSkip',log('on_skip'));
+LINE 3793         miningInterstitialController.addEventListener('onError',log('sdk_error'));
+LINE 3794         miningInterstitialController.addEventListener('onBannerNotFound',log('no_fill'));
+LINE 3795         miningInterstitialController.addEventListener('onNonStopShow',log('nonstop'));
+LINE 3796         miningInterstitialController.addEventListener('onTooLongSession',log('too_long'));
+LINE 3799       return miningInterstitialController;
+LINE 3805   function warmMiningInterstitialController(){
+LINE 3806     try{ getMiningInterstitialController(); }catch(e){}
+LINE 3809   async function waitForMiningInterstitialController(maxWaitMs=2200){
+LINE 3813       const controller = getMiningInterstitialController();
+LINE 3820     return getMiningInterstitialController();
+LINE 3824     document.addEventListener('DOMContentLoaded',warmMiningInterstitialController,{once:true});
+LINE 3826     warmMiningInterstitialController();
+LINE 3828   setTimeout(warmMiningInterstitialController,250);
+LINE 3829   setTimeout(warmMiningInterstitialController,900);
+LINE 3831   async function showInterstitialSilently(controller){
+LINE 3833     if(miningInterstitialBusy) return;
+LINE 3836     try{ lastAttemptAt = Number(localStorage.getItem(MIMA_INTERSTITIAL_LAST_AT_KEY) || 0); }catch(e){}
+LINE 3838     if(Number.isFinite(lastAttemptAt) && lastAttemptAt > 0 && now - lastAttemptAt < MIMA_INTERSTITIAL_COOLDOWN_MS) return;
+LINE 3842     miningInterstitialBusy = true;
+LINE 3843     try{ localStorage.setItem(MIMA_INTERSTITIAL_LAST_AT_KEY,String(now)); }catch(e){}
+LINE 3844     window.mimaAdDiag?.('interstitial','request');
+LINE 3853           /AdsgramError/i.test(text) ||
+LINE 3871               /AdsgramError/i.test(title) ||
+LINE 3883       window.mimaAdDiag?.('interstitial','sdk_completed');
+LINE 3885       window.mimaAdDiag?.('interstitial','show_rejected');
+LINE 3888       miningInterstitialBusy = false;
+LINE 3904   // AdsGram entry interstitial — restored after approval.
+LINE 3905   let entryInterstitialAttempted = false;
+LINE 3907   async function showEntryInterstitialOnce(){
+LINE 3908     if(entryInterstitialAttempted) return;
+LINE 3909     entryInterstitialAttempted = true;
+LINE 3912       // Give the AdsGram SDK enough time to finish loading before the
+LINE 3914       const controller = await waitForMiningInterstitialController(6500);
+LINE 3916         await showInterstitialSilently(controller);
+LINE 3918         window.mimaAdDiag?.('interstitial','sdk_error');
+LINE 3925   function scheduleEntryInterstitial(){
+LINE 3928         showEntryInterstitialOnce().catch(()=>{});
+LINE 3939   // Show one AdsGram interstitial shortly after MIMA opens.
+LINE 3940   scheduleEntryInterstitial();
+LINE 5190       // Interstitial failure/no-fill must never affect the withdrawal request.
+LINE 5193           const controller = getMiningInterstitialController();
+LINE 5196             await showInterstitialSilently(controller);
+LINE 5295       if(isMimaAdmin()){
+LINE 5356     if(isMimaAdmin()){
+LINE 6707 #tasks .mimaAdTaskCard{
+LINE 6719 #tasks .mimaAdTaskCard:before{
+LINE 6726 #tasks .mimaAdTop{
+LINE 6734 #tasks .mimaAdIcon{
+LINE 6748 #tasks .mimaAdCopy{
+LINE 6752 #tasks .mimaAdCopy b{
+LINE 6758 #tasks .mimaAdCopy small{
+LINE 6765 #tasks .mimaAdProgressTrack{
+LINE 6775 #tasks .mimaAdProgressTrack i{
+LINE 6784 #tasks .mimaAdProgressMeta{
+LINE 6794 #tasks .mimaAdWatchBtn{
+LINE 6814 #tasks .mimaAdWatchBtn:active{
+LINE 6817 #tasks .mimaAdWatchBtn:disabled{
+LINE 6902 #tasks .mimaAdBadge,
+LINE 6910   #tasks .mimaAdTaskCard{padding:13px;border-radius:17px}
+LINE 6911   #tasks .mimaAdIcon{width:44px;height:44px;flex-basis:44px;border-radius:12px}
+LINE 6912   #tasks .mimaAdCopy b{font-size:14px}
+LINE 7073     <h3>4. الإعلانات وAdsGram</h3>
+LINE 7074     <p>يعرض MIMA إعلانات اختيارية بمكافأة عبر AdsGram. لا يلزم مشاهدة الإعلان لاستخدام وظائف التطبيق الأساسية، وتُمنح المكافأة فقط بعد اكتمال الإعلان بنجاح.</p>
+LINE 7077     <p>يستخدم MIMA خدمات Telegram لتشغيل التطبيق والمصادقة، وSupabase للبنية الخلفية وقاعدة البيانات، وGitHub Pages للاستضافة، وAdsGram لعرض الإعلانات الاختيارية. لكل مزود سياساته الخاصة.</p>
+LINE 7103     <h3>4. Advertising and AdsGram</h3>
+LINE 7104     <p>MIMA displays optional rewarded ads through AdsGram. Watching an ad is not required to use the app's core features, and a reward is granted only after the ad is completed successfully.</p>
+LINE 7107     <p>MIMA uses Telegram for the Mini App platform and authentication, Supabase for backend/database services, GitHub Pages for hosting, and AdsGram for optional advertising. Each provider operates under its own privacy terms.</p>
+LINE 7660 <style id="mima-adsgram-reward-style">
+LINE 7661 #adsgramRewardTaskItem{
+LINE 7666 #adsgramRewardTaskBtn{
+LINE 7677 #adsgramRewardTaskBtn:disabled{opacity:.62!important}
+LINE 8891 #adsgramRewardTaskBtn,
+LINE 8892 #adsgramRewardTaskBtn:focus,
+LINE 8893 #adsgramRewardTaskBtn:focus-visible,
+LINE 8894 #adsgramRewardTaskBtn:active{
+LINE 8903 #adsgramRewardTaskBtn,
+LINE 8904 #adsgramRewardTaskBtn:focus,
+LINE 8905 #adsgramRewardTaskBtn:focus-visible,
+LINE 8906 #adsgramRewardTaskBtn:active{
+LINE 8919 #adsgramRewardTaskBtn::-moz-focus-inner{
+LINE 9224 #tasksPage #adsgramWatchBtn,
+LINE 9225 #tasksSection #adsgramWatchBtn,
+LINE 9226 .page[data-page="tasks"] #adsgramWatchBtn,
+LINE 9227 .page.tasksPage #adsgramWatchBtn{
+LINE 9241 #tasksPage #adsgramWatchBtn:disabled,
+LINE 9242 #tasksSection #adsgramWatchBtn:disabled,
+LINE 9243 .page[data-page="tasks"] #adsgramWatchBtn:disabled,
+LINE 9244 .page.tasksPage #adsgramWatchBtn:disabled{
+LINE 9269 #tasksPage #adsgramTaskItem,
+LINE 9270 #tasksSection #adsgramTaskItem,
+LINE 9271 .page[data-page="tasks"] #adsgramTaskItem,
+LINE 9272 .page.tasksPage #adsgramTaskItem{
+LINE 9351 #tasks .mimaAdWatchBtn{
+LINE 9364 #tasks .mimaAdWatchBtn:disabled{
+LINE 9397 #tasks .mimaAdIcon{
+LINE 9401 #tasks .mimaAdRealIcon{
+LINE 9411 #tasks .mimaAdRealIcon circle{
+LINE 9414 #tasks .mimaAdRealIcon path:not(.mimaAdIconLine){
+LINE 9418 #tasks .mimaAdRealIcon .mimaAdIconLine{
+LINE 9421 #tasks .mimaAdRealIcon .mimaAdIconDot{
+LINE 9449 #tasks .mimaAdIcon{
+LINE 9455 #tasks .mimaAdMegaphoneIcon{
+LINE 9461 #tasks .mimaAdMegaphoneIcon .mimaAdMegaBody{
+LINE 9467 #tasks .mimaAdMegaphoneIcon .mimaAdMegaHandle{
+LINE 9474 #tasks .mimaAdMegaphoneIcon .mimaAdMegaWave{
+LINE 9573 #tasks .mimaAdIcon{
+LINE 9589 #tasks .mimaAdPremiumIcon{
+LINE 9594 #tasks .mimaAdScreen{
+LINE 9599 #tasks .mimaAdPlay{
+LINE 9603 #tasks .mimaAdStem,
+LINE 9604 #tasks .mimaAdStand,
+LINE 9605 #tasks .mimaAdSparkLine1,
+LINE 9606 #tasks .mimaAdSparkLine2{
+LINE 9613 #tasks .mimaAdSpark{
+LINE 9618 #tasks .mimaAdMegaphoneIcon,
+LINE 9619 #tasks .mimaAdRealIcon{
+LINE 9627 #tasks #adsgramRewardTaskItem.mimaAdReady{
+LINE 9634 #tasks #adsgramRewardTaskItem.mimaAdReady .mimaAdWatchBtn{
+LINE 9635   animation:mimaAdReadyPulse 2.8s ease-in-out infinite!important;
+LINE 9637 @keyframes mimaAdReadyPulse{
+LINE 9641 #tasks #adsgramRewardTaskItem:not(.mimaAdReady) .mimaAdWatchBtn{
+LINE 9998 <style id="mima-adsgram-task-unit-v1">
+LINE 9999 #tasks .mimaAdsgramTaskCard{
+LINE 10011 #tasks .mimaAdsgramTaskHead{
+LINE 10018 #tasks .mimaAdsgramTaskHead b{
+LINE 10024 #tasks .mimaAdsgramTaskHead small{
+LINE 10031 #tasks .mimaAdsgramTaskBadge{
+LINE 10042 #tasks .mimaAdsgramNativeTask{
+LINE 10043   --adsgram-task-font-size:14px;
+LINE 10044   --adsgram-task-icon-size:44px;
+LINE 10045   --adsgram-task-icon-title-gap:10px;
+LINE 10046   --adsgram-task-button-width:64px;
+LINE 10047   --adsgram-task-icon-border-radius:12px;
+LINE 10058 #tasks .mimaAdsgramTaskReward{
+LINE 10065 #tasks .mimaAdsgramTaskButton{
+LINE 10082 #tasks .mimaAdsgramTaskClaim{
+LINE 10086 #tasks .mimaAdsgramTaskDone{
+LINE 10093 <script id="mima-adsgram-task-unit-script-v1">
+LINE 10096   const COOLDOWN_KEY='mima_adsgram_task_cooldown_until_v1';
+LINE 10097   const MIGRATION_KEY='mima_adsgram_task_cooldown_30m_visible_v1';
+LINE 10102   // AdsGram controls when its native button/claim/done slots are displayed.
+LINE 10109     // Do not let a late AdsGram no-fill/error event override verification.
+LINE 10114     // Keep the sponsored task container visible even when AdsGram has no fill.
+LINE 10116     const card=document.getElementById('mimaAdsgramTaskCard');
+LINE 10117     const task=document.getElementById('mimaAdsgramTaskUnit');
+LINE 10118     const sub=document.getElementById('mimaAdsgramTaskSub');
+LINE 10129     const card=document.getElementById('mimaAdsgramTaskCard');
+LINE 10144       const data=await apiCall('adsgram_task_status');
+LINE 10179     const card=document.getElementById('mimaAdsgramTaskCard');
+LINE 10180     const task=document.getElementById('mimaAdsgramTaskUnit');
+LINE 10181     const sub=document.getElementById('mimaAdsgramTaskSub');
+LINE 10182     const timer=document.getElementById('mimaAdsgramTaskCooldown');
+LINE 10183     const value=document.getElementById('mimaAdsgramTaskCooldownValue');
+LINE 10184     const label=document.getElementById('mimaAdsgramTaskCooldownLabel');
+LINE 10185     const notice=document.getElementById('mimaAdsgramTaskServerNotice');
+LINE 10189     const completedIcon=timer.querySelector('.mimaAdsgramCooldownIcon');
+LINE 10203       // Show clean cooldown row instead of native AdsGram loading skeleton.
+LINE 10221         notice.textContent=txSafe('⏳ لم يصل تأكيد المكافأة بعد. ظهور حالة AdsGram لا يعني إضافة 5 MIMA.','⏳ Server reward confirmation is pending. An AdsGram status does not mean 5 MIMA was credited.');
+LINE 10231     if(verificationState==='awaiting' && sub) sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
+LINE 10247     const h=document.getElementById('mimaAdsgramTaskHeading');
+LINE 10248     const s=document.getElementById('mimaAdsgramTaskSub');
+LINE 10249     const task=document.getElementById('mimaAdsgramTaskUnit');
+LINE 10251     if(s) s.textContent=txSafe('مهمة اختيارية • أكمل شروط المعلن • +5 MIMA بعد تأكيد AdsGram','Optional sponsored task • complete advertiser requirements • +5 MIMA after AdsGram confirmation');
+LINE 10260       // in MIMA. The native AdsGram done state may precede our callback.
+LINE 10266     const task=document.getElementById('mimaAdsgramTaskUnit');
+LINE 10278     // Count user intent separately from AdsGram's reward event, so that
+LINE 10286       if(startClicked) window.mimaAdDiag?.('task','request');
+LINE 10287       // Respect AdsGram's own native flow. A start/claim click is never
+LINE 10288       // a reward: only the AdsGram backend callback may credit MIMA.
+LINE 10298       window.mimaAdDiag?.('task','on_reward');
+LINE 10300       // AdsGram's reward event alone is not proof of a credited MIMA reward.
+LINE 10302       const sub=document.getElementById('mimaAdsgramTaskSub');
+LINE 10310             const status=await apiCall('adsgram_task_status');
+LINE 10314             // AdsGram UI "done" state alone must never trigger success.
+LINE 10324         window.mimaAdDiag?.('task','reward_confirmed');
+LINE 10334         window.mimaAdDiag?.('task','reward_pending');
+LINE 10336         if(sub)sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
+LINE 10342     task.addEventListener('onBannerNotFound',()=>{window.mimaAdDiag?.('task','no_fill');hideCard();});
+LINE 10343     task.addEventListener('onError',()=>{window.mimaAdDiag?.('task','sdk_error');hideCard();});
+LINE 10344     task.addEventListener('onTooLongSession',()=>{window.mimaAdDiag?.('task','too_long');hideCard();});
+LINE 10363 <style id="mima-adsgram-task-countdown-v2">
+LINE 10364 #tasks #mimaAdsgramTaskCard{position:relative!important}
+LINE 10365 #tasks .mimaAdsgramTaskCountdown{
+LINE 10384 #tasks #mimaAdsgramTaskCooldownLabel{display:none!important}
+LINE 10385 #tasks #mimaAdsgramTaskCooldownValue{
+LINE 10398   #tasks .mimaAdsgramTaskCountdown{left:20px!important;width:105px!important}
+LINE 10402 <style id="mima-adsgram-cooldown-row-clean-v3">
+LINE 10403 #tasks #mimaAdsgramTaskCooldown.mimaAdsgramTaskCooldownRow{
+LINE 10411 #tasks #mimaAdsgramTaskCooldown.mimaAdsgramTaskCooldownRow[style*="display: flex"]{display:flex!important}
+LINE 10412 #tasks .mimaAdsgramCooldownButton{
+LINE 10419 #tasks .mimaAdsgramCooldownDetails{display:flex;flex:1 1 auto;min-width:0;flex-direction:column;gap:5px;text-align:right}
+LINE 10420 #tasks .mimaAdsgramCooldownDetails strong{font-size:12px;color:#f2ddad;line-height:1.4}
+LINE 10421 #tasks .mimaAdsgramCooldownDetails small{font-size:11px;color:#e4b955;font-weight:800}
+LINE 10422 #tasks .mimaAdsgramCooldownIcon{
+LINE 10427 @media(max-width:390px){#tasks .mimaAdsgramCooldownButton{flex-basis:94px!important;font-size:16px!important}}
+LINE 10433 #tasks .mimaAdsgramTaskReward {
+LINE 10452 #tasks #adsgramRewardTaskInfo,
+LINE 10453 #tasks #adsgramRewardTaskLeft,
+LINE 10454 #tasks #adsgramRewardTaskCount {
+LINE 10466 #tasks #adsgramRewardTaskInfo{font-size:11.5px!important;line-height:1.65!important;letter-spacing:.1px!important}
+LINE 10467 #tasks .mimaAdProgressMeta{font-size:12px!important;font-weight:900!important;align-items:center!important}
+LINE 10468 #tasks .mimaAdIcon{
+LINE 10473 #tasks .mimaAdPremiumIcon{width:37px!important;height:37px!important;filter:drop-shadow(0 1px 0 rgba(255,255,255,.20))!important}
+LINE 10474 #tasks .mimaAdScreen{stroke:#342005!important;stroke-width:2.8!important;fill:rgba(35,22,0,.045)!important}
+LINE 10475 #tasks .mimaAdPlay{fill:#352103!important;stroke:#352103!important;stroke-width:1.7!important}
+LINE 10476 #tasks .mimaAdStem,#tasks .mimaAdStand,#tasks .mimaAdSparkLine1,#tasks .mimaAdSparkLine2{stroke:#352103!important;stroke-width:2.7!important;stroke-linecap:round!important}
+LINE 10477 #tasks .mimaAdSpark{fill:#352103!important}
+LINE 10481 /* Visual-only harmonization of AdsGram native task with MIMA gold task cards. */
+LINE 10482 #tasks #mimaAdsgramTaskCard{
+LINE 10488 #tasks #mimaAdsgramTaskHeading{color:#f8e0a3!important;font-weight:900!important}
+LINE 10489 #tasks #mimaAdsgramTaskSub,
+LINE 10490 #tasks .mimaAdsgramTaskReward,
+LINE 10491 #tasks .mimaAdsgramCooldownDetails small{
+LINE 10498 #tasks .mimaAdsgramTaskBadge{
+LINE 10502 #tasks #mimaAdsgramTaskUnit{
+LINE 10511 #tasks .mimaAdsgramTaskButton,
+LINE 10512 #tasks .mimaAdsgramTaskClaim,
+LINE 10513 #tasks .mimaAdsgramTaskDone{
+LINE 10521 #tasks #mimaAdsgramTaskCooldown{border-color:rgba(213,161,60,.55)!important;background:linear-gradient(120deg,#151007,#090b0c)!important}
+LINE 10647 #tasks #mimaAdsgramTaskCooldownValue{display:none!important}
+LINE 10648 #tasks #mimaAdsgramTaskCooldown .mimaAdsgramCooldownDetails{flex:1 1 auto!important;align-items:center!important;text-align:center!important}
+LINE 10649 #tasks #mimaAdsgramTaskCooldown .mimaAdsgramCooldownIcon{color:#f6cf79!important}
+---- SCOPED CONTEXT ----
+---- line 556 ----
+549:  background:linear-gradient(155deg,#171406,#080c12)!important;
+550:  border:2px solid #c49332!important;color:#ffe09a!important;
+551:  box-shadow:inset 0 0 0 1px rgba(255,223,135,.12),0 3px 15px rgba(0,0,0,.38)!important;
+552: }
+553: </style>
+554: <script id="mima-header-content-safe-area-sync-v1">
+555: (function(){
+556:   function syncMimaHeader(){
+557:     try{
+558:       const root=document.documentElement;
+559:       const tg=window.Telegram?.WebApp;
+560:       const apiValue=Number(tg?.contentSafeAreaInset?.top || 0);
+561:       const cssValue=parseFloat(getComputedStyle(root).getPropertyValue('--tg-content-safe-area-inset-top')) || 0;
+562:       const raw=Math.max(Number.isFinite(apiValue)?apiValue:0,cssValue);
+563:       root.style.setProperty('--mima-header-native-inset',Math.min(110,Math.max(0,raw))+'px');
+564:     }catch(e){}
+565:   }
+566:   syncMimaHeader();
+567:   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',syncMimaHeader,{once:true});
+568:   try{window.Telegram?.WebApp?.onEvent?.('contentSafeAreaChanged',syncMimaHeader)}catch(e){}
+569: })();
+570: </script>
+571: 
+572: <style id="mima-sponsored-server-verification-v1">
+573: #tasks #mimaAdsgramTaskServerNotice.mimaAdsgramTaskServerNotice{
+574:   display:none;
+575:   width:100%;
+576:   box-sizing:border-box;
+577:   margin-top:9px;
+578:   padding:11px 13px;
+579:   color:#f7d996;
+580:   background:linear-gradient(135deg,#1c160b,#0b1118);
+581:   border:1px solid rgba(222,170,64,.6);
+582:   border-radius:12px;
+583:   font-size:12px;
+584:   font-weight:700;
+585:   line-height:1.55;
+586:   text-align:start;
+587: }
+588: </style>
+589: <style id="mima-market-admin-beta-css">
+590: #mimaMarketBetaLaunchWrap{display:none;justify-content:center;padding:12px 0 4px;position:relative;z-index:99;pointer-events:auto!important}
+591: #mimaMarketBetaLaunch{pointer-events:auto!important;touch-action:manipulation;position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 14px;border:1px solid rgba(227,180,73,.73);border-radius:12px;background:linear-gradient(150deg,
+592: #mimaMarketBetaLaunch span:first-child{color:#f4b94e;font-size:17px}
+593: #mimaMarketBetaLaunch small{border:1px solid #8c7040;background:#33230b;color:#f4d494;border-radius:5px;font-size:8px;letter-spacing:.09em;padding:2px 4px}
+594: #mimaMarketBetaLaunch:focus-visible{outline:2px solid #ffe1a0;outline-offset:3px}
+595: /* Telegram draws its native header over the WebApp. Reserve room before
+596:    the exchange header and keep only the exchange content scrollable. */
+597: #mimaMarketBetaOverlay{
+598:   --mima-market-safe-top:max(88px, calc(env(safe-area-inset-top, 0px) + 76px), calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px) + 14px));
+599:   box-sizing:border-box;position:fixed;inset:0;z-index:2147483646;
+600:   display:none;justify-content:center;align-items:flex-start;
+601:   padding:var(--mima-market-safe-top) 0 max(18px, env(safe-area-inset-bottom, 0px));
+602:   border:0;border-radius:0;margin:0;width:100vw;max-width:none;max-height:none;
+603:   height:100dvh;overflow:hidden;
+604:   background:rgba(1,5,10,.89);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+605: }
+606: #mimaMarketBetaOverlay.mimaOpen{display:flex}
+607: #mimaMarketBetaOverlay::backdrop{background:rgba(1,5,10,.89)}
+608: #mimaMarketBetaDialog{box-sizing:border-box;position:relative;width:min(100%,540px);min-height:0;max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border:1px solid rgba(229,183,93,.50);border-radius:20px;background:radial-gradient(circle at 80% 0%,rgba(187,
+609: #mimaMarketBetaDialog *{box-sizing:border-box}
+610: #mimaMarketBetaDialog button{font:inherit;cursor:pointer}
+611: #mimaMarketBetaDialog button:focus-visible,#mimaMarketBetaDialog input:focus-visible{outline:2px solid #ffd282;outline-offset:2px}
+612: .mmb-head{position:sticky;top:-16px;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding:2px 0 10px;background:linear-gradient(180deg,#11171c 78%,rgba(17,23,28,.96));border-bottom:1px solid rgba(228,176,71,.15)}
+613: .mmb-brand{display:flex;align-items:center;gap:9px;text-align:start}
+614: .mmb-mark{width:39px;height:39px;border:1px solid #d8ad60;border-radius:11px;display:grid;place-items:center;font-weight:1000;font-size:22px;color:#f8cc6b;background:radial-gradient(circle at 40% 20%,#483015,#110f10 70%)}
+615: .mmb-brand b{display:block;font-size:14px;letter-spacing:.035em;color:#ffe4a2}
+616: .mmb-brand small{display:block;color:#98a7b8;font-size:10px;padding-top:4px}
+617: .mmb-close{width:35px;height:35px;border:1px solid #45505b;border-radius:10px;background:#151a21;color:#e6d1a9;font-size:22px!important}
+618: .mmb-notice{padding:8px 10px;border:1px solid #71603d;border-radius:10px;color:#dfbf86;background:#251c11;font-size:10px;line-height:1.5;margin:9px 0 15px;text-align:center}
+619: .mmb-topline,.mmb-timeframes,.mmb-pairs,.mmb-order-tabs{display:flex;align-items:center;justify-content:space-between;gap:7px}
+620: .mmb-pairs{justify-content:flex-start;margin-bottom:14px}
+---- line 1480 ----
+1473:   try{
+1474:     const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+1475:     currentUserTelegramId = Number(tgUser?.id || 0);
+1476:     currentUserFirstName = String(tgUser?.first_name || '').trim();
+1477:     currentUserUsername = String(tgUser?.username || '').trim();
+1478:   }catch(e){}
+1479: 
+1480:   function isAdminNoAds(){
+1481:     return String(currentUserTelegramId || '') === String(ADMIN_TELEGRAM_USER_ID);
+1482:   }
+1483: 
+1484:   const LANGUAGE_STORAGE_KEY = 'mima_language_v1';
+1485:   const LANGUAGE_MANUAL_KEY = 'mima_language_manual_v1';
+1486: 
+1487:   function getMimaTelegramLanguage(){
+1488:     let code='';
+1489:     try{code=String(navigator.language||window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||'').toLowerCase()}catch(e){}
+1490:     const base=code.split(/[-_]/)[0];
+1491:     return MIMA_KNOWN_LANGUAGE_CODES.includes(base)?base:'en';
+1492:   }
+1493:   const MIMA_KNOWN_LANGUAGE_CODES=["en","ar","ru","fa","hi","id","fr","zh","de","es","bn","tr","pt","uz","ur"];
+1494:   function detectInitialLanguage(){
+1495:     let manual = '';
+1496:     try{
+1497:       manual = String(localStorage.getItem(LANGUAGE_MANUAL_KEY) || '').toLowerCase();
+1498:     }catch(e){}
+1499: 
+1500:     if(MIMA_KNOWN_LANGUAGE_CODES.includes(manual)) return manual;
+1501:     if(manual==='auto') return getMimaTelegramLanguage();
+1502: 
+1503:     // In automatic mode, use the Telegram/device language when supported.
+1504:     // Unknown countries/languages automatically fall back to English.
+1505:     // Explicit manual language choices remain unchanged.
+1506:     return getMimaTelegramLanguage();
+1507:   }
+1508: 
+1509: 
+1510:   // Local, synchronous translations; no external translation requests or extra server load.
+1511:   const MIMA_EXTRA_TRANSLATIONS = {
+1512:     uz: {
+1513:       'Withdraw':'Yechib olish','Welcome to the ecosystem':'MIMA tizimiga xush kelibsiz',
+1514:       'Your current balance':'Joriy balansingiz','Mining rate':'Mayning tezligi',
+1515:       '● Active':'● Faol','Mining inactive':'Mayning faol emas','Tap to start':'Boshlash uchun bosing',
+1516:       'Earned this round':'Ushbu davrda yigʻilgan','Mining level':'Mayning darajasi',
+1517:       'Available taps':'Mavjud bosishlar','Referrals':'Takliflar','Total users':'Jami foydalanuvchilar',
+1518:       'Online now':'Hozir onlayn','Active today':'Bugun faol','Miners':'Maynerlar',
+1519:       'Mining':'Mayning','Tasks':'Vazifalar','Friends':'Doʻstlar','Wallet':'Hamyon',
+1520:       'Settings':'Sozlamalar','Language':'Til','Arabic':'Arabcha','English':'Inglizcha',
+1521:       'Uzbek':'Oʻzbekcha','Urdu':'Urducha','Privacy Policy':'Maxfiylik siyosati',
+1522:       'How we use and protect your data':'Maʼlumotlaringizdan qanday foydalanamiz va ularni himoya qilamiz',
+1523:       'Admin Live Stats':'Admin statistikasi','Search user':'Foydalanuvchini qidirish',
+1524:       'Updates automatically':'Avtomatik yangilanadi',
+1525:       'Manage miners, track speed, and monitor mining status.':'Maynerlar, tezlik va mayning holatini kuzatish.',
+1526:       'Total earned':'Jami yigʻilgan','Mining status':'Mayning holati','Stopped':'Toʻxtagan',
+1527:       'Complete tasks and earn exchangeable MIMA.':'Vazifalarni bajaring va almashtiriladigan MIMA oling.',
+1528:       'Channel task • refreshes every 3 hours':'Kanal vazifasi • har 3 soatda yangilanadi',
+1529:       'Join the MIMA channel':'MIMA kanaliga qoʻshiling','Join the MIMACOIN2 channel':'MIMACOIN2 kanaliga qoʻshiling',
+1530:       'Join the MIMA Withdrawals channel':'MIMA yechib olish kanaliga qoʻshiling',
+1531:       'Join the MIMA Exchange channel':'MIMA birja kanaliga qoʻshiling',
+1532:       'Join the MIMA Channel':'MIMA kanaliga qoʻshiling',
+1533:       'Join a MIMA partner':'MIMA hamkoriga qoʻshiling','Join Our Partners':'Hamkorlarimizga qoʻshiling',
+1534:       'Join':'Qoʻshilish','Claim':'Olish','Claimed':'Olindi','Verify':'Tekshirish',
+1535:       'Watch':'Koʻrish','Watch an ad':'Reklama koʻrish','Watch an ad & earn':'Reklama koʻrib mukofot oling',
+1536:       'Available now':'Hozir mavjud','Open':'Ochish','Buy':'Sotib olish',
+1537:       'Invite friends & earn':'Doʻstlarni taklif qiling va mukofot oling',
+1538:       'Each valid referral =':'Har bir haqiqiy taklif =','and you earn':'va siz olasiz',
+1539:       'Referral link':'Taklif havolasi','Preparing link…':'Havola tayyorlanmoqda…',
+1540:       'Share link 🔗':'Havolani ulashish 🔗','Referral count':'Takliflar soni',
+1541:       'Referral rewards':'Taklif mukofotlari','Mining bonus':'Mayning bonusi',
+1542:       'Available wallet balance':'Hamyondagi mavjud balans','Syncing…':'Sinxronlanmoqda…',
+1543:       'USD value':'AQSH dollaridagi qiymat','Connect your wallet to view GRAM balance':'GRAM balansini koʻrish uchun hamyoningizni ulang',
+1544:       'Connected wallet':'Ulangan hamyon','GRAM wallet balance':'GRAM hamyon balansi',
+---- line 2220 ----
+2213:       task2NextAvailableAt,
+2214:       mimaExchangeChannelNextAvailableAt,
+2215:       interactPostNextAvailableAt,
+2216:       victorsPartnerNextAvailableAt
+2217:     }));
+2218:   }
+2219: 
+2220:   function loadPreviewState(){
+2221:     if(serverMode) return;
+2222: 
+2223:     try{
+2224:       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+2225:       if(!saved) return;
+2226: 
+2227:       if(Number.isFinite(saved.bal)) bal = Math.max(0,saved.bal);
+2228:       if(Number.isFinite(saved.miningBalance)) miningBalance = Math.max(0,saved.miningBalance);
+2229:       if(Number.isFinite(saved.exchangeableBalance)){
+2230:         exchangeableBalance = Math.max(0,saved.exchangeableBalance);
+2231:       }else{
+2232:         exchangeableBalance = miningBalance;
+2233:       }
+2234:       if(Number.isFinite(saved.gramBalance)) gramBalance = Math.max(0,saved.gramBalance);
+2235:       if(Number.isFinite(saved.earned)) earned = Math.max(0,Math.min(ROUND_MAX,saved.earned));
+2236:       if(Number.isFinite(saved.roundStartedAt)) roundStartedAt = saved.roundStartedAt;
+2237: 
+2238:       if(Number.isFinite(saved.miningPoints)){
+2239:         miningPoints = Math.max(0,Math.floor(saved.miningPoints));
+2240:       }
+2241: 
+2242:       if(Number.isFinite(saved.tapEnergy)){
+2243:         tapEnergy = Math.max(0,Math.min(MAX_TAP_ENERGY,Math.floor(saved.tapEnergy)));
+2244:       }
+2245: 
+2246:       if(Number.isFinite(saved.tapRewardProgress)){
+2247:         tapRewardProgress = Math.max(0,Math.floor(saved.tapRewardProgress)%1000);
+2248:       }
+2249: 
+2250:       if(Number.isFinite(saved.tapLastRegenAt)){
+2251:         tapLastRegenAt = saved.tapLastRegenAt;
+2252:       }
+2253: 
+2254:       if(typeof saved.referralCode === 'string') referralCode = saved.referralCode;
+2255:       if(Number.isFinite(saved.referralCount)) referralCount = Math.max(0,saved.referralCount);
+2256:       if(Number.isFinite(saved.referralPoints)) referralPoints = Math.max(0,saved.referralPoints);
+2257:       if(Number.isFinite(saved.referralBonusTotal)) referralBonusTotal = Math.max(0,saved.referralBonusTotal);
+2258:       if(Number.isFinite(saved.taskNextAvailableAt)) taskNextAvailableAt = saved.taskNextAvailableAt;
+2259:       if(Number.isFinite(saved.task2NextAvailableAt)) task2NextAvailableAt = saved.task2NextAvailableAt;
+2260:       if(Number.isFinite(saved.mimaExchangeChannelNextAvailableAt)) mimaExchangeChannelNextAvailableAt = saved.mimaExchangeChannelNextAvailableAt;
+2261:       if(Number.isFinite(saved.interactPostNextAvailableAt)) interactPostNextAvailableAt = saved.interactPostNextAvailableAt;
+2262:       if(Number.isFinite(saved.victorsPartnerNextAvailableAt)) victorsPartnerNextAvailableAt = saved.victorsPartnerNextAvailableAt;
+2263: 
+2264:       miningRate = getMiningRateForLevel();
+2265:       roundMax = Number((miningRate * 4).toFixed(8));
+2266:       earned = Math.max(0,Math.min(roundMax,earned));
+2267:     }catch(e){}
+2268:   }
+2269: 
+2270:   async function apiCall(action, extra={}){
+2271:     if(!serverMode){
+2272:       throw new Error('Telegram initData unavailable');
+2273:     }
+2274: 
+2275:     const response = await fetch(MIMA_API_URL,{
+2276:       method:'POST',
+2277:       headers:{
+2278:         'Content-Type':'application/json',
+2279:         'apikey':SUPABASE_PUBLISHABLE_KEY,
+2280:         'x-telegram-init-data':telegramInitData
+2281:       },
+2282:       body:JSON.stringify({action,...extra})
+2283:     });
+2284: 
+---- line 2340 ----
+2333:           minimumFractionDigits:4, maximumFractionDigits:9
+2334:         }) + ' GRAM'
+2335:       : '— GRAM';
+2336:     if($('mimaTonWalletBalance')) $('mimaTonWalletBalance').textContent = text;
+2337:     if($('exchangeGramBalance')) $('exchangeGramBalance').textContent = text;
+2338:   }
+2339: 
+2340:   function shortTonAddress(value){
+2341:     const s = String(value || '').trim();
+2342:     if(!s) return '—';
+2343:     if(s.length <= 18) return s;
+2344:     return s.slice(0,8) + '…' + s.slice(-8);
+2345:   }
+2346: 
+2347:   function renderConnectedTonWallet(){
+2348:     const addressEl = $('mimaTonWalletAddress');
+2349:     const stateEl = $('mimaTonWalletState');
+2350:     if(addressEl){
+2351:       addressEl.textContent = connectedTonWalletAddress
+2352:         ? shortTonAddress(connectedTonWalletAddress)
+2353:         : '—';
+2354:       addressEl.title = connectedTonWalletAddress || '';
+2355:     }
+2356:     if(stateEl){
+2357:       stateEl.textContent = connectedTonWalletAddress
+2358:         ? tx('متصلة • قراءة فقط','Connected • Read only')
+2359:         : tx('غير متصلة','Not connected');
+2360:     }
+2361:     renderExternalGramBalance();
+2362:   }
+2363: 
+2364:   window.refreshConnectedGramBalance = async function(){
+2365:     const balanceEl = $('mimaTonWalletBalance');
+2366:     const stateEl = $('mimaTonWalletState');
+2367:     const requestAddress = connectedTonWalletAddress;
+2368:     const requestSeq = ++connectedWalletReadSeq;
+2369:     if(!requestAddress){
+2370:       connectedWalletGramBalance = null;
+2371:       connectedWalletBalanceAddress = '';
+2372:       renderConnectedTonWallet();
+2373:       return;
+2374:     }
+2375: 
+2376:     if(connectedTonWalletChain && String(connectedTonWalletChain) !== '-239'){
+2377:       connectedWalletGramBalance = null;
+2378:       connectedWalletBalanceAddress = '';
+2379:       renderExternalGramBalance();
+2380:       if(stateEl) stateEl.textContent = tx(
+2381:         'يرجى ربط محفظة الشبكة الرئيسية',
+2382:         'Please connect a mainnet wallet'
+2383:       );
+2384:       return;
+2385:     }
+2386: 
+2387:     connectedWalletGramBalance = null;
+2388:     connectedWalletBalanceAddress = '';
+2389:     renderExternalGramBalance();
+2390:     if(balanceEl) balanceEl.textContent = '…';
+2391:     if(stateEl) stateEl.textContent = tx('جاري قراءة الرصيد…','Reading balance…');
+2392: 
+2393:     try{
+2394:       const data = await apiCall('wallet_balance',{
+2395:         wallet_address:requestAddress
+2396:       });
+2397:       if(requestSeq !== connectedWalletReadSeq || requestAddress !== connectedTonWalletAddress) return;
+2398:       if(data?.success !== true) throw new Error(data?.message || 'wallet_balance_failed');
+2399: 
+2400:       const value = Number(data.gram_balance);
+2401:       if(!Number.isFinite(value) || value < 0) throw new Error('invalid_wallet_balance');
+2402:       connectedWalletGramBalance = value;
+2403:       connectedWalletBalanceAddress = requestAddress;
+2404:       renderExternalGramBalance();
+---- line 2465 ----
+2458:     }catch(err){
+2459:       root.innerHTML = '<small style="color:#75879a">' +
+2460:         tx('تعذر تشغيل ربط المحفظة','Could not initialize wallet connection') +
+2461:         '</small>';
+2462:     }
+2463:   }
+2464: 
+2465:   function isMimaAdmin(){
+2466:     return String(currentUserTelegramId || '') === String(ADMIN_TELEGRAM_USER_ID);
+2467:   }
+2468: 
+2469:   async function loadAdminLiveStats(){
+2470:     const box = $('adminLiveStats');
+2471:     if(!box) return;
+2472: 
+2473:     if(!serverMode || !isMimaAdmin()){
+2474:       box.style.display = 'none';
+2475:       return;
+2476:     }
+2477: 
+2478:     box.style.display = '';
+2479: 
+2480:     try{
+2481:       const data = await apiCall('admin_stats');
+2482: 
+2483:       if(data?.success !== true){
+2484:         throw new Error(localizeServerMessage(data?.message) || tx('تعذر تحميل العدادات','Could not load live stats'));
+2485:       }
+2486: 
+2487:       if($('adminTotalUsers')){
+2488:         $('adminTotalUsers').textContent = Number(data.total_users || 0).toLocaleString('en-US');
+2489:       }
+2490: 
+2491:       if($('adminOnlineNow')){
+2492:         $('adminOnlineNow').textContent = Number(data.online_now || 0).toLocaleString('en-US');
+2493:       }
+2494: 
+2495:       if($('adminActiveToday')){
+2496:         $('adminActiveToday').textContent = Number(data.active_today || 0).toLocaleString('en-US');
+2497:       }
+2498:     }catch(err){
+2499:       if($('adminTotalUsers')) $('adminTotalUsers').textContent = '—';
+2500:       if($('adminOnlineNow')) $('adminOnlineNow').textContent = '—';
+2501:       if($('adminActiveToday')) $('adminActiveToday').textContent = '—';
+2502:     }
+2503:   }
+2504: 
+2505: 
+2506:   function adminAuditUserLabel(row){
+2507:     const username = String(row?.username || '').replace(/^@/,'').trim();
+2508:     const firstName = String(row?.first_name || '').trim();
+2509:     return username ? '@' + username : (firstName || 'MIMA User');
+2510:   }
+2511: 
+2512:   function adminAuditDate(value){
+2513:     if(!value) return '—';
+2514:     const d = new Date(value);
+2515:     if(!Number.isFinite(d.getTime())) return '—';
+2516:     return d.toLocaleString(currentLang === 'ar' ? 'ar' : 'en-US');
+2517:   }
+2518: 
+2519:   function adminAuditTxLabel(type){
+2520:     const labels = {
+2521:       tap_reward: tx('نقرات','Taps'),
+2522:       mining_claim: tx('تعدين','Mining'),
+2523:       task_reward: tx('مهمة','Task'),
+2524:       referral_reward: tx('إحالة','Referral'),
+2525:       mima_to_gram_exchange: tx('تبادل','Exchange'),
+2526:       gram_withdraw_request: tx('طلب سحب','Withdrawal request')
+2527:     };
+2528:     return labels[String(type || '')] || String(type || '—');
+2529:   }
+---- line 2469 ----
+2462:     }
+2463:   }
+2464: 
+2465:   function isMimaAdmin(){
+2466:     return String(currentUserTelegramId || '') === String(ADMIN_TELEGRAM_USER_ID);
+2467:   }
+2468: 
+2469:   async function loadAdminLiveStats(){
+2470:     const box = $('adminLiveStats');
+2471:     if(!box) return;
+2472: 
+2473:     if(!serverMode || !isMimaAdmin()){
+2474:       box.style.display = 'none';
+2475:       return;
+2476:     }
+2477: 
+2478:     box.style.display = '';
+2479: 
+2480:     try{
+2481:       const data = await apiCall('admin_stats');
+2482: 
+2483:       if(data?.success !== true){
+2484:         throw new Error(localizeServerMessage(data?.message) || tx('تعذر تحميل العدادات','Could not load live stats'));
+2485:       }
+2486: 
+2487:       if($('adminTotalUsers')){
+2488:         $('adminTotalUsers').textContent = Number(data.total_users || 0).toLocaleString('en-US');
+2489:       }
+2490: 
+2491:       if($('adminOnlineNow')){
+2492:         $('adminOnlineNow').textContent = Number(data.online_now || 0).toLocaleString('en-US');
+2493:       }
+2494: 
+2495:       if($('adminActiveToday')){
+2496:         $('adminActiveToday').textContent = Number(data.active_today || 0).toLocaleString('en-US');
+2497:       }
+2498:     }catch(err){
+2499:       if($('adminTotalUsers')) $('adminTotalUsers').textContent = '—';
+2500:       if($('adminOnlineNow')) $('adminOnlineNow').textContent = '—';
+2501:       if($('adminActiveToday')) $('adminActiveToday').textContent = '—';
+2502:     }
+2503:   }
+2504: 
+2505: 
+2506:   function adminAuditUserLabel(row){
+2507:     const username = String(row?.username || '').replace(/^@/,'').trim();
+2508:     const firstName = String(row?.first_name || '').trim();
+2509:     return username ? '@' + username : (firstName || 'MIMA User');
+2510:   }
+2511: 
+2512:   function adminAuditDate(value){
+2513:     if(!value) return '—';
+2514:     const d = new Date(value);
+2515:     if(!Number.isFinite(d.getTime())) return '—';
+2516:     return d.toLocaleString(currentLang === 'ar' ? 'ar' : 'en-US');
+2517:   }
+2518: 
+2519:   function adminAuditTxLabel(type){
+2520:     const labels = {
+2521:       tap_reward: tx('نقرات','Taps'),
+2522:       mining_claim: tx('تعدين','Mining'),
+2523:       task_reward: tx('مهمة','Task'),
+2524:       referral_reward: tx('إحالة','Referral'),
+2525:       mima_to_gram_exchange: tx('تبادل','Exchange'),
+2526:       gram_withdraw_request: tx('طلب سحب','Withdrawal request')
+2527:     };
+2528:     return labels[String(type || '')] || String(type || '—');
+2529:   }
+2530: 
+2531:   window.closeAdminAuditPanel = function(){
+2532:     const panel = $('adminAuditPanel');
+2533:     const backdrop = $('adminAuditBackdrop');
+---- line 2506 ----
+2499:       if($('adminTotalUsers')) $('adminTotalUsers').textContent = '—';
+2500:       if($('adminOnlineNow')) $('adminOnlineNow').textContent = '—';
+2501:       if($('adminActiveToday')) $('adminActiveToday').textContent = '—';
+2502:     }
+2503:   }
+2504: 
+2505: 
+2506:   function adminAuditUserLabel(row){
+2507:     const username = String(row?.username || '').replace(/^@/,'').trim();
+2508:     const firstName = String(row?.first_name || '').trim();
+2509:     return username ? '@' + username : (firstName || 'MIMA User');
+2510:   }
+2511: 
+2512:   function adminAuditDate(value){
+2513:     if(!value) return '—';
+2514:     const d = new Date(value);
+2515:     if(!Number.isFinite(d.getTime())) return '—';
+2516:     return d.toLocaleString(currentLang === 'ar' ? 'ar' : 'en-US');
+2517:   }
+2518: 
+2519:   function adminAuditTxLabel(type){
+2520:     const labels = {
+2521:       tap_reward: tx('نقرات','Taps'),
+2522:       mining_claim: tx('تعدين','Mining'),
+2523:       task_reward: tx('مهمة','Task'),
+2524:       referral_reward: tx('إحالة','Referral'),
+2525:       mima_to_gram_exchange: tx('تبادل','Exchange'),
+2526:       gram_withdraw_request: tx('طلب سحب','Withdrawal request')
+2527:     };
+2528:     return labels[String(type || '')] || String(type || '—');
+2529:   }
+2530: 
+2531:   window.closeAdminAuditPanel = function(){
+2532:     const panel = $('adminAuditPanel');
+2533:     const backdrop = $('adminAuditBackdrop');
+2534:     if(panel) panel.style.display = 'none';
+2535:     if(backdrop) backdrop.style.display = 'none';
+2536:   };
+2537: 
+2538:   function openAdminAuditPanel(){
+2539:     const panel = $('adminAuditPanel');
+2540:     const backdrop = $('adminAuditBackdrop');
+2541:     if(backdrop) backdrop.style.display = 'block';
+2542:     if(panel) panel.style.display = 'block';
+2543:   }
+2544: 
+2545:   function adminActivitySourceLabel(type){
+2546:     const labels = {
+2547:       adsgram_reward: tx('إعلانات AdsGram','AdsGram ads'),
+2548:       monetag_reward: tx('إعلانات Monetag','Monetag ads'),
+2549:       mining_claim: tx('التعدين','Mining'),
+2550:       tap_reward: tx('مكافآت النقر','Tap rewards'),
+2551:       task_reward: tx('المهام','Tasks'),
+2552:       referral_signup_reward: tx('مكافآت الإحالة','Referral rewards'),
+2553:       referral_mining_bonus: tx('10% تعدين الإحالات','Referral mining 10%'),
+2554:       admin_bonus: tx('مكافأة الإدارة','Admin bonus')
+2555:     };
+2556:     return labels[String(type || '')] || String(type || '—');
+2557:   }
+2558: 
+2559:   function adminActivityTaskLabel(code){
+2560:     const labels = {
+2561:       join_channel: tx('قناة MIMA','MIMA channel'),
+2562:       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+2563:       join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
+2564:       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
+2565:       victors_partner: tx('مهمة الشريك','Partner task'),
+2566:     };
+2567:     return labels[String(code || '')] || String(code || '—');
+2568:   }
+2569: 
+2570:   window.openAdminUserSearch = function(){
+---- line 2512 ----
+2505: 
+2506:   function adminAuditUserLabel(row){
+2507:     const username = String(row?.username || '').replace(/^@/,'').trim();
+2508:     const firstName = String(row?.first_name || '').trim();
+2509:     return username ? '@' + username : (firstName || 'MIMA User');
+2510:   }
+2511: 
+2512:   function adminAuditDate(value){
+2513:     if(!value) return '—';
+2514:     const d = new Date(value);
+2515:     if(!Number.isFinite(d.getTime())) return '—';
+2516:     return d.toLocaleString(currentLang === 'ar' ? 'ar' : 'en-US');
+2517:   }
+2518: 
+2519:   function adminAuditTxLabel(type){
+2520:     const labels = {
+2521:       tap_reward: tx('نقرات','Taps'),
+2522:       mining_claim: tx('تعدين','Mining'),
+2523:       task_reward: tx('مهمة','Task'),
+2524:       referral_reward: tx('إحالة','Referral'),
+2525:       mima_to_gram_exchange: tx('تبادل','Exchange'),
+2526:       gram_withdraw_request: tx('طلب سحب','Withdrawal request')
+2527:     };
+2528:     return labels[String(type || '')] || String(type || '—');
+2529:   }
+2530: 
+2531:   window.closeAdminAuditPanel = function(){
+2532:     const panel = $('adminAuditPanel');
+2533:     const backdrop = $('adminAuditBackdrop');
+2534:     if(panel) panel.style.display = 'none';
+2535:     if(backdrop) backdrop.style.display = 'none';
+2536:   };
+2537: 
+2538:   function openAdminAuditPanel(){
+2539:     const panel = $('adminAuditPanel');
+2540:     const backdrop = $('adminAuditBackdrop');
+2541:     if(backdrop) backdrop.style.display = 'block';
+2542:     if(panel) panel.style.display = 'block';
+2543:   }
+2544: 
+2545:   function adminActivitySourceLabel(type){
+2546:     const labels = {
+2547:       adsgram_reward: tx('إعلانات AdsGram','AdsGram ads'),
+2548:       monetag_reward: tx('إعلانات Monetag','Monetag ads'),
+2549:       mining_claim: tx('التعدين','Mining'),
+2550:       tap_reward: tx('مكافآت النقر','Tap rewards'),
+2551:       task_reward: tx('المهام','Tasks'),
+2552:       referral_signup_reward: tx('مكافآت الإحالة','Referral rewards'),
+2553:       referral_mining_bonus: tx('10% تعدين الإحالات','Referral mining 10%'),
+2554:       admin_bonus: tx('مكافأة الإدارة','Admin bonus')
+2555:     };
+2556:     return labels[String(type || '')] || String(type || '—');
+2557:   }
+2558: 
+2559:   function adminActivityTaskLabel(code){
+2560:     const labels = {
+2561:       join_channel: tx('قناة MIMA','MIMA channel'),
+2562:       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+2563:       join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
+2564:       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
+2565:       victors_partner: tx('مهمة الشريك','Partner task'),
+2566:     };
+2567:     return labels[String(code || '')] || String(code || '—');
+2568:   }
+2569: 
+2570:   window.openAdminUserSearch = function(){
+2571:     const panel = $('adminAuditPanel');
+2572:     if(!panel) return;
+2573:     openAdminAuditPanel();
+2574:     panel.innerHTML =
+2575:       '<button class="adminAuditClose" type="button" onclick="closeAdminAuditPanel()">×</button>' +
+2576:       '<div class="adminAuditTitle">🔎 ' + tx('بحث عن مستخدم','Search user') + '</div>' +
+---- line 2519 ----
+2512:   function adminAuditDate(value){
+2513:     if(!value) return '—';
+2514:     const d = new Date(value);
+2515:     if(!Number.isFinite(d.getTime())) return '—';
+2516:     return d.toLocaleString(currentLang === 'ar' ? 'ar' : 'en-US');
+2517:   }
+2518: 
+2519:   function adminAuditTxLabel(type){
+2520:     const labels = {
+2521:       tap_reward: tx('نقرات','Taps'),
+2522:       mining_claim: tx('تعدين','Mining'),
+2523:       task_reward: tx('مهمة','Task'),
+2524:       referral_reward: tx('إحالة','Referral'),
+2525:       mima_to_gram_exchange: tx('تبادل','Exchange'),
+2526:       gram_withdraw_request: tx('طلب سحب','Withdrawal request')
+2527:     };
+2528:     return labels[String(type || '')] || String(type || '—');
+2529:   }
+2530: 
+2531:   window.closeAdminAuditPanel = function(){
+2532:     const panel = $('adminAuditPanel');
+2533:     const backdrop = $('adminAuditBackdrop');
+2534:     if(panel) panel.style.display = 'none';
+2535:     if(backdrop) backdrop.style.display = 'none';
+2536:   };
+2537: 
+2538:   function openAdminAuditPanel(){
+2539:     const panel = $('adminAuditPanel');
+2540:     const backdrop = $('adminAuditBackdrop');
+2541:     if(backdrop) backdrop.style.display = 'block';
+2542:     if(panel) panel.style.display = 'block';
+2543:   }
+2544: 
+2545:   function adminActivitySourceLabel(type){
+2546:     const labels = {
+2547:       adsgram_reward: tx('إعلانات AdsGram','AdsGram ads'),
+2548:       monetag_reward: tx('إعلانات Monetag','Monetag ads'),
+2549:       mining_claim: tx('التعدين','Mining'),
+2550:       tap_reward: tx('مكافآت النقر','Tap rewards'),
+2551:       task_reward: tx('المهام','Tasks'),
+2552:       referral_signup_reward: tx('مكافآت الإحالة','Referral rewards'),
+2553:       referral_mining_bonus: tx('10% تعدين الإحالات','Referral mining 10%'),
+2554:       admin_bonus: tx('مكافأة الإدارة','Admin bonus')
+2555:     };
+2556:     return labels[String(type || '')] || String(type || '—');
+2557:   }
+2558: 
+2559:   function adminActivityTaskLabel(code){
+2560:     const labels = {
+2561:       join_channel: tx('قناة MIMA','MIMA channel'),
+2562:       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+2563:       join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
+2564:       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
+2565:       victors_partner: tx('مهمة الشريك','Partner task'),
+2566:     };
+2567:     return labels[String(code || '')] || String(code || '—');
+2568:   }
+2569: 
+2570:   window.openAdminUserSearch = function(){
+2571:     const panel = $('adminAuditPanel');
+2572:     if(!panel) return;
+2573:     openAdminAuditPanel();
+2574:     panel.innerHTML =
+2575:       '<button class="adminAuditClose" type="button" onclick="closeAdminAuditPanel()">×</button>' +
+2576:       '<div class="adminAuditTitle">🔎 ' + tx('بحث عن مستخدم','Search user') + '</div>' +
+2577:       '<div class="adminUserSearchBox">' +
+2578:         '<input id="adminUserSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="' +
+2579:           tx('Telegram ID أو Username','Telegram ID or Username') + '">' +
+2580:         '<button type="button" onclick="runAdminUserSearch()">' + tx('بحث','Search') + '</button>' +
+2581:       '</div>' +
+2582:       '<div class="adminAuditHint">' +
+2583:         tx('يعرض مصدر الرصيد، الإعلانات، المهام، التعدين، الإحالات والسحوبات.','Shows balance sources, ads, tasks, mining, referrals and withdrawals.') +
+---- line 2538 ----
+2531:   window.closeAdminAuditPanel = function(){
+2532:     const panel = $('adminAuditPanel');
+2533:     const backdrop = $('adminAuditBackdrop');
+2534:     if(panel) panel.style.display = 'none';
+2535:     if(backdrop) backdrop.style.display = 'none';
+2536:   };
+2537: 
+2538:   function openAdminAuditPanel(){
+2539:     const panel = $('adminAuditPanel');
+2540:     const backdrop = $('adminAuditBackdrop');
+2541:     if(backdrop) backdrop.style.display = 'block';
+2542:     if(panel) panel.style.display = 'block';
+2543:   }
+2544: 
+2545:   function adminActivitySourceLabel(type){
+2546:     const labels = {
+2547:       adsgram_reward: tx('إعلانات AdsGram','AdsGram ads'),
+2548:       monetag_reward: tx('إعلانات Monetag','Monetag ads'),
+2549:       mining_claim: tx('التعدين','Mining'),
+2550:       tap_reward: tx('مكافآت النقر','Tap rewards'),
+2551:       task_reward: tx('المهام','Tasks'),
+2552:       referral_signup_reward: tx('مكافآت الإحالة','Referral rewards'),
+2553:       referral_mining_bonus: tx('10% تعدين الإحالات','Referral mining 10%'),
+2554:       admin_bonus: tx('مكافأة الإدارة','Admin bonus')
+2555:     };
+2556:     return labels[String(type || '')] || String(type || '—');
+2557:   }
+2558: 
+2559:   function adminActivityTaskLabel(code){
+2560:     const labels = {
+2561:       join_channel: tx('قناة MIMA','MIMA channel'),
+2562:       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+2563:       join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
+2564:       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
+2565:       victors_partner: tx('مهمة الشريك','Partner task'),
+2566:     };
+2567:     return labels[String(code || '')] || String(code || '—');
+2568:   }
+2569: 
+2570:   window.openAdminUserSearch = function(){
+2571:     const panel = $('adminAuditPanel');
+2572:     if(!panel) return;
+2573:     openAdminAuditPanel();
+2574:     panel.innerHTML =
+2575:       '<button class="adminAuditClose" type="button" onclick="closeAdminAuditPanel()">×</button>' +
+2576:       '<div class="adminAuditTitle">🔎 ' + tx('بحث عن مستخدم','Search user') + '</div>' +
+2577:       '<div class="adminUserSearchBox">' +
+2578:         '<input id="adminUserSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="' +
+2579:           tx('Telegram ID أو Username','Telegram ID or Username') + '">' +
+2580:         '<button type="button" onclick="runAdminUserSearch()">' + tx('بحث','Search') + '</button>' +
+2581:       '</div>' +
+2582:       '<div class="adminAuditHint">' +
+2583:         tx('يعرض مصدر الرصيد، الإعلانات، المهام، التعدين، الإحالات والسحوبات.','Shows balance sources, ads, tasks, mining, referrals and withdrawals.') +
+2584:       '</div>' +
+2585:       '<div id="adminUserSearchResult"></div>';
+2586: 
+2587:     setTimeout(()=>{
+2588:       const input = $('adminUserSearchInput');
+2589:       if(input){
+2590:         input.focus();
+2591:         input.addEventListener('keydown',(e)=>{
+2592:           if(e.key === 'Enter') runAdminUserSearch();
+2593:         });
+2594:       }
+2595:     },50);
+2596:   };
+2597: 
+2598:   window.runAdminUserSearch = async function(){
+2599:     const input = $('adminUserSearchInput');
+2600:     const result = $('adminUserSearchResult');
+2601:     if(!input || !result) return;
+2602: 
+---- line 2545 ----
+2538:   function openAdminAuditPanel(){
+2539:     const panel = $('adminAuditPanel');
+2540:     const backdrop = $('adminAuditBackdrop');
+2541:     if(backdrop) backdrop.style.display = 'block';
+2542:     if(panel) panel.style.display = 'block';
+2543:   }
+2544: 
+2545:   function adminActivitySourceLabel(type){
+2546:     const labels = {
+2547:       adsgram_reward: tx('إعلانات AdsGram','AdsGram ads'),
+2548:       monetag_reward: tx('إعلانات Monetag','Monetag ads'),
+2549:       mining_claim: tx('التعدين','Mining'),
+2550:       tap_reward: tx('مكافآت النقر','Tap rewards'),
+2551:       task_reward: tx('المهام','Tasks'),
+2552:       referral_signup_reward: tx('مكافآت الإحالة','Referral rewards'),
+2553:       referral_mining_bonus: tx('10% تعدين الإحالات','Referral mining 10%'),
+2554:       admin_bonus: tx('مكافأة الإدارة','Admin bonus')
+2555:     };
+2556:     return labels[String(type || '')] || String(type || '—');
+2557:   }
+2558: 
+2559:   function adminActivityTaskLabel(code){
+2560:     const labels = {
+2561:       join_channel: tx('قناة MIMA','MIMA channel'),
+2562:       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+2563:       join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
+2564:       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
+2565:       victors_partner: tx('مهمة الشريك','Partner task'),
+2566:     };
+2567:     return labels[String(code || '')] || String(code || '—');
+2568:   }
+2569: 
+2570:   window.openAdminUserSearch = function(){
+2571:     const panel = $('adminAuditPanel');
+2572:     if(!panel) return;
+2573:     openAdminAuditPanel();
+2574:     panel.innerHTML =
+2575:       '<button class="adminAuditClose" type="button" onclick="closeAdminAuditPanel()">×</button>' +
+2576:       '<div class="adminAuditTitle">🔎 ' + tx('بحث عن مستخدم','Search user') + '</div>' +
+2577:       '<div class="adminUserSearchBox">' +
+2578:         '<input id="adminUserSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="' +
+2579:           tx('Telegram ID أو Username','Telegram ID or Username') + '">' +
+2580:         '<button type="button" onclick="runAdminUserSearch()">' + tx('بحث','Search') + '</button>' +
+2581:       '</div>' +
+2582:       '<div class="adminAuditHint">' +
+2583:         tx('يعرض مصدر الرصيد، الإعلانات، المهام، التعدين، الإحالات والسحوبات.','Shows balance sources, ads, tasks, mining, referrals and withdrawals.') +
+2584:       '</div>' +
+2585:       '<div id="adminUserSearchResult"></div>';
+2586: 
+2587:     setTimeout(()=>{
+2588:       const input = $('adminUserSearchInput');
+2589:       if(input){
+2590:         input.focus();
+2591:         input.addEventListener('keydown',(e)=>{
+2592:           if(e.key === 'Enter') runAdminUserSearch();
+2593:         });
+2594:       }
+2595:     },50);
+2596:   };
+2597: 
+2598:   window.runAdminUserSearch = async function(){
+2599:     const input = $('adminUserSearchInput');
+2600:     const result = $('adminUserSearchResult');
+2601:     if(!input || !result) return;
+2602: 
+2603:     const search = String(input.value || '').trim();
+2604:     if(!search){
+2605:       result.innerHTML = '<div class="adminAuditState">' +
+2606:         tx('أدخل Telegram ID أو Username','Enter Telegram ID or Username') + '</div>';
+2607:       return;
+2608:     }
+2609: 
+---- line 2559 ----
+2552:       referral_signup_reward: tx('مكافآت الإحالة','Referral rewards'),
+2553:       referral_mining_bonus: tx('10% تعدين الإحالات','Referral mining 10%'),
+2554:       admin_bonus: tx('مكافأة الإدارة','Admin bonus')
+2555:     };
+2556:     return labels[String(type || '')] || String(type || '—');
+2557:   }
+2558: 
+2559:   function adminActivityTaskLabel(code){
+2560:     const labels = {
+2561:       join_channel: tx('قناة MIMA','MIMA channel'),
+2562:       join_channel_2: tx('قناة MIMACOIN2','MIMACOIN2 channel'),
+2563:       join_mima_exchange_channel: tx('قناة MIMA','MIMA channel'),
+2564:       join_withdrawals_channel: tx('قناة السحوبات','Withdrawals channel'),
+2565:       victors_partner: tx('مهمة الشريك','Partner task'),
+2566:     };
+2567:     return labels[String(code || '')] || String(code || '—');
+2568:   }
+2569: 
+2570:   window.openAdminUserSearch = function(){
+2571:     const panel = $('adminAuditPanel');
+2572:     if(!panel) return;
+2573:     openAdminAuditPanel();
+2574:     panel.innerHTML =
+2575:       '<button class="adminAuditClose" type="button" onclick="closeAdminAuditPanel()">×</button>' +
+2576:       '<div class="adminAuditTitle">🔎 ' + tx('بحث عن مستخدم','Search user') + '</div>' +
+2577:       '<div class="adminUserSearchBox">' +
+2578:         '<input id="adminUserSearchInput" type="text" autocomplete="off" spellcheck="false" placeholder="' +
+2579:           tx('Telegram ID أو Username','Telegram ID or Username') + '">' +
+2580:         '<button type="button" onclick="runAdminUserSearch()">' + tx('بحث','Search') + '</button>' +
+2581:       '</div>' +
+2582:       '<div class="adminAuditHint">' +
+2583:         tx('يعرض مصدر الرصيد، الإعلانات، المهام، التعدين، الإحالات والسحوبات.','Shows balance sources, ads, tasks, mining, referrals and withdrawals.') +
+2584:       '</div>' +
+2585:       '<div id="adminUserSearchResult"></div>';
+2586: 
+2587:     setTimeout(()=>{
+2588:       const input = $('adminUserSearchInput');
+2589:       if(input){
+2590:         input.focus();
+2591:         input.addEventListener('keydown',(e)=>{
+2592:           if(e.key === 'Enter') runAdminUserSearch();
+2593:         });
+2594:       }
+2595:     },50);
+2596:   };
+2597: 
+2598:   window.runAdminUserSearch = async function(){
+2599:     const input = $('adminUserSearchInput');
+2600:     const result = $('adminUserSearchResult');
+2601:     if(!input || !result) return;
+2602: 
+2603:     const search = String(input.value || '').trim();
+2604:     if(!search){
+2605:       result.innerHTML = '<div class="adminAuditState">' +
+2606:         tx('أدخل Telegram ID أو Username','Enter Telegram ID or Username') + '</div>';
+2607:       return;
+2608:     }
+2609: 
+2610:     result.innerHTML = '<div class="adminAuditState">⏳ ' + tx('جاري البحث…','Searching…') + '</div>';
+2611: 
+2612:     try{
+2613:       const data = await apiCall('admin_user_activity',{search});
+2614:       if(data?.success !== true){
+2615:         throw new Error(data?.message || tx('المستخدم غير موجود','User not found'));
+2616:       }
+2617: 
+2618:       // Admin-only 12-hour activity report (server independently verifies admin identity).
+2619:       let activity12 = null;
+2620:       try {
+2621:         const a12 = await apiCall('admin_user_activity_12h',{
+2622:           telegram_user_id: String(data?.user?.telegram_user_id || '')
+2623:         });
+---- line 2894 ----
+2887:           '<div class="adminAuditState">' + tx('لا توجد إحالات','No referrals') + '</div>');
+2888:     }catch(err){
+2889:       panel.innerHTML = '<div class="adminAuditState">⚠️ ' +
+2890:         escapeHtml(String(err?.message || tx('تعذر التحميل','Could not load'))) + '</div>';
+2891:     }
+2892:   };
+2893: 
+2894:   async function exchangeRequestApiCall(mimaAmount,walletAddress,memo='',testOnly=false){
+2895:     if(!serverMode){
+2896:       throw new Error(tx('افتح البوت داخل Telegram لإرسال طلب التبادل','Open MIMA inside Telegram to send an exchange request'));
+2897:     }
+2898: 
+2899:     const response = await fetch(MIMA_EXCHANGE_REQUEST_URL,{
+2900:       method:'POST',
+2901:       headers:{
+2902:         'Content-Type':'application/json',
+2903:         'apikey':SUPABASE_PUBLISHABLE_KEY,
+2904:         'x-telegram-init-data':telegramInitData
+2905:       },
+2906:       body:JSON.stringify({
+2907:         mima_amount:mimaAmount,
+2908:         wallet_address:walletAddress,
+2909:         memo:String(memo || '').trim(),
+2910:         test_only:testOnly
+2911:       })
+2912:     });
+2913: 
+2914:     let data = null;
+2915: 
+2916:     try{
+2917:       data = await response.json();
+2918:     }catch(e){
+2919:       throw new Error(tx('استجابة الخادم غير صالحة','Invalid server response'));
+2920:     }
+2921: 
+2922:     if(!response.ok || data?.success !== true){
+2923:       throw new Error(localizeServerMessage(data?.message) || tx('تعذر إرسال طلب التبادل','Could not send the exchange request'));
+2924:     }
+2925: 
+2926:     return data;
+2927:   }
+2928: 
+2929:   async function exchangeHistoryApiCall(){
+2930:     if(!serverMode){
+2931:       throw new Error(tx('افتح البوت داخل Telegram لعرض السحوبات','Open MIMA inside Telegram to view withdrawals'));
+2932:     }
+2933: 
+2934:     const response = await fetch(MIMA_EXCHANGE_REQUEST_URL,{
+2935:       method:'POST',
+2936:       headers:{
+2937:         'Content-Type':'application/json',
+2938:         'apikey':SUPABASE_PUBLISHABLE_KEY,
+2939:         'x-telegram-init-data':telegramInitData
+2940:       },
+2941:       body:JSON.stringify({action:'history'})
+2942:     });
+2943: 
+2944:     let data = null;
+2945: 
+2946:     try{
+2947:       data = await response.json();
+2948:     }catch(e){
+2949:       throw new Error(tx('استجابة الخادم غير صالحة','Invalid server response'));
+2950:     }
+2951: 
+2952:     if(!response.ok || data?.success !== true){
+2953:       throw new Error(localizeServerMessage(data?.message) || tx('تعذر تحميل السحوبات','Could not load withdrawals'));
+2954:     }
+2955: 
+2956:     return Array.isArray(data.withdrawals) ? data.withdrawals : [];
+2957:   }
+2958: 
+---- line 3196 ----
+3189:     renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v2');
+3190:     const task2Title = $('joinChannel2TaskTitle');
+3191:     if(task2Title) task2Title.textContent = tx('انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel');
+3192:     const task2OpenBtn = $('joinChannel2OpenBtn');
+3193:     if(task2OpenBtn) task2OpenBtn.textContent = tx('انضم','Join');
+3194:   }
+3195: 
+3196:   function startAdsgramRewardCountdown(){
+3197:     if(adsgramRewardCountdownTimer){
+3198:       clearInterval(adsgramRewardCountdownTimer);
+3199:       adsgramRewardCountdownTimer = null;
+3200:     }
+3201: 
+3202:     if(!adsgramRewardNextAvailableAt) return;
+3203: 
+3204:     adsgramRewardCountdownTimer = setInterval(async ()=>{
+3205:       const left = Math.max(0,adsgramRewardNextAvailableAt-nowMs());
+3206: 
+3207:       if(left <= 0){
+3208:         clearInterval(adsgramRewardCountdownTimer);
+3209:         adsgramRewardCountdownTimer = null;
+3210:         adsgramRewardNextAvailableAt = 0;
+3211:         renderAdTask();
+3212: 
+3213:         try{
+3214:           await refreshAdsgramRewardStatus(false);
+3215:         }catch(e){}
+3216:         return;
+3217:       }
+3218: 
+3219:       renderAdTask();
+3220:     },1000);
+3221:   }
+3222: 
+3223:   function renderAdTask(){
+3224:     const item = $('adsgramRewardTaskItem');
+3225:     if(item){
+3226:       item.style.display = '';
+3227:       item.classList.remove('mimaAdReady');
+3228:     }
+3229: 
+3230:     const title = $('adsgramRewardTaskTitle');
+3231:     const info = $('adsgramRewardTaskInfo');
+3232:     const btn = $('adsgramRewardTaskBtn');
+3233:     const progress = $('adsgramRewardProgress');
+3234:     const count = $('adsgramRewardTaskCount');
+3235:     const leftLabel = $('adsgramRewardTaskLeft');
+3236:     if(!title || !info || !btn) return;
+3237: 
+3238:     const rewardText = Number(adsgramRewardAmount || 5);
+3239:     const completedAds = Math.max(0,Math.min(6,6-Number(adsgramRewardRemaining || 0)));
+3240:     if(progress) progress.style.width = ((completedAds / 6) * 100).toFixed(2) + '%';
+3241:     if(count) count.textContent = completedAds + ' / 6';
+3242:     if(leftLabel){
+3243:       leftLabel.textContent = tx(
+3244:         adsgramRewardRemaining + ' متبقية',
+3245:         adsgramRewardRemaining + ' left'
+3246:       );
+3247:     }
+3248: 
+3249:     title.textContent = tx('شاهد إعلان','Watch an ad');
+3250: 
+3251:     if(!serverMode){
+3252:       btn.disabled = true;
+3253:       btn.textContent = tx('افتح داخل Telegram','Open in Telegram');
+3254:       info.textContent = '+' + rewardText + tx(' MIMA • إعلان اختياري',' MIMA • optional ad');
+3255:       return;
+3256:     }
+3257: 
+3258:     if(adsgramRewardRemaining <= 0){
+3259:       btn.disabled = true;
+3260:       btn.textContent = tx('مكتمل','Completed');
+---- line 3223 ----
+3216:         return;
+3217:       }
+3218: 
+3219:       renderAdTask();
+3220:     },1000);
+3221:   }
+3222: 
+3223:   function renderAdTask(){
+3224:     const item = $('adsgramRewardTaskItem');
+3225:     if(item){
+3226:       item.style.display = '';
+3227:       item.classList.remove('mimaAdReady');
+3228:     }
+3229: 
+3230:     const title = $('adsgramRewardTaskTitle');
+3231:     const info = $('adsgramRewardTaskInfo');
+3232:     const btn = $('adsgramRewardTaskBtn');
+3233:     const progress = $('adsgramRewardProgress');
+3234:     const count = $('adsgramRewardTaskCount');
+3235:     const leftLabel = $('adsgramRewardTaskLeft');
+3236:     if(!title || !info || !btn) return;
+3237: 
+3238:     const rewardText = Number(adsgramRewardAmount || 5);
+3239:     const completedAds = Math.max(0,Math.min(6,6-Number(adsgramRewardRemaining || 0)));
+3240:     if(progress) progress.style.width = ((completedAds / 6) * 100).toFixed(2) + '%';
+3241:     if(count) count.textContent = completedAds + ' / 6';
+3242:     if(leftLabel){
+3243:       leftLabel.textContent = tx(
+3244:         adsgramRewardRemaining + ' متبقية',
+3245:         adsgramRewardRemaining + ' left'
+3246:       );
+3247:     }
+3248: 
+3249:     title.textContent = tx('شاهد إعلان','Watch an ad');
+3250: 
+3251:     if(!serverMode){
+3252:       btn.disabled = true;
+3253:       btn.textContent = tx('افتح داخل Telegram','Open in Telegram');
+3254:       info.textContent = '+' + rewardText + tx(' MIMA • إعلان اختياري',' MIMA • optional ad');
+3255:       return;
+3256:     }
+3257: 
+3258:     if(adsgramRewardRemaining <= 0){
+3259:       btn.disabled = true;
+3260:       btn.textContent = tx('مكتمل','Completed');
+3261:       const left = adsgramRewardResetAt ? Math.max(0,adsgramRewardResetAt-nowMs()) : 0;
+3262:       info.textContent = left > 0
+3263:         ? ('+' + rewardText + tx(' MIMA • تتجدد بعد ',' MIMA • refreshes in ') + formatCountdown(left))
+3264:         : ('+' + rewardText + tx(' MIMA • تتجدد قريباً',' MIMA • refreshes soon'));
+3265:       return;
+3266:     }
+3267: 
+3268:     const cooldownLeft = adsgramRewardNextAvailableAt
+3269:       ? Math.max(0,adsgramRewardNextAvailableAt-nowMs())
+3270:       : 0;
+3271: 
+3272:     if(cooldownLeft > 0){
+3273:       btn.disabled = true;
+3274:       btn.textContent = formatCountdown(cooldownLeft);
+3275:       info.textContent =
+3276:         '+' + rewardText + tx(' MIMA • الإعلان التالي بعد ',' MIMA • next ad in ') +
+3277:         formatCountdown(cooldownLeft);
+3278:       return;
+3279:     }
+3280: 
+3281:     if(adsgramRewardNextAvailableAt){
+3282:       adsgramRewardNextAvailableAt = 0;
+3283:     }
+3284: 
+3285:     if(item) item.classList.add('mimaAdReady');
+3286:     btn.disabled = adsgramRewardBusy;
+3287:     btn.innerHTML = adsgramRewardBusy
+---- line 3297 ----
+3290:     info.textContent =
+3291:       tx('جاهز الآن • ','Ready now • ') +
+3292:       '+' + rewardText +
+3293:       tx(' MIMA • المتبقي ',' MIMA • remaining ') +
+3294:       adsgramRewardRemaining + '/6';
+3295:   }
+3296: 
+3297:   async function refreshAdsgramRewardStatus(showError=false){
+3298:     if(!serverMode){
+3299:       renderAdTask();
+3300:       return false;
+3301:     }
+3302: 
+3303:     try{
+3304:       const data = await apiCall('ad_status');
+3305:       if(data?.success !== true){
+3306:         throw new Error(localizeServerMessage(data?.message) || tx('تعذر تحميل حالة الإعلان','Could not load ad status'));
+3307:       }
+3308: 
+3309:       adsgramRewardWatched = Math.max(0,Number(data.watched || 0));
+3310:       if(Number.isFinite(Number(data.reward_mima)) && Number(data.reward_mima)>0){adsgramRewardAmount=Number(data.reward_mima);}
+3311:       adsgramRewardRemaining = Math.max(0,Number(data.remaining ?? 0));
+3312: 
+3313:       const serverTs = Date.parse(data.server_time || '');
+3314:       if(Number.isFinite(serverTs)){
+3315:         serverTimeOffset = serverTs - Date.now();
+3316:       }
+3317: 
+3318:       const resetTs = Date.parse(data.reset_at || '');
+3319:       adsgramRewardResetAt = Number.isFinite(resetTs) ? resetTs : 0;
+3320: 
+3321:       if(data.available === true){
+3322:         adsgramRewardNextAvailableAt = 0;
+3323:       }else{
+3324:         const nextTs = Date.parse(data.next_available_at || '');
+3325:         adsgramRewardNextAvailableAt = Number.isFinite(nextTs) ? nextTs : 0;
+3326: 
+3327:         // Ignore tiny clock/network differences that would otherwise
+3328:         // leave the task stuck displaying 00:00:01.
+3329:         if(
+3330:           adsgramRewardNextAvailableAt &&
+3331:           adsgramRewardNextAvailableAt - nowMs() <= 1500
+3332:         ){
+3333:           adsgramRewardNextAvailableAt = 0;
+3334:         }
+3335:       }
+3336: 
+3337:       renderAdTask();
+3338:       startAdsgramRewardCountdown();
+3339:       return true;
+3340:     }catch(err){
+3341:       renderAdTask();
+3342:       if(showError){
+3343:         toast('⚠️ ' + (err.message || tx('تعذر تحميل حالة الإعلان','Could not load ad status')));
+3344:       }
+3345:       return false;
+3346:     }
+3347:   }
+3348: 
+3349:   function getAdsgramController(){
+3350:     if(adsgramController) return adsgramController;
+3351:     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
+3352: 
+3353:     adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+3354: 
+3355:     if(
+3356:       adsgramController &&
+3357:       typeof adsgramController.addEventListener === 'function'
+3358:     ){
+3359:       const log=(event)=>()=>{window.mimaAdDiag?.('rewarded',event);return false;};
+3360:       adsgramController.addEventListener('onStart',log('on_start'));
+3361:       adsgramController.addEventListener('onReward',log('on_reward'));
+---- line 3349 ----
+3342:       if(showError){
+3343:         toast('⚠️ ' + (err.message || tx('تعذر تحميل حالة الإعلان','Could not load ad status')));
+3344:       }
+3345:       return false;
+3346:     }
+3347:   }
+3348: 
+3349:   function getAdsgramController(){
+3350:     if(adsgramController) return adsgramController;
+3351:     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
+3352: 
+3353:     adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+3354: 
+3355:     if(
+3356:       adsgramController &&
+3357:       typeof adsgramController.addEventListener === 'function'
+3358:     ){
+3359:       const log=(event)=>()=>{window.mimaAdDiag?.('rewarded',event);return false;};
+3360:       adsgramController.addEventListener('onStart',log('on_start'));
+3361:       adsgramController.addEventListener('onReward',log('on_reward'));
+3362:       adsgramController.addEventListener('onSkip',log('on_skip'));
+3363:       adsgramController.addEventListener('onError',log('sdk_error'));
+3364:       adsgramController.addEventListener('onBannerNotFound',log('no_fill'));
+3365:       adsgramController.addEventListener('onNonStopShow',log('nonstop'));
+3366:       adsgramController.addEventListener('onTooLongSession',log('too_long'));
+3367:     }
+3368: 
+3369:     return adsgramController;
+3370:   }
+3371: 
+3372:   if(document.readyState === 'loading'){
+3373:     document.addEventListener('DOMContentLoaded',()=>setTimeout(warmAdsgramRewardController,900),{once:true});
+3374:   }else{
+3375:     setTimeout(warmAdsgramRewardController,900);
+3376:   }
+3377: 
+3378:   function warmAdsgramRewardController(){
+3379:     try{ getAdsgramController(); }catch(e){}
+3380:   }
+3381: 
+3382:   async function waitForAdsgramReward(beforeCount){
+3383:     for(let i=0;i<12;i++){
+3384:       await new Promise(resolve=>setTimeout(resolve,800));
+3385:       await refreshAdsgramRewardStatus(false);
+3386:       if(adsgramRewardWatched > beforeCount){
+3387:         await syncServerStatus(false,true);
+3388:         return true;
+3389:       }
+3390:     }
+3391:     return false;
+3392:   }
+3393: 
+3394:   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+3395:     if(adsgramRewardBusy) return;
+3396: 
+3397:     if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
+3398:       renderAdTask();
+3399:       return;
+3400:     }
+3401: 
+3402:     if(!serverMode){
+3403:       toast(tx('⚠️ افتح MIMA من داخل Telegram لمشاهدة الإعلان','⚠️ Open MIMA inside Telegram to watch the ad'));
+3404:       return;
+3405:     }
+3406: 
+3407:     await refreshAdsgramRewardStatus(false);
+3408: 
+3409:     if(adsgramRewardRemaining <= 0){
+3410:       renderAdTask();
+3411:       toast(tx('⏳ أكملت إعلانات هذه الدورة','⏳ You completed the ads for this cycle'));
+3412:       return;
+3413:     }
+---- line 3378 ----
+3371: 
+3372:   if(document.readyState === 'loading'){
+3373:     document.addEventListener('DOMContentLoaded',()=>setTimeout(warmAdsgramRewardController,900),{once:true});
+3374:   }else{
+3375:     setTimeout(warmAdsgramRewardController,900);
+3376:   }
+3377: 
+3378:   function warmAdsgramRewardController(){
+3379:     try{ getAdsgramController(); }catch(e){}
+3380:   }
+3381: 
+3382:   async function waitForAdsgramReward(beforeCount){
+3383:     for(let i=0;i<12;i++){
+3384:       await new Promise(resolve=>setTimeout(resolve,800));
+3385:       await refreshAdsgramRewardStatus(false);
+3386:       if(adsgramRewardWatched > beforeCount){
+3387:         await syncServerStatus(false,true);
+3388:         return true;
+3389:       }
+3390:     }
+3391:     return false;
+3392:   }
+3393: 
+3394:   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+3395:     if(adsgramRewardBusy) return;
+3396: 
+3397:     if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
+3398:       renderAdTask();
+3399:       return;
+3400:     }
+3401: 
+3402:     if(!serverMode){
+3403:       toast(tx('⚠️ افتح MIMA من داخل Telegram لمشاهدة الإعلان','⚠️ Open MIMA inside Telegram to watch the ad'));
+3404:       return;
+3405:     }
+3406: 
+3407:     await refreshAdsgramRewardStatus(false);
+3408: 
+3409:     if(adsgramRewardRemaining <= 0){
+3410:       renderAdTask();
+3411:       toast(tx('⏳ أكملت إعلانات هذه الدورة','⏳ You completed the ads for this cycle'));
+3412:       return;
+3413:     }
+3414: 
+3415:     const controller = getAdsgramController();
+3416:     if(!controller){
+3417:       window.mimaAdDiag?.('rewarded','sdk_error');
+3418:       toast(tx('⏳ خدمة الإعلان لم تجهز بعد، حاول مرة أخرى','⏳ Ad service is not ready yet. Try again'));
+3419:       return;
+3420:     }
+3421: 
+3422:     window.mimaAdDiag?.('rewarded','request');
+3423:     adsgramRewardBusy = true;
+3424:     renderAdTask();
+3425:     const beforeCount = adsgramRewardWatched;
+3426: 
+3427:     try{
+3428:       await controller.show();
+3429:       window.mimaAdDiag?.('rewarded','sdk_completed');
+3430: 
+3431:       toast(tx('✅ تمت المشاهدة، جاري تأكيد المكافأة','✅ Ad completed, confirming reward'));
+3432:       const confirmed = await waitForAdsgramReward(beforeCount);
+3433: 
+3434:       if(confirmed){
+3435:         window.mimaAdDiag?.('rewarded','reward_confirmed');
+3436:         startAdsgramRewardCountdown();
+3437:         showMimaTaskSuccess('شاهد إعلان','Watch an ad',adsgramRewardAmount);
+3438:       }else{
+3439:         window.mimaAdDiag?.('rewarded','reward_pending');
+3440:         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
+3441:         setTimeout(async()=>{
+3442:           await refreshAdsgramRewardStatus(false);
+---- line 3382 ----
+3375:     setTimeout(warmAdsgramRewardController,900);
+3376:   }
+3377: 
+3378:   function warmAdsgramRewardController(){
+3379:     try{ getAdsgramController(); }catch(e){}
+3380:   }
+3381: 
+3382:   async function waitForAdsgramReward(beforeCount){
+3383:     for(let i=0;i<12;i++){
+3384:       await new Promise(resolve=>setTimeout(resolve,800));
+3385:       await refreshAdsgramRewardStatus(false);
+3386:       if(adsgramRewardWatched > beforeCount){
+3387:         await syncServerStatus(false,true);
+3388:         return true;
+3389:       }
+3390:     }
+3391:     return false;
+3392:   }
+3393: 
+3394:   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+3395:     if(adsgramRewardBusy) return;
+3396: 
+3397:     if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
+3398:       renderAdTask();
+3399:       return;
+3400:     }
+3401: 
+3402:     if(!serverMode){
+3403:       toast(tx('⚠️ افتح MIMA من داخل Telegram لمشاهدة الإعلان','⚠️ Open MIMA inside Telegram to watch the ad'));
+3404:       return;
+3405:     }
+3406: 
+3407:     await refreshAdsgramRewardStatus(false);
+3408: 
+3409:     if(adsgramRewardRemaining <= 0){
+3410:       renderAdTask();
+3411:       toast(tx('⏳ أكملت إعلانات هذه الدورة','⏳ You completed the ads for this cycle'));
+3412:       return;
+3413:     }
+3414: 
+3415:     const controller = getAdsgramController();
+3416:     if(!controller){
+3417:       window.mimaAdDiag?.('rewarded','sdk_error');
+3418:       toast(tx('⏳ خدمة الإعلان لم تجهز بعد، حاول مرة أخرى','⏳ Ad service is not ready yet. Try again'));
+3419:       return;
+3420:     }
+3421: 
+3422:     window.mimaAdDiag?.('rewarded','request');
+3423:     adsgramRewardBusy = true;
+3424:     renderAdTask();
+3425:     const beforeCount = adsgramRewardWatched;
+3426: 
+3427:     try{
+3428:       await controller.show();
+3429:       window.mimaAdDiag?.('rewarded','sdk_completed');
+3430: 
+3431:       toast(tx('✅ تمت المشاهدة، جاري تأكيد المكافأة','✅ Ad completed, confirming reward'));
+3432:       const confirmed = await waitForAdsgramReward(beforeCount);
+3433: 
+3434:       if(confirmed){
+3435:         window.mimaAdDiag?.('rewarded','reward_confirmed');
+3436:         startAdsgramRewardCountdown();
+3437:         showMimaTaskSuccess('شاهد إعلان','Watch an ad',adsgramRewardAmount);
+3438:       }else{
+3439:         window.mimaAdDiag?.('rewarded','reward_pending');
+3440:         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
+3441:         setTimeout(async()=>{
+3442:           await refreshAdsgramRewardStatus(false);
+3443:           await syncServerStatus(false,true);
+3444:         },4000);
+3445:       }
+3446:     }catch(err){
+---- line 3394 ----
+3387:         await syncServerStatus(false,true);
+3388:         return true;
+3389:       }
+3390:     }
+3391:     return false;
+3392:   }
+3393: 
+3394:   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+3395:     if(adsgramRewardBusy) return;
+3396: 
+3397:     if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
+3398:       renderAdTask();
+3399:       return;
+3400:     }
+3401: 
+3402:     if(!serverMode){
+3403:       toast(tx('⚠️ افتح MIMA من داخل Telegram لمشاهدة الإعلان','⚠️ Open MIMA inside Telegram to watch the ad'));
+3404:       return;
+3405:     }
+3406: 
+3407:     await refreshAdsgramRewardStatus(false);
+3408: 
+3409:     if(adsgramRewardRemaining <= 0){
+3410:       renderAdTask();
+3411:       toast(tx('⏳ أكملت إعلانات هذه الدورة','⏳ You completed the ads for this cycle'));
+3412:       return;
+3413:     }
+3414: 
+3415:     const controller = getAdsgramController();
+3416:     if(!controller){
+3417:       window.mimaAdDiag?.('rewarded','sdk_error');
+3418:       toast(tx('⏳ خدمة الإعلان لم تجهز بعد، حاول مرة أخرى','⏳ Ad service is not ready yet. Try again'));
+3419:       return;
+3420:     }
+3421: 
+3422:     window.mimaAdDiag?.('rewarded','request');
+3423:     adsgramRewardBusy = true;
+3424:     renderAdTask();
+3425:     const beforeCount = adsgramRewardWatched;
+3426: 
+3427:     try{
+3428:       await controller.show();
+3429:       window.mimaAdDiag?.('rewarded','sdk_completed');
+3430: 
+3431:       toast(tx('✅ تمت المشاهدة، جاري تأكيد المكافأة','✅ Ad completed, confirming reward'));
+3432:       const confirmed = await waitForAdsgramReward(beforeCount);
+3433: 
+3434:       if(confirmed){
+3435:         window.mimaAdDiag?.('rewarded','reward_confirmed');
+3436:         startAdsgramRewardCountdown();
+3437:         showMimaTaskSuccess('شاهد إعلان','Watch an ad',adsgramRewardAmount);
+3438:       }else{
+3439:         window.mimaAdDiag?.('rewarded','reward_pending');
+3440:         toast(tx('⏳ جاري تأكيد المكافأة، تحقق من رصيدك بعد قليل','⏳ Reward is being confirmed. Check your balance shortly'));
+3441:         setTimeout(async()=>{
+3442:           await refreshAdsgramRewardStatus(false);
+3443:           await syncServerStatus(false,true);
+3444:         },4000);
+3445:       }
+3446:     }catch(err){
+3447:       const desc = String(err?.description || err?.message || '');
+3448:       window.mimaAdDiag?.('rewarded',/no ads|no banner|banner not found/i.test(desc)?'no_fill':'show_rejected');
+3449: 
+3450:       // No-ad / no-fill cases should stay completely silent.
+3451:       if(!/no ads|no banner|banner not found|not found|non.?stop|too long session/i.test(desc)){
+3452:         if(!/skip|close|cancel/i.test(desc)){
+3453:           toast(tx('⚠️ تعذر تشغيل الإعلان','⚠️ Could not play the ad'));
+3454:         }
+3455:       }
+3456:     }finally{
+3457:       adsgramRewardBusy = false;
+3458:       renderAdTask();
+---- line 4831 ----
+4824:     }).join('');
+4825:   }
+4826: 
+4827:   let publicPayoutsLastFetchAt = 0;
+4828:   let publicPayoutsFetchPromise = null;
+4829:   const PUBLIC_PAYOUTS_CLIENT_TTL_MS = 60 * 1000;
+4830: 
+4831:   async function loadPublicPayouts(force=false){
+4832:     const list = $('publicPayoutsList');
+4833:     if(!list) return;
+4834: 
+4835:     const now = Date.now();
+4836:     if(!force && now - publicPayoutsLastFetchAt < PUBLIC_PAYOUTS_CLIENT_TTL_MS){
+4837:       return;
+4838:     }
+4839: 
+4840:     if(publicPayoutsFetchPromise){
+4841:       return publicPayoutsFetchPromise;
+4842:     }
+4843: 
+4844:     publicPayoutsFetchPromise = (async()=>{
+4845:       try{
+4846:         const rows = await publicPayoutsApiCall();
+4847:         publicPayoutsLastFetchAt = Date.now();
+4848:         renderPublicPayouts(rows);
+4849:       }catch(err){
+4850:         list.innerHTML = `
+4851:           <div class="publicPayoutEmpty">
+4852:             <b>${tx('تعذر تحميل إثباتات السحب','Could not load payout proofs')}</b>
+4853:             <small>${escapeHtml(err?.message || tx('حاول مرة أخرى','Please try again'))}</small>
+4854:           </div>
+4855:         `;
+4856:       }finally{
+4857:         publicPayoutsFetchPromise = null;
+4858:       }
+4859:     })();
+4860: 
+4861:     return publicPayoutsFetchPromise;
+4862:   }
+4863: 
+4864:   window.copyTxHashDirect = async function(button){
+4865:     const value = String(
+4866:       button?.dataset?.copy ||
+4867:       button?.closest?.('[data-tx-hash]')?.dataset?.txHash ||
+4868:       ''
+4869:     ).trim();
+4870: 
+4871:     if(!value || value === '—'){
+4872:       toast(tx('⚠️ TX Hash غير متوفر','⚠️ TX Hash unavailable'));
+4873:       return;
+4874:     }
+4875: 
+4876:     let copied = false;
+4877: 
+4878:     try{
+4879:       if(navigator.clipboard && window.isSecureContext){
+4880:         await navigator.clipboard.writeText(value);
+4881:         copied = true;
+4882:       }
+4883:     }catch(e){}
+4884: 
+4885:     if(!copied){
+4886:       try{
+4887:         const area = document.createElement('textarea');
+4888:         area.value = value;
+4889:         area.setAttribute('readonly','');
+4890:         area.style.position = 'fixed';
+4891:         area.style.left = '-9999px';
+4892:         area.style.top = '0';
+4893:         area.style.opacity = '0';
+4894:         document.body.appendChild(area);
+4895:         area.focus();
+---- line 7357 ----
+7350:     hidden=true;
+7351:     splash.classList.add('hide');
+7352:     setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 450);
+7353:   }
+7354:   // Keep the branded screen visible for roughly four seconds,
+7355:   // while allowing the app to finish its initial paint.
+7356:   var start=Date.now();
+7357:   function readyHide(){
+7358:     var wait=Math.max(0,4000-(Date.now()-start));
+7359:     setTimeout(hide,wait);
+7360:   }
+7361:   if(document.readyState==='complete') readyHide();
+7362:   else window.addEventListener('load',readyHide,{once:true});
+7363:   setTimeout(hide,7000);
+7364: })();
+7365: </script>
+7366: 
+7367: <style id="mima-safe-withdrawals-task-style">
+7368: /* Keep public withdrawal proofs hidden. */
+7369: .publicPayoutProofs.homePayouts{
+7370:   display:none !important;
+7371: }
+7372: 
+7373: /* The withdrawals task now inherits the exact same appearance as all other tasks. */
+7374: .mimaWithdrawalsTask{
+7375:   position:static !important;
+7376:   overflow:visible !important;
+7377:   border:0 !important;
+7378:   background:none !important;
+7379:   box-shadow:none !important;
+7380: }
+7381: .mimaWithdrawalsTask::after{
+7382:   display:none !important;
+7383: }
+7384: </style>
+7385: 
+7386: 
+7387: <script id="mima-safe-withdrawals-task-script">
+7388: (function(){
+7389:   const TASK_ENDPOINT = SUPABASE_URL + '/functions/v1/mima-withdrawals-task';
+7390:   const CHANNEL_URL = 'https://t.me/MIMACOINWITHDRAWALS/174';
+7391:   let nextAt = 0;
+7392:   let busy = false;
+7393: 
+7394:   function el(id){ return document.getElementById(id); }
+7395: 
+7396:   async function openChannel(){
+7397:     if(serverMode){
+7398:       try{
+7399:         const result=await callTask('open');
+7400:         if(result?.success!==true) throw new Error('Could not register channel opening');
+7401:       }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
+7402:     }
+7403:     try{ localStorage.setItem('mima_withdrawals_channel_opened_v2',String(Date.now())); }catch(e){}
+7404:     renderTask();
+7405:     try{
+7406:       if(window.Telegram && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function'){
+7407:         Telegram.WebApp.openTelegramLink(CHANNEL_URL);
+7408:       }else{
+7409:         window.open(CHANNEL_URL,'_blank','noopener,noreferrer');
+7410:       }
+7411:     }catch(e){
+7412:       window.location.href = CHANNEL_URL;
+7413:     }
+7414:   }
+7415: 
+7416:   async function callTask(action){
+7417:     if(!serverMode){
+7418:       throw new Error(tx('افتح التطبيق من داخل Telegram','Open the app inside Telegram'));
+7419:     }
+7420: 
+7421:     const response = await fetch(TASK_ENDPOINT,{
+---- line 7880 ----
+7873:     'MIMA/USDT':{base:0.00124,currency:'USDT'}
+7874:   };
+7875:   const PERIODS = {'1H':1,'4H':4,'1D':11,'1W':23};
+7876:   let pair='MIMA/GRAM',period='1H',side='buy',lastFocus=null;
+7877:   const get=(id)=>document.getElementById(id);
+7878:   const isAr=()=>String(document.documentElement.lang||'').toLowerCase().startsWith('ar');
+7879:   const trans=(ar,en)=>isAr()?ar:en;
+7880:   function isAdmin(){
+7881:     try{
+7882:       return String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id||'')===ADMIN_ID && Boolean(window.Telegram?.WebApp?.initData);
+7883:     }catch(e){return false;}
+7884:   }
+7885:   function makeCandles(){
+7886:     const base=MARKET_PAIRS[pair].base, offset=PERIODS[period], list=[];
+7887:     let prev=base*(0.985+0.011*Math.sin(offset));
+7888:     for(let i=0;i<36;i++){
+7889:       const change=(Math.sin(i*1.45+offset)*0.0047)+(Math.cos(i*.49+offset)*.0038)+.0005;
+7890:       const open=prev,close=open*(1+change);
+7891:       const spike=.0018+.0037*Math.abs(Math.sin(i*.81+offset));
+7892:       list.push({o:open,c:close,h:Math.max(open,close)*(1+spike),l:Math.min(open,close)*(1-spike),vol:25+75*Math.abs(Math.sin(i*.47+offset))});
+7893:       prev=close;
+7894:     }
+7895:     return list;
+7896:   }
+7897:   function paint(){
+7898:     const canvas=get('mimaMarketBetaCanvas');
+7899:     if(!canvas)return;
+7900:     const width=Math.max(300,Math.round(canvas.getBoundingClientRect().width||350));
+7901:     const height=220,ratio=Math.min(2,window.devicePixelRatio||1);
+7902:     canvas.width=Math.round(width*ratio);canvas.height=height*ratio;
+7903:     const ctx=canvas.getContext('2d');if(!ctx)return;
+7904:     ctx.setTransform(ratio,0,0,ratio,0,0);
+7905:     ctx.clearRect(0,0,width,height);
+7906:     const cs=makeCandles();
+7907:     const top=Math.max(...cs.map(c=>c.h))*1.0015,bot=Math.min(...cs.map(c=>c.l))*.9985;
+7908:     const publicView=!isAdmin();
+7909:     const h=174, padLeft=9,padRight=publicView?13:53, plotWidth=width-padLeft-padRight;
+7910:     const y=(v)=>8+(top-v)/(top-bot)*h;
+7911:     ctx.textAlign='right';ctx.font='10px system-ui';
+7912:     for(let i=0;i<=4;i++){
+7913:       const gy=8+i*h/4;ctx.strokeStyle='#253443';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(padLeft,gy);ctx.lineTo(width-padRight+8,gy);ctx.stroke();
+7914:       // Public preview never displays synthetic numbers as real market prices.
+7915:       if(!publicView){ctx.fillStyle='#8292a0';ctx.fillText((top-(top-bot)*i/4).toFixed(5),width-3,gy+3);}
+7916:     }
+7917:     const step=plotWidth/cs.length,candleW=Math.max(3,step*.54);
+7918:     cs.forEach((c,i)=>{
+7919:       const mid=padLeft+step*(i+.5),up=c.c>=c.o,color=up?'#31c79a':'#ee6670';
+7920:       ctx.fillStyle=color;ctx.strokeStyle=color;ctx.lineWidth=1.15;
+7921:       ctx.beginPath();ctx.moveTo(mid,y(c.h));ctx.lineTo(mid,y(c.l));ctx.stroke();
+7922:       const bodyTop=Math.min(y(c.o),y(c.c)),bodyH=Math.max(1.6,Math.abs(y(c.o)-y(c.c)));
+7923:       ctx.fillRect(mid-candleW/2,bodyTop,candleW,bodyH);
+7924:       ctx.globalAlpha=.34;
+7925:       ctx.fillRect(mid-candleW/2,203-(c.vol/100*19),candleW,c.vol/100*19);
+7926:       ctx.globalAlpha=1;
+7927:     });
+7928:     const last=cs[cs.length-1].c,initial=cs[0].o,pct=(last/initial-1)*100;
+7929:     get('mimaMarketBetaPrice').textContent=last.toFixed(6);
+7930:     get('mimaMarketBetaQuote').textContent=MARKET_PAIRS[pair].currency;
+7931:     get('mimaMarketBetaDelta').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';
+7932:     get('mimaMarketBetaDelta').style.color=pct>=0?'#8ee5b6':'#ff9da7';
+7933:     get('mimaMarketBetaDelta').style.borderColor=pct>=0?'#27644b':'#7e3540';
+7934:     get('mimaMarketBetaDelta').style.background=pct>=0?'#123c30':'#3d1e25';
+7935:     get('mimaMarketBetaHigh').textContent=Math.max(...cs.map(c=>c.h)).toFixed(6);
+7936:     get('mimaMarketBetaLow').textContent=Math.min(...cs.map(c=>c.l)).toFixed(6);
+7937:     get('mimaMarketBetaVolume').textContent='1.28M';
+7938:     estimate();
+7939:   }
+7940:   function estimate(){
+7941:     const value=Number(get('mimaMarketBetaAmount')?.value||0);
+7942:     const candles=makeCandles();
+7943:     const unit=candles[candles.length-1].c;
+7944:     const result=side==='buy'?(unit>0?value/unit:0):value*unit;
+---- line 8272 ----
+8265:  function tickContest(){
+8266:   const el=$('mimaContestTimer');if(!el)return;
+8267:   const remaining=Math.max(0,Math.ceil((contestEnds-(Date.now()+contestClockOffset))/1000));
+8268:   const days=Math.floor(remaining/86400),hours=Math.floor((remaining%86400)/3600),mins=Math.floor((remaining%3600)/60),secs=remaining%60;
+8269:   el.textContent=contestEnds?[days*24+hours,mins,secs].map(n=>String(n).padStart(2,'0')).join(':'):'--:--:--';
+8270:   const state=$('mimaContestState');if(state&&contestEnds)state.textContent=remaining>0?'Time remaining · Winners verified at the end':'Competition ended · Results pending review';
+8271:  }
+8272:  async function loadContest(){
+8273:   try{const r=await apiCall('rank_contest');if(r?.success&&r.contest){
+8274:     contestEnds=Date.parse(r.contest.ends_at)||0;
+8275:     contestClockOffset=(Date.parse(r.contest.server_time)||Date.now())-Date.now();
+8276:     tickContest();
+8277:   }}catch(e){const state=$('mimaContestState');if(state)state.textContent='Contest timer unavailable';}
+8278:  }
+8279:  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{loadContest();setInterval(tickContest,1000);});
+8280:  else {loadContest();setInterval(tickContest,1000);}
+8281: 
+8282:  window.mimaLoadRank=async function(force){
+8283:   if(loading||(!force&&Date.now()-last<60000))return;
+8284:   loading=true; $('mimaRankList').textContent=words('جار تحميل الترتيب…','Loading leaderboard…');
+8285:   try{
+8286:    const r=await apiCall('rank_leaderboard');
+8287:    if(!r?.success)throw Error(r?.message||'Unable to load rank');
+8288:    const all=Array.isArray(r.top)?r.top:[];last=Date.now();
+8289:    $('mimaRankDescription').textContent=words('إحالات حقيقية مؤهلة فقط • بدون جوائز','Verified referrals only • $35 prize pool');
+8290:    $('mimaRankYouLabel').textContent=words('ترتيبك','Your rank');
+8291:    $('mimaRankListTitle').textContent=words('أفضل 100 معدّن','Top 100 miners');
+8292:    $('mimaRankMyPosition').textContent=r.me?.rank?'#'+r.me.rank:'—';
+8293:    $('mimaRankMyInvites').textContent=r.me?words(r.me.invites+' إحالة مؤهلة',r.me.invites+' qualified invites'):words('لا توجد إحالات مؤهلة بعد','No qualified invites yet');
+8294:    const top=all.slice(0,3);
+8295:    $('mimaRankPodium').innerHTML=[top[1],top[0],top[2]].map((p,i)=>p?'<div class="person '+(['second','first','third'][i])+'"><div class="medal">'+(['🥈 #2','🥇 #1','🥉 #3'][i])+'</div><div class="name">'+(p.username&&/^[a-zA-Z0-9_]{5,32}$/.test(p.username)?'<a class="mimaRankProfileLink" href="https:/
+8296:    $('mimaRankList').innerHTML=all.length?all.map(p=>'<div class="mimaRankItem"><span class="mimaRankNumber">#'+safe(p.rank)+'</span><span class="mimaRankName">'+safe(p.name)+'</span><span class="mimaRankCount">'+safe(p.invites)+' '+words('إحالة','invites')+'</span></div>').join(''):'<div class="mim
+8297:   }catch(e){$('mimaRankList').textContent=words('تعذّر جلب الترتيب، حاول مجدداً','Could not load ranks, please retry');}
+8298:   finally{loading=false;}
+8299:  };
+8300: })();
+8301: </script><script id="mima-channel-ten-second-refresh">setInterval(function(){try{if(typeof renderTask==='function')renderTask();if(typeof renderMimaExchangeChannelTask==='function')renderMimaExchangeChannelTask();}catch(e){}},1000);</script></body>
+8302: 
+8303: <style id="mima-boost-right-edge-alignment-20261011">
+8304: /* Keep the single BOOST button inside the gold-bordered MIMA panel. */
+8305: #mimaBoostSafeButton{box-sizing:border-box!important;margin-right:0!important;max-width:calc(100% - 10px)!important;}
+8306: </style>
+8307: <script id="mima-boost-right-edge-alignment-script-20261011">
+8308: (function(){
+8309:  function alignBoost(){
+8310:    const scene=document.querySelector('.miningScene');
+8311:    if(!scene)return;
+8312:    const frame=scene.parentElement;
+8313:    if(!frame)return;
+8314:    const sceneRect=scene.getBoundingClientRect();
+8315:    const frameRect=frame.getBoundingClientRect();
+8316:    if(!sceneRect.width||!frameRect.width)return;
+8317:    ['mimaBoostSafeButton'].forEach(id=>{
+8318:      const btn=document.getElementById(id);
+8319:      if(!btn||!btn.getBoundingClientRect().width)return;
+8320:      const width=btn.getBoundingClientRect().width;
+8321:      const left=Math.max(4,Math.min(sceneRect.width-width-4,frameRect.right-sceneRect.left-width-6));
+8322:      btn.style.setProperty('left',left+'px','important');
+8323:      btn.style.setProperty('right','auto','important');
+8324:    });
+8325:  }
+8326:  function start(){alignBoost();requestAnimationFrame(alignBoost);window.addEventListener('resize',alignBoost,{passive:true});window.addEventListener('orientationchange',alignBoost,{passive:true});}
+8327:  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+8328: })();
+8329: </script>
+8330: <style id="mima-royal-boost-rocket-20261011">
+8331: #mimaBoostSafeButton .rocket{display:flex!important;align-items:center!important;justify-content:center!important;width:37px!important;height:40px!important;line-height:0!important;filter:drop-shadow(0 1px 3px rgba(242,187,69,.45))}
+8332: #mimaBoostSafeButton .rocket svg{width:34px!important;height:38px!important;display:block!important}
+8333: #mimaBoostSafeButton .hours{font-size:11px!important;line-height:1.05!important;letter-spacing:.35px!important;color:#ffe9aa!important;text-shadow:0 1px 7px rgba(248,193,79,.4)}
+8334: </style>
+8335: </html>
+8336: <style>
+---- line 8326 ----
+8319:      if(!btn||!btn.getBoundingClientRect().width)return;
+8320:      const width=btn.getBoundingClientRect().width;
+8321:      const left=Math.max(4,Math.min(sceneRect.width-width-4,frameRect.right-sceneRect.left-width-6));
+8322:      btn.style.setProperty('left',left+'px','important');
+8323:      btn.style.setProperty('right','auto','important');
+8324:    });
+8325:  }
+8326:  function start(){alignBoost();requestAnimationFrame(alignBoost);window.addEventListener('resize',alignBoost,{passive:true});window.addEventListener('orientationchange',alignBoost,{passive:true});}
+8327:  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+8328: })();
+8329: </script>
+8330: <style id="mima-royal-boost-rocket-20261011">
+8331: #mimaBoostSafeButton .rocket{display:flex!important;align-items:center!important;justify-content:center!important;width:37px!important;height:40px!important;line-height:0!important;filter:drop-shadow(0 1px 3px rgba(242,187,69,.45))}
+8332: #mimaBoostSafeButton .rocket svg{width:34px!important;height:38px!important;display:block!important}
+8333: #mimaBoostSafeButton .hours{font-size:11px!important;line-height:1.05!important;letter-spacing:.35px!important;color:#ffe9aa!important;text-shadow:0 1px 7px rgba(248,193,79,.4)}
+8334: </style>
+8335: </html>
+8336: <style>
+8337: .coin.exactCoinHost{
+8338:   width:230px!important;
+8339:   height:230px!important;
+8340:   min-width:230px!important;
+8341:   min-height:230px!important;
+8342:   aspect-ratio:1/1!important;
+8343: }
+8344: .mimaCoinRotor{
+8345:   width:100%!important;
+8346:   height:100%!important;
+8347:   aspect-ratio:1/1!important;
+8348:   transform-style:preserve-3d;
+8349: }
+8350: </style>
+8351: 
+8352: <style>
+8353: /* v14: clean approved MIMA coin — no bottom pedestal, no fake crop */
+8354: .coin.exactCoinHost{
+8355:   width:230px!important;
+8356:   height:230px!important;
+8357:   min-width:230px!important;
+8358:   min-height:230px!important;
+8359:   aspect-ratio:1/1!important;
+8360:   background:transparent!important;
+8361:   border:0!important;
+8362:   box-shadow:none!important;
+8363:   overflow:visible!important;
+8364: }
+8365: .mimaCoinRotor{
+8366:   width:100%!important;
+8367:   height:100%!important;
+8368:   inset:0!important;
+8369:   border-radius:50%!important;
+8370:   overflow:visible!important;
+8371:   background:transparent!important;
+8372:   border:0!important;
+8373:   box-shadow:none!important;
+8374: }
+8375: #mimaCoinImage{
+8376:   position:absolute!important;
+8377:   inset:0!important;
+8378:   width:100%!important;
+8379:   height:100%!important;
+8380:   object-fit:contain!important;
+8381:   object-position:center!important;
+8382:   clip-path:none!important;
+8383:   border-radius:50%!important;
+8384:   background:transparent!important;
+8385:   border:0!important;
+8386:   box-shadow:none!important;
+8387:   filter:none!important;
+8388:   pointer-events:none!important;
+8389: }
+8390: </style>
