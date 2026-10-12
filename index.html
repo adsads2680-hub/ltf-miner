@@ -920,6 +920,48 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </div>
   </div>
 
+  <section class="mimaDailyCheckin" id="mimaDailyCheckin" aria-live="polite">
+    <div class="mimaDailyHead">
+      <div>
+        <b id="mimaDailyTitle">تسجيل الحضور اليومي</b>
+        <small id="mimaDailySubtitle">ادخل كل يوم واحصل على مكافأة MIMA متزايدة</small>
+      </div>
+      <div class="mimaDailyStreakBadge">
+        <span class="mimaDailyFlame">◆</span>
+        <strong id="mimaDailyStreakText">0/7</strong>
+      </div>
+    </div>
+
+    <div class="mimaDailyDays" id="mimaDailyDays">
+      <div class="mimaDailyDay" data-day="1"><small>اليوم 1</small><b>1</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="2"><small>اليوم 2</small><b>2</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="3"><small>اليوم 3</small><b>4</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="4"><small>اليوم 4</small><b>6</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="5"><small>اليوم 5</small><b>8</b><span>MIMA</span></div>
+      <div class="mimaDailyDay" data-day="6"><small>اليوم 6</small><b>10</b><span>MIMA</span></div>
+      <div class="mimaDailyDay mimaDailyGiftDay" data-day="7">
+        <small>اليوم 7</small>
+        <svg class="mimaDailyGiftIcon" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M10 29h44v27H10z"></path>
+          <path d="M7 21h50v12H7z"></path>
+          <path d="M32 21v35"></path>
+          <path d="M31 21c-8-1-13-4-13-9 0-4 3-6 7-5 5 1 7 7 7 14"></path>
+          <path d="M33 21c8-1 13-4 13-9 0-4-3-6-7-5-5 1-7 7-7 14"></path>
+        </svg>
+        <b>12</b><span>MIMA</span>
+      </div>
+    </div>
+
+    <div class="mimaDailyStatusLine">
+      <span id="mimaDailyStatusText">جاري تحميل حالة الحضور…</span>
+      <strong id="mimaDailyNextReward">+1 MIMA</strong>
+    </div>
+
+    <button id="mimaDailyClaimBtn" class="mimaDailyClaimBtn" type="button" onclick="claimMimaDailyCheckin()">
+      تسجيل حضور اليوم
+    </button>
+  </section>
+
   <div id="mimaAdEarnedNotice" class="mimaAdEarnedNotice" role="status" aria-live="polite">
     <span class="mimaAdEarnedIcon" aria-hidden="true">✓</span>
     <strong id="mimaAdEarnedNoticeText">+5 MIMA</strong>
@@ -989,47 +1031,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </div>
   </section>
 
-  <section class="mimaDailyCheckin" id="mimaDailyCheckin" aria-live="polite">
-    <div class="mimaDailyHead">
-      <div>
-        <b id="mimaDailyTitle">تسجيل الحضور اليومي</b>
-        <small id="mimaDailySubtitle">ادخل كل يوم واحصل على مكافأة MIMA متزايدة</small>
-      </div>
-      <div class="mimaDailyStreakBadge">
-        <span class="mimaDailyFlame">◆</span>
-        <strong id="mimaDailyStreakText">0/7</strong>
-      </div>
-    </div>
-
-    <div class="mimaDailyDays" id="mimaDailyDays">
-      <div class="mimaDailyDay" data-day="1"><small>اليوم 1</small><b>1</b><span>MIMA</span></div>
-      <div class="mimaDailyDay" data-day="2"><small>اليوم 2</small><b>2</b><span>MIMA</span></div>
-      <div class="mimaDailyDay" data-day="3"><small>اليوم 3</small><b>4</b><span>MIMA</span></div>
-      <div class="mimaDailyDay" data-day="4"><small>اليوم 4</small><b>6</b><span>MIMA</span></div>
-      <div class="mimaDailyDay" data-day="5"><small>اليوم 5</small><b>8</b><span>MIMA</span></div>
-      <div class="mimaDailyDay" data-day="6"><small>اليوم 6</small><b>10</b><span>MIMA</span></div>
-      <div class="mimaDailyDay mimaDailyGiftDay" data-day="7">
-        <small>اليوم 7</small>
-        <svg class="mimaDailyGiftIcon" viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M10 29h44v27H10z"></path>
-          <path d="M7 21h50v12H7z"></path>
-          <path d="M32 21v35"></path>
-          <path d="M31 21c-8-1-13-4-13-9 0-4 3-6 7-5 5 1 7 7 7 14"></path>
-          <path d="M33 21c8-1 13-4 13-9 0-4-3-6-7-5-5 1-7 7-7 14"></path>
-        </svg>
-        <b>12</b><span>MIMA</span>
-      </div>
-    </div>
-
-    <div class="mimaDailyStatusLine">
-      <span id="mimaDailyStatusText">جاري تحميل حالة الحضور…</span>
-      <strong id="mimaDailyNextReward">+1 MIMA</strong>
-    </div>
-
-    <button id="mimaDailyClaimBtn" class="mimaDailyClaimBtn" type="button" onclick="claimMimaDailyCheckin()">
-      تسجيل حضور اليوم
-    </button>
-  </section>
+  
 
   <div class="mimaTaskList">
     <div class="item mimaTaskRow">
