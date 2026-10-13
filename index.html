@@ -1022,7 +1022,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </adsgram-task>
     <div id="mimaAdsgramTaskServerNotice" class="mimaAdsgramTaskServerNotice" role="status" aria-live="polite" style="display:none"></div>
     <div id="mimaAdsgramTaskCooldown" class="mimaAdsgramTaskCooldownRow" style="display:none" role="status" aria-live="off">
-      <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr">30:00</span>
+      <span class="mimaAdsgramCooldownButton" id="mimaAdsgramTaskCooldownValue" dir="ltr"></span>
       <span class="mimaAdsgramCooldownDetails">
         <strong id="mimaAdsgramTaskCooldownLabel">المهمة التالية بعد انتهاء الانتظار</strong>
         <small>+5 MIMA</small>
@@ -10217,273 +10217,174 @@ input[type="submit"]:focus-visible{
 }
 </style>
 
-<script id="mima-adsgram-task-unit-script-v1">
+<script id="mima-adsgram-task-unit-script-v2">
 (function(){
-  const COOLDOWN_MS=30*60*1000;
-  const COOLDOWN_KEY='mima_adsgram_task_cooldown_until_v1';
-  const MIGRATION_KEY='mima_adsgram_task_cooldown_30m_visible_v1';
-  let cooldownTimer=null;
+  'use strict';
   let verificationState='idle';
   let dailyLimitReached=false;
+  let adAvailable=true;
+  let verifyingReward=false;
+  let lastKnownRewardId=0;
+  let pendingReward=null;
 
-  // AdsGram controls when its native button/claim/done slots are displayed.
-  // A native "done" is NOT our evidence of a verified MIMA reward.
-  function txSafe(ar,en){
-    try{return typeof tx==='function'?tx(ar,en):ar}catch(e){return ar}
+  function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en;}catch(_){return en;}}
+  function element(id){return document.getElementById(id);}
+  function showMessage(subAr,subEn){
+    const sub=element('mimaAdsgramTaskSub');
+    if(sub)sub.textContent=tr(subAr,subEn);
   }
-
-  function hideCard(){
-    // Do not let a late AdsGram no-fill/error event override verification.
-    if(verificationState!=='idle'){
-      renderCooldown();
-      return;
-    }
-    // Keep the sponsored task container visible even when AdsGram has no fill.
-    // In particular, a late no-banner event must never hide the cooldown.
-    const card=document.getElementById('mimaAdsgramTaskCard');
-    const task=document.getElementById('mimaAdsgramTaskUnit');
-    const sub=document.getElementById('mimaAdsgramTaskSub');
-    if(card) card.style.display='';
-    if(getCooldownUntil()>Date.now()){
-      renderCooldown();
-      return;
-    }
-    if(task) task.style.setProperty('display','none','important');
-    if(sub) sub.textContent=txSafe('لا توجد مهمة متاحة الآن','No sponsored task available right now');
+  function applyLanguage(){
+    const heading=element('mimaAdsgramTaskHeading');
+    if(heading)heading.textContent=tr('مهمة ممولة','Sponsored Task');
+    const task=element('mimaAdsgramTaskUnit');
+    if(!task)return;
+    const slots=[
+      ['button','ابدأ','Start'],
+      ['claim','تحقق من الإكمال','Verify completion'],
+      ['done','بانتظار التأكيد','Awaiting confirmation']
+    ];
+    slots.forEach(([key,ar,en])=>{
+      const slot=task.querySelector('[slot="'+key+'"]');
+      if(slot)slot.textContent=tr(ar,en);
+    });
   }
-
-  function showCard(){
-    const card=document.getElementById('mimaAdsgramTaskCard');
-    if(card) card.style.display='';
-  }
-
-  function getCooldownUntil(){
-    try{return Number(localStorage.getItem(COOLDOWN_KEY)||0)}catch(e){return 0}
-  }
-
-  function setCooldownUntil(ts){
-    try{localStorage.setItem(COOLDOWN_KEY,String(ts))}catch(e){}
-  }
-
-  async function syncServerCooldown(){
-    if(!serverMode) return false;
-    try{
-      const data=await apiCall('adsgram_task_status');
-      if(data?.success!==true) return false;
-
-      // Server is authoritative for the rolling daily reward cap.
-      // A daily limit is not another successful claim and must not be
-      // advertised as a fresh +5 MIMA reward or a 30-minute cooldown.
-      dailyLimitReached=data.limit_reached===true;
-      const localUntil=getCooldownUntil();
-      if(dailyLimitReached){
-        verificationState='idle';
-      }else if(data.next_available_at){
-        const ts=Date.parse(data.next_available_at);
-        if(Number.isFinite(ts)){
-          setCooldownUntil(Math.max(localUntil,ts));
-          if(ts>Date.now()) verificationState='idle';
-        }
-      }else if(data.available===true && localUntil<=Date.now()){
-        setCooldownUntil(0);
-      }
-
-      renderCooldown();
-      return true;
-    }catch(e){
-      renderCooldown();
-      return false;
-    }
-  }
-
-  function migrateOldThirtyMinuteCooldown(){
-    try{
-      localStorage.setItem(MIGRATION_KEY,'1');
-    }catch(e){}
-  }
-
-  function renderCooldown(){
-    const card=document.getElementById('mimaAdsgramTaskCard');
-    const task=document.getElementById('mimaAdsgramTaskUnit');
-    const sub=document.getElementById('mimaAdsgramTaskSub');
-    const timer=document.getElementById('mimaAdsgramTaskCooldown');
-    const value=document.getElementById('mimaAdsgramTaskCooldownValue');
-    const label=document.getElementById('mimaAdsgramTaskCooldownLabel');
-    const notice=document.getElementById('mimaAdsgramTaskServerNotice');
-    if(!card||!task||!timer) return false;
-
-    const left=getCooldownUntil()-Date.now();
-    const completedIcon=timer.querySelector('.mimaAdsgramCooldownIcon');
-    if(completedIcon) completedIcon.style.display=dailyLimitReached?'none':'';
+  function render(){
+    const card=element('mimaAdsgramTaskCard');
+    const task=element('mimaAdsgramTaskUnit');
+    const row=element('mimaAdsgramTaskCooldown');
+    const notice=element('mimaAdsgramTaskServerNotice');
+    const value=element('mimaAdsgramTaskCooldownValue');
+    if(!card||!task||!row)return;
     card.style.display='';
+    if(value)value.textContent='';
     if(dailyLimitReached){
-      if(notice) notice.style.display='none';
       task.style.setProperty('display','none','important');
-      timer.style.setProperty('display','flex','important');
-      if(label) label.textContent=txSafe('بلغت الحد اليومي للمكافآت','Daily reward limit reached');
-      if(value) value.textContent='';
-      if(sub) sub.textContent=txSafe('تم بلوغ حد 10 مكافآت خلال 24 ساعة. حاول لاحقاً.','10 rewards per 24 hours reached. Try again later.');
-      return true;
+      row.style.setProperty('display','flex','important');
+      if(notice)notice.style.display='none';
+      const label=element('mimaAdsgramTaskCooldownLabel');
+      if(label)label.textContent=tr('الحد اليومي للمكافآت','Daily reward limit');
+      showMessage('بلغت حد 10 مكافآت خلال 24 ساعة','Daily limit: 10 rewards in 24 hours');
+      return;
     }
-    if(left>0){
-      if(notice) notice.style.display='none';
-      // Show clean cooldown row instead of native AdsGram loading skeleton.
-      task.style.setProperty('display','none','important');
-      timer.style.setProperty('display','flex','important');
-      if(label) label.textContent=txSafe('تمت المهمة • ستتاح مجدداً لاحقاً','Task completed • available again later');
-      const seconds=Math.max(0,Math.ceil(left/1000));
-      if(value) value.textContent=''; // Countdown remains enforced internally but is not displayed.
-      if(sub) sub.textContent=txSafe('تمت المهمة • +5 MIMA • تتجدد كل 30 دقيقة','Task completed • +5 MIMA • refreshes every 30 minutes');
-      return true;
-    }
-
-    timer.style.setProperty('display','none','important');
-    task.style.setProperty('display','block','important');
+    row.style.setProperty('display','none','important');
+    task.style.setProperty('display',adAvailable?'block':'none','important');
     applyLanguage();
     if(notice){
-      if(verificationState==='checking'){
-        notice.textContent=txSafe('⏳ جارٍ التحقق من تأكيد المهمة على الخادم. لا تُحتسب المكافأة بعد.','⏳ Checking server confirmation. No reward has been credited yet.');
-        notice.style.display='block';
-      }else if(verificationState==='awaiting'){
-        notice.textContent=txSafe('⏳ لم يصل تأكيد المكافأة بعد. ظهور حالة AdsGram لا يعني إضافة 5 MIMA.','⏳ Server reward confirmation is pending. An AdsGram status does not mean 5 MIMA was credited.');
-        notice.style.display='block';
-      }else if(verificationState==='started'){
-        notice.textContent=txSafe('ℹ️ المهمة اختيارية. أكمل شروط المعلن الفعلية؛ فتح الإعلان أو الرجوع فقط لا يمنح مكافأة.','ℹ️ This task is optional. Fulfil the advertiser requirements; simply opening and returning does not earn a reward.');
-        notice.style.display='block';
-      }else{
-        notice.style.display='none';
-      }
+      const messages={
+        checking:['جارٍ التحقق من AdsGram. لم تُضف المكافأة بعد.','Checking AdsGram confirmation. No reward credited yet.'],
+        awaiting:['بانتظار تأكيد AdsGram من السيرفر؛ لن نضيف الرصيد قبل التأكيد.','Awaiting server confirmation from AdsGram. No reward until confirmed.'],
+        started:['المهمة اختيارية. أكمل متطلبات المعلن للحصول على المكافأة.','This task is optional. Complete the advertiser requirements for a reward.']
+      };
+      const message=messages[verificationState];
+      if(message){notice.textContent=tr(message[0],message[1]);notice.style.display='block';}
+      else notice.style.display='none';
     }
-    if(verificationState==='checking' && sub) sub.textContent=txSafe('جاري تأكيد المكافأة من السيرفر…','Verifying reward with server…');
-    if(verificationState==='awaiting' && sub) sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
-    if(verificationState==='started' && sub) sub.textContent=txSafe('أكمل متطلبات المعلن ثم انتظر تأكيد المكافأة','Complete the advertiser requirements, then await confirmation');
-    return false;
+    if(verificationState==='checking')showMessage('جارٍ تأكيد المكافأة من السيرفر…','Verifying reward with server…');
+    else if(verificationState==='awaiting')showMessage('بانتظار تأكيد المهمة من AdsGram','Awaiting AdsGram task confirmation');
+    else if(verificationState==='started')showMessage('أكمل شروط المعلن ثم انتظر التأكيد','Complete the advertiser requirements, then await confirmation');
+    else if(!adAvailable)showMessage('لا توجد مهمة ممولة متاحة حالياً','No sponsored task available right now');
+    else showMessage('+5 MIMA • بعد تأكيد AdsGram','+5 MIMA • after AdsGram confirmation');
   }
-
-  function startCooldownTicker(){
-    if(cooldownTimer) clearInterval(cooldownTimer);
-    cooldownTimer=setInterval(()=>{
-      if(!renderCooldown()){
-        clearInterval(cooldownTimer);
-        cooldownTimer=null;
-      }
-    },1000);
-  }
-
-  function applyLanguage(){
-    const h=document.getElementById('mimaAdsgramTaskHeading');
-    const s=document.getElementById('mimaAdsgramTaskSub');
-    const task=document.getElementById('mimaAdsgramTaskUnit');
-    if(h) h.textContent=txSafe('مهمة ممولة','Sponsored Task');
-    if(s) s.textContent=txSafe('+5 MIMA • بعد تأكيد AdsGram','+5 MIMA • after AdsGram confirmation');
-
-    if(task){
-      const b=task.querySelector('[slot="button"]');
-      const c=task.querySelector('[slot="claim"]');
-      const d=task.querySelector('[slot="done"]');
-      if(b) b.textContent=txSafe('ابدأ','Start');
-      if(c) c.textContent=txSafe('تحقق من الإكمال','Verify completion');
-      // The server-backed cooldown row is the only "completed" confirmation
-      // in MIMA. The native AdsGram done state may precede our callback.
-      if(d) d.textContent=txSafe('بانتظار التأكيد','Awaiting confirmation');
+  function recordStatus(data,initialize){
+    if(!data||data.success!==true)return false;
+    dailyLimitReached=data.limit_reached===true;
+    // Remember a previous confirmed transaction without treating it as a new reward.
+    if(initialize&&!pendingReward){
+      lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
     }
+    render();
+    return true;
   }
-
+  function completedFromServer(data,pending){
+    if(!data||data.success!==true||!pending)return false;
+    const id=Number(data.last_reward_id)||0;
+    const at=Date.parse(data.last_reward_at||'');
+    // AdsGram's UI event is not sufficient. The authenticated publisher
+    // callback must have written a NEW transaction on our server.
+    return id>pending.baselineId &&
+      Number.isFinite(at) &&
+      at>=pending.startedAt-45000 &&
+      at<=Date.now()+5000;
+  }
+  function reportReward(data){
+    if(!pendingReward||!completedFromServer(data,pendingReward))return false;
+    lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
+    pendingReward=null;
+    verificationState='idle';
+    adAvailable=true;
+    window.mimaAdDiag?.('task','reward_confirmed');
+    try{
+      if(typeof window.showMimaTaskSuccess==='function')
+        window.showMimaTaskSuccess('مهمة ممولة','Sponsored Task',5);
+      if(typeof syncServerStatus==='function')syncServerStatus(false,true);
+    }catch(_){}
+    render();
+    return true;
+  }
+  async function syncStatus(initialize){
+    if(typeof serverMode==='undefined'||!serverMode)return null;
+    try{
+      const data=await apiCall('adsgram_task_status');
+      if(data?.success===true){
+        if(pendingReward&&completedFromServer(data,pendingReward))reportReward(data);
+        recordStatus(data,initialize===true);
+        return data;
+      }
+    }catch(_){}
+    render();
+    return null;
+  }
+  function unavailable(type){
+    window.mimaAdDiag?.('task',type);
+    adAvailable=false;
+    if(verificationState==='idle')render();
+  }
   function init(){
-    const task=document.getElementById('mimaAdsgramTaskUnit');
-    if(!task) return;
-
-    migrateOldThirtyMinuteCooldown();
-    applyLanguage();
-    showCard();
-    renderCooldown();
-    syncServerCooldown().then(()=>{
-      if(renderCooldown()) startCooldownTicker();
-    });
-
-    let verifyingReward=false;
-    // Count user intent separately from AdsGram's reward event, so that
-    // unexpected immediate completion can be investigated without blocking
-    // the provider's own task navigation or reward flow.
+    const task=element('mimaAdsgramTaskUnit');
+    if(!task)return;
+    // The former local 30-minute timer is obsolete and is not read again.
+    try{localStorage.removeItem('mima_adsgram_task_cooldown_until_v1');}catch(_){}
+    render();
+    syncStatus(true);
     task.addEventListener('click',(event)=>{
       const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
-      const slotClicked=path.map(el=>el && typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
-      const startClicked=slotClicked.includes('button');
-      const claimClicked=slotClicked.includes('claim');
-      if(startClicked) window.mimaAdDiag?.('task','request');
-      // Respect AdsGram's own native flow. A start/claim click is never
-      // a reward: only the AdsGram backend callback may credit MIMA.
-      if((startClicked||claimClicked) && verificationState==='idle' && !dailyLimitReached){
+      const slots=path.map(el=>el&&typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
+      if(slots.includes('button'))window.mimaAdDiag?.('task','request');
+      if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached){
         verificationState='started';
-        renderCooldown();
+        render();
       }
     },true);
     task.addEventListener('reward',async()=>{
-      if(verifyingReward)return;
+      if(verifyingReward||dailyLimitReached)return;
       verifyingReward=true;
       verificationState='checking';
       window.mimaAdDiag?.('task','on_reward');
-      const rewardEventAt=Date.now();
-      // AdsGram's reward event alone is not proof of a credited MIMA reward.
-      // Never start the 30-minute cooldown before the server records payment.
-      const sub=document.getElementById('mimaAdsgramTaskSub');
-      if(sub)sub.textContent=txSafe('جاري تأكيد المكافأة من السيرفر…','Verifying reward with server…');
-
+      pendingReward={baselineId:lastKnownRewardId,startedAt:Date.now()};
+      render();
       let confirmed=false;
-      if(serverMode){
-        for(let attempt=0;attempt<10;attempt++){
-          if(attempt)await new Promise(resolve=>setTimeout(resolve,3000));
-          try{
-            const status=await apiCall('adsgram_task_status');
-            if(status?.success!==true)continue;
-            const next=Date.parse(status.next_available_at||'');
-            // Server has recorded a recent reward transaction; a plain
-            // AdsGram UI "done" state alone must never trigger success.
-            if(Number.isFinite(next) && next-COOLDOWN_MS>=rewardEventAt-15000){
-              confirmed=true;
-              setCooldownUntil(Math.max(getCooldownUntil(),next));
-              break;
-            }
-          }catch(e){}
+      for(let attempt=0;attempt<10;attempt++){
+        if(attempt)await new Promise(resolve=>setTimeout(resolve,3000));
+        const status=await syncStatus(false);
+        if(!pendingReward){confirmed=true;break;}
+        if(status&&completedFromServer(status,pendingReward)){
+          confirmed=reportReward(status);
+          break;
         }
       }
-      if(confirmed){
-        window.mimaAdDiag?.('task','reward_confirmed');
-        verificationState='idle';
-        renderCooldown();
-        startCooldownTicker();
-        try{
-          if(typeof window.showMimaTaskSuccess==='function')
-            window.showMimaTaskSuccess('مهمة ممولة','Sponsored Task',5);
-          if(typeof syncServerStatus==='function')syncServerStatus(false,true);
-        }catch(e){}
-      }else{
-        window.mimaAdDiag?.('task','reward_pending');
-        verificationState='awaiting';
-        if(sub)sub.textContent=txSafe('بانتظار تأكيد المكافأة من AdsGram — تحقق من رصيدك لاحقاً','Awaiting AdsGram confirmation — check your balance later');
-      }
+      if(!confirmed&&pendingReward)verificationState='awaiting';
       verifyingReward=false;
-      renderCooldown();
+      render();
     });
-
-    task.addEventListener('onBannerNotFound',()=>{window.mimaAdDiag?.('task','no_fill');hideCard();});
-    task.addEventListener('onError',()=>{window.mimaAdDiag?.('task','sdk_error');hideCard();});
-    task.addEventListener('onTooLongSession',()=>{window.mimaAdDiag?.('task','too_long');hideCard();});
+    task.addEventListener('onBannerNotFound',()=>unavailable('no_fill'));
+    task.addEventListener('onError',()=>unavailable('sdk_error'));
+    task.addEventListener('onTooLongSession',()=>unavailable('too_long'));
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible')syncStatus(false);
+    });
   }
-
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',init,{once:true});
-  }else{
-    init();
-  }
-
-  document.addEventListener('visibilitychange',()=>{
-    if(document.visibilityState==='visible'){
-      syncServerCooldown().then(()=>{
-        if(renderCooldown()) startCooldownTicker();
-      });
-    }
-  });
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
 })();
 </script>
 
