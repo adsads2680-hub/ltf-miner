@@ -739,6 +739,30 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 #topMenu.topMenu{max-height:75dvh!important;overflow-y:auto!important}
 #topMenu.topMenu>button{font-size:14px!important;min-height:52px!important}
 </style>
+<style id="mima-top-menu-support-header-i18n-v2">
+#topMenu.topMenu{
+ width:min(270px,calc(100vw - 24px))!important;
+ max-width:calc(100vw - 24px)!important;
+ max-height:calc(100dvh - 105px)!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;
+ gap:8px!important
+}
+#topMenu .mimaSupportMenuHeading{
+ border-top:1px solid rgba(232,181,74,.28);
+ border-bottom:1px solid rgba(232,181,74,.28);
+ background:linear-gradient(90deg,rgba(212,161,60,.19),transparent);
+ padding:12px 10px!important;margin:1px 0 0;
+ text-align:center;direction:inherit;color:#ffdf96;font-size:16px;
+ line-height:1.4;font-weight:900;letter-spacing:.2px;
+ border-radius:10px;pointer-events:none
+}
+#topMenu.topMenu>button{
+ min-height:50px!important;height:auto!important;padding:10px 8px!important;
+ font-size:13px!important;white-space:normal!important;overflow-wrap:anywhere;
+ line-height:1.35!important;text-align:center
+}
+#topMenu #mimaTopMenuLanguageButton{margin-top:3px}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -769,7 +793,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
 <div id="topMenuBackdrop" class="topMenuBackdrop" onclick="closeTopMenu()"></div>
 <div id="topMenu" class="topMenu">
-  <button type="button" onclick="openWithdrawFromMenu()">💸 سحب</button>
+  <button id="mimaTopMenuWithdrawMain" type="button" onclick="openWithdrawFromMenu()">💸 سحب</button>
+  <div class="mimaSupportMenuHeading" id="mimaTopMenuSupportTitle" role="heading" aria-level="2">🎧 دعم MIMA</div>
   <button id="mimaTopMenuWithdrawalsSupport" type="button" onclick="openMimaSupportTicket('withdrawals')">📩 السحوبات</button>
   <button id="mimaTopMenuProblemSupport" type="button" onclick="openMimaSupportTicket('problem')">🐛 إبلاغ عن مشكلة</button>
   <button id="mimaTopMenuOtherSupport" type="button" onclick="openMimaSupportTicket('other')">💬 أخرى</button>
@@ -2062,6 +2087,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     translateStaticDom();
     updateMimaReferralRulesLanguage();
+    if(typeof window.renderMimaSupportLanguage === 'function') window.renderMimaSupportLanguage();
 
     if(typeof render === 'function') render();
     if(typeof renderTask === 'function') renderTask();
@@ -5438,6 +5464,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
   function toggleTopMenu(event){
     if(event) event.stopPropagation();
+    if(typeof window.renderMimaSupportLanguage === 'function') window.renderMimaSupportLanguage();
     $('topMenu').classList.toggle('show');
     $('topMenuBackdrop').classList.toggle('show');
   }
@@ -8663,31 +8690,27 @@ input[type="submit"]:focus-visible{
   let category='problem',busy=false,lastTicket=null;
   const el=id=>document.getElementById(id);
   const tr=(ar,en)=>{try{return typeof tx==='function'?tx(ar,en):en;}catch(_){return en;}};
-  const cats={
-    withdrawals:['💸 السحوبات','💸 Withdrawals'],
-    problem:['🐛 إبلاغ عن مشكلة','🐛 Report a Problem'],
-    other:['💬 أخرى','💬 Other']
-  };
+  const I18N={"en":["MIMA Support","Withdraw","Withdrawals Support","Report a Problem","Other","Language","Describe your issue. We will send it to MIMA Support with your Telegram account ID.","Describe your request here…","10–2000 characters","Never share passwords, wallet seed phrases or private keys.","Send to Support","Please enter a message between 10 and 2000 characters.","Open MIMA inside Telegram to send this request.","Sending…","You have reached 5 support requests in 24 hours.","Please wait 5 minutes before sending another support request.","Please check the message.","Could not send request.","Support request #{id} was saved. The team will review it and reply in Telegram.","Sent","Retry","Unable to send request"],"ar":["دعم MIMA","سحب","دعم السحوبات","إبلاغ عن مشكلة","أخرى","اللغات","اشرح مشكلتك. سيتم إرسال الرسالة إلى دعم MIMA مع رقم حسابك في تلغرام.","اكتب تفاصيل رسالتك هنا…","10–2000 حرف","لا تشارك كلمة المرور أو عبارة استرداد المحفظة أو المفتاح الخاص.","إرسال إلى الدعم","اكتب رسالة من 10 إلى 2000 حرف.","افتح MIMA داخل تلغرام لإرسال الطلب.","جاري الإرسال…","بلغت حد 5 طلبات دعم خلال 24 ساعة.","انتظر 5 دقائق قبل إرسال طلب جديد.","تأكد من صحة الرسالة.","تعذر إرسال الطلب.","تم حفظ طلب الدعم #{id}. ستراجعه الإدارة وترد عبر تلغرام.","تم الإرسال","إعادة المحاولة","تعذر إرسال الطلب"],"tr":["MIMA Destek","Para çek","Çekim desteği","Sorun bildir","Diğer","Dil","Sorununuzu açıklayın. Mesajınız Telegram kimliğinizle MIMA desteğine iletilecek.","Sorununuzu buraya yazın…","10–2000 karakter","Şifrenizi, cüzdan kurtarma kelimelerinizi veya özel anahtarınızı paylaşmayın.","Desteğe gönder","10–2000 karakterlik bir mesaj girin.","Talep göndermek için MIMA'yı Telegram'da açın.","Gönderiliyor…","24 saatte en fazla 5 destek talebi gönderebilirsiniz.","Yeni talep için 5 dakika bekleyin.","Mesajınızı kontrol edin.","Talep gönderilemedi.","Destek talebi #{id} kaydedildi. Ekip inceleyip Telegram'dan yanıtlayacak.","Gönderildi","Tekrar dene","Talep gönderilemedi"],"ru":["Поддержка MIMA","Вывести","Помощь с выводом","Сообщить о проблеме","Другое","Язык","Опишите проблему. Сообщение поступит в поддержку MIMA с вашим Telegram ID.","Опишите ваш вопрос…","10–2000 символов","Не сообщайте пароль, сид-фразу или приватный ключ.","Отправить в поддержку","Введите сообщение от 10 до 2000 символов.","Откройте MIMA в Telegram для отправки.","Отправляем…","Лимит: 5 обращений за 24 часа.","Подождите 5 минут перед новым обращением.","Проверьте сообщение.","Не удалось отправить обращение.","Обращение #{id} сохранено. Ответ придёт в Telegram.","Отправлено","Повторить","Не удалось отправить"],"fa":["پشتیبانی MIMA","برداشت","پشتیبانی برداشت","گزارش مشکل","سایر","زبان","مشکل خود را توضیح دهید. پیام همراه با شناسه تلگرام به پشتیبانی MIMA ارسال می‌شود.","درخواست خود را اینجا بنویسید…","۱۰ تا ۲۰۰۰ نویسه","رمز عبور، عبارت بازیابی یا کلید خصوصی را ارسال نکنید.","ارسال به پشتیبانی","پیامی بین ۱۰ تا ۲۰۰۰ نویسه وارد کنید.","برای ارسال درخواست، MIMA را در تلگرام باز کنید.","در حال ارسال…","سقف ۵ درخواست پشتیبانی در ۲۴ ساعت تکمیل شده است.","برای درخواست جدید ۵ دقیقه صبر کنید.","پیام را بررسی کنید.","ارسال درخواست ناموفق بود.","درخواست پشتیبانی #{id} ثبت شد. پاسخ از طریق تلگرام ارسال می‌شود.","ارسال شد","تلاش دوباره","ارسال درخواست ناموفق بود"],"ur":["MIMA سپورٹ","رقم نکالیں","رقم نکالنے میں مدد","مسئلہ رپورٹ کریں","دیگر","زبان","اپنا مسئلہ بتائیں۔ پیغام ٹیلیگرام آئی ڈی کے ساتھ MIMA سپورٹ کو بھیجا جائے گا۔","اپنا پیغام یہاں لکھیں…","۱۰ تا ۲۰۰۰ حروف","پاس ورڈ، والیٹ ریکوری فریز یا پرائیویٹ کی نہ بھیجیں۔","سپورٹ کو بھیجیں","۱۰ تا ۲۰۰۰ حروف کا پیغام لکھیں۔","درخواست بھیجنے کے لیے ٹیلیگرام میں MIMA کھولیں۔","بھیجا جا رہا ہے…","۲۴ گھنٹوں میں ۵ سپورٹ درخواستوں کی حد پوری ہو گئی۔","اگلی درخواست سے پہلے ۵ منٹ انتظار کریں۔","اپنا پیغام چیک کریں۔","درخواست نہیں بھیجی جا سکی۔","سپورٹ درخواست #{id} محفوظ ہو گئی۔ جواب ٹیلیگرام پر ملے گا۔","بھیج دیا گیا","دوبارہ کوشش","درخواست ناکام ہوئی"],"uz":["MIMA yordam","Yechib olish","Yechib olish bo‘yicha yordam","Muammo haqida xabar","Boshqa","Til","Muammoni tushuntiring. Xabar Telegram ID bilan MIMA yordam xizmatiga yuboriladi.","Xabaringizni shu yerga yozing…","10–2000 belgi","Parol, hamyon tiklash iborasi yoki maxfiy kalitni yubormang.","Yordamga yuborish","10–2000 belgidan iborat xabar kiriting.","So‘rov yuborish uchun MIMA’ni Telegramda oching.","Yuborilmoqda…","24 soatda 5 ta so‘rov chegarasiga yetdingiz.","Yangi so‘rov uchun 5 daqiqa kuting.","Xabaringizni tekshiring.","So‘rov yuborilmadi.","#{id}-raqamli so‘rov saqlandi. Javob Telegram orqali keladi.","Yuborildi","Qayta urinish","So‘rov yuborilmadi"],"hi":["MIMA सहायता","निकासी","निकासी सहायता","समस्या रिपोर्ट करें","अन्य","भाषा","अपनी समस्या बताएँ। आपका संदेश Telegram ID के साथ MIMA सहायता को भेजा जाएगा।","अपना संदेश यहाँ लिखें…","10–2000 अक्षर","पासवर्ड, वॉलेट रिकवरी वाक्यांश या निजी कुंजी न भेजें।","सहायता को भेजें","10–2000 अक्षरों का संदेश लिखें।","अनुरोध भेजने के लिए Telegram में MIMA खोलें।","भेजा जा रहा है…","24 घंटों में 5 सहायता अनुरोधों की सीमा पूरी हो गई।","अगले अनुरोध से पहले 5 मिनट प्रतीक्षा करें।","संदेश जाँचें।","अनुरोध भेजा नहीं जा सका।","सहायता अनुरोध #{id} सहेजा गया। जवाब Telegram पर मिलेगा।","भेज दिया","फिर कोशिश करें","अनुरोध विफल"],"id":["Dukungan MIMA","Tarik dana","Bantuan penarikan","Laporkan masalah","Lainnya","Bahasa","Jelaskan masalah Anda. Pesan akan dikirim ke Dukungan MIMA beserta ID Telegram Anda.","Tulis pesan Anda di sini…","10–2000 karakter","Jangan kirim kata sandi, frasa pemulihan dompet, atau kunci pribadi.","Kirim ke dukungan","Tulis pesan sepanjang 10–2000 karakter.","Buka MIMA di Telegram untuk mengirim permintaan.","Mengirim…","Anda mencapai batas 5 permintaan dalam 24 jam.","Tunggu 5 menit sebelum mengirim permintaan lagi.","Periksa pesan Anda.","Gagal mengirim permintaan.","Permintaan dukungan #{id} disimpan. Balasan akan diterima di Telegram.","Terkirim","Coba lagi","Permintaan gagal"],"fr":["Assistance MIMA","Retirer","Aide aux retraits","Signaler un problème","Autre","Langue","Décrivez votre problème. Votre message sera transmis à MIMA avec votre identifiant Telegram.","Écrivez votre demande ici…","10 à 2000 caractères","Ne communiquez jamais de mot de passe, phrase de récupération ou clé privée.","Envoyer au support","Saisissez un message de 10 à 2000 caractères.","Ouvrez MIMA dans Telegram pour envoyer la demande.","Envoi en cours…","Limite atteinte : 5 demandes en 24 heures.","Attendez 5 minutes avant une autre demande.","Vérifiez votre message.","Envoi impossible.","Demande d’assistance n°{id} enregistrée. Réponse via Telegram.","Envoyé","Réessayer","Demande non envoyée"],"zh":["MIMA 客服","提现","提现帮助","报告问题","其他","语言","请描述您的问题。消息将附带 Telegram 账号 ID 发送给 MIMA 客服。","请在这里填写您的问题…","10–2000 个字符","请勿提供密码、钱包助记词或私钥。","发送至客服","请输入 10–2000 个字符。","请在 Telegram 内打开 MIMA 提交请求。","正在发送…","已达到 24 小时内 5 次支持请求的限制。","请等待 5 分钟后再提交。","请检查消息。","发送失败。","支持请求 #{id} 已保存。团队将在 Telegram 中回复。","已发送","重试","提交失败"],"de":["MIMA Support","Auszahlen","Hilfe bei Auszahlungen","Problem melden","Sonstiges","Sprache","Beschreibe dein Anliegen. Es wird mit deiner Telegram-ID an den MIMA Support gesendet.","Schreibe deine Nachricht hier…","10–2000 Zeichen","Teile niemals Passwort, Wiederherstellungsphrase oder privaten Schlüssel.","An Support senden","Bitte 10–2000 Zeichen eingeben.","Öffne MIMA in Telegram, um die Anfrage zu senden.","Wird gesendet…","Limit von 5 Anfragen in 24 Stunden erreicht.","Bitte 5 Minuten vor einer weiteren Anfrage warten.","Bitte Nachricht prüfen.","Anfrage konnte nicht gesendet werden.","Supportanfrage #{id} gespeichert. Antwort folgt über Telegram.","Gesendet","Erneut versuchen","Anfrage fehlgeschlagen"],"es":["Soporte MIMA","Retirar","Ayuda con retiros","Informar de un problema","Otro","Idioma","Describe tu problema. El mensaje se enviará al soporte de MIMA con tu ID de Telegram.","Escribe aquí tu mensaje…","10–2000 caracteres","Nunca compartas contraseñas, frases de recuperación ni claves privadas.","Enviar al soporte","Escribe entre 10 y 2000 caracteres.","Abre MIMA dentro de Telegram para enviar la solicitud.","Enviando…","Has alcanzado el límite de 5 solicitudes en 24 horas.","Espera 5 minutos antes de enviar otra solicitud.","Revisa el mensaje.","No se pudo enviar la solicitud.","Solicitud de soporte #{id} guardada. Responderemos por Telegram.","Enviado","Reintentar","Solicitud fallida"],"bn":["MIMA সহায়তা","উত্তোলন","উত্তোলন সহায়তা","সমস্যা জানান","অন্যান্য","ভাষা","আপনার সমস্যা লিখুন। Telegram ID সহ বার্তাটি MIMA সহায়তায় পাঠানো হবে।","এখানে বার্তা লিখুন…","১০–২০০০ অক্ষর","পাসওয়ার্ড, ওয়ালেট রিকভারি ফ্রেজ বা প্রাইভেট কী দেবেন না।","সহায়তায় পাঠান","১০–২০০০ অক্ষরের বার্তা লিখুন।","অনুরোধ পাঠাতে Telegram-এ MIMA খুলুন।","পাঠানো হচ্ছে…","২৪ ঘণ্টায় ৫টি অনুরোধের সীমা শেষ।","নতুন অনুরোধের আগে ৫ মিনিট অপেক্ষা করুন।","বার্তাটি যাচাই করুন।","অনুরোধ পাঠানো যায়নি।","সহায়তা অনুরোধ #{id} সংরক্ষিত হয়েছে। Telegram-এ উত্তর পাবেন।","পাঠানো হয়েছে","আবার চেষ্টা করুন","অনুরোধ ব্যর্থ"],"pt":["Suporte MIMA","Retirar","Ajuda com saques","Reportar problema","Outro","Idioma","Descreva o problema. A mensagem será enviada ao suporte da MIMA com seu ID do Telegram.","Escreva sua mensagem aqui…","10–2000 caracteres","Não compartilhe senhas, frase de recuperação ou chave privada.","Enviar ao suporte","Escreva de 10 a 2000 caracteres.","Abra MIMA dentro do Telegram para enviar a solicitação.","Enviando…","Limite de 5 solicitações em 24 horas atingido.","Aguarde 5 minutos antes de enviar outra solicitação.","Verifique sua mensagem.","Não foi possível enviar.","Solicitação de suporte #{id} salva. Responderemos pelo Telegram.","Enviado","Tentar novamente","Solicitação falhou"]};
+  function code(){try{return typeof currentLang==='string'&&I18N[currentLang]?currentLang:'en';}catch(_){return 'en';}}
+  function t(i){return (I18N[code()]||I18N.en)[i]||I18N.en[i];}
+  const cats={withdrawals:2,problem:3,other:4};
   function language(){
-    const w=el('mimaTopMenuWithdrawalsSupport'),p=el('mimaTopMenuProblemSupport'),o=el('mimaTopMenuOtherSupport');
-    if(w)w.textContent=tr('📩 السحوبات','📩 Withdrawals support');
-    if(p)p.textContent=tr('🐛 إبلاغ عن مشكلة','🐛 Report a Problem');
-    if(o)o.textContent=tr('💬 أخرى','💬 Other');
-    const heading=el('mimaSupportTitle');
-    if(heading)heading.textContent=tr(...cats[category]);
-    if(el('mimaSupportHint'))el('mimaSupportHint').textContent=tr(
-      'اكتب رسالتك بوضوح. سيتم إرسالها إلى إدارة MIMA مع رقم حسابك في تلغرام.',
-      'Describe your issue. We will deliver it to MIMA administrators with your Telegram account ID.'
-    );
-    if(el('mimaSupportMessage'))el('mimaSupportMessage').placeholder=tr('اكتب تفاصيل رسالتك هنا…','Describe your request here…');
-    if(el('mimaSupportMinLabel'))el('mimaSupportMinLabel').textContent=tr('10–2000 حرف','10–2000 characters');
-    if(el('mimaSupportPrivacy'))el('mimaSupportPrivacy').textContent=tr(
-      'لا ترسل كلمة مرور أو عبارة استرداد المحفظة أو المفتاح الخاص.',
-      'Never send a password, wallet seed phrase or private key.'
-    );
+    const set=(id,label)=>{const node=el(id);if(node)node.textContent=label;};
+    set('mimaTopMenuWithdrawMain','💸 '+t(1));
+    set('mimaTopMenuSupportTitle','🎧 '+t(0));
+    set('mimaTopMenuWithdrawalsSupport','📩 '+t(2));
+    set('mimaTopMenuProblemSupport','🐛 '+t(3));
+    set('mimaTopMenuOtherSupport','💬 '+t(4));
+    set('mimaTopMenuLanguageButton','🌐 '+t(5));
+    set('mimaSupportTitle',['💸','🐛','💬'][['withdrawals','problem','other'].indexOf(category)]+' '+t(cats[category]));
+    set('mimaSupportHint',t(6));
+    if(el('mimaSupportMessage'))el('mimaSupportMessage').placeholder=t(7);
+    set('mimaSupportMinLabel',t(8));
+    set('mimaSupportPrivacy',t(9));
     const send=el('mimaSupportSubmit');
-    if(send&&!busy&&!lastTicket)send.textContent=tr('📨 إرسال إلى الدعم','📨 Send to Support');
+    if(send&&!busy&&!lastTicket)send.textContent='📨 '+t(10);
   }
+  window.renderMimaSupportLanguage=language;
   function count(){
     const msg=el('mimaSupportMessage'),counter=el('mimaSupportCount');
     if(msg&&counter)counter.textContent=msg.value.length+' / 2000';
@@ -8717,38 +8740,30 @@ input[type="submit"]:focus-visible{
     const msg=el('mimaSupportMessage'),status=el('mimaSupportStatus'),send=el('mimaSupportSubmit');
     const message=String(msg?.value||'').trim();
     if(message.length<10||message.length>2000){
-      if(status)status.textContent=tr('الرجاء كتابة رسالة من 10 إلى 2000 حرف.','Please enter 10 to 2000 characters.');
+      if(status)status.textContent=t(11);
       return;
     }
     if(typeof serverMode==='undefined'||!serverMode){
-      if(status)status.textContent=tr('افتح بوت MIMA داخل تلغرام لإرسال الرسالة.','Open MIMA inside Telegram to send this request.');
+      if(status)status.textContent=t(12);
       return;
     }
     busy=true;
-    if(send){send.disabled=true;send.textContent=tr('⏳ جاري الإرسال…','⏳ Sending…');}
+    if(send){send.disabled=true;send.textContent='⏳ '+t(13);}
     if(status)status.textContent='';
     try{
       const result=await apiCall('support_ticket_create',{category,message});
       if(result?.success!==true){
         const error=String(result?.message||'');
-        const messages={
-          support_daily_limit:[ 'وصلت إلى حد 5 رسائل دعم خلال 24 ساعة.','You have reached the limit of 5 support requests in 24 hours.' ],
-          support_wait_five_minutes:[ 'يمكنك إرسال طلب دعم جديد بعد 5 دقائق من الطلب السابق.','Please wait 5 minutes before sending another support request.' ],
-          invalid_support_request:[ 'يرجى التأكد من صحة الرسالة.','Please check your message.' ]
-        };
-        const translated=messages[error];
-        throw new Error(translated?tr(translated[0],translated[1]):error||tr('تعذر إرسال الرسالة','Could not send request'));
+        const errors={support_daily_limit:14,support_wait_five_minutes:15,invalid_support_request:16};
+        throw new Error(t(Object.prototype.hasOwnProperty.call(errors,error)?errors[error]:17));
       }
       lastTicket=Number(result.ticket_id)||true;
-      if(status)status.textContent=tr(
-        '✅ تم تسجيل طلب الدعم #'+lastTicket+'. سيصل للإدارة وسيتم الرد عبر تلغرام عند المراجعة.',
-        '✅ Support request #'+lastTicket+' saved. It will be delivered to the team; replies arrive in Telegram.'
-      );
-      if(send){send.textContent=tr('✅ تم الإرسال','✅ Sent');send.disabled=true;}
+      if(status)status.textContent='✅ '+t(18).replace('{id}',String(lastTicket));
+      if(send){send.textContent='✅ '+t(19);send.disabled=true;}
       if(msg)msg.disabled=true;
     }catch(e){
-      if(status)status.textContent='⚠️ '+String(e?.message||tr('تعذر إرسال الطلب','Unable to send request'));
-      if(send){send.disabled=false;send.textContent=tr('📨 إعادة المحاولة','📨 Retry');}
+      if(status)status.textContent='⚠️ '+String(e?.message||t(21));
+      if(send){send.disabled=false;send.textContent='📨 '+t(20);}
     }finally{busy=false;}
   };
   function init(){
