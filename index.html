@@ -763,6 +763,22 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 }
 #topMenu #mimaTopMenuLanguageButton{margin-top:3px}
 </style>
+<style id="mima-support-submenu-layout-20261013">
+#topMenu #mimaTopMenuReportToggle{display:flex!important;justify-content:center!important;align-items:center!important;gap:9px!important}
+#topMenu .mimaSupportChevron{font-size:20px;line-height:1;transition:transform .18s ease}
+#topMenu #mimaTopMenuReportToggle[aria-expanded="true"] .mimaSupportChevron{transform:rotate(180deg)}
+#topMenu .mimaSupportSubmenu[hidden]{display:none!important}
+#topMenu .mimaSupportSubmenu{display:grid;gap:7px;padding:9px 7px 10px;
+  border:1px solid rgba(225,174,73,.42);border-radius:16px;
+  background:linear-gradient(180deg,rgba(235,185,78,.11),rgba(18,14,8,.5))}
+#topMenu .mimaSupportSubmenu>button{display:block!important;width:100%!important;min-height:43px!important;
+  padding:10px 8px!important;border:1px solid rgba(221,171,73,.58)!important;border-radius:12px!important;
+  background:linear-gradient(180deg,#1a170f,#0a1015)!important;color:#ffe5a9!important;
+  font-size:13px!important;font-weight:800!important;text-align:center!important;line-height:1.35!important;
+  white-space:normal!important;cursor:pointer!important}
+#topMenu .mimaSupportSubmenu>button:hover,#topMenu .mimaSupportSubmenu>button:focus-visible{
+  background:linear-gradient(180deg,#32240e,#12150f)!important;border-color:#ffe09a!important}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -795,9 +811,12 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 <div id="topMenu" class="topMenu">
   <button id="mimaTopMenuWithdrawMain" type="button" onclick="openWithdrawFromMenu()">💸 سحب</button>
   <div class="mimaSupportMenuHeading" id="mimaTopMenuSupportTitle" role="heading" aria-level="2">🎧 دعم MIMA</div>
-  <button id="mimaTopMenuWithdrawalsSupport" type="button" onclick="openMimaSupportTicket('withdrawals')">📩 السحوبات</button>
-  <button id="mimaTopMenuProblemSupport" type="button" onclick="openMimaSupportTicket('problem')">🐛 إبلاغ عن مشكلة</button>
-  <button id="mimaTopMenuOtherSupport" type="button" onclick="openMimaSupportTicket('other')">💬 أخرى</button>
+  <button id="mimaTopMenuReportToggle" type="button" aria-expanded="false" aria-controls="mimaSupportSubmenu" onclick="toggleMimaSupportCategories(event)"><span id="mimaTopMenuReportToggleLabel">🐛 إبلاغ عن مشكلة</span><span class="mimaSupportChevron" aria-hidden="true">⌄</span></button>
+  <div id="mimaSupportSubmenu" class="mimaSupportSubmenu" hidden>
+    <button id="mimaTopMenuWithdrawalsSupport" type="button" onclick="openMimaSupportTicket('withdrawals')">📩 السحوبات</button>
+    <button id="mimaTopMenuProblemSupport" type="button" onclick="openMimaSupportTicket('problem')">🐛 إبلاغ عن مشكلة</button>
+    <button id="mimaTopMenuOtherSupport" type="button" onclick="openMimaSupportTicket('other')">💬 أخرى</button>
+  </div>
   <button id="mimaTopMenuLanguageButton" type="button" onclick="openMimaLanguageFromMenu()">🌐 Language</button>
 </div>
 <div id="mimaSupportBackdrop" class="mimaSupportBackdrop" hidden onclick="closeMimaSupportTicket()"></div>
@@ -5472,6 +5491,10 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   function closeTopMenu(){
     $('topMenu').classList.remove('show');
     $('topMenuBackdrop').classList.remove('show');
+    const sub=document.getElementById('mimaSupportSubmenu');
+    const subToggle=document.getElementById('mimaTopMenuReportToggle');
+    if(sub)sub.hidden=true;
+    if(subToggle)subToggle.setAttribute('aria-expanded','false');
   }
 
   function openMimaLanguageFromMenu(){
@@ -8698,6 +8721,7 @@ input[type="submit"]:focus-visible{
     const set=(id,label)=>{const node=el(id);if(node)node.textContent=label;};
     set('mimaTopMenuWithdrawMain','💸 '+t(1));
     set('mimaTopMenuSupportTitle','🎧 '+t(0));
+    set('mimaTopMenuReportToggleLabel','🐛 '+t(3));
     set('mimaTopMenuWithdrawalsSupport','📩 '+t(2));
     set('mimaTopMenuProblemSupport','🐛 '+t(3));
     set('mimaTopMenuOtherSupport','💬 '+t(4));
@@ -8711,6 +8735,14 @@ input[type="submit"]:focus-visible{
     if(send&&!busy&&!lastTicket)send.textContent='📨 '+t(10);
   }
   window.renderMimaSupportLanguage=language;
+  window.toggleMimaSupportCategories=function(event){
+    if(event)event.stopPropagation();
+    const menu=el('mimaSupportSubmenu'),toggle=el('mimaTopMenuReportToggle');
+    if(!menu||!toggle)return;
+    const open=menu.hidden;
+    menu.hidden=!open;
+    toggle.setAttribute('aria-expanded',String(open));
+  };
   function count(){
     const msg=el('mimaSupportMessage'),counter=el('mimaSupportCount');
     if(msg&&counter)counter.textContent=msg.value.length+' / 2000';
