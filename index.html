@@ -1004,7 +1004,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <div class="mimaAdsgramTaskHead">
       <div>
         <b id="mimaAdsgramTaskHeading">مهمة ممولة</b>
-        <small id="mimaAdsgramTaskSub">مهمة اختيارية • المكافأة بعد تأكيد AdsGram فقط (+5 MIMA)</small>
+        <small id="mimaAdsgramTaskSub">+5 MIMA • بعد تأكيد AdsGram</small>
       </div>
       <span class="mimaAdsgramTaskBadge">ADS</span>
     </div>
@@ -10375,7 +10375,7 @@ input[type="submit"]:focus-visible{
     const s=document.getElementById('mimaAdsgramTaskSub');
     const task=document.getElementById('mimaAdsgramTaskUnit');
     if(h) h.textContent=txSafe('مهمة ممولة','Sponsored Task');
-    if(s) s.textContent=txSafe('مهمة اختيارية • أكمل شروط المعلن • +5 MIMA بعد تأكيد AdsGram','Optional sponsored task • complete advertiser requirements • +5 MIMA after AdsGram confirmation');
+    if(s) s.textContent=txSafe('+5 MIMA • بعد تأكيد AdsGram','+5 MIMA • after AdsGram confirmation');
 
     if(task){
       const b=task.querySelector('[slot="button"]');
@@ -10895,102 +10895,61 @@ input[type="submit"]:focus-visible{
 }
 </style>
 
-<style id="mima-sponsored-match-watch-size-20261012">
-/* Visual alignment only: sponsored AdsGram stays an independent task.
-   Match the Watch Ads card's dimensions without changing reward/claim handlers. */
+<style id="mima-sponsored-compact-like-channel-tasks-20261013">
+/* Match normal channel-task cards; preserve AdsGram native controls. */
 #tasks #mimaAdsgramTaskCard{
-  width:100%!important;
-  box-sizing:border-box!important;
-  min-height:var(--mima-watch-ads-height,228px)!important;
-  display:flex;
-  flex-direction:column;
-  padding:20px 18px!important;
-  border-radius:23px!important;
-  border:1px solid rgba(238,181,70,.55)!important;
-  background:radial-gradient(circle at 100% 0%,rgba(244,185,62,.10),transparent 44%),linear-gradient(140deg,#16130f,#111013 55%,#171109)!important;
-  box-shadow:0 14px 34px rgba(0,0,0,.31),inset 0 1px 0 rgba(255,237,162,.045)!important;
+  box-sizing:border-box!important;width:100%!important;min-height:0!important;height:auto!important;
+  margin:0 0 9px!important;padding:11px 12px!important;display:flex!important;
+  flex-direction:column!important;gap:6px!important;border-radius:17px!important;
+  border:1px solid rgba(206,157,48,.34)!important;
+  background:linear-gradient(145deg,#0b0b0b,#120f08)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,225,139,.018)!important;
 }
 #tasks #mimaAdsgramTaskCard .mimaAdsgramTaskHead{
-  align-items:center;
-  gap:12px;
-  margin-bottom:16px;
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:8px!important;margin:0!important;min-width:0!important;
 }
+#tasks #mimaAdsgramTaskCard .mimaAdsgramTaskHead>div{min-width:0!important;flex:1 1 auto!important}
 #tasks #mimaAdsgramTaskHeading{
-  font-size:19px!important;
-  line-height:1.3!important;
-  font-weight:900!important;
-  color:#fff0bd!important;
+  font-size:13px!important;line-height:1.35!important;font-weight:900!important;color:#f7e7b1!important;
 }
 #tasks #mimaAdsgramTaskSub{
-  display:block;
-  margin-top:6px!important;
-  font-size:11.5px!important;
-  line-height:1.55!important;
-  overflow-wrap:anywhere;
+  display:block!important;margin-top:2px!important;font-size:9.5px!important;
+  line-height:1.4!important;color:#aa9469!important;overflow-wrap:anywhere!important;
 }
 #tasks #mimaAdsgramTaskCard .mimaAdsgramTaskBadge{
-  font-size:10px!important;
-  padding:7px 10px!important;
-  border-radius:12px!important;
+  flex:0 0 auto!important;padding:5px 8px!important;font-size:9px!important;border-radius:11px!important;
 }
 #tasks #mimaAdsgramTaskUnit{
-  --adsgram-task-font-size:15px!important;
-  --adsgram-task-icon-size:56px!important;
-  --adsgram-task-icon-title-gap:12px!important;
-  --adsgram-task-button-width:86px!important;
-  --adsgram-task-icon-border-radius:16px!important;
-  min-height:92px!important;
-  margin-top:auto!important;
-  padding:12px!important;
-  border-radius:17px!important;
-  width:100%!important;
-  max-width:100%!important;
-  flex:0 0 auto;
+  --adsgram-task-font-size:12px!important;--adsgram-task-icon-size:42px!important;
+  --adsgram-task-icon-title-gap:8px!important;--adsgram-task-button-width:70px!important;
+  --adsgram-task-icon-border-radius:12px!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;min-height:64px!important;
+  margin:0!important;padding:7px 9px!important;border-radius:13px!important;flex:0 0 auto!important;
 }
 #tasks #mimaAdsgramTaskCard .mimaAdsgramTaskButton{
-  min-width:78px!important;
-  min-height:44px!important;
-  padding:9px 12px!important;
-  font-size:12px!important;
-  border-radius:14px!important;
+  min-width:60px!important;min-height:39px!important;padding:7px 10px!important;
+  border-radius:13px!important;font-size:11px!important;
 }
 #tasks #mimaAdsgramTaskCard #mimaAdsgramTaskCooldown{
-  margin-top:auto!important;
+  min-height:64px!important;margin:0!important;padding:8px 10px!important;border-radius:13px!important;
+}
+#tasks #mimaAdsgramTaskCard .mimaAdsgramCooldownButton{
+  flex-basis:80px!important;min-height:39px!important;
 }
 @media(max-width:390px){
-  #tasks #mimaAdsgramTaskCard{padding:16px 14px!important;}
-  #tasks #mimaAdsgramTaskSub{font-size:11px!important;}
-  #tasks #mimaAdsgramTaskHeading{font-size:18px!important;}
-  #tasks #mimaAdsgramTaskUnit{
-    --adsgram-task-icon-size:50px!important;
-    --adsgram-task-button-width:76px!important;
-    padding:10px!important;
-  }
+ #tasks #mimaAdsgramTaskCard{padding:10px 11px!important;gap:5px!important}
+ #tasks #mimaAdsgramTaskHeading{font-size:12px!important}
+ #tasks #mimaAdsgramTaskSub{font-size:9px!important}
+ #tasks #mimaAdsgramTaskUnit{
+  --adsgram-task-font-size:11px!important;--adsgram-task-icon-size:38px!important;
+  --adsgram-task-button-width:64px!important;padding:6px 7px!important;
+ }
+ #tasks #mimaAdsgramTaskCard .mimaAdsgramTaskButton{
+  min-width:55px!important;padding:7px 8px!important;font-size:10px!important;
+ }
 }
 </style>
-<script id="mima-sponsored-match-watch-size-20261012-sync">
-(function(){
-  'use strict';
-  const watch=document.getElementById('adsgramRewardTaskItem');
-  const sponsored=document.getElementById('mimaAdsgramTaskCard');
-  if(!watch || !sponsored) return;
-  function alignTaskCards(){
-    const height=watch.getBoundingClientRect().height;
-    if(Number.isFinite(height) && height>0){
-      sponsored.style.setProperty('--mima-watch-ads-height',Math.ceil(height)+'px');
-    }
-  }
-  alignTaskCards();
-  if(typeof ResizeObserver==='function'){
-    const observer=new ResizeObserver(alignTaskCards);
-    observer.observe(watch);
-  }
-  window.addEventListener('resize',alignTaskCards,{passive:true});
-  document.addEventListener('visibilitychange',function(){
-    if(!document.hidden) alignTaskCards();
-  });
-})();
-</script>
 
 <script id="mima-checkin-first-order-20261012">
 (function(){
