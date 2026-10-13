@@ -9649,6 +9649,76 @@ input[type="submit"]:focus-visible{
 }
 </style>
 
+<style id="mima-home-compact-layout-20261013">
+/* Home screen only: reclaim space added by the premium member card.
+   Keep the official coin (230px), its animation, the fixed nav and all logic untouched. */
+#home.screen{
+  padding-top:9px!important;
+}
+#home .heroHead{
+  padding:9px 12px 0!important;
+}
+#home .mimaUserCard{
+  padding:7px 10px!important;
+  gap:9px!important;
+  border-radius:16px!important;
+}
+#home .mimaUserAvatarWrap{
+  width:44px!important;
+  height:44px!important;
+  flex:0 0 44px!important;
+}
+#home .mimaUserAvatar,
+#home .mimaUserAvatarFallback{
+  width:44px!important;
+  height:44px!important;
+}
+#home .mimaUserAvatarFallback{
+  font-size:20px!important;
+}
+#home .mimaUserMeta #heroWelcome{
+  font-size:14px!important;
+  line-height:1.2!important;
+}
+#home .mimaUserMetaRow{
+  margin-top:4px!important;
+  gap:6px!important;
+}
+#home .heroHead .heroUsername,
+#home .mimaMemberBadge{
+  padding:4px 8px!important;
+}
+#home .heroHead h1{
+  margin:7px 0 2px!important;
+  font-size:27px!important;
+  line-height:1.08!important;
+}
+#home .heroHead > small{
+  font-size:11px!important;
+  line-height:1.2!important;
+}
+#home .balanceRow{
+  margin:8px 9px 0!important;
+  gap:8px!important;
+}
+#home .balanceCard{
+  padding:8px 9px!important;
+}
+#home .balanceCard b{
+  margin-top:4px!important;
+  line-height:1.18!important;
+}
+#home .miningScene{
+  margin-top:5px!important;
+}
+@media (max-width:370px){
+  #home .heroHead{padding:8px 10px 0!important}
+  #home .mimaUserCard{padding:6px 8px!important}
+  #home .balanceCard{padding:7px!important}
+  #home .balanceCard b{font-size:15px!important}
+}
+</style>
+
 <script id="mima-premium-user-card-script-v1">
 (function(){
   function applyPremiumUserCard(){
