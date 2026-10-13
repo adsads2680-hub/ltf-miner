@@ -10225,6 +10225,7 @@ input[type="submit"]:focus-visible{
   let adAvailable=true;
   let verifyingReward=false;
   let lastKnownRewardId=0;
+  let baselineReady=false;
   let pendingReward=null;
 
   function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en;}catch(_){return en;}}
@@ -10291,19 +10292,20 @@ input[type="submit"]:focus-visible{
     // Remember a previous confirmed transaction without treating it as a new reward.
     if(initialize&&!pendingReward){
       lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
+      baselineReady=true;
     }
     render();
     return true;
   }
   function completedFromServer(data,pending){
-    if(!data||data.success!==true||!pending)return false;
+    if(!data||data.success!==true||!pending||pending.baselineReady!==true)return false;
     const id=Number(data.last_reward_id)||0;
     const at=Date.parse(data.last_reward_at||'');
     // AdsGram's UI event is not sufficient. The authenticated publisher
     // callback must have written a NEW transaction on our server.
     return id>pending.baselineId &&
       Number.isFinite(at) &&
-      at>=pending.startedAt-45000 &&
+      at>=pending.startedAt-5000 &&
       at<=Date.now()+5000;
   }
   function reportReward(data){
@@ -10360,7 +10362,7 @@ input[type="submit"]:focus-visible{
       verifyingReward=true;
       verificationState='checking';
       window.mimaAdDiag?.('task','on_reward');
-      pendingReward={baselineId:lastKnownRewardId,startedAt:Date.now()};
+      pendingReward={baselineId:lastKnownRewardId,baselineReady,startedAt:Date.now()};
       render();
       let confirmed=false;
       for(let attempt=0;attempt<10;attempt++){
