@@ -747,15 +747,6 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
  overflow-y:auto!important;overscroll-behavior:contain!important;
  gap:8px!important
 }
-#topMenu .mimaSupportMenuHeading{
- border-top:1px solid rgba(232,181,74,.28);
- border-bottom:1px solid rgba(232,181,74,.28);
- background:linear-gradient(90deg,rgba(212,161,60,.19),transparent);
- padding:12px 10px!important;margin:1px 0 0;
- text-align:center;direction:inherit;color:#ffdf96;font-size:16px;
- line-height:1.4;font-weight:900;letter-spacing:.2px;
- border-radius:10px;pointer-events:none
-}
 #topMenu.topMenu>button{
  min-height:50px!important;height:auto!important;padding:10px 8px!important;
  font-size:13px!important;white-space:normal!important;overflow-wrap:anywhere;
@@ -810,7 +801,6 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 <div id="topMenuBackdrop" class="topMenuBackdrop" onclick="closeTopMenu()"></div>
 <div id="topMenu" class="topMenu">
   <button id="mimaTopMenuWithdrawMain" type="button" onclick="openWithdrawFromMenu()">💸 سحب</button>
-  <div class="mimaSupportMenuHeading" id="mimaTopMenuSupportTitle" role="heading" aria-level="2">🎧 دعم MIMA</div>
   <button id="mimaTopMenuReportToggle" type="button" aria-expanded="false" aria-controls="mimaSupportSubmenu" onclick="toggleMimaSupportCategories(event)"><span id="mimaTopMenuReportToggleLabel">🐛 إبلاغ عن مشكلة</span><span class="mimaSupportChevron" aria-hidden="true">⌄</span></button>
   <div id="mimaSupportSubmenu" class="mimaSupportSubmenu" hidden>
     <button id="mimaTopMenuWithdrawalsSupport" type="button" onclick="openMimaSupportTicket('withdrawals')">📩 السحوبات</button>
@@ -8720,7 +8710,6 @@ input[type="submit"]:focus-visible{
   function language(){
     const set=(id,label)=>{const node=el(id);if(node)node.textContent=label;};
     set('mimaTopMenuWithdrawMain','💸 '+t(1));
-    set('mimaTopMenuSupportTitle','🎧 '+t(0));
     set('mimaTopMenuReportToggleLabel','🐛 '+t(3));
     set('mimaTopMenuWithdrawalsSupport','📩 '+t(2));
     set('mimaTopMenuProblemSupport','🐛 '+t(3));
