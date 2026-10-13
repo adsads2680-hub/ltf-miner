@@ -8146,110 +8146,179 @@ input[type="submit"]:focus-visible{
 </div>
 <script id="mima-market-admin-beta-script">
 (function(){
-  'use strict';
-  // Informational showcase only: no mock charts/prices and no buy or sell controls.
-  // This is UI only, independent from balances, wallets and transaction services.
-  const CONTRACT='EQCJx-Um0Q7LTYcxOn7Ebj6NeDGvln37kcWE5KWsWvXuKqIZ';
-  const EXPLORER='https://tonviewer.com/'+CONTRACT;
-  const ADMIN_ID='1035565575';
-  const get=id=>document.getElementById(id);
-  const isArabic=()=>String(document.documentElement.lang||'').toLowerCase().startsWith('ar');
-  const t=(ar,en)=>isArabic()?ar:en;
-  function isAdmin(){
-    try{
-      return String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id||'')===ADMIN_ID && Boolean(window.Telegram?.WebApp?.initData);
-    }catch(_){return false;}
-  }
-  let lastFocus=null;
-  function render(){
-    const dialog=get('mimaMarketBetaOverlay');
-    if(!dialog)return;
-    dialog.classList.toggle('mimaMarketPublic',!isAdmin());
-    get('mimaMarketBetaLaunchLabel').textContent=t('بورصة MIMA','MIMA Exchange');
-    get('mimaMarketBetaLaunchBadge').textContent=isAdmin()?'PREVIEW':t('قريباً','SOON');
-    get('mimaMarketBetaDialog').dir=isArabic()?'rtl':'ltr';
-    get('mimaMarketBetaSubtitle').textContent=t('المنصة الداخلية • قريباً','Internal exchange • Coming soon');
-    get('mimaMarketBetaComingSoonTitle').textContent=t('بورصة MIMA قريباً','MIMA Exchange Coming Soon');
-    get('mimaMarketBetaComingSoonSub').textContent=t('العملة موجودة على شبكة TON، لكن التداول غير مفعّل حالياً.','The token is on TON, but trading is not enabled yet.');
-    get('mimaMarketTokenChain').textContent=t('عملة MIMA على شبكة TON','MIMA token on TON');
-    get('mimaMarketTokenAddrLabel').textContent=t('عنوان العقد الرسمي للعرض','Token contract address');
-    get('mimaMarketTokenCopy').textContent=t('نسخ العنوان','Copy address');
-    get('mimaMarketTokenOpen').textContent=t('عرض على TON Viewer ↗','View on TON Viewer ↗');
-    get('mimaMarketBetaFooter').textContent=t('صفحة تعريفية فقط • لا توجد أسعار سوق أو عمليات شراء وبيع هنا.','Information only • No market prices, buy orders or sell orders.');
-  }
-  function close(){
-    const dialog=get('mimaMarketBetaOverlay');
-    if(dialog?.open){try{dialog.close();}catch(_){}}
-    dialog?.classList.remove('mimaOpen');
-    if(dialog)dialog.style.display='';
-    document.body.classList.remove('mimaMarketBetaBodyOpen');
-    if(lastFocus?.focus)lastFocus.focus();
-  }
-  function open(event){
-    if(event){event.preventDefault();event.stopPropagation();}
-    const dialog=get('mimaMarketBetaOverlay');
-    if(!dialog||dialog.open||dialog.classList.contains('mimaOpen'))return;
-    lastFocus=document.activeElement;
-    render();
-    try{if(typeof dialog.showModal==='function')dialog.showModal();}catch(_){}
-    dialog.classList.add('mimaOpen');
-    dialog.style.display='flex';
-    document.body.classList.add('mimaMarketBetaBodyOpen');
-    get('mimaMarketBetaClose')?.focus();
-  }
-  function init(){
-    const launch=get('mimaMarketBetaLaunch'),wrap=get('mimaMarketBetaLaunchWrap');
-    if(!launch||!wrap)return;
-    const overlay=document.createElement('dialog');
-    overlay.id='mimaMarketBetaOverlay';
-    overlay.setAttribute('aria-label','MIMA Exchange information');
-    overlay.innerHTML=`
-      <div id="mimaMarketBetaDialog" role="dialog" aria-modal="true" aria-label="MIMA COIN on TON" dir="ltr">
-        <div class="mmb-head"><div class="mmb-brand"><div class="mmb-mark">M</div><div><b>MIMA EXCHANGE</b><small id="mimaMarketBetaSubtitle"></small></div></div><button id="mimaMarketBetaClose" class="mmb-close" type="button" aria-label="Close">×</button></div>
-        <div class="mmb-coming" aria-live="polite"><span class="mmb-coming-icon" aria-hidden="true">✦ ◈ ✦</span><strong id="mimaMarketBetaComingSoonTitle"></strong><small id="mimaMarketBetaComingSoonSub"></small></div>
-        <section class="mimaTokenDisplay" aria-label="MIMA COIN token">
-          <div class="mimaTokenHalo"><img id="mimaMarketTokenLogo" alt="Official MIMA COIN gold coin" loading="eager" draggable="false"></div>
-          <h2>MIMA COIN</h2><p id="mimaMarketTokenChain"></p><span class="mimaTokenSymbol">MIMA · TON</span>
-        </section>
-        <section class="mimaTokenContract">
-          <small id="mimaMarketTokenAddrLabel"></small>
-          <code dir="ltr">EQCJx-Um…WvXuKqIZ</code>
-          <div class="mimaTokenActions">
-            <button id="mimaMarketTokenCopy" type="button"></button>
-            <a id="mimaMarketTokenOpen" href="https://tonviewer.com/EQCJx-Um0Q7LTYcxOn7Ebj6NeDGvln37kcWE5KWsWvXuKqIZ" rel="noopener noreferrer" target="_blank"></a>
-          </div>
-          <small id="mimaMarketTokenCopyStatus" role="status" aria-live="polite"></small>
-        </section>
-        <div id="mimaMarketBetaFooter" class="mmb-bottom"></div>
-      </div>`;
-    document.body.appendChild(overlay);
-    const coinImg=get('mimaCoinImage');
-    const img=get('mimaMarketTokenLogo');
-    if(img && coinImg?.src)img.src=coinImg.src;
-    else if(img){img.style.display='none';img.parentElement.textContent='MIMA';}
-    get('mimaMarketBetaClose')?.addEventListener('click',close);
-    overlay.addEventListener('cancel',event=>{event.preventDefault();close();});
-    overlay.addEventListener('click',event=>{if(event.target===overlay)close();});
-    get('mimaMarketTokenCopy')?.addEventListener('click',async()=>{
-      const msg=get('mimaMarketTokenCopyStatus');
-      try{
-        if(!navigator.clipboard?.writeText)throw new Error('Clipboard not supported');
-        await navigator.clipboard.writeText(CONTRACT);
-        if(msg)msg.textContent=t('تم نسخ عنوان العقد','Contract address copied');
-      }catch(_){
-        if(msg)msg.textContent=t('اضغط مطولاً على العنوان لنسخه','Copy not supported here; use the TON Viewer link');
-      }
-    });
-    window.mimaOpenMarketDemo=open;
-    launch.addEventListener('click',event=>{if(!overlay.open&&!overlay.classList.contains('mimaOpen'))open(event);});
-    wrap.style.display='flex';
-    new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-    render();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
-  else init();
+'use strict';
+// Read-only market view, no prices or trades are simulated.
+const CONTRACT='EQCJx-Um0Q7LTYcxOn7Ebj6NeDGvln37kcWE5KWsWvXuKqIZ';
+const RAW='0:89c7e526d10ecb4d87313a7ec46e3e8d7831af967dfb91c584e4a5ac5af5ee2a';
+const API='https://api.dexscreener.com/token-pairs/v1/ton/'+CONTRACT;
+const ADMIN_ID='1035565575';
+const $=id=>document.getElementById(id);
+const ar=()=>String(document.documentElement.lang||'').toLowerCase().startsWith('ar');
+const tr=(a,e)=>ar()?a:e;
+const isAdmin=()=>{
+ try{return String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id||'')===ADMIN_ID&&Boolean(window.Telegram?.WebApp?.initData)}
+ catch(_){return false}
+};
+let lastFocus=null,fetching=false,lastChecked=0,marketReady=false;
+const isMatching=a=>[CONTRACT.toLowerCase(),RAW].includes(String(a||'').toLowerCase());
+function fmt(value){
+ const n=Number(value);
+ if(!Number.isFinite(n)||n<=0)return '—';
+ if(n<0.00000001)return n.toExponential(5);
+ if(n<0.01)return n.toFixed(8);
+ if(n<1)return n.toFixed(6);
+ return n.toLocaleString('en-US',{maximumFractionDigits:6});
+}
+function emptyMarket(){
+ $('mimaLiveUsd').textContent='$0.00000000';
+ $('mimaLiveGram').textContent='—';
+ $('mimaLiveBuys').textContent='—';
+ $('mimaLiveSells').textContent='—';
+ $('mimaLiveChange').textContent='—';
+ $('mimaLiveStatus').textContent=tr('لا يوجد سعر متاح من سوق تداول بعد • الصفر مجرد قيمة عرض','No market trading price found yet • Zero is a display placeholder');
+ marketReady=false;
+}
+async function loadMarket(force){
+ const overlay=$('mimaMarketBetaOverlay');
+ if(!overlay||(!overlay.open&&!overlay.classList.contains('mimaOpen'))||fetching||document.hidden)return;
+ if(!force && Date.now()-lastChecked<55000)return;
+ fetching=true;lastChecked=Date.now();
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),9000);
+ try{
+   const response=await fetch(API,{signal:controller.signal,headers:{Accept:'application/json'},cache:'no-store'});
+   if(!response.ok)throw new Error('Market fetch HTTP '+response.status);
+   const data=await response.json();
+   if(!Array.isArray(data))throw new Error('Market response invalid');
+   const pairs=data.filter(p=>p&&String(p.chainId||'').toLowerCase()==='ton'&&isMatching(p.baseToken?.address)&&Number(p.priceUsd)>0&&Number(p.liquidity?.usd)>0);
+   pairs.sort((a,b)=>Number(b.liquidity?.usd||0)-Number(a.liquidity?.usd||0));
+   const top=pairs[0];
+   if(!top){emptyMarket();return;}
+   $('mimaLiveUsd').textContent='$'+fmt(top.priceUsd);
+   const quote=String(top.quoteToken?.symbol||'').toUpperCase();
+   $('mimaLiveGram').textContent=(quote==='TON'||quote==='GRAM')?fmt(top.priceNative)+' GRAM':'—';
+   const counts=top.txns?.m5||{};
+   $('mimaLiveBuys').textContent=Number.isFinite(Number(counts.buys))&&counts.buys!=null?String(counts.buys):'—';
+   $('mimaLiveSells').textContent=Number.isFinite(Number(counts.sells))&&counts.sells!=null?String(counts.sells):'—';
+   const delta=Number(top.priceChange?.h24);
+   $('mimaLiveChange').textContent=top.priceChange?.h24!=null&&Number.isFinite(delta)?(delta>0?'+':'')+delta.toFixed(2)+'%':'—';
+   $('mimaLiveChange').style.color=delta<0?'#ff9da7':'#8ee5b6';
+   $('mimaLiveStatus').textContent=tr('السعر من '+String(top.dexId||'DEX')+' • تحديث كل دقيقة تقريباً','Price from '+String(top.dexId||'DEX')+' • Updates about every minute');
+   marketReady=true;
+ }catch(_){
+   $('mimaLiveStatus').textContent=tr('خدمة أسعار الأسواق غير متاحة حالياً • السعر الحالي غير مؤكد','Market data temporarily unavailable • No verified current price');
+ }finally{clearTimeout(timer);fetching=false;}
+}
+function render(){
+ const o=$('mimaMarketBetaOverlay');if(!o)return;
+ o.classList.toggle('mimaMarketPublic',!isAdmin());
+ $('mimaMarketBetaLaunchLabel').textContent=tr('بورصة MIMA','MIMA Exchange');
+ $('mimaMarketBetaLaunchBadge').textContent=isAdmin()?'PREVIEW':tr('قريباً','SOON');
+ $('mimaMarketBetaDialog').dir=ar()?'rtl':'ltr';
+ $('mimaMarketBetaSubtitle').textContent=tr('بورصة MIMA • قريباً','MIMA Exchange • Coming Soon');
+ $('mimaMarketBetaComingSoonTitle').textContent=tr('بورصة MIMA قريباً','MIMA Exchange Coming Soon');
+ $('mimaMarketBetaComingSoonSub').textContent=tr('العملة على شبكة TON • التداول داخل البوت غير مفعّل','Token on TON • In-app trading is not enabled');
+ $('mimaLiveTitle').textContent=tr('سعر MIMA في الأسواق','MIMA market price');
+ $('mimaLiveUsdLabel').textContent=tr('السعر مقابل الدولار','USD price');
+ $('mimaLiveGramLabel').textContent=tr('السعر مقابل GRAM','GRAM price');
+ $('mimaLiveBuysLabel').textContent=tr('شراء آخر 5 دقائق','Buys · Last 5 min');
+ $('mimaLiveSellsLabel').textContent=tr('بيع آخر 5 دقائق','Sells · Last 5 min');
+ $('mimaLiveChangeLabel').textContent=tr('تغير 24 ساعة','24h change');
+ $('mimaLiveRefresh').textContent=tr('تحديث السعر','Refresh price');
+ $('mimaLiveExplanation').textContent=tr('الأرقام تعكس صفقات أسواق DEX المرصودة، وليست التحويلات بين المحافظ.','Data represents indexed DEX trades, not wallet transfers.');
+ $('mimaMarketTokenChain').textContent=tr('عملة MIMA على شبكة TON','MIMA token on TON');
+ $('mimaMarketTokenAddrLabel').textContent=tr('عنوان عقد MIMA','MIMA contract address');
+ $('mimaMarketTokenCopy').textContent=tr('نسخ العنوان','Copy address');
+ $('mimaMarketTokenOpen').textContent=tr('عرض على TON Viewer ↗','View on TON Viewer ↗');
+ $('mimaMarketBetaFooter').textContent=tr('متابعة الأسواق فقط • لا توجد أوامر شراء أو بيع داخل البوت.','Market tracking only • No buy or sell orders within the bot.');
+ if(!marketReady&&lastChecked===0)emptyMarket();
+}
+function close(){
+ const o=$('mimaMarketBetaOverlay');
+ if(o?.open){try{o.close()}catch(_){}}
+ o?.classList.remove('mimaOpen');if(o)o.style.display='';
+ document.body.classList.remove('mimaMarketBetaBodyOpen');
+ if(lastFocus?.focus)lastFocus.focus();
+}
+function open(event){
+ if(event){event.preventDefault();event.stopPropagation()}
+ const o=$('mimaMarketBetaOverlay');
+ if(!o||o.open||o.classList.contains('mimaOpen'))return;
+ lastFocus=document.activeElement;
+ render();
+ try{if(typeof o.showModal==='function')o.showModal()}catch(_){}
+ o.classList.add('mimaOpen');o.style.display='flex';
+ document.body.classList.add('mimaMarketBetaBodyOpen');
+ loadMarket(true);
+ $('mimaMarketBetaClose')?.focus();
+}
+function init(){
+ const launch=$('mimaMarketBetaLaunch'),wrap=$('mimaMarketBetaLaunchWrap');
+ if(!launch||!wrap)return;
+ const o=document.createElement('dialog');
+ o.id='mimaMarketBetaOverlay';o.setAttribute('aria-label','MIMA Exchange market overview');
+ o.innerHTML=`
+ <div id="mimaMarketBetaDialog" role="dialog" aria-modal="true" aria-label="MIMA COIN on TON" dir="ltr">
+ <div class="mmb-head"><div class="mmb-brand"><div class="mmb-mark">M</div><div><b>MIMA EXCHANGE</b><small id="mimaMarketBetaSubtitle"></small></div></div><button id="mimaMarketBetaClose" class="mmb-close" type="button" aria-label="Close">×</button></div>
+ <div class="mmb-coming" aria-live="polite"><span class="mmb-coming-icon" aria-hidden="true">✦ ◈ ✦</span><strong id="mimaMarketBetaComingSoonTitle"></strong><small id="mimaMarketBetaComingSoonSub"></small></div>
+ <section class="mimaLivePanel" id="mimaMarketLiveFeed">
+  <div class="mimaLiveHead"><strong id="mimaLiveTitle"></strong><span class="mimaLiveSource">DEX</span></div>
+  <div class="mimaLivePrimary"><small id="mimaLiveUsdLabel"></small><b id="mimaLiveUsd">$0.00000000</b></div>
+  <div class="mimaLiveSecondary"><small id="mimaLiveGramLabel"></small><b id="mimaLiveGram">—</b></div>
+  <div class="mimaLiveStats">
+    <div><small id="mimaLiveBuysLabel"></small><b id="mimaLiveBuys">—</b></div>
+    <div><small id="mimaLiveSellsLabel"></small><b id="mimaLiveSells">—</b></div>
+    <div><small id="mimaLiveChangeLabel"></small><b id="mimaLiveChange">—</b></div>
+  </div>
+  <p id="mimaLiveStatus" role="status" aria-live="polite"></p>
+  <button type="button" id="mimaLiveRefresh"></button>
+  <p id="mimaLiveExplanation"></p>
+ </section>
+ <section class="mimaTokenDisplay" aria-label="MIMA COIN token"><div class="mimaTokenHalo"><img id="mimaMarketTokenLogo" alt="Official MIMA COIN gold coin" loading="eager" draggable="false"></div><h2>MIMA COIN</h2><p id="mimaMarketTokenChain"></p><span class="mimaTokenSymbol">MIMA · TON</span></section>
+ <section class="mimaTokenContract"><small id="mimaMarketTokenAddrLabel"></small><code dir="ltr">EQCJx-Um…WvXuKqIZ</code><div class="mimaTokenActions"><button id="mimaMarketTokenCopy" type="button"></button><a id="mimaMarketTokenOpen" href="https://tonviewer.com/EQCJx-Um0Q7LTYcxOn7Ebj6NeDGvln37kcWE5KWsWvXuKqIZ" rel="noopener noreferrer" target="_blank"></a></div><small id="mimaMarketTokenCopyStatus" role="status" aria-live="polite"></small></section>
+ <div id="mimaMarketBetaFooter" class="mmb-bottom"></div>
+ </div>`;
+ document.body.appendChild(o);
+ const coin=$('mimaCoinImage'),img=$('mimaMarketTokenLogo');
+ if(img&&coin?.src)img.src=coin.src;else if(img){img.style.display='none';img.parentElement.textContent='MIMA'}
+ $('mimaMarketBetaClose')?.addEventListener('click',close);
+ o.addEventListener('cancel',event=>{event.preventDefault();close()});
+ o.addEventListener('click',event=>{if(event.target===o)close()});
+ $('mimaLiveRefresh')?.addEventListener('click',()=>loadMarket(true));
+ $('mimaMarketTokenCopy')?.addEventListener('click',async()=>{
+  const msg=$('mimaMarketTokenCopyStatus');
+  try{await navigator.clipboard.writeText(CONTRACT);msg.textContent=tr('تم النسخ','Address copied')}
+  catch(_){msg.textContent=tr('افتح TON Viewer لنسخ العنوان','Open TON Viewer to copy the address')}
+ });
+ window.mimaOpenMarketDemo=open;
+ launch.addEventListener('click',event=>{if(!o.open&&!o.classList.contains('mimaOpen'))open(event)});
+ wrap.style.display='flex';
+ new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+ window.setInterval(()=>loadMarket(false),60000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadMarket(false)});
+ render();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
+<style id="mima-market-live-price-css">
+#mimaMarketBetaOverlay .mimaLivePanel{padding:13px;margin:0 0 15px;border-radius:15px;border:1px solid rgba(216,171,80,.45);background:radial-gradient(circle at 75% 0%,rgba(208,157,65,.13),transparent 65%),linear-gradient(160deg,#0f1c26,#0b121b)}
+#mimaMarketBetaOverlay .mimaLiveHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+#mimaMarketBetaOverlay .mimaLiveHead strong{font-size:14px;color:#ffe1a1}
+#mimaMarketBetaOverlay .mimaLiveSource{font-size:10px;color:#a5e3c3;border:1px solid #315f4c;background:#12352a;border-radius:99px;padding:4px 9px}
+#mimaMarketBetaOverlay .mimaLivePrimary{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-bottom:10px}
+#mimaMarketBetaOverlay .mimaLivePrimary small,#mimaMarketBetaOverlay .mimaLiveSecondary small{font-size:11px;color:#9bb0c0}
+#mimaMarketBetaOverlay .mimaLivePrimary b{font-size:clamp(23px,6vw,34px);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;color:#ccefe0;letter-spacing:.01em}
+#mimaMarketBetaOverlay .mimaLiveSecondary{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 13px}
+#mimaMarketBetaOverlay .mimaLiveSecondary b{color:#f2d999;font-size:13px;direction:ltr;unicode-bidi:isolate}
+#mimaMarketBetaOverlay .mimaLiveStats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#mimaMarketBetaOverlay .mimaLiveStats>div{text-align:center;background:#131f29;border:1px solid #32414a;border-radius:10px;padding:9px 4px}
+#mimaMarketBetaOverlay .mimaLiveStats small{display:block;font-size:9px;color:#a0b0bf;line-height:1.5;margin-bottom:4px}
+#mimaMarketBetaOverlay .mimaLiveStats b{font-size:16px;color:#f1d8a5;direction:ltr}
+#mimaMarketBetaOverlay #mimaLiveStatus{font-size:10px;color:#eecb85;text-align:center;line-height:1.6;margin:10px 0 7px}
+#mimaMarketBetaOverlay #mimaLiveRefresh{display:block;margin:0 auto;padding:6px 16px;background:#2c2111;border:1px solid #ad7d31;border-radius:10px;color:#ffe0a5;font-size:11px}
+#mimaMarketBetaOverlay #mimaLiveExplanation{margin:8px 0 0;text-align:center;font-size:9px;line-height:1.6;color:#8ca1b2}
+</style>
 <style id="mima-market-token-showcase-css">
 /* Showcase replaces all simulated charts, stats and order-entry UI. */
 #mimaMarketBetaOverlay .mmb-coming{display:block!important;margin:6px 0 13px}
