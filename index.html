@@ -8175,7 +8175,7 @@ function emptyMarket(){
  $('mimaLiveBuys').textContent='—';
  $('mimaLiveSells').textContent='—';
  $('mimaLiveChange').textContent='—';
- $('mimaLiveStatus').textContent=tr('لا يوجد سعر متاح من سوق تداول بعد • الصفر مجرد قيمة عرض','No market trading price found yet • Zero is a display placeholder');
+ $('mimaLiveStatus').textContent='';
  marketReady=false;
 }
 async function loadMarket(force){
@@ -8585,7 +8585,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #mimaMarketBetaOverlay .mimaHeroBrandCopy b{color:#ffe0a1;font-size:18px;letter-spacing:1px}
 #mimaMarketBetaOverlay .mimaHeroBrandCopy span{color:#8caabd;font-size:11px}
 #mimaMarketBetaOverlay .mimaMarketHero .mimaTokenHalo{margin:0!important;width:83px!important;height:83px!important;min-width:83px!important;border-radius:50%}
-#mimaMarketBetaOverlay .mimaHeroTicker{margin-top:-62px;width:calc(100% - 95px);min-height:67px}
+#mimaMarketBetaOverlay .mimaHeroTicker{margin:15px 0 0!important;width:100%!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:10px!important;clear:both!important;box-sizing:border-box!important}
 #mimaMarketBetaOverlay .mimaHeroTicker .mimaLivePrimary b{font-size:clamp(22px,5.6vw,31px);color:#ffe49e}
 #mimaMarketBetaOverlay .mimaHeroTicker .mimaLiveSecondary{display:block}
 #mimaMarketBetaOverlay .mimaHeroTicker .mimaLiveSecondary b{display:block;margin-top:3px}
@@ -8630,8 +8630,107 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #mimaMarketBetaOverlay .mimaTokenContract{margin-top:5px}
 @media(max-width:385px){
  #mimaMarketBetaOverlay .mimaMarketHero .mimaTokenHalo{width:65px!important;height:65px!important;min-width:65px!important}
- #mimaMarketBetaOverlay .mimaHeroTicker{margin-top:-47px;width:calc(100% - 72px);min-height:65px}
+ #mimaMarketBetaOverlay .mimaHeroTicker{margin-top:13px!important;width:100%!important;min-height:0!important}
  #mimaMarketBetaOverlay .mimaHeroTicker .mimaLivePrimary b{font-size:22px}
+}
+</style>
+<style id="mima-market-no-overlap-20261014">
+/* Hero and exchange ticker: prevent price, unit and title from intersecting. */
+#mimaMarketBetaOverlay .mimaMarketHero{
+  overflow:hidden!important;
+  padding:16px 15px 15px!important;
+}
+#mimaMarketBetaOverlay .mimaHeroBrand{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  min-height:78px!important;
+  gap:12px!important;
+}
+#mimaMarketBetaOverlay .mimaHeroBrandCopy{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  max-width:calc(100% - 83px)!important;
+}
+#mimaMarketBetaOverlay .mimaHeroBrandCopy b{
+  font-size:clamp(16px,4.1vw,19px)!important;
+  line-height:1.3!important;
+  overflow-wrap:anywhere!important;
+}
+#mimaMarketBetaOverlay .mimaHeroBrandCopy span{
+  line-height:1.6!important;
+}
+#mimaMarketBetaOverlay .mimaMarketHero .mimaTokenHalo{
+  flex:0 0 76px!important;
+  width:76px!important;
+  height:76px!important;
+  min-width:76px!important;
+}
+#mimaMarketBetaOverlay .mimaHeroTicker .mimaLivePrimary{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:7px!important;
+  min-width:0!important;
+  margin:0!important;
+}
+#mimaMarketBetaOverlay .mimaHeroTicker .mimaLivePrimary small{
+  position:static!important;
+  display:block!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+#mimaMarketBetaOverlay .mimaHeroTicker .mimaLivePrimary b{
+  position:static!important;
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  line-height:1.25!important;
+  font-size:clamp(24px,6.2vw,33px)!important;
+  text-align:start!important;
+  direction:ltr!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+#mimaMarketBetaOverlay .mimaHeroTicker .mimaLiveSecondary{
+  margin:0!important;
+  padding-top:7px!important;
+  border-top:1px solid rgba(225,171,77,.15)!important;
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+  min-width:0!important;
+}
+#mimaMarketBetaOverlay .mimaHeroTicker .mimaLiveSecondary small,
+#mimaMarketBetaOverlay .mimaHeroTicker .mimaLiveSecondary b{
+  display:block!important;
+  margin:0!important;
+  line-height:1.4!important;
+}
+#mimaMarketBetaOverlay .mimaHeroTicker .mimaLiveSecondary b{
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+}
+#mimaMarketBetaOverlay .mimaMarketLiveHead{
+  margin:15px 0 8px!important;
+}
+#mimaMarketBetaOverlay #mimaLiveStatus:empty{
+  display:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+@media(max-width:385px){
+ #mimaMarketBetaOverlay .mimaMarketHero .mimaTokenHalo{
+   flex-basis:62px!important;width:62px!important;height:62px!important;min-width:62px!important;
+ }
+ #mimaMarketBetaOverlay .mimaHeroBrandCopy{
+   max-width:calc(100% - 70px)!important;
+ }
+ #mimaMarketBetaOverlay .mimaHeroTicker .mimaLivePrimary b{
+   font-size:clamp(22px,6vw,27px)!important;
+ }
 }
 </style>
 <script id="mima-ui-language-reconcile-20261011">
