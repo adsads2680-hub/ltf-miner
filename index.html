@@ -2403,7 +2403,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         'apikey':SUPABASE_PUBLISHABLE_KEY,
         'x-telegram-init-data':telegramInitData
       },
-      body:JSON.stringify({action,...extra})
+      body:JSON.stringify({action,...extra,selected_language:currentLang})
     });
 
     let data = null;
