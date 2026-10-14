@@ -1197,7 +1197,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <main><b id="mimaXTaskTitle">Follow Us on X</b><small id="mimaXTaskInfo">+5 MIMA • every 8 hours</small></main>
       <div class="taskActionGroup">
         <button id="mimaXOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaXTask()">Open X</button>
-        <label id="mimaXConfirmRow" style="display:none;align-items:center;gap:7px;color:#ffe7a0;font-size:12px;max-width:165px;cursor:pointer"><input id="mimaXConfirmBox" type="checkbox" onchange="renderMimaXTask()" style="width:18px;height:18px;accent-color:#dfb751;flex-shrink:0"><span>I confirm that I followed on X</span></label>
+        <label id="mimaXConfirmRow" style="display:none;align-items:center;gap:7px;color:#ffe7a0;font-size:12px;max-width:165px;cursor:pointer"><input id="mimaXConfirmBox" type="checkbox" onchange="renderMimaXTask()" style="width:18px;height:18px;accent-color:#dfb751;flex-shrink:0"><span id="mimaXConfirmText">I confirm that I followed on X</span></label>
         <button id="mimaXClaimBtn" type="button" onclick="claimMimaXTask(this)" style="display:none" disabled>Submit</button>
       </div>
     </div>
@@ -3352,6 +3352,12 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     try{const openedAt=Number(localStorage.getItem(key));return openedAt>1000000000000?Math.max(0,10000-(Date.now()-openedAt)):0;}catch(e){return 0}
   }
   
+  const MIMA_TASK_LABELS={"en":{"community":"Join Our Community","communityInfo":"Join the MIMA community • membership may be checked periodically","follow":"Follow Us on X","confirm":"I confirm that I followed on X","post":"Like, Comment & Repost on X"},"ar":{"community":"انضم إلى مجتمعنا","communityInfo":"انضم إلى مجتمع MIMA • قد يتم التحقق من العضوية دورياً","follow":"تابعنا على X","confirm":"أؤكد أنني تابعت الحساب على X","post":"إعجاب وتعليق وإعادة نشر على X"},"tr":{"community":"Topluluğumuza Katıl","communityInfo":"MIMA topluluğuna katıl • üyelik kontrol edilebilir","follow":"Bizi X'te Takip Et","confirm":"X'te takip ettiğimi onaylıyorum","post":"X'te Beğen, Yorum Yap ve Yeniden Paylaş"},"ru":{"community":"Присоединяйтесь к сообществу","communityInfo":"Вступите в MIMA • членство может проверяться","follow":"Подпишитесь на нас в X","confirm":"Подтверждаю подписку в X","post":"Лайк, комментарий и репост в X"},"fa":{"community":"به جامعه ما بپیوندید","communityInfo":"به جامعه MIMA بپیوندید • عضویت ممکن است بررسی شود","follow":"ما را در X دنبال کنید","confirm":"تأیید می‌کنم که در X دنبال کردم","post":"پسندیدن، نظر و بازنشر در X"},"hi":{"community":"हमारे समुदाय से जुड़ें","communityInfo":"MIMA से जुड़ें • सदस्यता की जाँच हो सकती है","follow":"X पर फ़ॉलो करें","confirm":"मैं पुष्टि करता हूँ कि X पर फ़ॉलो किया","post":"X पर लाइक, कमेंट और रीपोस्ट"},"id":{"community":"Gabung Komunitas Kami","communityInfo":"Gabung MIMA • keanggotaan dapat diperiksa","follow":"Ikuti Kami di X","confirm":"Saya mengonfirmasi sudah mengikuti di X","post":"Suka, Komentar & Posting Ulang di X"},"fr":{"community":"Rejoignez notre communauté","communityInfo":"Rejoignez MIMA • l'adhésion peut être vérifiée","follow":"Suivez-nous sur X","confirm":"Je confirme suivre sur X","post":"Aimer, commenter et republier sur X"},"zh":{"community":"加入我们的社区","communityInfo":"加入 MIMA • 可能检查成员身份","follow":"在 X 上关注我们","confirm":"我确认已在 X 上关注","post":"在 X 上点赞、评论及转发"},"de":{"community":"Tritt unserer Community bei","communityInfo":"Tritt MIMA bei • Mitgliedschaft kann geprüft werden","follow":"Folge uns auf X","confirm":"Ich bestätige, dass ich auf X folge","post":"Auf X liken, kommentieren und reposten"},"es":{"community":"Únete a nuestra comunidad","communityInfo":"Únete a MIMA • la membresía puede verificarse","follow":"Síguenos en X","confirm":"Confirmo que seguí en X","post":"Dar me gusta, comentar y republicar en X"},"bn":{"community":"আমাদের কমিউনিটিতে যোগ দিন","communityInfo":"MIMA-তে যোগ দিন • সদস্যতা যাচাই হতে পারে","follow":"X-এ আমাদের অনুসরণ করুন","confirm":"আমি নিশ্চিত করছি যে X-এ অনুসরণ করেছি","post":"X-এ লাইক, মন্তব্য ও রিপোস্ট"},"pt":{"community":"Entre na nossa comunidade","communityInfo":"Entre na MIMA • a participação pode ser verificada","follow":"Siga-nos no X","confirm":"Confirmo que segui no X","post":"Curta, comente e republique no X"},"uz":{"community":"Hamjamiyatimizga qoʻshiling","communityInfo":"MIMA hamjamiyatiga qoʻshiling • aʼzolik tekshirilishi mumkin","follow":"Xʼda bizni kuzating","confirm":"Xʼda kuzatganimni tasdiqlayman","post":"Xʼda layk, izoh va repost"},"ur":{"community":"ہماری کمیونٹی میں شامل ہوں","communityInfo":"MIMA میں شامل ہوں • رکنیت کی جانچ ہو سکتی ہے","follow":"X پر ہمیں فالو کریں","confirm":"میں تصدیق کرتا ہوں کہ X پر فالو کیا","post":"X پر لائک، کمنٹ اور ری پوسٹ"}};
+  function mimaTaskLabel(key){return (MIMA_TASK_LABELS[currentLang]||MIMA_TASK_LABELS.en)[key]||MIMA_TASK_LABELS.en[key]||key}
+  function mimaTaskAction(en,ar){return tx(ar,en)}
+  function mimaTaskPeriod(){return currentLang==='ar'?'كل 8 ساعات':mimaLanguageText('every 8 hours',currentLang)}
+  function mimaTaskAvailable(){return currentLang==='ar'?'متاحة بعد ':mimaLanguageText('available in ',currentLang)}
+  function mimaTaskConfirmText(){const el=$('mimaXConfirmText');if(el)el.textContent=mimaTaskLabel('confirm')}
   function renderTask(){
     const renderOne = (taskCode, btnId, infoId, openedKey) => {
       const btn = $(btnId);
@@ -3393,9 +3399,9 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     const communityTitle=$('mimaCommunityTitle');
     const communityInfo=$('joinChannelTaskInfo');
     const communityOpen=$('joinChannelOpenBtn');
-    if(communityTitle)communityTitle.textContent='Join Our Community';
-    if(communityInfo)communityInfo.textContent='Join the MIMA community • membership may be checked periodically';
-    if(communityOpen)communityOpen.textContent='Join';
+    if(communityTitle)communityTitle.textContent=mimaTaskLabel('community');
+    if(communityInfo)communityInfo.textContent=mimaTaskLabel('communityInfo');
+    if(communityOpen)communityOpen.textContent=mimaTaskAction('Join','انضم');
     renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v2');
     const task2Title = $('joinChannel2TaskTitle');
     if(task2Title) task2Title.textContent = tx('انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel');
@@ -4348,22 +4354,22 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   function renderMimaXTask(){
     const title=$('mimaXTaskTitle'),info=$('mimaXTaskInfo'),open=$('mimaXOpenBtn'),claim=$('mimaXClaimBtn'),row=$('mimaXConfirmRow'),box=$('mimaXConfirmBox');
     if(!title||!info||!open||!claim||!row||!box)return;
-    title.textContent='Follow Us on X';
-    open.textContent='Open X';
+    title.textContent=mimaTaskLabel('follow');mimaTaskConfirmText();
+    open.textContent=mimaTaskAction('Open X','فتح X');
     const remaining=mimaXNextAvailableAt-nowMs();
     if(remaining>0){
       row.style.display='none';claim.style.display='inline-block';claim.disabled=true;claim.textContent=formatCountdown(remaining);
-      info.textContent='+5 MIMA • available in '+formatCountdown(remaining);return;
+      info.textContent='+5 MIMA • '+mimaTaskAvailable()+formatCountdown(remaining);return;
     }
     let at=0;try{at=Number(localStorage.getItem(MIMA_X_OPEN_KEY)||0)}catch(e){}
     if(!at||Date.now()-at>30*60*1000){
       row.style.display='none';claim.style.display='none';claim.disabled=true;
       if(box.checked)box.checked=false;
-      info.textContent='+5 MIMA • every 8 hours';return;
+      info.textContent='+5 MIMA • '+mimaTaskPeriod();return;
     }
     row.style.display='flex';claim.style.display=box.checked?'inline-block':'none';
-    claim.disabled=!box.checked;claim.textContent='Submit';
-    info.textContent='+5 MIMA • every 8 hours';
+    claim.disabled=!box.checked;claim.textContent=mimaTaskAction('Submit','إرسال');
+    info.textContent='+5 MIMA • '+mimaTaskPeriod();
   }
   async function claimMimaXTask(btn){
     const confirmation=$('mimaXConfirmBox');
@@ -4396,13 +4402,13 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   function renderMimaXPost(){
     const title=$('mimaXPostTitle'),info=$('mimaXPostInfo'),open=$('mimaXPostOpen'),claim=$('mimaXPostClaim');
     if(!title||!info||!open||!claim)return;
-    title.textContent='Like, Comment & Repost on X';
-    open.textContent='Open Post';
+    title.textContent=mimaTaskLabel('post');
+    open.textContent=mimaTaskAction('Open Post','فتح المنشور');
     const remaining=mimaXPostNextAvailableAt-nowMs();
-    if(remaining>0){claim.disabled=true;claim.textContent=formatCountdown(remaining);info.textContent='+5 MIMA • available in '+formatCountdown(remaining);return}
+    if(remaining>0){claim.disabled=true;claim.textContent=formatCountdown(remaining);info.textContent='+5 MIMA • '+mimaTaskAvailable()+formatCountdown(remaining);return}
     let at=0;try{at=Number(localStorage.getItem(MIMA_X_POST_OPEN_KEY)||0)}catch(e){}
-    if(!at||Date.now()-at>30*60*1000){claim.disabled=true;claim.textContent='Open post first'}else{claim.disabled=false;claim.textContent='Submit'}
-    info.textContent='+5 MIMA • every 8 hours';
+    if(!at||Date.now()-at>30*60*1000){claim.disabled=true;claim.textContent=mimaTaskAction('Open post first','افتح المنشور أولاً')}else{claim.disabled=false;claim.textContent=mimaTaskAction('Submit','إرسال')}
+    info.textContent='+5 MIMA • '+mimaTaskPeriod();
   }
   async function claimMimaXPost(btn){
     if(!btn||btn.disabled)return;
