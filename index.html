@@ -1124,12 +1124,11 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <div class="item mimaTaskRow">
       <span class="ico">✈️</span>
       <main>
-        <b>انضم إلى قناة MIMA</b>
-        <small id="joinChannelTaskInfo">+5 MIMA • انضم ثم تحقق</small>
+        <b id="mimaCommunityTitle">Join Our Community</b>
+        <small id="joinChannelTaskInfo">Join the MIMA community • membership is checked periodically</small>
       </main>
       <div class="taskActionGroup">
-        <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">انضم</button>
-        <button id="joinChannelTaskBtn" type="button" onclick="claimTask('join_channel',this)">تحقق</button>
+        <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">Join</button>
       </div>
     </div>
 
@@ -3391,7 +3390,12 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       info.textContent = tx('+5 MIMA • انضم ثم استلم','+5 MIMA • join then verify');
     };
 
-    renderOne('join_channel','joinChannelTaskBtn','joinChannelTaskInfo','mima_join_channel_opened_v2');
+    const communityTitle=$('mimaCommunityTitle');
+    const communityInfo=$('joinChannelTaskInfo');
+    const communityOpen=$('joinChannelOpenBtn');
+    if(communityTitle)communityTitle.textContent='Join Our Community';
+    if(communityInfo)communityInfo.textContent='Join the MIMA community • membership may be checked periodically';
+    if(communityOpen)communityOpen.textContent='Join';
     renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v2');
     const task2Title = $('joinChannel2TaskTitle');
     if(task2Title) task2Title.textContent = tx('انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel');
@@ -4168,14 +4172,6 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   scheduleEntryInterstitial();
 
   async function openMimaChannel(){
-    if(serverMode){
-      try{
-        const result=await apiCall('open_channel_task',{task_code:'join_channel'});
-        if(result?.success!==true) throw new Error('Could not open channel task');
-      }catch(e){toast(tx('تعذر تسجيل فتح القناة. حاول مجدداً','Could not register channel opening. Retry'));return;}
-    }
-    try{ localStorage.setItem('mima_join_channel_opened_v2',String(Date.now())); }catch(e){}
-    renderTask();
     const url = 'https://t.me/MIMA_COIN';
 
     try{
