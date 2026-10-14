@@ -1169,7 +1169,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <div class="item mimaTaskRow" id="victorsPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
-        <b id="victorsPartnerTaskTitle">انضم إلى شركائنا</b>
+        <b id="victorsPartnerTaskTitle">اربط المحفظة وابدأ التعدين</b>
         <small id="victorsPartnerTaskInfo">+5 MIMA • تتجدد كل ساعتين</small>
       </main>
       <div class="taskActionGroup">
@@ -4438,7 +4438,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
   }
 
-  const VICTORS_PARTNER_URL = 'https://t.me/LUMETRAS_BOT?startapp=ref_1035565575';
+  const VICTORS_PARTNER_URL = 'https://t.me/VictorsCompanybot/app?startapp=ref_5D66CA239C';
   const VICTORS_PARTNER_OPENED_KEY = 'mima_victors_partner_opened_v2';
 
   let victorsTimedState = 'not_started';
@@ -4468,8 +4468,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     const title=$('victorsPartnerTaskTitle'), open=$('victorsPartnerOpenBtn');
     const btn=$('victorsPartnerTaskBtn'), info=$('victorsPartnerTaskInfo');
     if(!btn||!info)return;
-    if(title)title.textContent=tx('انضم إلى شركائنا','Join Our Partners');
-    if(open)open.textContent=tx('انضم','Join');
+    if(title)title.textContent=tx('اربط المحفظة وابدأ التعدين','Connect Wallet & Start Mining');
+    if(open)open.textContent=tx('ابدأ','Start');
     const cooldown=victorsPartnerNextAvailableAt-Date.now();
     if(cooldown>0){
       btn.disabled=true;
@@ -4486,8 +4486,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       info.textContent=tx('انتهت فترة الانتظار','Waiting period completed');
     }else{
       btn.disabled=true;
-      btn.textContent=tx('انضم أولاً','Join first');
-      info.textContent=tx('+5 MIMA • كل ساعتين • انضم ثم انتظر دقيقتين','+5 MIMA • every 2 hours • join then wait two minutes');
+      btn.textContent=tx('ابدأ أولاً','Start first');
+      info.textContent=tx('+5 MIMA • كل ساعتين • افتح البوت ثم انتظر دقيقتين','+5 MIMA • every 2 hours • open the bot then wait two minutes');
     }
   }
 
@@ -4513,7 +4513,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
           victorsPartnerNextAvailableAt=Date.parse(data.next_available_at||'')||Date.now()+7200000;
           bal=Number(data.balance??bal);
           exchangeableBalance=Number(data.exchangeable_balance??exchangeableBalance);
-          if(typeof showMimaTaskSuccess==='function')showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',Number(data.reward||5));
+          if(typeof showMimaTaskSuccess==='function')showMimaTaskSuccess('اربط المحفظة وابدأ التعدين','Connect Wallet & Start Mining',Number(data.reward||5));
           render();
         }
       }else{
