@@ -1198,7 +1198,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <main><b id="mimaXTaskTitle">Follow Us on X</b><small id="mimaXTaskInfo">+5 MIMA • every 8 hours</small></main>
       <div class="taskActionGroup">
         <button id="mimaXOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaXTask()">Open X</button>
-        <button id="mimaXClaimBtn" type="button" onclick="claimMimaXTask(this)" disabled>Open X first</button>
+        <label id="mimaXConfirmRow" style="display:none;align-items:center;gap:7px;color:#ffe7a0;font-size:12px;max-width:165px;cursor:pointer"><input id="mimaXConfirmBox" type="checkbox" onchange="renderMimaXTask()" style="width:18px;height:18px;accent-color:#dfb751;flex-shrink:0"><span>I confirm that I followed on X</span></label>
+        <button id="mimaXClaimBtn" type="button" onclick="claimMimaXTask(this)" style="display:none" disabled>Submit</button>
       </div>
     </div>
     <div class="item mimaTaskRow" id="interactPostTaskItem">
@@ -4329,7 +4330,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
   }
 
-  const MIMA_X_TASK_URL='https://x.com/MIMA_COIN/status/2110413482432893205';
+  const MIMA_X_TASK_URL='https://x.com/MIMA_COIN';
   const MIMA_X_OPEN_KEY='mima_x_opened_v1';
   let mimaXNextAvailableAt=0;
   function openMimaXTask(){
@@ -4338,24 +4339,30 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     renderMimaXTask();
   }
   function renderMimaXTask(){
-    const title=$('mimaXTaskTitle'),info=$('mimaXTaskInfo'),open=$('mimaXOpenBtn'),claim=$('mimaXClaimBtn');
-    if(!title||!info||!open||!claim)return;
-    title.textContent=tx('تابعنا على X — لايك تعليق إعادة نشر','Follow Us on X — Like, Comment & Repost');
-    open.textContent=tx('فتح X','Open X');
+    const title=$('mimaXTaskTitle'),info=$('mimaXTaskInfo'),open=$('mimaXOpenBtn'),claim=$('mimaXClaimBtn'),row=$('mimaXConfirmRow'),box=$('mimaXConfirmBox');
+    if(!title||!info||!open||!claim||!row||!box)return;
+    title.textContent='Follow Us on X';
+    open.textContent='Open X';
     const remaining=mimaXNextAvailableAt-nowMs();
-    if(remaining>0){claim.disabled=true;claim.textContent=formatCountdown(remaining);info.textContent=tx('+5 MIMA • تتجدد بعد ','+5 MIMA • available in ')+formatCountdown(remaining);return}
+    if(remaining>0){
+      row.style.display='none';claim.style.display='inline-block';claim.disabled=true;claim.textContent=formatCountdown(remaining);
+      info.textContent='+5 MIMA • available in '+formatCountdown(remaining);return;
+    }
     let at=0;try{at=Number(localStorage.getItem(MIMA_X_OPEN_KEY)||0)}catch(e){}
     if(!at||Date.now()-at>30*60*1000){
-      claim.disabled=true;claim.textContent=tx('افتح X أولاً','Open X first');
-      info.textContent=tx('+5 MIMA • كل 8 ساعات','+5 MIMA • every 8 hours');return;
+      row.style.display='none';claim.style.display='none';claim.disabled=true;
+      if(box.checked)box.checked=false;
+      info.textContent='+5 MIMA • every 8 hours';return;
     }
-    claim.disabled=false;claim.textContent=tx('استلام','Claim');
-    info.textContent=tx('+5 MIMA • كل 8 ساعات','+5 MIMA • every 8 hours');
+    row.style.display='flex';claim.style.display=box.checked?'inline-block':'none';
+    claim.disabled=!box.checked;claim.textContent='Submit';
+    info.textContent='+5 MIMA • every 8 hours';
   }
   async function claimMimaXTask(btn){
-    if(!btn||btn.disabled)return;
+    const confirmation=$('mimaXConfirmBox');
+    if(!btn||btn.disabled||!confirmation?.checked)return;
     btn.disabled=true;btn.textContent='⏳';
-    if(!serverMode){mimaXNextAvailableAt=Date.now()+8*60*60*1000;renderMimaXTask();return}
+    if(!serverMode){mimaXNextAvailableAt=Date.now()+8*60*60*1000;confirmation.checked=false;renderMimaXTask();return}
     try{
       const data=await apiCall('claim_task',{task_code:'follow_mima_x',selected_language:currentLang});
       const next=Date.parse(data?.next_available_at||'');
@@ -4364,6 +4371,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       bal=Math.max(0,Number(data.balance??bal));
       exchangeableBalance=Math.max(0,Number(data.exchangeable_balance??exchangeableBalance));
       try{localStorage.removeItem(MIMA_X_OPEN_KEY)}catch(e){}
+      confirmation.checked=false;
       showMimaTaskSuccess('تابعنا على X','Follow Us on X',data.reward);
       render();
     }catch(err){toast('⚠️ '+(err.message||tx('تعذّر استلام المكافأة','Unable to claim reward')))}
