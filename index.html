@@ -3991,7 +3991,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   // Keep full-screen ads occasional across entry, mining claims, and exchanges.
   // This cooldown limits frequency; it never affects mining or balances.
   const MIMA_INTERSTITIAL_COOLDOWN_MS = 60 * 60 * 1000;
-  const MIMA_INTERSTITIAL_LAST_AT_KEY = 'mima_interstitial_last_attempt_v1';
+  const MIMA_INTERSTITIAL_LAST_AT_KEY = 'mima_interstitial_last_shown_v2';
 
   function getMiningInterstitialController(){
     if(miningInterstitialController) return miningInterstitialController;
@@ -4009,7 +4009,14 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         typeof miningInterstitialController.addEventListener === 'function'
       ){
         const log=(event)=>()=>{window.mimaAdDiag?.('interstitial',event);};
-        miningInterstitialController.addEventListener('onStart',log('on_start'));
+        // AdsGram onStart means the banner's first frame is actually visible.
+        // A no-fill, timeout or SDK rejection must NOT start the 1-hour cooldown.
+        miningInterstitialController.addEventListener('onStart',()=>{
+          window.mimaAdDiag?.('interstitial','on_start');
+          if(miningInterstitialBusy){
+            try{ localStorage.setItem(MIMA_INTERSTITIAL_LAST_AT_KEY,String(Date.now())); }catch(e){}
+          }
+        });
         miningInterstitialController.addEventListener('onComplete',log('on_complete'));
         miningInterstitialController.addEventListener('onSkip',log('on_skip'));
         miningInterstitialController.addEventListener('onError',log('sdk_error'));
@@ -4054,15 +4061,14 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(!serverMode || !controller || typeof controller.show !== 'function') return;
     if(miningInterstitialBusy) return;
 
-    let lastAttemptAt = 0;
-    try{ lastAttemptAt = Number(localStorage.getItem(MIMA_INTERSTITIAL_LAST_AT_KEY) || 0); }catch(e){}
+    let lastShownAt = 0;
+    try{ lastShownAt = Number(localStorage.getItem(MIMA_INTERSTITIAL_LAST_AT_KEY) || 0); }catch(e){}
     const now = Date.now();
-    if(Number.isFinite(lastAttemptAt) && lastAttemptAt > 0 && now - lastAttemptAt < MIMA_INTERSTITIAL_COOLDOWN_MS) return;
+    if(Number.isFinite(lastShownAt) && lastShownAt > 0 && now - lastShownAt < MIMA_INTERSTITIAL_COOLDOWN_MS) return;
 
-    // Reserve the slot before attempting to show: failed/no-fill impressions
-    // must not cause repeated disruptive requests on subsequent clicks.
+    // Prevent concurrent displays; persist cooldown only after SDK onStart.
+    // Unavailable ads never take away the user's next eligible opportunity.
     miningInterstitialBusy = true;
-    try{ localStorage.setItem(MIMA_INTERSTITIAL_LAST_AT_KEY,String(now)); }catch(e){}
     window.mimaAdDiag?.('interstitial','request');
 
     const originalAlert = window.alert;
