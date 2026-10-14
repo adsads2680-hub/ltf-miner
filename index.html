@@ -1814,7 +1814,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         'Could not connect to the database right now. Please try again shortly.'
       );
     }
-    if(!raw || currentLang === 'ar') return raw;
+    if(!raw) return raw;
 
     const map = {
       'استجابة الخادم غير صالحة':'Invalid server response',
@@ -1845,15 +1845,17 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       'تعذر تجهيز إشعار الإدارة، تم إرجاع الرصيد تلقائياً':'Could not prepare the admin notification. Your balance was refunded automatically'
     };
 
-    if(map[raw]) return map[raw];
-
-    // If the server returns an untranslated Arabic message, keep it readable
-    // but provide a useful English fallback instead of exposing Arabic-only UI.
-    if(/[\u0600-\u06FF]/.test(raw)){
-      return 'Request could not be completed. Please try again.';
+    const english = map[raw] || raw;
+    // The same language selected in settings is used for server messages.
+    if(currentLang==='ar'){
+      if(map[raw]) return raw;
+      const reverse=Object.entries(map).find(([,en])=>en===raw);
+      return reverse ? reverse[0] : raw;
     }
-
-    return raw;
+    if(/[\u0600-\u06FF]/.test(english)){
+      return mimaLanguageText('Request could not be completed. Please try again.',currentLang);
+    }
+    return mimaLanguageText(english,currentLang);
   }
 
   const MIMA_UI_MISSING_PAIRS = [
