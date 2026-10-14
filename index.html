@@ -782,11 +782,14 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   var lang='en';
   var manual='';
   try{ manual=String(localStorage.getItem('mima_language_manual_v1')||'').toLowerCase(); }catch(e){}
-  // English is the default; preserve Arabic only if the user explicitly chose it.
-  if(manual==='auto'){
-    try{var loc=String(navigator.language||window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||'').toLowerCase();lang=loc.startsWith('ar')?'ar':'en'}
-    catch(e){lang='en'}
-  }else{lang=manual==='ar'?'ar':'en'}
+  // Never show the Arabic splash unless both device and Telegram are Arabic.
+  var bothArabic=false;
+  try{
+    var device=String(navigator.language||'').toLowerCase().split(/[-_]/)[0];
+    var telegram=String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||'').toLowerCase().split(/[-_]/)[0];
+    bothArabic=(device==='ar'&&telegram==='ar');
+  }catch(e){}
+  lang=bothArabic && (manual==='ar'||manual==='auto'||!manual) ? 'ar' : 'en';
   var chosen = img.getAttribute(lang==='ar' ? 'data-ar-src' : 'data-en-src');
   if(chosen && img.src!==chosen) img.src=chosen;
 })();
@@ -1588,11 +1591,23 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   const LANGUAGE_STORAGE_KEY = 'mima_language_v1';
   const LANGUAGE_MANUAL_KEY = 'mima_language_manual_v1';
 
+  function mimaLanguageCode(value){
+    return String(value||'').toLowerCase().split(/[-_]/)[0];
+  }
+  // Arabic is allowed only when BOTH the device and Telegram are set to Arabic.
+  // Unknown/unavailable Telegram language is not interpreted as Arabic.
+  function mimaArabicAllowed(){
+    let device='',telegram='';
+    try{device=mimaLanguageCode(navigator.language)}catch(e){}
+    try{telegram=mimaLanguageCode(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code)}catch(e){}
+    return device==='ar' && telegram==='ar';
+  }
   function getMimaTelegramLanguage(){
     let code='';
-    try{code=String(navigator.language||window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||'').toLowerCase()}catch(e){}
-    const base=code.split(/[-_]/)[0];
-    return MIMA_KNOWN_LANGUAGE_CODES.includes(base)?base:'en';
+    try{code=mimaLanguageCode(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code)}catch(e){}
+    if(!code){try{code=mimaLanguageCode(navigator.language)}catch(e){}}
+    if(code==='ar'&&!mimaArabicAllowed())return 'en';
+    return MIMA_KNOWN_LANGUAGE_CODES.includes(code)?code:'en';
   }
   const MIMA_KNOWN_LANGUAGE_CODES=["en","ar","ru","fa","hi","id","fr","zh","de","es","bn","tr","pt","uz","ur"];
   function detectInitialLanguage(){
@@ -1601,6 +1616,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       manual = String(localStorage.getItem(LANGUAGE_MANUAL_KEY) || '').toLowerCase();
     }catch(e){}
 
+    if(manual==='ar'&&!mimaArabicAllowed())return 'en';
     if(MIMA_KNOWN_LANGUAGE_CODES.includes(manual)) return manual;
     if(manual==='auto') return getMimaTelegramLanguage();
 
@@ -1789,7 +1805,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   let currentLang = detectInitialLanguage();
 
   function tx(ar,en){
-    return currentLang === 'ar' ? ar : mimaLanguageText(en);
+    return currentLang === 'ar' && mimaArabicAllowed() ? ar : mimaLanguageText(en,currentLang==='ar'?'en':currentLang);
   }
 
   function localizeServerMessage(message){
@@ -2085,6 +2101,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     rule.dir=['ar','fa','ur'].includes(currentLang)?'rtl':'ltr';
   }
   function applyLanguage(persist=false){
+    if(currentLang==='ar'&&!mimaArabicAllowed())currentLang='en';
     document.documentElement.lang = currentLang;
     document.documentElement.dir = ['ar','ur','fa'].includes(currentLang) ? 'rtl' : 'ltr';
     document.body.dir = document.documentElement.dir;
@@ -2113,6 +2130,10 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   window.closeMimaLanguagePicker=function(){const el=document.getElementById('mimaLanguagePicker');if(el)el.style.display='none';};
   window.chooseMimaLanguage=function(code){
     if(code!=='auto'&&!MIMA_LANGUAGES.includes(code))return;
+    if(code==='ar'&&!mimaArabicAllowed()){
+      toast('Arabic requires both your device and Telegram language to be Arabic.');
+      return;
+    }
     currentLang=code==='auto'?getMimaTelegramLanguage():code;
     applyLanguage(code!=='auto');
     if(code==='auto')try{localStorage.setItem(LANGUAGE_MANUAL_KEY,'auto');localStorage.setItem(LANGUAGE_STORAGE_KEY,currentLang)}catch(e){}
@@ -2128,6 +2149,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     list.replaceChildren();
     const auto=mimaLanguageIsAuto();
     for(const code of MIMA_LANGUAGES){
+      if(code==='ar'&&!mimaArabicAllowed())continue;
       const btn=document.createElement('button');btn.type='button';
       btn.className='mimaLangOption'+(!auto&&currentLang===code?' selected':'');
       btn.dataset.lang=code;btn.setAttribute('role','radio');
