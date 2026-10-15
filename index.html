@@ -773,6 +773,13 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 #topMenu .mimaSupportSubmenu>button:hover,#topMenu .mimaSupportSubmenu>button:focus-visible{
   background:linear-gradient(180deg,#32240e,#12150f)!important;border-color:#ffe09a!important}
 </style>
+<style id="mima-ston-market-actions-20261016">
+.mimaMarketSwapActions{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:14px 2px 4px}
+.mimaMarketSwapActions .mimaSwapButton{display:flex;align-items:center;justify-content:center;min-height:51px;border-radius:15px;font-weight:900;font-size:15px;text-decoration:none!important;border:1px solid rgba(255,217,133,.65);box-shadow:0 5px 20px rgba(0,0,0,.26)}
+.mimaMarketSwapActions .mimaSwapBuy{background:linear-gradient(145deg,#187855,#0c4737);color:#fff0c1!important}
+.mimaMarketSwapActions .mimaSwapSell{background:linear-gradient(145deg,#762f37,#481924);color:#ffe6dd!important}
+.mimaSwapNote{display:block;font-size:11px;line-height:1.7;color:#aebdcb;text-align:center;margin:2px 4px 13px}
+</style>
 </head>
 <body>
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -8404,13 +8411,7 @@ function init(){
  if(!launch||!wrap)return;
  const o=document.createElement('dialog');
  o.id='mimaMarketBetaOverlay';o.setAttribute('aria-label','MIMA Exchange market overview');
- <style id="mima-ston-market-actions-20261016">
-.mimaMarketSwapActions{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:14px 2px 4px}
-.mimaMarketSwapActions .mimaSwapButton{display:flex;align-items:center;justify-content:center;min-height:51px;border-radius:15px;font-weight:900;font-size:15px;text-decoration:none!important;border:1px solid rgba(255,217,133,.65);box-shadow:0 5px 20px rgba(0,0,0,.26)}
-.mimaMarketSwapActions .mimaSwapBuy{background:linear-gradient(145deg,#187855,#0c4737);color:#fff0c1!important}
-.mimaMarketSwapActions .mimaSwapSell{background:linear-gradient(145deg,#762f37,#481924);color:#ffe6dd!important}
-.mimaSwapNote{display:block;font-size:11px;line-height:1.7;color:#aebdcb;text-align:center;margin:2px 4px 13px}
-</style>
+ 
  o.innerHTML=`
  <div id="mimaMarketBetaDialog" role="dialog" aria-modal="true" aria-label="MIMA COIN market" dir="ltr">
  <div class="mmb-head">
