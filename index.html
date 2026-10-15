@@ -9509,6 +9509,20 @@ padding:10px 14px;cursor:pointer;font-weight:700}
     }catch(e){status(String(e.message||e))}
     finally{busy=false;window.updateMimaJettonQuote();}
   };
+  window.refundMimaLegacyRequest=async function(id){
+    if(busy)return;
+    if(!confirm(phrase('هل تريد إلغاء طلب السحب القديم واسترجاع كامل MIMA المحجوز إلى رصيدك؟','Cancel this old withdrawal and return the full reserved MIMA to your balance?')))return;
+    busy=true;
+    try{
+      const result=await api('legacy_refund',{request_id:id});
+      if(result?.success){
+        if(typeof syncServerStatus==='function')syncServerStatus(false).catch(()=>{});
+        await window.loadMimaJettonHistory();
+        alert(phrase('تم استرجاع '+fmt(result.refunded_mima)+' MIMA بنجاح','Successfully refunded '+fmt(result.refunded_mima)+' MIMA'));
+      }
+    }catch(e){alert(phrase('تعذر الاسترداد: ','Refund unavailable: ')+String(e.message||e))}
+    finally{busy=false;}
+  };
   window.loadMimaJettonHistory=async function(){
     if(historyBusy)return;
     historyBusy=true;
@@ -9531,6 +9545,12 @@ padding:10px 14px;cursor:pointer;font-weight:700}
         desc.textContent=fmt(r.requested_mima)+' MIMA'+
           (r.kind==='MIMA'?' • '+phrase('الصافي ','net ')+fmt(r.net_mima)+' MIMA':'');
         card.appendChild(desc);
+        if(r.kind!=='MIMA'&&r.status==='pending'&&!r.completed_at&&!r.approved_at&&!r.tx_hash){
+          const b=document.createElement('button');b.type='button';
+          b.textContent=phrase('استرجاع الرصيد','Refund balance');
+          b.onclick=()=>window.refundMimaLegacyRequest(r.id);
+          card.appendChild(b);
+        }
         if(r.kind==='MIMA'&&r.status==='pending'){
           const b=document.createElement('button');b.type='button';
           b.textContent=phrase('إلغاء واسترداد','Cancel & refund');
