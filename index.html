@@ -8265,6 +8265,7 @@ const isAdmin=()=>{
  catch(_){return false}
 };
 let lastFocus=null,fetching=false,lastChecked=0,marketReady=false;
+let lastObservedUsd=null;
 const isMatching=a=>[CONTRACT.toLowerCase(),RAW].includes(String(a||'').toLowerCase());
 function fmt(value){
  const n=Number(value);
@@ -8274,8 +8275,34 @@ function fmt(value){
  if(n<1)return n.toFixed(6);
  return n.toLocaleString('en-US',{maximumFractionDigits:6});
 }
+function renderPriceTrend(usd,change24){
+ const panel=$('mimaPriceMove'),arrow=$('mimaPriceArrow'),value=$('mimaPriceMoveValue'),period=$('mimaPriceMovePeriod');
+ if(!panel||!arrow||!value||!period)return;
+ const previous=lastObservedUsd;
+ const hasPrevious=Number.isFinite(previous)&&previous>0;
+ const delta=hasPrevious ? (usd-previous)/previous*100 : change24;
+ const hasDelta=Number.isFinite(delta);
+ const trend=!hasDelta||Math.abs(delta)<0.000001?'flat':delta>0?'up':'down';
+ panel.dataset.trend=trend;
+ arrow.textContent=trend==='up'?'↗':trend==='down'?'↘':'→';
+ value.textContent=hasDelta ? (delta>0?'+':'')+delta.toFixed(3)+'%' : '—';
+ period.textContent=hasDelta ? (hasPrevious?tr('من آخر تحديث','Since last update'):tr('خلال 24 ساعة','24h change')) : tr('بانتظار بيانات التغير','Waiting for change data');
+ panel.setAttribute('aria-label',value.textContent+' '+period.textContent);
+ if(hasPrevious && usd!==previous){
+   panel.classList.remove('mimaPriceUpdated');
+   void panel.offsetWidth;
+   panel.classList.add('mimaPriceUpdated');
+ }else panel.classList.remove('mimaPriceUpdated');
+ lastObservedUsd=usd;
+}
 function emptyMarket(){
  $('mimaLiveUsd').textContent='$0.00000000';
+ lastObservedUsd=null;
+ const trend=$('mimaPriceMove');
+ if(trend)trend.dataset.trend='flat';
+ if($('mimaPriceArrow'))$('mimaPriceArrow').textContent='→';
+ if($('mimaPriceMoveValue'))$('mimaPriceMoveValue').textContent='—';
+ if($('mimaPriceMovePeriod'))$('mimaPriceMovePeriod').textContent='';
  $('mimaLiveGram').textContent='—';
  $('mimaLiveBuys').textContent='—';
  $('mimaLiveSells').textContent='—';
@@ -8299,7 +8326,10 @@ async function loadMarket(force){
    pairs.sort((a,b)=>Number(b.liquidity?.usd||0)-Number(a.liquidity?.usd||0));
    const top=pairs[0];
    if(!top){emptyMarket();window.mimaMarketDetailUpdate?.(null);return;}
-   $('mimaLiveUsd').textContent='$'+fmt(top.priceUsd);
+   const verifiedUsd=Number(top.priceUsd);
+   $('mimaLiveUsd').textContent='$'+fmt(verifiedUsd);
+   const delta24=top.priceChange?.h24==null?NaN:Number(top.priceChange.h24);
+   renderPriceTrend(verifiedUsd,delta24);
    const quote=String(top.quoteToken?.symbol||'').toUpperCase();
    $('mimaLiveGram').textContent=(quote==='TON'||quote==='GRAM')?fmt(top.priceNative)+' GRAM':'—';
    const counts=top.txns?.m5||{};
@@ -8382,7 +8412,16 @@ function init(){
    <div class="mimaTokenHalo"><img id="mimaMarketTokenLogo" alt="Official MIMA COIN golden token" loading="eager" draggable="false"></div>
   </div>
   <div class="mimaHeroTicker">
-    <div class="mimaLivePrimary"><small id="mimaLiveUsdLabel"></small><b id="mimaLiveUsd">$0.00000000</b></div>
+    <div class="mimaLivePrimary">
+     <small id="mimaLiveUsdLabel"></small>
+     <div class="mimaLivePriceLine">
+      <b id="mimaLiveUsd">$0.00000000</b>
+      <div class="mimaPriceMove" id="mimaPriceMove" data-trend="flat" role="status" aria-live="off">
+       <span class="mimaPriceArrow" id="mimaPriceArrow" aria-hidden="true">→</span>
+       <span class="mimaPriceMoveValues"><strong id="mimaPriceMoveValue">—</strong><small id="mimaPriceMovePeriod"></small></span>
+      </div>
+     </div>
+    </div>
     <div class="mimaLiveSecondary"><small id="mimaLiveGramLabel"></small><b id="mimaLiveGram">—</b></div>
   </div>
   <div class="mimaMarketLiveHead"><span class="mimaLiveSource">DEX</span><b id="mimaLiveTitle"></b></div>
@@ -8623,6 +8662,22 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #mimaMarketBetaOverlay #mimaLiveStatus{font-size:10px;color:#eecb85;text-align:center;line-height:1.6;margin:10px 0 7px}
 #mimaMarketBetaOverlay #mimaLiveRefresh{display:block;margin:0 auto;padding:6px 16px;background:#2c2111;border:1px solid #ad7d31;border-radius:10px;color:#ffe0a5;font-size:11px}
 #mimaMarketBetaOverlay #mimaLiveExplanation{margin:8px 0 0;text-align:center;font-size:9px;line-height:1.6;color:#8ca1b2}
+
+/* Live quote direction, based only on verified DEX price movements. */
+#mimaMarketBetaOverlay .mimaLivePriceLine{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0;width:100%;direction:ltr}
+#mimaMarketBetaOverlay .mimaLivePriceLine>#mimaLiveUsd{overflow-wrap:anywhere;min-width:0}
+#mimaMarketBetaOverlay .mimaPriceMove{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:5px 11px;border:1px solid #465566;border-radius:12px;background:rgba(24,35,48,.85);color:#b9c7d5;direction:ltr;font-variant-numeric:tabular-nums}
+#mimaMarketBetaOverlay .mimaPriceMove[data-trend=up]{border-color:#318965;background:rgba(14,76,55,.32);color:#92e8b9}
+#mimaMarketBetaOverlay .mimaPriceMove[data-trend=down]{border-color:#9e5361;background:rgba(108,39,52,.25);color:#ff9ea9}
+#mimaMarketBetaOverlay .mimaPriceArrow{font-size:29px;line-height:1;font-weight:900}
+#mimaMarketBetaOverlay .mimaPriceMoveValues{display:flex;flex-direction:column;align-items:flex-start;gap:1px;white-space:nowrap}
+#mimaMarketBetaOverlay .mimaPriceMoveValues strong{font-size:13px;font-weight:900}
+#mimaMarketBetaOverlay .mimaPriceMoveValues small{font-size:9px;color:#b6c3d0}
+#mimaMarketBetaOverlay .mimaPriceUpdated[data-trend=up] .mimaPriceArrow{animation:mimaPriceLift .55s ease-out}
+#mimaMarketBetaOverlay .mimaPriceUpdated[data-trend=down] .mimaPriceArrow{animation:mimaPriceDip .55s ease-out}
+@keyframes mimaPriceLift{0%{transform:translateY(6px);opacity:.5}100%{transform:translateY(0);opacity:1}}
+@keyframes mimaPriceDip{0%{transform:translateY(-6px);opacity:.5}100%{transform:translateY(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){#mimaMarketBetaOverlay .mimaPriceUpdated .mimaPriceArrow{animation:none!important}}
 </style>
 <style id="mima-market-token-showcase-css">
 /* Showcase replaces all simulated charts, stats and order-entry UI. */
