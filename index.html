@@ -9212,6 +9212,215 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   else init();
 })();
 </script>
+
+<!-- mima-jetton-modal-v1 : independent TON Jetton withdrawal workflow, legacy GRAM history preserved -->
+<style>
+#mimaJettonOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.81);z-index:999999;align-items:center;justify-content:center;padding:14px}
+#mimaJettonOverlay.show{display:flex}
+#mimaJettonModal{box-sizing:border-box;width:min(100%,430px);max-height:89vh;overflow-y:auto;background:linear-gradient(145deg,#091624,#04080d);
+border:1px solid #a77b20;border-radius:20px;padding:20px;color:#f8faff;box-shadow:0 12px 70px #000;line-height:1.6}
+#mimaJettonModal h3{color:#ffd06c;margin:0 0 8px;font-size:20px}
+#mimaJettonModal label{display:block;font-size:13px;margin-top:12px;color:#b9c7d5}
+#mimaJettonModal input{box-sizing:border-box;width:100%;border:1px solid #6b572c;background:#07111a;
+color:#fff;border-radius:9px;padding:13px;font-size:15px;min-height:44px}
+#mimaJettonModal button{background:linear-gradient(145deg,#ffe394,#b88a1f);color:#231500;border-radius:10px;
+padding:10px 14px;cursor:pointer;font-weight:700}
+#mimaJettonModal button:disabled{opacity:.42;cursor:not-allowed}
+#mimaJettonModal .mimaJettonClose{float:right;border:0;background:none;color:#ffc247;font-size:22px;padding:0 6px}
+#mimaJettonModal .mimaJettonQuote{border:1px solid #3c3f35;border-radius:9px;padding:11px;margin-top:12px}
+#mimaJettonModal .mimaJettonRow{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #333;padding:4px 0}
+#mimaJettonModal small{color:#b5bdc8}
+#mimaJettonModal .mimaJettonStatus{font-size:13px;color:#ffe39a;margin:12px 0}
+#mimaJettonModal .mimaJettonItem{border:1px solid #3d3b31;border-radius:11px;padding:10px;margin-top:9px;font-size:12px;overflow-wrap:anywhere}
+#mimaJettonModal .mimaJettonItem button{font-size:12px;padding:6px 10px;margin:7px 3px}
+</style>
+<div id="mimaJettonOverlay" role="presentation">
+ <div id="mimaJettonModal" role="dialog" aria-modal="true" aria-labelledby="mimaJettonTitle">
+  <button class="mimaJettonClose" type="button" onclick="window.closeMimaJettonWithdraw()" aria-label="Close">×</button>
+  <h3 id="mimaJettonTitle">MIMA • TON</h3>
+  <p id="mimaJettonDescription"></p>
+  <div id="mimaJettonStatus" class="mimaJettonStatus"></div>
+  <label for="mimaJettonAmount" id="mimaJettonAmountLabel">MIMA amount</label>
+  <input id="mimaJettonAmount" type="number" min="500" step="0.00000001" inputmode="decimal" placeholder="500" oninput="window.updateMimaJettonQuote()">
+  <label for="mimaJettonAddress" id="mimaJettonWalletLabel">TON wallet address</label>
+  <input id="mimaJettonAddress" type="text" maxlength="48" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="UQ..." oninput="window.updateMimaJettonQuote()">
+  <div class="mimaJettonQuote">
+   <div class="mimaJettonRow"><span id="mimaJettonMinLabel"></span><b>500 MIMA</b></div>
+   <div class="mimaJettonRow"><span id="mimaJettonFeeLabel"></span><b id="mimaJettonFeeValue">—</b></div>
+   <div class="mimaJettonRow"><span id="mimaJettonNetLabel"></span><b id="mimaJettonNetValue">—</b></div>
+  </div>
+  <button style="width:100%;margin-top:13px" type="button" id="mimaJettonSubmit" onclick="window.submitMimaJettonWithdraw()" disabled></button>
+  <p><small id="mimaJettonNotice"></small></p>
+  <h3 id="mimaJettonHistoryTitle" style="margin-top:18px"></h3>
+  <div id="mimaJettonHistory"></div>
+ </div>
+</div>
+<script>
+(function(){
+  const API='https://julnowgcrkazepbfxkau.supabase.co/functions/v1/mima-jetton-withdrawal';
+  const $j=id=>document.getElementById(id);
+  let config=null, busy=false, historyBusy=false;
+  function phrase(ar,en){
+    try{return typeof tx==='function'?tx(ar,en):en}catch(_){return en}
+  }
+  function fmt(amount){
+    return Number(amount || 0).toLocaleString('en-US',{maximumFractionDigits:8});
+  }
+  function status(message){if($j('mimaJettonStatus'))$j('mimaJettonStatus').textContent=String(message||'');}
+  async function api(action,extra={}){
+    const init=window.Telegram?.WebApp?.initData || '';
+    if(!init)throw new Error(phrase('افتح البوت من داخل Telegram','Open the bot from Telegram.'));
+    const resp=await fetch(API,{method:'POST',headers:{
+      'Content-Type':'application/json',
+      'x-telegram-init-data':init
+    },body:JSON.stringify({action,...extra})});
+    const data=await resp.json().catch(()=>({}));
+    if(!resp.ok || data.success!==true)throw new Error(data.code||data.message||'Request failed');
+    return data;
+  }
+  function renderLabels(){
+    $j('mimaJettonDescription').textContent=phrase('سحب عملة MIMA الحقيقية على شبكة TON إلى محفظتك.',
+      'Withdraw real MIMA Jettons on TON to your wallet.');
+    $j('mimaJettonAmountLabel').textContent=phrase('كمية MIMA المطلوبة','MIMA amount');
+    $j('mimaJettonWalletLabel').textContent=phrase('عنوان محفظة TON المستلمة','Destination TON wallet');
+    $j('mimaJettonMinLabel').textContent=phrase('الحد الأدنى','Minimum');
+    $j('mimaJettonFeeLabel').textContent=phrase('الرسوم (40 لكل 500)','Fee (40 per 500)');
+    $j('mimaJettonNetLabel').textContent=phrase('الكمية التي ستصلك','You will receive');
+    $j('mimaJettonSubmit').textContent=phrase('إرسال طلب سحب MIMA','Request MIMA withdrawal');
+    $j('mimaJettonHistoryTitle').textContent=phrase('سحوباتي','My withdrawals');
+    $j('mimaJettonNotice').textContent=phrase(
+      'رسوم الشبكة تُدفع بعملة الشبكة بشكل منفصل. الطلبات القديمة تبقى محفوظة.',
+      'TON network fees are separate. Earlier withdrawal records are preserved.'
+    );
+  }
+  window.updateMimaJettonQuote=function(){
+    const amt=Number($j('mimaJettonAmount')?.value||0);
+    const fee=amt>=500?Math.round((amt*0.08+Number.EPSILON)*1e8)/1e8:0;
+    const ready=!!config?.enabled&&Number.isFinite(amt)&&amt>=500&&
+      Number.isFinite(fee)&&amt>fee&&amt<=Number(exchangeableBalance||0)&&
+      /^[A-Za-z0-9_-]{48}$/.test(String($j('mimaJettonAddress')?.value||''));
+    $j('mimaJettonFeeValue').textContent=amt>=500?fmt(fee)+' MIMA':'—';
+    $j('mimaJettonNetValue').textContent=amt>=500?fmt(amt-fee)+' MIMA':'—';
+    $j('mimaJettonSubmit').disabled=!ready||busy;
+  };
+  window.openMimaJettonWithdraw=async function(){
+    $j('mimaJettonOverlay')?.classList.add('show');
+    renderLabels();
+    if(!$j('mimaJettonAddress').value&&typeof connectedTonWalletAddress==='string'&&connectedTonWalletAddress.length===48)
+      $j('mimaJettonAddress').value=connectedTonWalletAddress;
+    status(phrase('جاري فحص حالة السحب…','Checking withdrawal status…'));
+    try{
+      config=await api('quote');
+      status(config.enabled
+        ?phrase('سحب MIMA متاح للمراجعة اليدوية على شبكة TON','MIMA requests are open for manual review on TON.')
+        :phrase('سحب MIMA قيد التجهيز. لن يتم خصم أي رصيد.',
+             'MIMA withdrawals are being prepared. No balance will be deducted.'));
+      window.updateMimaJettonQuote();
+      await window.loadMimaJettonHistory();
+    }catch(e){status(String(e.message||e));}
+  };
+  window.closeMimaJettonWithdraw=()=>{$j('mimaJettonOverlay')?.classList.remove('show')};
+  window.submitMimaJettonWithdraw=async function(){
+    if(busy||!config?.enabled)return;
+    busy=true;window.updateMimaJettonQuote();
+    const amount=Number($j('mimaJettonAmount').value);
+    const wallet_address=$j('mimaJettonAddress').value.trim();
+    try{
+      const result=await api('create',{amount,wallet_address});
+      $j('mimaJettonAmount').value='';
+      status(phrase('تم تسجيل طلب MIMA رقم ','MIMA withdrawal request #')+result.request_id);
+      if(typeof syncServerStatus==='function')syncServerStatus(false).catch(()=>{});
+      await window.loadMimaJettonHistory();
+    }catch(e){status(String(e.message||e));}
+    finally{busy=false;window.updateMimaJettonQuote();}
+  };
+  window.cancelMimaJettonRequest=async function(id){
+    if(busy)return;
+    if(!confirm(phrase('إلغاء هذا الطلب وإرجاع رصيده؟','Cancel this request and refund your balance?')))return;
+    busy=true;try{
+      await api('cancel',{request_id:id});
+      status(phrase('تم إلغاء الطلب وإرجاع الرصيد','Withdrawal cancelled and funds refunded.'));
+      if(typeof syncServerStatus==='function')syncServerStatus(false).catch(()=>{});
+      await window.loadMimaJettonHistory();
+    }catch(e){status(String(e.message||e))}
+    finally{busy=false;window.updateMimaJettonQuote();}
+  };
+  window.convertMimaLegacyRequest=async function(id,amount){
+    if(busy||!config?.enabled)return;
+    const wallet_address=String($j('mimaJettonAddress')?.value||'').trim();
+    if(!/^[A-Za-z0-9_-]{48}$/.test(wallet_address)){
+      status(phrase('أدخل عنوان محفظة TON صحيحاً أولاً.','Enter your TON wallet address first.'));return;
+    }
+    const fee=Number((Number(amount)*0.08).toFixed(8));
+    if(!confirm(phrase(
+      'تأكيد: تحويل طلب GRAM القديم #'+id+' إلى طلب MIMA على TON بالمبلغ '+fmt(amount)+'، والرسوم '+fmt(fee)+' MIMA، والصافي '+fmt(amount-fee)+' MIMA؟ لن يتم خصم الرصيد مرتين.',
+      'Confirm: convert old GRAM request #'+id+' into TON MIMA? Gross '+fmt(amount)+', fee '+fmt(fee)+', net '+fmt(amount-fee)+' MIMA. Funds will not be charged again.'
+    )))return;
+    busy=true;
+    try{
+      await api('convert_legacy',{legacy_request_id:id,consent_to_convert:true,amount:Number(amount),wallet_address});
+      status(phrase('تم تحويل الطلب بنجاح دون خصم جديد','Converted without a second balance deduction.'));
+      await window.loadMimaJettonHistory();
+    }catch(e){status(String(e.message||e))}
+    finally{busy=false;window.updateMimaJettonQuote();}
+  };
+  window.loadMimaJettonHistory=async function(){
+    if(historyBusy)return;
+    historyBusy=true;
+    const host=$j('mimaJettonHistory');
+    host.textContent=phrase('جاري التحميل…','Loading…');
+    try{
+      const data=await api('history');
+      host.replaceChildren();
+      const entries=[
+       ...(data.withdrawals||[]).map(r=>({...r,kind:'MIMA'})),
+       ...(data.legacy_gram_withdrawals||[]).map(r=>({...r,kind:'GRAM (legacy)'}))
+      ].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+      if(!entries.length){host.textContent=phrase('لا توجد طلبات بعد','No withdrawals yet');return}
+      for(const r of entries){
+        const card=document.createElement('div');card.className='mimaJettonItem';
+        const title=document.createElement('strong');
+        title.textContent='#'+String(r.id)+' • '+r.kind+' • '+String(r.status);
+        card.appendChild(title);
+        const desc=document.createElement('div');
+        desc.textContent=fmt(r.requested_mima)+' MIMA'+
+          (r.kind==='MIMA'?' • '+phrase('الصافي ','net ')+fmt(r.net_mima)+' MIMA':'');
+        card.appendChild(desc);
+        if(r.kind==='MIMA'&&r.status==='pending'){
+          const b=document.createElement('button');b.type='button';
+          b.textContent=phrase('إلغاء واسترداد','Cancel & refund');
+          b.onclick=()=>window.cancelMimaJettonRequest(r.id);
+          card.appendChild(b);
+        }
+        if(r.kind!=='MIMA'&&r.status==='pending'&&Number(r.requested_mima)>=500&&config?.enabled){
+          const b=document.createElement('button');b.type='button';
+          b.textContent=phrase('تحويل إلى سحب MIMA','Convert to MIMA');
+          b.onclick=()=>window.convertMimaLegacyRequest(r.id,r.requested_mima);
+          card.appendChild(b);
+        }
+        host.appendChild(card);
+      }
+    }catch(e){host.textContent=String(e.message||e)}
+    finally{historyBusy=false;}
+  };
+  function wire(){
+    const oldBtn=document.querySelector('.exchangeMainBtn');
+    if(oldBtn){
+      oldBtn.setAttribute('onclick','window.openMimaJettonWithdraw()');
+      oldBtn.innerHTML='<span class="exchangeCoin">M</span><span>MIMA • TON Withdrawals</span>';
+    }
+    const priceNote=document.querySelector('#wallet .priceLine');
+    if(priceNote?.parentElement)priceNote.parentElement.style.display='none';
+    const historyHint=document.querySelector('.withdrawHistoryHint');
+    if(historyHint)historyHint.textContent=phrase('سجل طلبات GRAM القديمة (محفوظ). لطلبات MIMA استخدم سحب MIMA.',
+       'Earlier GRAM withdrawal history (preserved). For MIMA requests, open MIMA withdrawals.');
+    $j('mimaJettonOverlay')?.addEventListener('click',function(e){if(e.target===this)window.closeMimaJettonWithdraw()});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});
+  else wire();
+})();
+</script>
+
 </body>
 
 <style id="mima-boost-right-edge-alignment-20261011">
