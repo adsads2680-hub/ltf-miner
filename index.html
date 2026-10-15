@@ -6,65 +6,7 @@
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- MIMA maintenance mode: self-contained script, no markup inserted into app layout -->
-<script id="mima-maintenance-safe-20261015">
-(function(){
-  var adminId='1035565575';
-  var user=null;
-  try{user=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initDataUnsafe&&window.Telegram.WebApp.initDataUnsafe.user;}catch(e){}
-  if(user && String(user.id)===adminId){return;}
-  var locale=String((user&&user.language_code)||navigator.language||'en').toLowerCase().split(/[-_]/)[0];
-  var translations={
-    ar:['البوت تحت الصيانة','نعمل حالياً على تطوير MIMA COIN وتحسين خدماته. جميع أرصدتكم وبياناتكم محفوظة. شكراً لصبركم، سنعود قريباً.'],
-    en:['Under Maintenance','MIMA COIN is currently undergoing maintenance. Your balances and data are preserved. Thank you for your patience. We will be back soon.'],
-    tr:['Bakım Çalışması','MIMA COIN şu anda bakımda. Bakiyeleriniz ve verileriniz korunmaktadır. Yakında döneceğiz.'],
-    ru:['Техническое обслуживание','MIMA COIN временно на техническом обслуживании. Ваши балансы и данные сохранены. Скоро вернёмся.'],
-    zh:['系统维护中','MIMA COIN 正在进行维护和升级。您的余额与数据均已保留。感谢耐心等待，我们很快回来。']
-  };
-  var strings=translations[locale]||translations.en;
-  var style=document.createElement('style');
-  style.id='mima-maintenance-safe-style';
-  style.textContent=[
-    'html.mima-maintenance-mode,html.mima-maintenance-mode body{overflow:hidden!important}',
-    'html.mima-maintenance-mode body>*:not(#mimaMaintenanceScreen){visibility:hidden!important;pointer-events:none!important}',
-    'html.mima-maintenance-mode #mimaMaintenanceScreen{display:flex!important;visibility:visible!important;pointer-events:auto!important}',
-    '#mimaMaintenanceScreen{position:fixed!important;inset:0!important;z-index:2147483647!important;display:none;justify-content:center;align-items:center;box-sizing:border-box;padding:22px;background:radial-gradient(ellipse at 50% 20%,#173445,#030810 65%,#010306);color:#eef2fa;font-family:Arial,Tahoma,sans-serif;text-align:center}',
-    '#mimaMaintenanceScreen .mima-maintenance-card{box-sizing:border-box;max-width:420px;width:100%;padding:35px 24px;border:1px solid #a78541;border-radius:22px;background:linear-gradient(145deg,#081725,#02060a);box-shadow:0 15px 50px #000}',
-    '#mimaMaintenanceScreen .mima-maintenance-coin{height:84px;width:84px;display:grid;place-items:center;margin:0 auto 25px;border:3px solid #f4c34a;border-radius:50%;background:radial-gradient(circle at 30% 20%,#ffefa9,#ce9825 58%,#5c3505);color:#432606;font-size:51px;font-weight:900}',
-    '#mimaMaintenanceScreen h1{color:#ffce66;font-size:23px;margin:0 0 16px}',
-    '#mimaMaintenanceScreen p{color:#cbd6e2;line-height:1.9;font-size:15px;margin:0}',
-    '#mimaMaintenanceScreen .mima-maintenance-brand{font-size:12px;letter-spacing:3px;color:#d3ad61;margin-top:26px}'
-  ].join('\n');
-  document.head.appendChild(style);
-  document.documentElement.classList.add('mima-maintenance-mode');
-  function show(){
-    if(document.getElementById('mimaMaintenanceScreen')||!document.body){return;}
-    var panel=document.createElement('div');
-    panel.id='mimaMaintenanceScreen';
-    panel.setAttribute('role','status');
-    var card=document.createElement('div');
-    card.className='mima-maintenance-card';
-    var coin=document.createElement('div');
-    coin.className='mima-maintenance-coin';
-    coin.textContent='M';
-    var heading=document.createElement('h1');
-    heading.textContent=strings[0];
-    var message=document.createElement('p');
-    message.textContent=strings[1];
-    var brand=document.createElement('div');
-    brand.className='mima-maintenance-brand';
-    brand.textContent='MIMA COIN';
-    card.appendChild(coin);
-    card.appendChild(heading);
-    card.appendChild(message);
-    card.appendChild(brand);
-    panel.appendChild(card);
-    document.body.appendChild(panel);
-  }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',show,{once:true});}
-  else{show();}
-})();
-</script>
+
 
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
