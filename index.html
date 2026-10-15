@@ -8357,6 +8357,9 @@ function render(){
  $('mimaMarketBetaSubtitle').textContent=tr('بورصة MIMA • أسعار السوق','MIMA Exchange • Market Prices');
  $('mimaMarketBetaComingSoonTitle').textContent=tr('MIMA COIN على شبكة TON','MIMA COIN on TON');
  $('mimaMarketBetaComingSoonSub').textContent=tr('العملة على شبكة TON • التداول داخل البوت غير مفعّل','Token on TON • In-app trading is not enabled');
+ $('mimaSwapBuy').textContent=tr('شراء MIMA','Buy MIMA');
+ $('mimaSwapSell').textContent=tr('بيع MIMA','Sell MIMA');
+ $('mimaMarketSwapNote').textContent=tr('التداول عبر STON.fi باستخدام عملات المحفظة الحقيقية فقط، وليس رصيد التعدين. تأكد من السعر والرسوم قبل الموافقة.','Swaps on STON.fi use real wallet tokens only, not mining balances. Check rates and fees before confirming.');
  $('mimaLiveTitle').textContent=tr('سعر MIMA في الأسواق','MIMA market price');
  $('mimaMarketChartTitle').textContent=tr('حركة السعر في الأسواق','Market price chart');
  $('mimaMarketTradesTitle').textContent=tr('آخر صفقات السوق','Recent market trades');
@@ -8401,6 +8404,13 @@ function init(){
  if(!launch||!wrap)return;
  const o=document.createElement('dialog');
  o.id='mimaMarketBetaOverlay';o.setAttribute('aria-label','MIMA Exchange market overview');
+ <style id="mima-ston-market-actions-20261016">
+.mimaMarketSwapActions{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:14px 2px 4px}
+.mimaMarketSwapActions .mimaSwapButton{display:flex;align-items:center;justify-content:center;min-height:51px;border-radius:15px;font-weight:900;font-size:15px;text-decoration:none!important;border:1px solid rgba(255,217,133,.65);box-shadow:0 5px 20px rgba(0,0,0,.26)}
+.mimaMarketSwapActions .mimaSwapBuy{background:linear-gradient(145deg,#187855,#0c4737);color:#fff0c1!important}
+.mimaMarketSwapActions .mimaSwapSell{background:linear-gradient(145deg,#762f37,#481924);color:#ffe6dd!important}
+.mimaSwapNote{display:block;font-size:11px;line-height:1.7;color:#aebdcb;text-align:center;margin:2px 4px 13px}
+</style>
  o.innerHTML=`
  <div id="mimaMarketBetaDialog" role="dialog" aria-modal="true" aria-label="MIMA COIN market" dir="ltr">
  <div class="mmb-head">
@@ -8431,6 +8441,11 @@ function init(){
   <p id="mimaLiveStatus" role="status" aria-live="polite"></p>
   <button type="button" id="mimaLiveRefresh"></button>
  </section>
+ <section class="mimaMarketSwapActions" aria-label="MIMA TON swap">
+  <a id="mimaSwapBuy" class="mimaSwapButton mimaSwapBuy" href="https://app.ston.fi/swap?ft=EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs&amp;tt=EQCJx-Um0Q7LTYcxOn7Ebj6NeDGvln37kcWE5KWsWvXuKqIZ" target="_blank" rel="noopener noreferrer"></a>
+  <a id="mimaSwapSell" class="mimaSwapButton mimaSwapSell" href="https://app.ston.fi/swap?ft=EQCJx-Um0Q7LTYcxOn7Ebj6NeDGvln37kcWE5KWsWvXuKqIZ&amp;tt=EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs" target="_blank" rel="noopener noreferrer"></a>
+ </section>
+ <small id="mimaMarketSwapNote" class="mimaSwapNote"></small>
  <section class="mimaMarketChart">
   <div class="mimaMarketChartHead"><div class="mimaMarketChartSymbol"><span id="mimaMarketChartTitle"></span><strong>MIMA / USDT</strong></div><span class="mimaMarketChartBadge">TON <span aria-hidden="true">↗</span></span></div>
   <div class="mimaMarketPlot">
