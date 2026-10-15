@@ -6,6 +6,48 @@
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
+<!-- mima-maintenance-oct15 -->
+<style>
+html.mima-maintenance-active,html.mima-maintenance-active body{overflow:hidden!important}
+html.mima-maintenance-active body>*:not(#mimaMaintenanceScreen){visibility:hidden!important;pointer-events:none!important}
+#mimaMaintenanceScreen{display:none;position:fixed;inset:0;z-index:2147483647;background:radial-gradient(ellipse at 50% 32%,#163143 0%,#050b14 55%,#010307 100%);font-family:Tahoma,Arial,sans-serif;color:#f8f7f4;align-items:center;justify-content:center;padding:24px;text-align:center}
+html.mima-maintenance-active #mimaMaintenanceScreen{display:flex!important;visibility:visible!important;pointer-events:all!important}
+#mimaMaintenanceScreen .mima-maintenance-card{max-width:420px;border:1px solid rgba(244,193,77,.55);border-radius:26px;padding:38px 26px;background:linear-gradient(150deg,rgba(11,23,32,.96),rgba(4,9,15,.98));box-shadow:0 0 50px rgba(205,158,47,.13);width:100%;box-sizing:border-box}
+#mimaMaintenanceScreen .mima-maintenance-coin{width:90px;height:90px;border-radius:50%;display:grid;place-items:center;margin:0 auto 25px;background:radial-gradient(circle at 30% 22%,#fff0ab,#e9b944 43%,#875308 75%,#402300);border:3px solid #dfae35;color:#4b2a06;font-size:54px;font-weight:900;box-shadow:0 8px 40px #d6a83945}
+#mimaMaintenanceScreen h1{font-size:24px;color:#ffd76c;margin:0 0 16px}
+#mimaMaintenanceScreen p{font-size:15px;line-height:1.9;color:#ccd4df;margin:0}
+#mimaMaintenanceScreen .mima-maintenance-brand{margin-top:24px;color:#cfac57;letter-spacing:3px;font-weight:700;font-size:13px}
+</style>
+<div id="mimaMaintenanceScreen" role="status" aria-live="polite" aria-label="MIMA is under maintenance">
+ <div class="mima-maintenance-card"><div class="mima-maintenance-coin">M</div>
+  <h1 id="mimaMaintenanceTitle">Under Maintenance</h1>
+  <p id="mimaMaintenanceMessage">MIMA COIN is currently undergoing scheduled maintenance. Your balances and progress are safe. Please check back soon.</p>
+  <div class="mima-maintenance-brand">MIMA COIN</div>
+ </div>
+</div>
+<script>
+(function(){
+  const ADMIN_ID='1035565575';
+  let user=null;
+  try{user=window.Telegram?.WebApp?.initDataUnsafe?.user||null}catch(e){}
+  const isAdmin=user&&String(user.id)===ADMIN_ID;
+  if(isAdmin)return;
+  const lang=String(user?.language_code||navigator.language||'en').toLowerCase().split(/[-_]/)[0];
+  const dict={
+   ar:['البوت تحت الصيانة','نعمل حالياً على تطوير MIMA COIN وتحسين خدماته. جميع أرصدتكم وبياناتكم محفوظة. شكراً لصبركم، سنعود قريباً.'],
+   en:['Under Maintenance','MIMA COIN is currently undergoing maintenance and improvements. Your balances and data are safe. Thank you for your patience. We will be back soon.'],
+   tr:['Bakım Çalışması','MIMA COIN şu anda bakımda. Bakiyeleriniz ve verileriniz korunmaktadır. Sabrınız için teşekkürler. Yakında döneceğiz.'],
+   ru:['Техническое обслуживание','MIMA COIN временно на техническом обслуживании. Ваши балансы и данные сохранены. Скоро вернёмся.'],
+   zh:['系统维护中','MIMA COIN 正在进行维护和升级。您的余额与数据均已保留。感谢耐心等待，我们很快回来。']
+  };
+  const copy=dict[lang]||dict.en;
+  document.documentElement.classList.add('mima-maintenance-active');
+  const show=()=>{const t=document.getElementById('mimaMaintenanceTitle'),m=document.getElementById('mimaMaintenanceMessage');if(t)t.textContent=copy[0];if(m)m.textContent=copy[1];};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show,{once:true});else show();
+})();
+</script>
+
 <style>
 :root{
   --bg:#02060b;--panel:#07131f;--panel2:#0a1d2c;--line:#1a4259;
