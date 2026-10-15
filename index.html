@@ -1180,18 +1180,6 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       </div>
     </div>
 
-    <div class="item mimaTaskRow" id="diggoPartnerTaskItem">
-      <span class="ico">🤝</span>
-      <main>
-        <b id="diggoPartnerTaskTitle">انضم إلى شركائنا</b>
-        <small id="diggoPartnerTaskInfo">+5 MIMA • كل 4 ساعات</small>
-      </main>
-      <div class="taskActionGroup">
-        <button id="diggoPartnerOpenBtn" class="taskJoinBtn" type="button">انضم</button>
-        <button id="diggoPartnerClaimBtn" type="button" disabled>انضم أولاً</button>
-      </div>
-    </div>
-
     <div class="item mimaTaskRow" id="mimaXTaskItem">
       <span class="ico">𝕏</span>
       <main><b id="mimaXTaskTitle">Follow Us on X</b><small id="mimaXTaskInfo">+5 MIMA • every 8 hours</small></main>
@@ -9067,124 +9055,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   finally{loading=false;}
  };
 })();
-</script><script id="mima-channel-ten-second-refresh">setInterval(function(){try{if(typeof renderTask==='function')renderTask();if(typeof renderMimaExchangeChannelTask==='function')renderMimaExchangeChannelTask();}catch(e){}},1000);</script><script id="mima-diggo-partner-task-v1">
-(function(){
-  'use strict';
-  const URL='https://t.me/Diggominer_bot?startapp=ref_cced0a23bfd65b5e54e1c8b6';
-  const el=id=>document.getElementById(id);
-  const tr=(ar,en)=>{try{return typeof tx==='function'?tx(ar,en):en;}catch(_){return en;}};
-  let state='not_started',readyAt=0,nextAt=0,busy=false,lastStatus=0;
-  const fmt=ms=>{
-    const s=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(s/3600),m=Math.floor((s%3600)/60);
-    return [h,m,s%60].map(n=>String(n).padStart(2,'0')).join(':');
-  };
-  function render(){
-    const title=el('diggoPartnerTaskTitle'),info=el('diggoPartnerTaskInfo');
-    const open=el('diggoPartnerOpenBtn'),claim=el('diggoPartnerClaimBtn');
-    if(!title||!info||!open||!claim)return;
-    title.textContent=tr('انضم إلى شركائنا','Join Our Partners');
-    open.textContent=tr('انضم','Join');
-    if(typeof serverMode==='undefined'||!serverMode){
-      claim.disabled=true;claim.textContent=tr('افتح في Telegram','Open in Telegram');
-      info.textContent=tr('+5 MIMA • كل 4 ساعات','+5 MIMA • every 4 hours');
-      return;
-    }
-    if(nextAt>Date.now()||state==='cooldown'){
-      const left=Math.max(0,nextAt-Date.now());
-      if(left>0){
-        claim.disabled=true;claim.textContent=fmt(left);
-        info.textContent=tr('+5 MIMA • متاحة بعد ','+5 MIMA • available in ')+fmt(left);
-        return;
-      }
-      if(state==='cooldown')state='not_started';
-    }
-    if(state==='waiting'){
-      const left=readyAt-Date.now();
-      if(left>0){
-        claim.disabled=true;claim.textContent=fmt(left);
-        info.textContent=tr('+5 MIMA • انتظر دقيقتين بعد فتح الشريك','+5 MIMA • wait two minutes after opening the partner');
-        return;
-      }
-      state='ready';
-    }
-    if(state==='ready'){
-      claim.disabled=busy;
-      claim.textContent=busy?'⏳':tr('استلم 5 MIMA','Claim 5 MIMA');
-      info.textContent=tr('+5 MIMA • المكافأة جاهزة للاستلام','+5 MIMA • reward ready to claim');
-    }else{
-      claim.disabled=true;claim.textContent=tr('انضم أولاً','Join first');
-      info.textContent=tr('+5 MIMA • كل 4 ساعات • افتح الشريك أولاً','+5 MIMA • every 4 hours • open partner first');
-    }
-  }
-  function apply(data){
-    if(!data||data.success!==true)return false;
-    state=data.state||'not_started';
-    if(state==='cooldown')nextAt=Date.parse(data.next_available_at||'')||0;
-    else if(state==='waiting'){nextAt=0;readyAt=Date.parse(data.ready_at||'')||Date.now()+120000;}
-    else if(state==='ready'||state==='not_started'){nextAt=0;}
-    render();
-    return true;
-  }
-  async function sync(force=false){
-    if(typeof serverMode==='undefined'||!serverMode||busy||document.visibilityState==='hidden')return;
-    if(!force && Date.now()-lastStatus<15000)return;
-    lastStatus=Date.now();
-    try{
-      const data=await apiCall('diggo_partner_timed_reward',{kind:'status'});
-      apply(data);
-    }catch(_){}
-  }
-  function openPartner(){
-    if(typeof serverMode!=='undefined'&&serverMode){
-      apiCall('diggo_partner_timed_reward',{kind:'start'}).then(data=>{
-        if(!apply(data))return;
-        if(data.state==='waiting')lastStatus=Date.now();
-      }).catch(()=>{try{toast(tr('تعذر بدء المهمة مؤقتاً','Could not start this task right now'));}catch(_){}});
-    }
-    try{
-      if(window.Telegram?.WebApp?.openTelegramLink)window.Telegram.WebApp.openTelegramLink(URL);
-      else window.open(URL,'_blank','noopener,noreferrer');
-    }catch(_){window.location.href=URL;}
-  }
-  async function claim(){
-    if(busy||state!=='ready')return;
-    if(typeof serverMode==='undefined'||!serverMode)return;
-    busy=true;render();
-    try{
-      const data=await apiCall('diggo_partner_timed_reward',{kind:'claim'});
-      if(!data||data.success!==true)throw new Error(data?.message||'claim_unavailable');
-      if(data.state==='rewarded'){
-        state='cooldown';
-        nextAt=Date.parse(data.next_available_at||'')||Date.now()+4*60*60*1000;
-        if(typeof showMimaTaskSuccess==='function')
-          showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',Number(data.reward||5));
-        if(typeof syncServerStatus==='function')syncServerStatus(false,true);
-      }else{
-        apply(data);
-      }
-    }catch(_){
-      try{toast(tr('تعذر استلام المكافأة الآن','Reward could not be claimed now'));}catch(__){}
-      await sync(true);
-    }finally{busy=false;render();}
-  }
-  function init(){
-    const open=el('diggoPartnerOpenBtn'),claimBtn=el('diggoPartnerClaimBtn');
-    if(!open||!claimBtn)return;
-    open.addEventListener('click',openPartner);
-    claimBtn.addEventListener('click',claim);
-    render();sync(true);
-    setInterval(()=>{
-      if(document.visibilityState!=='visible')return;
-      render();
-      if(state==='waiting'&&Date.now()-lastStatus>=15000)sync(false);
-    },1000);
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync(true);});
-    window.addEventListener('pageshow',()=>sync(true));
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
-  else init();
-})();
-</script>
+</script><script id="mima-channel-ten-second-refresh">setInterval(function(){try{if(typeof renderTask==='function')renderTask();if(typeof renderMimaExchangeChannelTask==='function')renderMimaExchangeChannelTask();}catch(e){}},1000);</script>
 <script id="mima-support-tickets-v1">
 (function(){
   'use strict';
