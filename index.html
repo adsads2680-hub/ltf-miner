@@ -8352,10 +8352,10 @@ function render(){
  const o=$('mimaMarketBetaOverlay');if(!o)return;
  o.classList.toggle('mimaMarketPublic',!isAdmin());
  $('mimaMarketBetaLaunchLabel').textContent=tr('بورصة MIMA','MIMA Exchange');
- $('mimaMarketBetaLaunchBadge').textContent=isAdmin()?'PREVIEW':tr('قريباً','SOON');
+ $('mimaMarketBetaLaunchBadge').textContent=tr('سعر السوق','MARKET');
  $('mimaMarketBetaDialog').dir=ar()?'rtl':'ltr';
- $('mimaMarketBetaSubtitle').textContent=tr('بورصة MIMA • قريباً','MIMA Exchange • Coming Soon');
- $('mimaMarketBetaComingSoonTitle').textContent=tr('بورصة MIMA قريباً','MIMA Exchange Coming Soon');
+ $('mimaMarketBetaSubtitle').textContent=tr('بورصة MIMA • أسعار السوق','MIMA Exchange • Market Prices');
+ $('mimaMarketBetaComingSoonTitle').textContent=tr('MIMA COIN على شبكة TON','MIMA COIN on TON');
  $('mimaMarketBetaComingSoonSub').textContent=tr('العملة على شبكة TON • التداول داخل البوت غير مفعّل','Token on TON • In-app trading is not enabled');
  $('mimaLiveTitle').textContent=tr('سعر MIMA في الأسواق','MIMA market price');
  $('mimaMarketChartTitle').textContent=tr('حركة السعر في الأسواق','Market price chart');
