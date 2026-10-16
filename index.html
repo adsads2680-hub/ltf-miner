@@ -1211,7 +1211,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <span class="ico">📄</span>
       <main>
         <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
-        <small id="interactPostTaskInfo">+5 MIMA • كل 4 ساعات</small>
+        <small id="interactPostTaskInfo">+5 MIMA • كل 5 ساعات</small>
       </main>
       <div class="taskActionGroup">
         <button id="interactPostOpenBtn" class="taskJoinBtn" type="button" onclick="openInteractPost()">فتح المنشور</button>
@@ -4431,8 +4431,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }catch(err){toast('⚠️ '+(err.message||'Unable to claim reward'))}finally{renderMimaXPost()}
   }
   setInterval(()=>{if($('mimaXPostTaskItem'))renderMimaXPost()},1000);
-  const INTERACT_POST_URL = 'https://t.me/MIMA_COIN/3643';
-  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_mima_coin_3643_v1';
+  const INTERACT_POST_URL = 'https://t.me/MIMA_COIN/3647';
+  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_mima_coin_3647_v1';
 
   async function openInteractPost(){
   if(serverMode){
@@ -4523,7 +4523,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(!serverMode){
       bal += 5;
       exchangeableBalance += 5;
-      interactPostNextAvailableAt = Date.now() + 4 * 60 * 60 * 1000;
+      interactPostNextAvailableAt = Date.now() + 5 * 60 * 60 * 1000;
       savePreviewState();
       render();
       toast(tx('🎁 +5 MIMA أضيفت إلى رصيدك','🎁 +5 MIMA added to your balance'));
@@ -4545,7 +4545,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       const nextTs = Date.parse(data.next_available_at || '');
       interactPostNextAvailableAt = Number.isFinite(nextTs)
         ? nextTs
-        : nowMs() + 4 * 60 * 60 * 1000;
+        : nowMs() + 5 * 60 * 60 * 1000;
 
       try{ localStorage.removeItem(INTERACT_POST_OPENED_KEY); }catch(e){}
       showMimaTaskSuccess('تفاعل مع المنشور','Interact with the post',data.reward);
