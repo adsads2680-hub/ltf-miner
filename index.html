@@ -3142,7 +3142,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         'apikey':SUPABASE_PUBLISHABLE_KEY,
         'x-telegram-init-data':telegramInitData
       },
-      body:JSON.stringify({action:'history'})
+      body:JSON.stringify({action:'history'}),
+      signal:AbortSignal.timeout(10000)
     });
 
     let data = null;
