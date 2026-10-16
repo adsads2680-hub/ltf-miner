@@ -1338,7 +1338,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <button class="exchangeClose" type="button" onclick="closeExchangePanel()">×</button>
 
     <h3>تبادل MIMA إلى GRAM</h3>
-    <p class="exchangeHint">الحد الأدنى 200 MIMA • الرسوم 15 MIMA • سيتم إرسال الطلب للإدارة مع عنوان السحب.</p>
+    <p class="exchangeHint">الحد الأدنى 500 MIMA • الرسوم 50 MIMA • سيتم إرسال الطلب للإدارة مع عنوان السحب.</p>
 
     <div class="exchangeBalanceBox">
       <small>رصيد MIMA القابل للتبادل</small>
@@ -1352,8 +1352,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     <label class="exchangeLabel" for="exchangeMimaAmount">كمية MIMA المراد تبديلها</label>
     <div class="exchangeInputWrap">
-      <input id="exchangeMimaAmount" type="number" min="200" step="0.000001" inputmode="decimal"
-             placeholder="الحد الأدنى 200 MIMA" oninput="updateExchangeEstimate()">
+      <input id="exchangeMimaAmount" type="number" min="500" step="0.000001" inputmode="decimal"
+             placeholder="الحد الأدنى 500 MIMA" oninput="updateExchangeEstimate()">
       <button type="button" onclick="setExchangeMax()">MAX</button>
     </div>
 
@@ -1369,8 +1369,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
            maxlength="200">
 
     <div class="exchangeFeeBox">
-      <div><span>الحد الأدنى</span><b>200 MIMA</b></div>
-      <div><span>الرسوم</span><b>15 MIMA</b></div>
+      <div><span>الحد الأدنى</span><b>500 MIMA</b></div>
+      <div><span>الرسوم</span><b>50 MIMA</b></div>
       <div><span>الصافي بعد الرسوم</span><b id="exchangeNetMima">0.000000 MIMA</b></div>
     </div>
 
@@ -1958,7 +1958,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     ['📋 نسخ TX Hash','📋 Copy TX Hash'],
     ['هنا تظهر جميع طلبات تبديل MIMA إلى GRAM وحالتها.','All MIMA-to-GRAM requests and their status appear here.'],
     ['جاري تحميل الطلبات…','Loading requests…'],
-    ['الحد الأدنى 200 MIMA • الرسوم 15 MIMA • سيتم إرسال الطلب للإدارة مع عنوان السحب.','Minimum 200 MIMA • Fee 15 MIMA • Your request and withdrawal address will be sent to the admin.'],
+    ['الحد الأدنى 500 MIMA • الرسوم 50 MIMA • سيتم إرسال الطلب للإدارة مع عنوان السحب.','Minimum 500 MIMA • Fee 50 MIMA • Your request and withdrawal address will be sent to the admin.'],
     ['رصيد MIMA القابل للتبادل','Exchangeable MIMA balance'],
     ['رصيد GRAM','GRAM balance'],
     ['رصيد GRAM في المحفظة المرتبطة','GRAM balance in connected wallet'],
@@ -2002,7 +2002,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   ];
 
   const PLACEHOLDER_PAIRS = [
-    ['الحد الأدنى 200 MIMA','Minimum 200 MIMA'],
+    ['الحد الأدنى 500 MIMA','Minimum 500 MIMA'],
     ['أدخل عنوان محفظة السحب','Enter withdrawal wallet address']
   ];
 
@@ -5563,7 +5563,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       toast(
         tx('✅ تم إرسال الطلب #','✅ Request #') +
         String(data.request_id || '') +
-        tx(' • الرسوم 15 MIMA',' sent • fee 15 MIMA')
+        tx(' • الرسوم 50 MIMA',' sent • fee 50 MIMA')
       );
 
       // Natural break: the exchange request is already completed.
