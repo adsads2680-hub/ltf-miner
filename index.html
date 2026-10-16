@@ -4643,9 +4643,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   async function claimVictorsPartner(btn){
     await victorsTimedCheck(true);
   }
-  setInterval(()=>{renderVictorsPartnerTask();victorsTimedCheck();},5000);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')victorsTimedCheck(true);});
-  setTimeout(()=>victorsTimedCheck(true),1200);
+  // Retired partner task: intentionally no polling, timers or claims.
+
 
   async function claimTask(taskCode,btn){
     if(!btn || btn.disabled) return;
