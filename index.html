@@ -11775,6 +11775,19 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
 function language(){try{return localStorage.getItem('mima_language_manual_v1')||localStorage.getItem('mima_language_v1')||'en'}catch(e){return'en'}}
 const translations={ar:['استرجاع رصيد MIMA','جاري الاسترجاع…','تم استرجاع الرصيد المتاح للسحب','لا توجد طلبات معلّقة','تعذّر استرجاع الرصيد'],en:['Restore MIMA balance','Restoring…','Withdrawable balance restored','No pending requests','Could not restore balance'],tr:['MIMA bakiyesini geri al','İade ediliyor…','Çekilebilir bakiye iade edildi','Bekleyen talep yok','Bakiye iade edilemedi'],ru:['Вернуть баланс MIMA','Возврат…','Баланс для вывода восстановлен','Нет ожидающих заявок','Ошибка возврата']};
+Object.assign(translations,{
+fa:['بازگرداندن موجودی MIMA','در حال بازگرداندن…','موجودی قابل برداشت بازگردانده شد','درخواست معلقی نیست','بازگردانی ناموفق بود'],
+hi:['MIMA बैलेंस वापस लें','वापस किया जा रहा है…','निकासी योग्य बैलेंस वापस आया','कोई लंबित अनुरोध नहीं','बैलेंस वापस नहीं हो सका'],
+id:['Kembalikan saldo MIMA','Mengembalikan…','Saldo penarikan dipulihkan','Tidak ada permintaan tertunda','Gagal memulihkan saldo'],
+fr:['Récupérer le solde MIMA','Récupération…','Solde retirable restauré','Aucune demande en attente','Récupération impossible'],
+zh:['恢复 MIMA 余额','正在恢复…','可提现余额已恢复','没有待处理申请','无法恢复余额'],
+de:['MIMA-Guthaben zurückholen','Wiederherstellung…','Auszahlbares Guthaben wiederhergestellt','Keine offenen Anträge','Wiederherstellung fehlgeschlagen'],
+es:['Recuperar saldo MIMA','Recuperando…','Saldo disponible para retiro restaurado','No hay solicitudes pendientes','No se pudo recuperar'],
+bn:['MIMA ব্যালেন্স ফেরত নিন','ফেরত আনা হচ্ছে…','উত্তোলনযোগ্য ব্যালেন্স ফেরত এসেছে','কোনো অপেক্ষমাণ অনুরোধ নেই','ব্যালেন্স ফেরত আনা যায়নি'],
+pt:['Restaurar saldo MIMA','Restaurando…','Saldo disponível para saque restaurado','Nenhum pedido pendente','Falha ao restaurar'],
+uz:['MIMA balansini qaytarish','Qaytarilmoqda…','Yechib olish balansi tiklandi','Kutilayotgan so‘rov yo‘q','Balans tiklanmadi'],
+ur:['MIMA بیلنس واپس لیں','واپس کیا جا رہا ہے…','قابلِ نکاسی بیلنس بحال ہو گیا','کوئی زیر التوا درخواست نہیں','بیلنس بحال نہیں ہوا']
+});
 function t(i){return (translations[language()]||translations.en)[i]}
 function init(){
  const panel=document.querySelector('#mima-maintenance-cover .mima-maintenance-panel');
