@@ -1492,8 +1492,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23';
   const MIMA_API_URL = SUPABASE_URL + '/functions/v1/mima-secure-api';
   const MIMA_EXCHANGE_REQUEST_URL = SUPABASE_URL + '/functions/v1/mima-exchange-request';
-  const EXCHANGE_MIN_MIMA = 200;
-  const EXCHANGE_FEE_MIMA = 15;
+  const EXCHANGE_MIN_MIMA = 500;
+  const EXCHANGE_FEE_MIMA = 50;
   const ADMIN_TELEGRAM_USER_ID = '1035565575';
 
   const $ = id => document.getElementById(id);
@@ -1830,7 +1830,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       'الحد الأقصى ضغطتان في الثانية':'Maximum 2 taps per second',
       'انتهت النقرات المتاحة مؤقتاً':'Tap energy is temporarily depleted',
       'المستخدم غير موجود':'User not found',
-      'الحد الأدنى للتبادل هو 200 MIMA':'Minimum exchange amount is 200 MIMA',
+      'الحد الأدنى للتبادل هو 500 MIMA':'Minimum exchange amount is 500 MIMA',
       'أدخل عنوان سحب صالح':'Enter a valid withdrawal address',
       'سعر GRAM المباشر غير متاح حالياً':'Live GRAM price is currently unavailable',
       'سعر GRAM قديم، حاول من جديد':'GRAM price is stale. Please try again',
@@ -5497,7 +5497,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
 
     if(amount < EXCHANGE_MIN_MIMA){
-      toast(tx('⚠️ الحد الأدنى للتبادل هو 200 MIMA','⚠️ Minimum exchange amount is 200 MIMA'));
+      toast(tx('⚠️ الحد الأدنى للتبادل هو 500 MIMA','⚠️ Minimum exchange amount is 500 MIMA'));
       return;
     }
 
