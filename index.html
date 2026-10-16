@@ -11796,13 +11796,26 @@ function init(){
  b.style.cssText='display:block;width:100%;padding:13px;margin-top:22px;border-radius:12px;border:1px solid #edc668;background:#bb8f30;color:#16100a;font-weight:bold;font-size:15px';
  const n=document.createElement('p');n.setAttribute('role','status');n.style.cssText='font-size:13px;margin-top:12px';
  panel.append(b,n);
+ async function checkRestoreVisibility(){
+  try{
+   const initData=window.Telegram?.WebApp?.initData||'';
+   if(!initData){b.hidden=true;return}
+   const response=await fetch('https://julnowgcrkazepbfxkau.supabase.co/functions/v1/mima-jetton-withdrawal',{
+    method:'POST',headers:{'content-type':'application/json','x-telegram-init-data':initData},
+    body:JSON.stringify({action:'restore_status'})
+   });
+   const result=await response.json();
+   if(result.success===true)b.hidden=Number(result.restorable_count||0)===0;
+  }catch(e){b.hidden=true}
+ }
+ checkRestoreVisibility();
  b.onclick=async()=>{b.disabled=true;b.textContent=t(1);try{
  const initData=window.Telegram?.WebApp?.initData||'';
  if(!initData)throw Error('auth');
  const response=await fetch('https://julnowgcrkazepbfxkau.supabase.co/functions/v1/mima-jetton-withdrawal',{method:'POST',headers:{'content-type':'application/json','x-telegram-init-data':initData},body:JSON.stringify({action:'restore_pending'})});
  const result=await response.json();
  if(result.failed_count||!result.success)throw Error('refund');
- n.textContent=result.restored_count>0?t(2)+' — '+result.restored_mima+' MIMA':t(3);
+ n.textContent=result.restored_count>0?t(2)+' — '+result.restored_mima+' MIMA':t(3); await checkRestoreVisibility();
  }catch(e){n.textContent=t(4)}finally{b.disabled=false;b.textContent=t(0)}};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
