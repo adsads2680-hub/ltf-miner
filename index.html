@@ -11790,7 +11790,7 @@ ur:['MIMA بیلنس واپس لیں','واپس کیا جا رہا ہے…','ق�
 });
 function t(i){return (translations[language()]||translations.en)[i]}
 function init(){
- const panel=document.querySelector('#mima-maintenance-cover .mima-maintenance-panel');
+ const panel=document.querySelector('#wallet .exchangeMainBtn')?.parentElement;
  if(!panel||document.getElementById('mimaRestoreJetton'))return;
  const b=document.createElement('button');b.id='mimaRestoreJetton';b.textContent=t(0);
  b.style.cssText='display:block;width:100%;padding:13px;margin-top:22px;border-radius:12px;border:1px solid #edc668;background:#bb8f30;color:#16100a;font-weight:bold;font-size:15px';
@@ -11808,37 +11808,6 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
-<!-- mima-full-maintenance-screen-20261016 -->
-<style id="mima-maintenance-css">
-#mima-maintenance-cover{position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 50% 30%,#29200d 0%,#0b0b0c 55%,#050505 100%);color:#e9d5a0;font-family:Arial,sans-serif;text-align:center}
-#mima-maintenance-cover .mima-maintenance-panel{max-width:480px;width:100%;padding:38px 25px;border-radius:24px;border:1px solid rgba(215,167,55,.4);background:linear-gradient(150deg,rgba(202,149,37,.11),rgba(0,0,0,.7));box-shadow:0 20px 80px #000}
-#mima-maintenance-cover .mima-maintenance-mark{font-size:62px;font-weight:900;letter-spacing:5px;color:#e5b94d;text-shadow:0 4px 22px rgba(230,183,66,.4)}
-#mima-maintenance-cover h1{font-size:24px;color:#fff4cc;margin:16px 0 14px}
-#mima-maintenance-cover p{font-size:16px;line-height:1.8;color:#d7c59b;margin:0}
-#mima-maintenance-cover .mima-maintenance-line{width:85px;height:2px;background:linear-gradient(90deg,transparent,#dab152,transparent);margin:24px auto}
-</style>
-<div id="mima-maintenance-cover" role="status" aria-live="polite">
-<div class="mima-maintenance-panel"><div class="mima-maintenance-mark">MIMA</div><div class="mima-maintenance-line"></div><h1 id="mima-maintenance-title">Under Maintenance</h1><p id="mima-maintenance-message">We're making improvements to MIMA COIN. Please check back later.</p></div>
-</div>
-<script id="mima-maintenance-gate">
-(function(){
-  function check(){
-    var tg=window.Telegram&&window.Telegram.WebApp;
-    var user=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
-    var id=user&&String(user.id);
-    var authorized=!!(tg&&tg.initData&&id==='1035565575');
-    var cover=document.getElementById('mima-maintenance-cover');
-    if(authorized){if(cover)cover.remove();return;}
-    var language=String((user&&user.language_code)||navigator.language||'en').toLowerCase();
-    if(language.indexOf('ar')===0){
-      document.getElementById('mima-maintenance-title').textContent='جاري الصيانة';
-      document.getElementById('mima-maintenance-message').textContent='نقوم حالياً بتحديث وتحسين MIMA COIN. يرجى العودة لاحقاً.';
-    }
-  }
-  check();
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',check,{once:true});
-  window.addEventListener('pageshow',check);
-})();
-</script>
+
 </body>
 </html>
