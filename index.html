@@ -11831,8 +11831,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="mima-onclicka-admin-trial">
 (function(){
   'use strict';
-  const ADMIN_ID='1035565575', SPOT_ID='468739', KEY='mima_onclicka_admin_last_success_468739', WAIT=300000;
-  let showAd=null,loading=false;
+  const ADMIN_ID='1035565575', SPOT_ID=468739, KEY='mima_onclicka_admin_last_success_468739', WAIT=300000;
+  let showAd=null,loading=false,diagnostic='';
   function el(id){return document.getElementById(id);}
   function authorized(){
     const tg=window.Telegram?.WebApp;
@@ -11847,23 +11847,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     btn.disabled=loading||remain>0;
     const m=Math.floor(remain/60000),sec=Math.ceil((remain%60000)/1000);
     btn.textContent=loading?'⏳':remain>0?`${m}:${String(sec).padStart(2,'0')}`:'شاهد إعلان';
-    info.textContent=remain>0?'المهمة التجريبية تتجدد بعد انتهاء العداد':'اختبار OnClickA • بدون إضافة رصيد حتى اعتماد تأكيد الخادم';
+    info.textContent=diagnostic || (remain>0?'المهمة التجريبية تتجدد بعد انتهاء العداد':'اختبار OnClickA • بدون إضافة رصيد حتى اعتماد تأكيد الخادم');
   }
   async function play(){
     if(!authorized()||loading)return;
     if(Date.now()-Number(localStorage.getItem(KEY)||0)<WAIT)return;
-    loading=true;refresh();
+    loading=true;diagnostic='جار تهيئة إعلان OnClickA...';refresh();
     try{
       if(!showAd){
         if(typeof window.initCdTma!=='function')throw new Error('مكتبة الإعلان لم تُحمّل بعد، حاول مجدداً');
         showAd=await window.initCdTma({id:SPOT_ID});
         if(typeof showAd!=='function')throw new Error('الإعلان غير جاهز');
       }
+      diagnostic='جار محاولة عرض الإعلان...';refresh();
       await showAd();
+      diagnostic='✅ نجح عرض الإعلان التجريبي (بدون مكافأة)';
       localStorage.setItem(KEY,String(Date.now()));
       if(typeof window.toast==='function')window.toast('✅ اكتملت تجربة الإعلان، بدون مكافأة مالية');
     }catch(e){
-      if(typeof window.toast==='function')window.toast('⚠️ '+String(e?.message||'الإعلان غير متوفر حالياً'));
+      diagnostic='⚠️ '+String(e?.message||e||'الإعلان غير متوفر حالياً').slice(0,180);
+      console.warn('OnClickA trial failed:',e);
     }finally{loading=false;refresh();}
   }
   function init(){
