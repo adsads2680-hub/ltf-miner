@@ -1207,9 +1207,9 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         <button id="mimaXPostClaim" type="button" onclick="claimMimaXPost(this)" disabled>Open post first</button>
       </div>
     </div>
-    <div class="item mimaTaskRow" id="onclickaAdminTask" hidden style="display:none!important">
+    <div class="item mimaTaskRow" id="onclickaAdminTask">
       <span class="ico">🎬</span>
-      <main><b id="onclickaAdminTitle">شاهد إعلان — OnClickA (اختبار الإدارة)</b><small id="onclickaAdminInfo">تجربة كل 5 دقائق • بلا مكافأة حتى تفعيل التأكيد</small></main>
+      <main><b id="onclickaAdminTitle">شاهد إعلان — OnClickA</b><small id="onclickaAdminInfo">كل 5 دقائق • عرض تجريبي دون مكافأة</small></main>
       <div class="taskActionGroup"><button type="button" id="onclickaAdminBtn">شاهد الإعلان</button></div>
     </div>
     <div class="item mimaTaskRow" id="interactPostTaskItem">
@@ -11831,7 +11831,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="mima-onclicka-admin-trial">
 (function(){
   'use strict';
-  const ADMIN_ID='1035565575', SPOT_ID=6153845, KEY='mima_onclicka_admin_last_success_468739', WAIT=300000;
+  const SPOT_ID=6153845, WAIT=300000;
   let showAd=null,loading=false,diagnostic='',initializing=null;
   async function prepare(){
     if(showAd)return showAd;
@@ -11841,37 +11841,35 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       const result=await window.initCdTma({id:SPOT_ID});
       if(typeof result!=='function')throw new Error('OnClickA لم يجهز الإعلان: تحقق من تفعيل Spot ID وتوفر الإعلانات');
       showAd=result;
-      diagnostic='الإعلان جاهز للاختبار';refresh();
+      diagnostic='الإعلان جاهز';refresh();
       return result;
     })();
     try{return await initializing;}finally{initializing=null;}
   }
   function el(id){return document.getElementById(id);}
-  function authorized(){
-    const tg=window.Telegram?.WebApp;
-    return !!tg?.initData && String(tg?.initDataUnsafe?.user?.id||'')===ADMIN_ID;
-  }
+  function authorized(){return !!window.Telegram?.WebApp?.initData;}
+  function cooldownKey(){return 'mima_onclicka_view_6153845_'+String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id||'unknown');}
   function refresh(){
     const row=el('onclickaAdminTask'),btn=el('onclickaAdminBtn'),info=el('onclickaAdminInfo');
     if(!row||!btn||!info)return;
     if(!authorized()){row.hidden=true;row.style.setProperty('display','none','important');return;}
-    row.hidden=false;row.style.setProperty('display','flex','important');
-    const remain=Math.max(0,WAIT-(Date.now()-Number(localStorage.getItem(KEY)||0)));
+    row.hidden=false;row.style.setProperty('display','flex');
+    const remain=Math.max(0,WAIT-(Date.now()-Number(localStorage.getItem(cooldownKey())||0)));
     btn.disabled=loading||remain>0;
     const m=Math.floor(remain/60000),sec=Math.ceil((remain%60000)/1000);
     btn.textContent=loading?'⏳':remain>0?`${m}:${String(sec).padStart(2,'0')}`:'شاهد إعلان';
-    info.textContent=diagnostic || (remain>0?'المهمة التجريبية تتجدد بعد انتهاء العداد':'اختبار OnClickA • بدون إضافة رصيد حتى اعتماد تأكيد الخادم');
+    info.textContent=diagnostic || (remain>0?'المهمة التجريبية تتجدد بعد انتهاء العداد':'شاهد إعلان OnClickA • دون مكافأة حتى تفعيل تأكيد الخادم');
   }
   async function play(){
     if(!authorized()||loading)return;
-    if(Date.now()-Number(localStorage.getItem(KEY)||0)<WAIT)return;
+    if(Date.now()-Number(localStorage.getItem(cooldownKey())||0)<WAIT)return;
     loading=true;diagnostic='جار تهيئة إعلان OnClickA...';refresh();
     try{
       if(!showAd)await prepare();
       diagnostic='جار محاولة عرض الإعلان...';refresh();
       await showAd();
-      diagnostic='✅ نجح عرض الإعلان التجريبي (بدون مكافأة)';
-      localStorage.setItem(KEY,String(Date.now()));
+      diagnostic='✅ اكتمل عرض الإعلان (دون مكافأة حالياً)';
+      localStorage.setItem(cooldownKey(),String(Date.now()));
       if(typeof window.toast==='function')window.toast('✅ اكتملت تجربة الإعلان، بدون مكافأة مالية');
     }catch(e){
       diagnostic='⚠️ '+String(e?.message||e||'الإعلان غير متوفر حالياً').slice(0,180);
