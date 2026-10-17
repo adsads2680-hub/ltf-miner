@@ -1207,6 +1207,11 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         <button id="mimaXPostClaim" type="button" onclick="claimMimaXPost(this)" disabled>Open post first</button>
       </div>
     </div>
+    <div class="item mimaTaskRow" id="onclickaAdminTask" hidden style="display:none!important">
+      <span class="ico">🎬</span>
+      <main><b id="onclickaAdminTitle">شاهد إعلان — OnClickA (اختبار الإدارة)</b><small id="onclickaAdminInfo">تجربة كل 5 دقائق • بلا مكافأة حتى تفعيل التأكيد</small></main>
+      <div class="taskActionGroup"><button type="button" id="onclickaAdminBtn">شاهد الإعلان</button></div>
+    </div>
     <div class="item mimaTaskRow" id="interactPostTaskItem">
       <span class="ico">📄</span>
       <main>
@@ -11822,5 +11827,51 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+<script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js" defer></script>
+<script id="mima-onclicka-admin-trial">
+(function(){
+  'use strict';
+  const ADMIN_ID='1035565575', SPOT_ID='468739', KEY='mima_onclicka_admin_last_success_468739', WAIT=300000;
+  let showAd=null,loading=false;
+  function el(id){return document.getElementById(id);}
+  function authorized(){
+    const tg=window.Telegram?.WebApp;
+    return !!tg?.initData && String(tg?.initDataUnsafe?.user?.id||'')===ADMIN_ID;
+  }
+  function refresh(){
+    const row=el('onclickaAdminTask'),btn=el('onclickaAdminBtn'),info=el('onclickaAdminInfo');
+    if(!row||!btn||!info)return;
+    if(!authorized()){row.hidden=true;row.style.setProperty('display','none','important');return;}
+    row.hidden=false;row.style.setProperty('display','flex','important');
+    const remain=Math.max(0,WAIT-(Date.now()-Number(localStorage.getItem(KEY)||0)));
+    btn.disabled=loading||remain>0;
+    const m=Math.floor(remain/60000),sec=Math.ceil((remain%60000)/1000);
+    btn.textContent=loading?'⏳':remain>0?`${m}:${String(sec).padStart(2,'0')}`:'شاهد إعلان';
+    info.textContent=remain>0?'المهمة التجريبية تتجدد بعد انتهاء العداد':'اختبار OnClickA • بدون إضافة رصيد حتى اعتماد تأكيد الخادم';
+  }
+  async function play(){
+    if(!authorized()||loading)return;
+    if(Date.now()-Number(localStorage.getItem(KEY)||0)<WAIT)return;
+    loading=true;refresh();
+    try{
+      if(!showAd){
+        if(typeof window.initCdTma!=='function')throw new Error('مكتبة الإعلان لم تُحمّل بعد، حاول مجدداً');
+        showAd=await window.initCdTma({id:SPOT_ID});
+        if(typeof showAd!=='function')throw new Error('الإعلان غير جاهز');
+      }
+      await showAd();
+      localStorage.setItem(KEY,String(Date.now()));
+      if(typeof window.toast==='function')window.toast('✅ اكتملت تجربة الإعلان، بدون مكافأة مالية');
+    }catch(e){
+      if(typeof window.toast==='function')window.toast('⚠️ '+String(e?.message||'الإعلان غير متوفر حالياً'));
+    }finally{loading=false;refresh();}
+  }
+  function init(){
+    const btn=el('onclickaAdminBtn');if(btn)btn.addEventListener('click',play);
+    refresh();setInterval(()=>{if(document.visibilityState==='visible')refresh()},1000);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
 </body>
 </html>
