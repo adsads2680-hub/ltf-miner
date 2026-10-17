@@ -11832,7 +11832,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
   'use strict';
   const ADMIN_ID='1035565575', SPOT_ID=468739, KEY='mima_onclicka_admin_last_success_468739', WAIT=300000;
-  let showAd=null,loading=false,diagnostic='';
+  let showAd=null,loading=false,diagnostic='',initializing=null;
+  async function prepare(){
+    if(showAd)return showAd;
+    if(initializing)return initializing;
+    initializing=(async()=>{
+      if(typeof window.initCdTma!=='function')throw new Error('تعذّر تحميل مكتبة OnClickA');
+      const result=await window.initCdTma({id:SPOT_ID});
+      if(typeof result!=='function')throw new Error('OnClickA لم يجهز الإعلان: تحقق من تفعيل Spot ID وتوفر الإعلانات');
+      showAd=result;
+      diagnostic='الإعلان جاهز للاختبار';refresh();
+      return result;
+    })();
+    try{return await initializing;}finally{initializing=null;}
+  }
   function el(id){return document.getElementById(id);}
   function authorized(){
     const tg=window.Telegram?.WebApp;
@@ -11854,11 +11867,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(Date.now()-Number(localStorage.getItem(KEY)||0)<WAIT)return;
     loading=true;diagnostic='جار تهيئة إعلان OnClickA...';refresh();
     try{
-      if(!showAd){
-        if(typeof window.initCdTma!=='function')throw new Error('مكتبة الإعلان لم تُحمّل بعد، حاول مجدداً');
-        showAd=await window.initCdTma({id:SPOT_ID});
-        if(typeof showAd!=='function')throw new Error('الإعلان غير جاهز');
-      }
+      if(!showAd)await prepare();
       diagnostic='جار محاولة عرض الإعلان...';refresh();
       await showAd();
       diagnostic='✅ نجح عرض الإعلان التجريبي (بدون مكافأة)';
@@ -11871,7 +11880,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   function init(){
     const btn=el('onclickaAdminBtn');if(btn)btn.addEventListener('click',play);
-    refresh();setInterval(()=>{if(document.visibilityState==='visible')refresh()},1000);
+    refresh();if(authorized()){
+      // Initialize in advance rather than doing it for the first time inside a click.
+      const begin=()=>prepare().catch(e=>{diagnostic='⚠️ '+String(e?.message||e);refresh();});
+      if(typeof window.initCdTma==='function')begin();
+      else window.addEventListener('load',begin,{once:true});
+    }
+    setInterval(()=>{if(document.visibilityState==='visible')refresh()},1000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
