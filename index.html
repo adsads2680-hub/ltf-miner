@@ -1207,17 +1207,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         <button id="mimaXPostClaim" type="button" onclick="claimMimaXPost(this)" disabled>Open post first</button>
       </div>
     </div>
-    <div class="item mimaTaskRow" id="interactPostTaskItem">
-      <span class="ico">📄</span>
-      <main>
-        <b id="interactPostTaskTitle">تفاعل مع المنشور</b>
-        <small id="interactPostTaskInfo">+5 MIMA • كل 5 ساعات</small>
-      </main>
-      <div class="taskActionGroup">
-        <button id="interactPostOpenBtn" class="taskJoinBtn" type="button" onclick="openInteractPost()">فتح المنشور</button>
-        <button id="interactPostTaskBtn" type="button" onclick="claimInteractPostTask(this)" disabled>افتح المنشور أولاً</button>
-      </div>
-    </div>
+
 
 
     </div>
@@ -3906,7 +3896,6 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     updateExchangeEstimate();
     renderTask();
     renderMimaExchangeChannelTask();
-    renderInteractPostTask();
   }
 
   async function claimMiningReward(){
@@ -4431,131 +4420,6 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }catch(err){toast('⚠️ '+(err.message||'Unable to claim reward'))}finally{renderMimaXPost()}
   }
   setInterval(()=>{if($('mimaXPostTaskItem'))renderMimaXPost()},1000);
-  const INTERACT_POST_URL = 'https://t.me/MIMA_COIN/3647';
-  const INTERACT_POST_OPENED_KEY = 'mima_interact_post_opened_mima_coin_3647_v1';
-
-  async function openInteractPost(){
-  if(serverMode){
-    try{
-      const result=await apiCall('open_channel_task',{task_code:'interact_mimacoin2_post'});
-      if(result?.success!==true) throw new Error('Post open registration failed');
-    }catch(e){
-      toast(tx('تعذّر تسجيل فتح المنشور، حاول مرة أخرى','Could not register post opening. Please try again.'));
-      return;
-    }
-  }
-  try{ localStorage.setItem(INTERACT_POST_OPENED_KEY,String(Date.now())); }catch(e){}
-  renderInteractPostTask();
-  setTimeout(renderInteractPostTask,10100);
-
-    try{
-      if(
-        window.Telegram &&
-        Telegram.WebApp &&
-        typeof Telegram.WebApp.openTelegramLink === 'function'
-      ){
-        Telegram.WebApp.openTelegramLink(INTERACT_POST_URL);
-      }else{
-        window.open(INTERACT_POST_URL,'_blank','noopener,noreferrer');
-      }
-    }catch(e){
-      window.location.href = INTERACT_POST_URL;
-    }
-  }
-
-  function renderInteractPostTask(){
-    const title = $('interactPostTaskTitle');
-    const info = $('interactPostTaskInfo');
-    const openBtn = $('interactPostOpenBtn');
-    const btn = $('interactPostTaskBtn');
-    if(!title || !info || !openBtn || !btn) return;
-
-    title.textContent = tx('تفاعل مع المنشور','Interact with the Post');
-    openBtn.textContent = tx('فتح المنشور','Open Post');
-
-    const remaining = interactPostNextAvailableAt
-      ? interactPostNextAvailableAt - nowMs()
-      : 0;
-
-    let opened = false;
-    try{ opened = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)) > 1000000000000; }catch(e){}
-
-    if(remaining > 0){
-      btn.disabled = true;
-      btn.textContent = formatCountdown(remaining);
-      info.textContent = tx('+5 MIMA • متاحة بعد ','+5 MIMA • available in ') + formatCountdown(remaining);
-      return;
-    }
-
-    let openedAt = 0;
-  try{ openedAt = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)||0); }catch(e){}
-  if(openedAt>1000000000000 && Date.now()-openedAt<10000){
-    btn.disabled = true;
-    btn.textContent = tx('تحقق','Verify');
-    info.textContent = tx('+5 MIMA • جار التحقق من فتح المنشور','+5 MIMA • verifying post opening');
-    return;
-  }
-  if(!opened){
-    btn.disabled = true;
-    btn.textContent = tx('افتح المنشور أولاً','Open post first');
-      info.textContent = tx('+5 MIMA • افتح المنشور ثم أكمل المهمة','+5 MIMA • open the post, then complete the task');
-      return;
-    }
-
-    btn.disabled = false;
-    btn.textContent = tx('إكمال المهمة','Complete Task');
-    info.textContent = tx('+5 MIMA • جاهزة للاستلام','+5 MIMA • ready to claim');
-  }
-
-  async function claimInteractPostTask(btn){
-    if(!btn || btn.disabled) return;
-
-    let opened = false;
-    try{ opened = Number(localStorage.getItem(INTERACT_POST_OPENED_KEY)) > 1000000000000; }catch(e){}
-    if(!opened){
-      renderInteractPostTask();
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = '⏳';
-
-    if(!serverMode){
-      bal += 5;
-      exchangeableBalance += 5;
-      interactPostNextAvailableAt = Date.now() + 5 * 60 * 60 * 1000;
-      savePreviewState();
-      render();
-      toast(tx('🎁 +5 MIMA أضيفت إلى رصيدك','🎁 +5 MIMA added to your balance'));
-      return;
-    }
-
-    try{
-      const data = await apiCall('claim_task',{task_code:'interact_mimacoin2_post'});
-
-      if(data.success !== true){
-        const nextTs = Date.parse(data.next_available_at || '');
-        if(Number.isFinite(nextTs)) interactPostNextAvailableAt = nextTs;
-        throw new Error(localizeServerMessage(data.message) || tx('المهمة غير متاحة','Task is not available'));
-      }
-
-      bal = Math.max(0,Number(data.balance || bal));
-      exchangeableBalance = Math.max(0,Number(data.exchangeable_balance ?? exchangeableBalance));
-
-      const nextTs = Date.parse(data.next_available_at || '');
-      interactPostNextAvailableAt = Number.isFinite(nextTs)
-        ? nextTs
-        : nowMs() + 5 * 60 * 60 * 1000;
-
-      try{ localStorage.removeItem(INTERACT_POST_OPENED_KEY); }catch(e){}
-      showMimaTaskSuccess('تفاعل مع المنشور','Interact with the post',data.reward);
-      render();
-    }catch(err){
-      toast('⚠️ ' + (err.message || tx('فشل استلام المهمة','Could not claim the task reward')));
-      render();
-    }
-  }
-
   const VICTORS_PARTNER_URL = 'https://t.me/VictorsCompanybot/app?startapp=ref_5D66CA239C';
   const VICTORS_PARTNER_OPENED_KEY = 'mima_victors_partner_opened_v2';
 
