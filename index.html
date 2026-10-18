@@ -11695,11 +11695,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
   const t=window.Telegram?.WebApp;
   if (!t?.initData || String(t.initDataUnsafe?.user?.id)!=="1035565575") return;
-  const b=document.createElement("button");
-  b.textContent="اختبار الأمان";
-  b.style.cssText="position:fixed;right:12px;bottom:95px;z-index:2147483000;background:#111;color:#eac466;border:1px solid #bc9239;border-radius:12px;padding:12px";
-  document.body.appendChild(b);
-  b.addEventListener("click",function(){
+  // Admin-only launch-screen verification preview. Not an access-control gate.
+  function showLaunchSecurityTest(){
     if(document.getElementById("mima-test-overlay"))return;
     const overlay=document.createElement("div"); overlay.id="mima-test-overlay";
     overlay.style.cssText="position:fixed;inset:0;z-index:2147483600;background:#090909ee;display:flex;align-items:center;justify-content:center;padding:20px";
@@ -11727,7 +11724,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       script.onload=show;script.onerror=()=>info.textContent="تعذر تحميل التحقق";
       document.head.appendChild(script);
     }
-  });
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",showLaunchSecurityTest,{once:true});
+  else showLaunchSecurityTest();
 })();
 </script>
 </body>
