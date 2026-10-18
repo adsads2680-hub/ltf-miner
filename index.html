@@ -785,8 +785,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 <script id="mima-turnstile-admin-test">
 (function(){
   const t=window.Telegram?.WebApp;
-  if (!t?.initData || String(t.initDataUnsafe?.user?.id)!=="1035565575") return;
-  // Admin-only Tasks entry preview; server verification remains admin-only.
+  if (!t?.initData || !t.initDataUnsafe?.user?.id) return;
+  // Turnstile verification on Tasks entry for every authenticated Telegram user, once per app launch.
   let allowNextTasksClick=false;
   let verifiedThisLaunch=false;
   let tasksButton;
