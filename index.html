@@ -793,12 +793,12 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   function showTasksSecurityTest(){
     if(document.getElementById("mima-test-overlay"))return;
     const overlay=document.createElement("div"); overlay.id="mima-test-overlay";
-    overlay.style.cssText="position:fixed;inset:0;z-index:2147483647;background:rgba(0,5,12,.40);display:flex;align-items:center;justify-content:center;padding:20px";
+    overlay.style.cssText="position:fixed;inset:0;z-index:2147483647;background:rgba(0,5,12,.40);display:grid;place-items:center;padding:16px;box-sizing:border-box;direction:ltr;";
     const card=document.createElement("div");
-    card.style.cssText="background:#101b2a;color:#f7e1a0;border:1px solid #d1a33f;border-radius:18px;padding:18px 14px;max-width:345px;width:100%;text-align:center;box-shadow:0 16px 48px #0009";
+    card.style.cssText="background:#101b2a;color:#f7e1a0;border:1px solid #d1a33f;border-radius:18px;padding:18px 14px;width:100%;max-width:345px;margin:0 auto;min-width:0;box-sizing:border-box;text-align:center;direction:rtl;box-shadow:0 16px 48px #0009";
     const title=document.createElement("h3");title.textContent="MIMA • Security Verification";
     const info=document.createElement("p");info.textContent="يرجى إكمال التحقق قبل الدخول";
-    const widget=document.createElement("div");
+    const widget=document.createElement("div");widget.style.cssText="display:flex;justify-content:center;align-items:center;width:100%;min-width:0;margin:0 auto;direction:ltr;overflow:hidden";
     const close=document.createElement("button");close.textContent="إغلاق";close.style.cssText="padding:8px 18px;margin-top:14px;border:1px solid #9d7a34;border-radius:10px;background:#202631;color:#f7e1a0";close.onclick=()=>overlay.remove();
     card.append(title,info,widget,close);overlay.appendChild(card);document.body.appendChild(overlay);
     const show=()=>window.turnstile.render(widget,{sitekey:"0x4AAAAAAFaY4eQx6IE84pPY",theme:"dark",callback:async token=>{
