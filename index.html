@@ -1250,6 +1250,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
         <button id="mimaXClaimBtn" type="button" onclick="claimMimaXTask(this)" style="display:none" disabled>Submit</button>
       </div>
     </div>
+<div class="item mimaTaskRow" id="interactMimaPostTaskItem"><span class="ico">📣</span><main><b id="interactMimaPostTitle">Interact With the Post</b><small id="interactMimaPostInfo">+5 MIMA • every 4 hours</small></main><div class="taskActionGroup"><button id="interactMimaPostOpen" class="taskJoinBtn" type="button" onclick="openInteractMimaPost()">Start Task</button><button id="interactMimaPostClaim" type="button" onclick="claimInteractMimaPost(this)" disabled>Open post first</button></div></div>
     <div class="item mimaTaskRow" id="mimaXPostTaskItem">
       <span class="ico">𝕏</span>
       <main><b id="mimaXPostTitle">Like, Comment & Repost on X</b><small id="mimaXPostInfo">+5 MIMA • every 8 hours</small></main>
@@ -4435,6 +4436,39 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     finally{renderMimaXTask()}
   }
   setInterval(()=>{if($('mimaXTaskItem'))renderMimaXTask()},1000);
+const MIMA_INTERACT_POST_URL='https://t.me/MIMA_COIN/3651';
+const MIMA_INTERACT_POST_KEY='mima_interact_post_open_v1';
+async function openInteractMimaPost(){
+ if(serverMode){try{const r=await apiCall('open_channel_task',{task_code:'interact_mimacoin2_post'});if(r?.success!==true)throw Error('record failed')}catch(e){toast(tx('تعذر فتح المهمة، حاول مجدداً','Unable to open task, retry'));return}}
+ try{localStorage.setItem(MIMA_INTERACT_POST_KEY,String(Date.now()))}catch(e){}
+ renderInteractPostTask();
+ try{if(window.Telegram?.WebApp?.openTelegramLink)Telegram.WebApp.openTelegramLink(MIMA_INTERACT_POST_URL);else window.open(MIMA_INTERACT_POST_URL,'_blank','noopener,noreferrer')}catch(e){window.location.href=MIMA_INTERACT_POST_URL}
+}
+function renderInteractPostTask(){
+ const title=$('interactMimaPostTitle'),info=$('interactMimaPostInfo'),open=$('interactMimaPostOpen'),claim=$('interactMimaPostClaim');
+ if(!title||!info||!open||!claim)return;
+ title.textContent=tx('تفاعل مع المنشور','Interact With the Post');open.textContent=tx('ابدأ المهمة','Start Task');
+ const remaining=interactPostNextAvailableAt-nowMs();
+ if(remaining>0){claim.disabled=true;claim.textContent=formatCountdown(remaining);info.textContent=tx('+5 MIMA • متاحة بعد ','+5 MIMA • available in ')+formatCountdown(remaining);return}
+ let at=0;try{at=Number(localStorage.getItem(MIMA_INTERACT_POST_KEY)||0)}catch(e){}
+ const elapsed=Date.now()-at;
+ if(!at||elapsed>1800000){claim.disabled=true;claim.textContent=tx('افتح المنشور أولاً','Open post first')}
+ else if(elapsed<10000){claim.disabled=true;claim.textContent=tx('انتظر 10 ثوانٍ','Wait 10 seconds')}
+ else{claim.disabled=false;claim.textContent=tx('استلم المكافأة','Claim Reward')}
+ info.textContent=tx('+5 MIMA • تتجدد كل 4 ساعات','+5 MIMA • every 4 hours');
+}
+async function claimInteractMimaPost(btn){
+ if(!btn||btn.disabled)return;btn.disabled=true;btn.textContent='⏳';
+ if(!serverMode){interactPostNextAvailableAt=Date.now()+14400000;renderInteractPostTask();return}
+ try{const data=await apiCall('claim_task',{task_code:'interact_mimacoin2_post',selected_language:currentLang});
+ const next=Date.parse(data?.next_available_at||'');if(Number.isFinite(next))interactPostNextAvailableAt=next;
+ if(data?.success!==true)throw Error(localizeServerMessage(data?.message)||'Task unavailable');
+ bal=Math.max(0,Number(data.balance??bal));exchangeableBalance=Math.max(0,Number(data.exchangeable_balance??exchangeableBalance));
+ try{localStorage.removeItem(MIMA_INTERACT_POST_KEY)}catch(e){}
+ showMimaTaskSuccess('تفاعل مع المنشور','Interact With the Post',data.reward);render();
+ }catch(err){toast('⚠️ '+(err.message||'Unable to claim reward'))}finally{renderInteractPostTask()}
+}
+setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000);
   const MIMA_X_POST_URL='https://x.com/MIMA_COIN/status/2110413482432893205';
   const MIMA_X_POST_OPEN_KEY='mima_x_post_opened_v1';
   let mimaXPostNextAvailableAt=0;
