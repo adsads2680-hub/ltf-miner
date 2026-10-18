@@ -795,27 +795,27 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     const overlay=document.createElement("div"); overlay.id="mima-test-overlay";
     overlay.style.cssText="position:fixed;inset:0;z-index:2147483647;background:rgba(0,5,12,.40);display:grid;place-items:center;padding:16px;box-sizing:border-box;direction:ltr;";
     const card=document.createElement("div");
-    card.style.cssText="background:#101b2a;color:#f7e1a0;border:1px solid #d1a33f;border-radius:18px;padding:18px 14px;width:100%;max-width:345px;margin:0 auto;min-width:0;box-sizing:border-box;text-align:center;direction:rtl;box-shadow:0 16px 48px #0009";
+    card.style.cssText="background:#101b2a;color:#f7e1a0;border:1px solid #d1a33f;border-radius:18px;padding:18px 14px;width:100%;max-width:345px;margin:0 auto;min-width:0;box-sizing:border-box;text-align:center;direction:ltr;box-shadow:0 16px 48px #0009";
     const title=document.createElement("h3");title.textContent="MIMA • Security Verification";
-    const info=document.createElement("p");info.textContent="يرجى إكمال التحقق قبل الدخول";
+    const info=document.createElement("p");info.textContent="Please complete security verification to continue";
     const widget=document.createElement("div");widget.style.cssText="display:flex;justify-content:center;align-items:center;width:100%;min-width:0;margin:0 auto;direction:ltr;overflow:hidden";
-    const close=document.createElement("button");close.textContent="إغلاق";close.style.cssText="padding:8px 18px;margin-top:14px;border:1px solid #9d7a34;border-radius:10px;background:#202631;color:#f7e1a0";close.onclick=()=>overlay.remove();
+    const close=document.createElement("button");close.textContent="Close";close.style.cssText="padding:8px 18px;margin-top:14px;border:1px solid #9d7a34;border-radius:10px;background:#202631;color:#f7e1a0";close.onclick=()=>overlay.remove();
     card.append(title,info,widget,close);overlay.appendChild(card);document.body.appendChild(overlay);
-    const show=()=>window.turnstile.render(widget,{sitekey:"0x4AAAAAAFaY4eQx6IE84pPY",theme:"dark",callback:async token=>{
-      info.textContent="جار التحقق...";
+    const show=()=>window.turnstile.render(widget,{sitekey:"0x4AAAAAAFaY4eQx6IE84pPY",theme:"dark",language:"en",callback:async token=>{
+      info.textContent="Verifying...";
       try {
         const response=await fetch("https://julnowgcrkazepbfxkau.supabase.co/functions/v1/mima-secure-api",{
           method:"POST",headers:{"Content-Type":"application/json","x-telegram-init-data":t.initData},
-          body:JSON.stringify({action:"turnstile_admin_test",turnstile_token:token})
+          body:JSON.stringify({action:"turnstile_verify",turnstile_token:token})
         });
         const data=await response.json();
-        if(data.verified){verifiedThisLaunch=true;info.textContent="تم التحقق بنجاح";setTimeout(()=>{overlay.remove();allowNextTasksClick=true;tasksButton.click();},500)}else{info.textContent="فشل التحقق: "+(data.message||response.status)}
-      }catch(e){info.textContent="خطأ اتصال: "+String(e.message||e)}
+        if(data.verified){verifiedThisLaunch=true;info.textContent="Verification successful";setTimeout(()=>{overlay.remove();allowNextTasksClick=true;tasksButton.click();},500)}else{info.textContent="Verification failed: "+(data.message||response.status)}
+      }catch(e){info.textContent="Connection error: "+String(e.message||e)}
     }});
     if(window.turnstile)show();else {
       const script=document.createElement("script");
       script.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-      script.onload=show;script.onerror=()=>info.textContent="تعذر تحميل التحقق";
+      script.onload=show;script.onerror=()=>info.textContent="Unable to load verification";
       document.head.appendChild(script);
     }
   }
