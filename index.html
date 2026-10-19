@@ -11801,6 +11801,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const COOLDOWN_MS = 5*60*1000;
   const STATE_KEY = 'mima_tads_public_limits_v1';
   let busy = false;
+  let noFillReported = false;
   function state(){
     try {
       const x=JSON.parse(localStorage.getItem(STATE_KEY)||'{}');
@@ -11858,7 +11859,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const btn = document.getElementById('mimaTadsWatchBtn');
     const before=state();
     if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
-    busy=true;status();
+    busy=true;noFillReported=false;status();
     try{
       await loadSdk();
       if(!window.tads || typeof window.tads.init !== 'function') throw new Error('TADS init unavailable');
@@ -11873,8 +11874,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
           status();
         },
         onAdsNotFound: () => {
+          noFillReported = true;
           console.info('TADS: no ads available for current user');
-          alert(arabic() ? 'لا توجد إعلانات TADS متاحة لحسابك حالياً. حاول لاحقاً.' : 'No TADS ads available for your account right now. Please try later.');
         }
       });
       if(!controller || typeof controller.showAd !== 'function') throw new Error('TADS showAd unavailable');
@@ -11882,7 +11883,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     }catch(e){
       console.warn('TADS ad launch failed:',e);
       const detail = String(e?.message || e?.error || e?.code || (typeof e==='string'?e:'') || '').slice(0,160);
-      alert((arabic() ? 'تعذر تشغيل إعلان TADS حالياً' : 'Unable to open TADS ad right now') + (detail ? '\n' + detail : '\n' + (arabic()?'قد لا يتوفر إعلان مناسب الآن.':'There may be no eligible ad right now.')));
+      const noFill = noFillReported || /no ads|ads not found|no fill/i.test(detail);
+      alert(noFill ? (arabic() ? 'لا يوجد إعلان TADS متاح حالياً. حاول لاحقاً.' : 'No TADS ad available right now. Please try later.') : ((arabic() ? 'تعذر تشغيل إعلان TADS حالياً' : 'Unable to open TADS ad right now') + (detail ? '\n' + detail : '')));
     }finally{
       busy=false;
       localize();
