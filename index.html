@@ -11875,13 +11875,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         },
         onAdsNotFound: () => {
           noFillReported = true;
-          console.info('TADS: no ads available for current user');
+          console.info('TADS diagnostic', {event:'ads_not_found',widgetId:WIDGET_ID,type:'fullscreen',debug:false,host:location.host,at:new Date().toISOString()});
         }
       });
       if(!controller || typeof controller.showAd !== 'function') throw new Error('TADS showAd unavailable');
       await controller.showAd();
     }catch(e){
-      console.warn('TADS ad launch failed:',e);
+      console.warn('TADS ad launch failed:',{widgetId:WIDGET_ID,host:location.host,message:String(e?.message||e),name:e?.name||'',code:e?.code||'',noFillReported});
       const detail = String(e?.message || e?.error || e?.code || (typeof e==='string'?e:'') || '').slice(0,160);
       const noFill = noFillReported || /no ads|ads not found|no fill/i.test(detail);
       alert(noFill ? (arabic() ? 'لا يوجد إعلان TADS متاح حالياً. حاول لاحقاً.' : 'No TADS ad available right now. Please try later.') : ((arabic() ? 'تعذر تشغيل إعلان TADS حالياً' : 'Unable to open TADS ad right now') + (detail ? '\n' + detail : '')));
