@@ -1183,6 +1183,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
   <div class="mimaTaskList">
   <!-- TADS public task: reward requires server-side confirmation. -->
+  <div id="tads-container-12730" style="display:none" aria-hidden="true"></div>
   <div class="item mimaTaskRow" id="mimaTadsTestTask" style="display:none">
     <span class="ico">▶️</span>
     <main>
@@ -11871,14 +11872,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
           // Test counter only. Never credit MIMA without authenticated server confirmation.
           status();
         },
-        onAdsNotFound: () => console.info('TADS: no ads available')
+        onAdsNotFound: () => {
+          console.info('TADS: no ads available for current user');
+          alert(arabic() ? 'لا توجد إعلانات TADS متاحة لحسابك حالياً. حاول لاحقاً.' : 'No TADS ads available for your account right now. Please try later.');
+        }
       });
       if(!controller || typeof controller.showAd !== 'function') throw new Error('TADS showAd unavailable');
       await controller.showAd();
     }catch(e){
       console.warn('TADS ad launch failed:',e);
-      const detail = String(e?.message || '').slice(0,120);
-      alert((arabic() ? 'تعذر تشغيل إعلان TADS حالياً' : 'Unable to open TADS ad right now') + (detail ? '\n' + detail : ''));
+      const detail = String(e?.message || e?.error || e?.code || (typeof e==='string'?e:'') || '').slice(0,160);
+      alert((arabic() ? 'تعذر تشغيل إعلان TADS حالياً' : 'Unable to open TADS ad right now') + (detail ? '\n' + detail : '\n' + (arabic()?'قد لا يتوفر إعلان مناسب الآن.':'There may be no eligible ad right now.')));
     }finally{
       busy=false;
       localize();
