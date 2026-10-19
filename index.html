@@ -1131,6 +1131,19 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   
 
   <div class="mimaTaskList">
+  <!-- TADS 12760 TGB pilot: admin-only; no MIMA rewards. -->
+  <div class="item mimaTaskRow" id="mimaTadsTgbAdminTask" style="display:none">
+    <span class="ico" aria-hidden="true" style="color:#f7c64e;font-size:29px">▣</span>
+    <main style="min-width:0">
+      <b id="mimaTadsTgbAdminTitle">TADS TGB • Admin Test</b>
+      <small id="mimaTadsTgbAdminInfo">12760 • Test only • No MIMA rewards</small>
+      <div id="tads-container-12760" style="width:100%;max-width:100%;min-height:0;margin-top:10px;overflow:hidden"></div>
+    </main>
+    <div class="taskActionGroup">
+      <button class="taskJoinBtn" id="mimaTadsTgbAdminReload" type="button">Load Ad</button>
+    </div>
+  </div>
+
   <!-- TADS public task: 3 MIMA per verified fullscreen view via server webhook. -->
   <div id="tads-container-12747" style="display:none" aria-hidden="true"></div>
   <div class="item mimaTaskRow" id="mimaTadsTestTask" style="display:none">
@@ -11850,6 +11863,52 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
+})();
+</script>
+<script id="mima-tads-tgb-admin-pilot">
+(function(){
+  'use strict';
+  const ADMIN_ID='1035565575', WIDGET_ID=12760;
+  const admin=()=>Boolean(window.Telegram?.WebApp?.initData) &&
+    String(window.Telegram?.WebApp?.initDataUnsafe?.user?.id||'')===ADMIN_ID;
+  let controller=null, scriptLoading=null, loading=false;
+  const row=()=>document.getElementById('mimaTadsTgbAdminTask');
+  const reload=()=>document.getElementById('mimaTadsTgbAdminReload');
+  const info=()=>document.getElementById('mimaTadsTgbAdminInfo');
+  const ar=()=>String(document.documentElement.lang||'').toLowerCase().startsWith('ar');
+  const wording=()=>{const i=info(),b=reload(),h=document.getElementById('mimaTadsTgbAdminTitle');if(h)h.textContent=ar()?'إعلان TADS • اختبار الإدارة':'TADS TGB • Admin Test';if(i&&!loading)i.textContent=ar()?'12760 • للإدارة فقط • دون مكافأة':'12760 • Admin only • No reward';if(b&&!loading)b.textContent=ar()?'عرض الإعلان':'Load Ad';};
+  function sdk(){
+    if(window.tads?.init)return Promise.resolve();
+    if(scriptLoading)return scriptLoading;
+    scriptLoading=new Promise((resolve,reject)=>{
+      const s=document.createElement('script');s.src='https://w.tads.me/widget.js';s.async=true;
+      s.onload=resolve;s.onerror=()=>reject(new Error('TADS SDK unavailable'));document.head.appendChild(s);
+    }).catch(e=>{scriptLoading=null;throw e});
+    return scriptLoading;
+  }
+  async function load(){
+    if(!admin()||loading)return;
+    const b=reload(),i=info();loading=true;
+    if(b){b.disabled=true;b.textContent=ar()?'جاري التحميل':'Loading';}
+    try{
+      await sdk();
+      if(!admin())return;
+      if(!controller)controller=window.tads.init({
+        widgetId:WIDGET_ID,type:'static',debug:false,
+        onClickReward:(adId)=>console.info('TADS 12760 click (no reward)',adId),
+        onAdsNotFound:()=>{if(i)i.textContent=ar()?'لا يوجد إعلان متاح حاليًا':'No ad available right now';}
+      });
+      await controller.loadAd();await controller.showAd();
+      if(i)i.textContent=ar()?'12760 • إعلان اختبار الإدارة':'12760 • Admin test ad';
+    }catch(e){if(i)i.textContent=(ar()?'تعذر تحميل الإعلان: ':'Ad unavailable: ')+String(e?.message||e);}
+    finally{loading=false;if(b)b.disabled=false;wording();}
+  }
+  function start(){
+    const item=row();if(!item||!admin())return;
+    item.style.display='';
+    wording();reload()?.addEventListener('click',load);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
 </body>
