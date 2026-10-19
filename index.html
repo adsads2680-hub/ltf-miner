@@ -11860,6 +11860,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     localize();
     document.getElementById('mimaTadsWatchBtn')?.addEventListener('click',watch);
     new MutationObserver(localize).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+    // Keep this single task synchronized after MIMA's own DOM translation/render pass.
+    const taskObserver = new MutationObserver(() => {
+      const title = document.getElementById('mimaTadsTaskTitle');
+      const btn = document.getElementById('mimaTadsWatchBtn');
+      const expected = arabic() ? 'شاهد إعلان' : 'Watch Ad';
+      if((title && title.textContent !== expected) || (btn && !btn.disabled && btn.textContent !== expected)) localize();
+    });
+    taskObserver.observe(item,{subtree:true,childList:true,characterData:true});
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
