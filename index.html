@@ -1182,7 +1182,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   
 
   <div class="mimaTaskList">
-  <!-- TADS test: admin-only; no MIMA reward is granted client-side. -->
+  <!-- TADS public task: reward requires server-side confirmation. -->
   <div class="item mimaTaskRow" id="mimaTadsTestTask" style="display:none">
     <span class="ico">▶️</span>
     <main>
@@ -11798,7 +11798,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const MAX_VIEWS = 7;
   const WINDOW_MS = 24*60*60*1000;
   const COOLDOWN_MS = 5*60*1000;
-  const STATE_KEY = 'mima_tads_test_limits_v1';
+  const STATE_KEY = 'mima_tads_public_limits_v1';
   let busy = false;
   function state(){
     try {
@@ -11813,7 +11813,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const x=state(), wait=remaining(x), ar=arabic();
     const info=document.getElementById('mimaTadsTaskInfo');
     const btn=document.getElementById('mimaTadsWatchBtn');
-    if(info) info.textContent=ar ? `TADS • ${x.count}/7 خلال 24 ساعة • 5 MIMA بعد التحقق` : `TADS • ${x.count}/7 in 24h • 5 MIMA after verification`;
+    if(info) info.textContent=ar ? `TADS • ${x.count}/7 خلال 24 ساعة • المكافأة بانتظار التفعيل` : `TADS • ${x.count}/7 in 24h • Reward pending activation`;
     if(btn){btn.disabled=busy || x.count>=MAX_VIEWS || wait>0;btn.textContent=busy?(ar?'جاري التحميل...':'Loading...'):x.count>=MAX_VIEWS?(ar?'اكتملت المهام':'Daily limit'):wait>0?`${Math.floor(wait/60)}:${String(wait%60).padStart(2,'0')}`:(ar?'شاهد إعلان':'Watch Ad');}
   }
   const row = () => document.getElementById('mimaTadsTestTask');
@@ -11853,7 +11853,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return sdkPromise;
   }
   async function watch(){
-    if(!isAdmin()) return;
+    if(!window.Telegram?.WebApp?.initData) return;
     const btn = document.getElementById('mimaTadsWatchBtn');
     const before=state();
     if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
@@ -11864,7 +11864,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       const controller = await window.tads.init({
         widgetId: WIDGET_ID,
         type: 'fullscreen',
-        debug: true,
+        debug: false,
         onShowReward: () => {
           const x=state();
           if(x.count<MAX_VIEWS && remaining(x)===0){x.count++;x.last=Date.now();save(x);}
@@ -11887,7 +11887,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const item=row();
     if(!item) return;
     const refreshVisibility = () => {
-      const allowed = isAdmin();
+      const allowed = Boolean(window.Telegram?.WebApp?.initData);
       item.style.setProperty('display', allowed ? 'flex' : 'none', 'important');
       if(allowed) localize();
     };
@@ -11896,7 +11896,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     let attempts=0;
     const retry=setInterval(()=>{
       refreshVisibility();
-      if(++attempts>=20 || isAdmin()) clearInterval(retry);
+      if(++attempts>=20 || window.Telegram?.WebApp?.initData) clearInterval(retry);
     },500);
     document.getElementById('mimaTadsWatchBtn')?.addEventListener('click',watch);
     setInterval(status,1000);
