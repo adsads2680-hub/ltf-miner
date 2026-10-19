@@ -11849,7 +11849,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       script.src = 'https://w.tads.me/widget.js';
       script.async = true;
       script.onload = resolve;
-      script.onerror = () => reject(new Error('TADS SDK unavailable'));
+      script.onerror = () => { sdkPromise = null; script.remove(); reject(new Error('TADS SDK unavailable')); };
       document.head.appendChild(script);
     });
     return sdkPromise;
@@ -11899,6 +11899,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       if(allowed) localize();
     };
     refreshVisibility();
+    // Load the official SDK ahead of the click so showAd is triggered by the user's gesture.
+    loadSdk().catch(e => console.warn('TADS SDK preload failed:', e));
     // Telegram initData can arrive after DOMContentLoaded. Keep visibility in sync.
     let attempts=0;
     const retry=setInterval(()=>{
