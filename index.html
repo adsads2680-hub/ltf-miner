@@ -1187,7 +1187,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <span class="ico">▶️</span>
     <main>
       <b id="mimaTadsTaskTitle">Watch Ad</b>
-      <small id="mimaTadsTaskInfo">TADS test • No reward during testing</small>
+      <small id="mimaTadsTaskInfo">TADS • 0/7 in 24h • 5 MIMA after verification</small>
     </main>
     <div class="taskActionGroup">
       <button class="taskJoinBtn" id="mimaTadsWatchBtn" type="button">Watch Ad</button>
@@ -11795,6 +11795,27 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   'use strict';
   const ADMIN_ID = '1035565575';
   const WIDGET_ID = 12730;
+  const MAX_VIEWS = 7;
+  const WINDOW_MS = 24*60*60*1000;
+  const COOLDOWN_MS = 5*60*1000;
+  const STATE_KEY = 'mima_tads_test_limits_v1';
+  let busy = false;
+  function state(){
+    try {
+      const x=JSON.parse(localStorage.getItem(STATE_KEY)||'{}');
+      if(!x.started || Date.now()-x.started>=WINDOW_MS || Date.now()<x.started) return {started:Date.now(),count:0,last:0};
+      return {started:x.started,count:Math.min(MAX_VIEWS,Math.max(0,x.count||0)),last:x.last||0};
+    }catch(_){return {started:Date.now(),count:0,last:0};}
+  }
+  function save(x){localStorage.setItem(STATE_KEY,JSON.stringify(x));}
+  function remaining(x){return Math.max(0,Math.ceil((x.last+COOLDOWN_MS-Date.now())/1000));}
+  function status(){
+    const x=state(), wait=remaining(x), ar=arabic();
+    const info=document.getElementById('mimaTadsTaskInfo');
+    const btn=document.getElementById('mimaTadsWatchBtn');
+    if(info) info.textContent=ar ? `TADS • ${x.count}/7 خلال 24 ساعة • 5 MIMA بعد التحقق` : `TADS • ${x.count}/7 in 24h • 5 MIMA after verification`;
+    if(btn){btn.disabled=busy || x.count>=MAX_VIEWS || wait>0;btn.textContent=busy?(ar?'جاري التحميل...':'Loading...'):x.count>=MAX_VIEWS?(ar?'اكتملت المهام':'Daily limit'):wait>0?`${Math.floor(wait/60)}:${String(wait%60).padStart(2,'0')}`:(ar?'شاهد إعلان':'Watch Ad');}
+  }
   const row = () => document.getElementById('mimaTadsTestTask');
   const arabic = () => String(document.documentElement.lang || '').toLowerCase().startsWith('ar');
   const isAdmin = () => {
@@ -11815,8 +11836,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const info = document.getElementById('mimaTadsTaskInfo');
     const btn = document.getElementById('mimaTadsWatchBtn');
     if(title) title.textContent = ar ? 'شاهد إعلان' : 'Watch Ad';
-    if(info) info.textContent = ar ? 'اختبار TADS • بدون مكافأة أثناء الاختبار' : 'TADS test • No reward during testing';
-    if(btn && !btn.disabled) btn.textContent = ar ? 'شاهد إعلان' : 'Watch Ad';
+    status();
   }
   let sdkPromise;
   function loadSdk(){
@@ -11835,9 +11855,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   async function watch(){
     if(!isAdmin()) return;
     const btn = document.getElementById('mimaTadsWatchBtn');
-    if(!btn || btn.disabled) return;
-    btn.disabled = true;
-    btn.textContent = arabic() ? 'جاري التحميل...' : 'Loading...';
+    const before=state();
+    if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
+    busy=true;status();
     try{
       await loadSdk();
       if(!window.tads || typeof window.tads.init !== 'function') throw new Error('TADS init unavailable');
@@ -11845,7 +11865,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         widgetId: WIDGET_ID,
         type: 'fullscreen',
         debug: true,
-        onShowReward: () => console.info('TADS test completed; no MIMA credited'),
+        onShowReward: () => {
+          const x=state();
+          if(x.count<MAX_VIEWS && remaining(x)===0){x.count++;x.last=Date.now();save(x);}
+          // Test counter only. Never credit MIMA without authenticated server confirmation.
+          status();
+        },
         onAdsNotFound: () => console.info('TADS test: no ads available')
       });
       if(!controller || typeof controller.showAd !== 'function') throw new Error('TADS showAd unavailable');
@@ -11854,7 +11879,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       console.warn('TADS admin test:',e);
       alert(arabic() ? 'الإعلان غير متاح حالياً للاختبار' : 'Test ad is currently unavailable');
     }finally{
-      btn.disabled = false;
+      busy=false;
       localize();
     }
   }
@@ -11874,13 +11899,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       if(++attempts>=20 || isAdmin()) clearInterval(retry);
     },500);
     document.getElementById('mimaTadsWatchBtn')?.addEventListener('click',watch);
+    setInterval(status,1000);
     new MutationObserver(localize).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
     // Keep this single task synchronized after MIMA's own DOM translation/render pass.
     const taskObserver = new MutationObserver(() => {
       const title = document.getElementById('mimaTadsTaskTitle');
       const btn = document.getElementById('mimaTadsWatchBtn');
       const expected = arabic() ? 'شاهد إعلان' : 'Watch Ad';
-      if((title && title.textContent !== expected) || (btn && !btn.disabled && btn.textContent !== expected)) localize();
+      if(title && title.textContent !== expected) localize();
     });
     taskObserver.observe(item,{subtree:true,childList:true,characterData:true});
   }
