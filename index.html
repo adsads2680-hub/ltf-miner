@@ -1182,13 +1182,13 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   
 
   <div class="mimaTaskList">
-  <!-- TADS public task: viewing enabled; MIMA rewards require server-side confirmation. -->
+  <!-- TADS public task: 3 MIMA per verified fullscreen view via server webhook. -->
   <div id="tads-container-12747" style="display:none" aria-hidden="true"></div>
   <div class="item mimaTaskRow" id="mimaTadsTestTask" style="display:none">
     <span class="ico">▶️</span>
     <main>
       <b id="mimaTadsTaskTitle">Watch Ad</b>
-      <small id="mimaTadsTaskInfo">TADS • 0/7 in 24h • Reward not active yet</small>
+      <small id="mimaTadsTaskInfo">TADS • 3 MIMA per verified view • 0/7 in 24h</small>
     </main>
     <div class="taskActionGroup">
       <button class="taskJoinBtn" id="mimaTadsWatchBtn" type="button">Watch Ad</button>
@@ -11815,7 +11815,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const x=state(), wait=remaining(x), ar=arabic();
     const info=document.getElementById('mimaTadsTaskInfo');
     const btn=document.getElementById('mimaTadsWatchBtn');
-    if(info) info.textContent=ar ? `TADS • ${x.count}/7 خلال 24 ساعة • المكافأة بانتظار التفعيل` : `TADS • ${x.count}/7 in 24h • Reward pending activation`;
+    if(info) info.textContent=ar ? `TADS • +3 MIMA بعد تأكيد المشاهدة • ${x.count}/7 خلال 24 ساعة` : `TADS • +3 MIMA after verified view • ${x.count}/7 in 24h`;
     if(btn){btn.disabled=busy || x.count>=MAX_VIEWS || wait>0;btn.textContent=busy?(ar?'جاري التحميل...':'Loading...'):x.count>=MAX_VIEWS?(ar?'اكتملت المهام':'Daily limit'):wait>0?`${Math.floor(wait/60)}:${String(wait%60).padStart(2,'0')}`:(ar?'شاهد إعلان':'Watch Ad');}
   }
   const row = () => document.getElementById('mimaTadsTestTask');
@@ -11855,7 +11855,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
           console.info('TADS diagnostic',{event:'reward_callback',widgetId:WIDGET_ID,adId:String(adId||''),at:new Date().toISOString()});
           const x=state();
           if(x.count<MAX_VIEWS && remaining(x)===0){x.count++;x.last=Date.now();save(x);}
-          // Test counter only. Never credit MIMA without authenticated server confirmation.
+          // On-screen progress is provisional. Only the TADS server webhook credits 3 MIMA.
           status();
         },
         onAdsNotFound: () => {
