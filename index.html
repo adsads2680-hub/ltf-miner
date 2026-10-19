@@ -1182,13 +1182,13 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   
 
   <div class="mimaTaskList">
-  <!-- TADS public task: reward requires server-side confirmation. -->
+  <!-- TADS public task: viewing enabled; MIMA rewards require server-side confirmation. -->
   <div id="tads-container-12747" style="display:none" aria-hidden="true"></div>
   <div class="item mimaTaskRow" id="mimaTadsTestTask" style="display:none">
     <span class="ico">▶️</span>
     <main>
       <b id="mimaTadsTaskTitle">Watch Ad</b>
-      <small id="mimaTadsTaskInfo">TADS • 0/7 in 24h • 5 MIMA after verification</small>
+      <small id="mimaTadsTaskInfo">TADS • 0/7 in 24h • Reward not active yet</small>
     </main>
     <div class="taskActionGroup">
       <button class="taskJoinBtn" id="mimaTadsWatchBtn" type="button">Watch Ad</button>
@@ -11794,7 +11794,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="mima-tads-admin-test">
 (function(){
   'use strict';
-  const ADMIN_ID = '1035565575';
+  // TADS task available to all users.
   const WIDGET_ID = 12747;
   const MAX_VIEWS = 7;
   const WINDOW_MS = 24*60*60*1000;
@@ -11820,18 +11820,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   const row = () => document.getElementById('mimaTadsTestTask');
   const arabic = () => String(document.documentElement.lang || '').toLowerCase().startsWith('ar');
-  const isAdmin = () => {
-    try {
-      const tg = window.Telegram && window.Telegram.WebApp;
-      if(!tg || !tg.initData) return false;
-      let id = tg.initDataUnsafe?.user?.id;
-      if(!id){
-        const raw = new URLSearchParams(tg.initData).get('user');
-        if(raw) id = JSON.parse(raw).id;
-      }
-      return String(id || '') === ADMIN_ID;
-    } catch (_) { return false; }
-  };
   function localize(){
     const ar = arabic();
     const title = document.getElementById('mimaTadsTaskTitle');
@@ -11881,7 +11869,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return controllerPromise;
   }
   async function watch(){
-    if(!isAdmin()) return;
+    
     const btn = document.getElementById('mimaTadsWatchBtn');
     const before=state();
     if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
@@ -11903,14 +11891,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const item=row();
     if(!item) return;
     const refreshVisibility = () => {
-      const allowed = isAdmin();
+      const allowed = true;
       item.style.setProperty('display', allowed ? 'flex' : 'none', 'important');
       if(allowed) localize();
     };
     refreshVisibility();
     // Load the official SDK ahead of the click so showAd is triggered by the user's gesture.
     getController().catch(e => console.warn('TADS controller preload failed:', e));
-    // Telegram initData can arrive after DOMContentLoaded. Keep visibility in sync.
+    // Keep the public task visible across app initialization.
     let attempts=0;
     const retry=setInterval(()=>{
       refreshVisibility();
