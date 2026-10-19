@@ -11855,7 +11855,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     return sdkPromise;
   }
   async function watch(){
-    if(!window.Telegram?.WebApp?.initData) return;
+    if(!isAdmin()) return;
     const btn = document.getElementById('mimaTadsWatchBtn');
     const before=state();
     if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
@@ -11894,7 +11894,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const item=row();
     if(!item) return;
     const refreshVisibility = () => {
-      const allowed = Boolean(window.Telegram?.WebApp?.initData);
+      const allowed = isAdmin();
       item.style.setProperty('display', allowed ? 'flex' : 'none', 'important');
       if(allowed) localize();
     };
