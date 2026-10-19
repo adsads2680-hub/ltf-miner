@@ -11841,6 +11841,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     status();
   }
   let sdkPromise;
+  let controllerPromise;
   function loadSdk(){
     if(window.tads && typeof window.tads.init === 'function') return Promise.resolve();
     if(sdkPromise) return sdkPromise;
@@ -11854,20 +11855,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     });
     return sdkPromise;
   }
-  async function watch(){
-    if(!isAdmin()) return;
-    const btn = document.getElementById('mimaTadsWatchBtn');
-    const before=state();
-    if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
-    busy=true;noFillReported=false;status();
-    try{
-      await loadSdk();
+  function getController(){
+    if(controllerPromise) return controllerPromise;
+    controllerPromise = loadSdk().then(()=>{
       if(!window.tads || typeof window.tads.init !== 'function') throw new Error('TADS init unavailable');
-      const controller = await window.tads.init({
+      const controller = window.tads.init({
         widgetId: WIDGET_ID,
         type: 'fullscreen',
         debug: false,
-        onShowReward: () => {
+        onShowReward: (adId) => {
+          console.info('TADS diagnostic',{event:'reward_callback',widgetId:WIDGET_ID,adId:String(adId||''),at:new Date().toISOString()});
           const x=state();
           if(x.count<MAX_VIEWS && remaining(x)===0){x.count++;x.last=Date.now();save(x);}
           // Test counter only. Never credit MIMA without authenticated server confirmation.
@@ -11879,6 +11876,18 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         }
       });
       if(!controller || typeof controller.showAd !== 'function') throw new Error('TADS showAd unavailable');
+      return controller;
+    }).catch(err=>{controllerPromise=null;throw err;});
+    return controllerPromise;
+  }
+  async function watch(){
+    if(!isAdmin()) return;
+    const btn = document.getElementById('mimaTadsWatchBtn');
+    const before=state();
+    if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
+    busy=true;noFillReported=false;status();
+    try{
+      const controller = await getController();
       await controller.showAd();
     }catch(e){
       console.warn('TADS ad launch failed:',{widgetId:WIDGET_ID,host:location.host,message:String(e?.message||e),name:e?.name||'',code:e?.code||'',noFillReported});
@@ -11900,7 +11909,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     };
     refreshVisibility();
     // Load the official SDK ahead of the click so showAd is triggered by the user's gesture.
-    loadSdk().catch(e => console.warn('TADS SDK preload failed:', e));
+    getController().catch(e => console.warn('TADS controller preload failed:', e));
     // Telegram initData can arrive after DOMContentLoaded. Keep visibility in sync.
     let attempts=0;
     const retry=setInterval(()=>{
