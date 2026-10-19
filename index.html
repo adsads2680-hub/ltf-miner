@@ -11871,13 +11871,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
           // Test counter only. Never credit MIMA without authenticated server confirmation.
           status();
         },
-        onAdsNotFound: () => console.info('TADS test: no ads available')
+        onAdsNotFound: () => console.info('TADS: no ads available')
       });
       if(!controller || typeof controller.showAd !== 'function') throw new Error('TADS showAd unavailable');
       await controller.showAd();
     }catch(e){
-      console.warn('TADS admin test:',e);
-      alert(arabic() ? 'الإعلان غير متاح حالياً للاختبار' : 'Test ad is currently unavailable');
+      console.warn('TADS ad launch failed:',e);
+      const detail = String(e?.message || '').slice(0,120);
+      alert((arabic() ? 'تعذر تشغيل إعلان TADS حالياً' : 'Unable to open TADS ad right now') + (detail ? '\n' + detail : ''));
     }finally{
       busy=false;
       localize();
