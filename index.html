@@ -11903,12 +11903,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     }catch(e){if(i)i.textContent=(ar()?'تعذر تحميل الإعلان: ':'Ad unavailable: ')+String(e?.message||e);}
     finally{loading=false;if(b)b.disabled=false;wording();}
   }
+  let wired=false;
   function start(){
-    const item=row();if(!item||!admin())return;
-    item.style.display='';
-    wording();reload()?.addEventListener('click',load);
+    const item=row();if(!item)return;
+    if(!admin()){
+      item.style.setProperty('display','none','important');
+      return;
+    }
+    item.style.setProperty('display','grid','important');
+    wording();
+    if(!wired){reload()?.addEventListener('click',load);wired=true;}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  // Telegram WebApp data and other task renderers may initialize later.
+  let retry=0;
+  const initRetry=setInterval(()=>{
+    start();
+    if(++retry>=25 || (wired && admin()))clearInterval(initRetry);
+  },400);
+  window.addEventListener('pageshow',start);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)start();});
 })();
 </script>
 </body>
