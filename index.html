@@ -3452,6 +3452,12 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   function renderAdTask(){
     const item = $('adsgramRewardTaskItem');
     if(item){
+      item.style.display = 'none';
+      const pausedBtn = $('adsgramRewardTaskBtn');
+      if(pausedBtn) pausedBtn.disabled = true;
+      return;
+    }
+    if(item){
       item.style.display = '';
       item.classList.remove('mimaAdReady');
     }
@@ -3615,6 +3621,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   }
 
   window.showAdsgramRewardAd = async function showAdsgramRewardAd(){
+    // Temporarily paused for all users; retain implementation for later reactivation.
+    return;
     if(adsgramRewardBusy) return;
 
     if(adsgramRewardNextAvailableAt && nowMs() < adsgramRewardNextAvailableAt){
