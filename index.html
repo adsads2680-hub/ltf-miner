@@ -1147,11 +1147,11 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <div class="item mimaTaskRow">
       <span class="ico">✈️</span>
       <main>
-        <b id="mimaCommunityTitle">Join Our Community</b>
-        <small id="joinChannelTaskInfo">Join the MIMA community • membership is checked periodically</small>
+        <b id="mimaCommunityTitle">Interact With the Post</b>
+        <small id="joinChannelTaskInfo">Open the post and interact with it</small>
       </main>
       <div class="taskActionGroup">
-        <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">Join</button>
+        <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">Open Post</button>
       </div>
     </div>
 
@@ -3390,9 +3390,9 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     const communityTitle=$('mimaCommunityTitle');
     const communityInfo=$('joinChannelTaskInfo');
     const communityOpen=$('joinChannelOpenBtn');
-    if(communityTitle)communityTitle.textContent=mimaTaskLabel('community');
-    if(communityInfo)communityInfo.textContent=mimaTaskLabel('communityInfo');
-    if(communityOpen)communityOpen.textContent=mimaTaskAction('Join','انضم');
+    if(communityTitle)communityTitle.textContent=tx('تفاعل مع المنشور','Interact With the Post');
+    if(communityInfo)communityInfo.textContent=tx('افتح المنشور وتفاعل معه','Open the post and interact with it');
+    if(communityOpen)communityOpen.textContent=tx('فتح المنشور','Open Post');
     renderOne('join_channel_2','joinChannel2TaskBtn','joinChannel2TaskInfo','mima_join_channel_2_opened_v2');
     const task2Title = $('joinChannel2TaskTitle');
     if(task2Title) task2Title.textContent = tx('انضم إلى قناة MIMACOIN2','Join the MIMACOIN2 channel');
@@ -4168,7 +4168,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   scheduleEntryInterstitial();
 
   async function openMimaChannel(){
-    const url = 'https://t.me/MIMA_COIN/3651';
+    const url = 'https://t.me/MIMA_COIN/3653';
 
     try{
       if(
