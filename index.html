@@ -11800,7 +11800,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const isAdmin = () => {
     try {
       const tg = window.Telegram && window.Telegram.WebApp;
-      return Boolean(tg && tg.initData && String(tg.initDataUnsafe?.user?.id || '') === ADMIN_ID);
+      if(!tg || !tg.initData) return false;
+      let id = tg.initDataUnsafe?.user?.id;
+      if(!id){
+        const raw = new URLSearchParams(tg.initData).get('user');
+        if(raw) id = JSON.parse(raw).id;
+      }
+      return String(id || '') === ADMIN_ID;
     } catch (_) { return false; }
   };
   function localize(){
@@ -11855,9 +11861,18 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function init(){
     const item=row();
     if(!item) return;
-    if(!isAdmin()){ item.remove(); return; }
-    item.style.display='';
-    localize();
+    const refreshVisibility = () => {
+      const allowed = isAdmin();
+      item.style.setProperty('display', allowed ? 'flex' : 'none', 'important');
+      if(allowed) localize();
+    };
+    refreshVisibility();
+    // Telegram initData can arrive after DOMContentLoaded. Keep visibility in sync.
+    let attempts=0;
+    const retry=setInterval(()=>{
+      refreshVisibility();
+      if(++attempts>=20 || isAdmin()) clearInterval(retry);
+    },500);
     document.getElementById('mimaTadsWatchBtn')?.addEventListener('click',watch);
     new MutationObserver(localize).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
     // Keep this single task synchronized after MIMA's own DOM translation/render pass.
