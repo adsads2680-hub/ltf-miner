@@ -1137,7 +1137,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <span class="ico" style="color:#f7c64e;font-family:Arial,sans-serif;font-size:30px;text-shadow:0 0 8px rgba(255,195,61,.32)" aria-hidden="true">▶</span>
     <main>
       <b id="mimaTadsTaskTitle">Watch Ad</b>
-      <small id="mimaTadsTaskInfo">TADS • 3 MIMA per verified view • 0/7 in 24h</small>
+      <small id="mimaTadsTaskInfo">TADS • 3 MIMA per verified view • every 5 minutes</small>
     </main>
     <div class="taskActionGroup">
       <button class="taskJoinBtn" id="mimaTadsWatchBtn" type="button">Watch Ad</button>
@@ -11728,8 +11728,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   'use strict';
   // TADS task available to all users.
   const WIDGET_ID = 12747;
-  const MAX_VIEWS = 7;
-  const WINDOW_MS = 24*60*60*1000;
   const COOLDOWN_MS = 5*60*1000;
   const STATE_KEY = 'mima_tads_public_limits_v1';
   let busy = false;
@@ -11737,9 +11735,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function state(){
     try {
       const x=JSON.parse(localStorage.getItem(STATE_KEY)||'{}');
-      if(!x.started || Date.now()-x.started>=WINDOW_MS || Date.now()<x.started) return {started:Date.now(),count:0,last:0};
-      return {started:x.started,count:Math.min(MAX_VIEWS,Math.max(0,x.count||0)),last:x.last||0};
-    }catch(_){return {started:Date.now(),count:0,last:0};}
+      return {last:Math.max(0,Number(x.last)||0)};
+    }catch(_){return {last:0};}
   }
   function save(x){localStorage.setItem(STATE_KEY,JSON.stringify(x));}
   function remaining(x){return Math.max(0,Math.ceil((x.last+COOLDOWN_MS-Date.now())/1000));}
@@ -11747,8 +11744,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const x=state(), wait=remaining(x), ar=arabic();
     const info=document.getElementById('mimaTadsTaskInfo');
     const btn=document.getElementById('mimaTadsWatchBtn');
-    if(info) info.textContent=ar ? `TADS • +3 MIMA بعد تأكيد المشاهدة • ${x.count}/7 خلال 24 ساعة` : `TADS • +3 MIMA after verified view • ${x.count}/7 in 24h`;
-    if(btn){btn.disabled=busy || x.count>=MAX_VIEWS || wait>0;btn.textContent=busy?(ar?'جاري التحميل...':'Loading...'):x.count>=MAX_VIEWS?(ar?'اكتملت المهام':'Daily limit'):wait>0?`${Math.floor(wait/60)}:${String(wait%60).padStart(2,'0')}`:(ar?'شاهد إعلان':'Watch Ad');}
+    if(info) info.textContent=ar ? 'TADS • +3 MIMA لكل مشاهدة مؤكدة • كل 5 دقائق' : 'TADS • +3 MIMA per verified ad • every 5 minutes';
+    if(btn){btn.disabled=busy || wait>0;btn.textContent=busy?(ar?'جاري التحميل...':'Loading...'):wait>0?`${Math.floor(wait/60)}:${String(wait%60).padStart(2,'0')}`:(ar?'شاهد إعلان':'Watch Ad');}
   }
   const row = () => document.getElementById('mimaTadsTestTask');
   const arabic = () => String(document.documentElement.lang || '').toLowerCase().startsWith('ar');
@@ -11786,7 +11783,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
         onShowReward: (adId) => {
           console.info('TADS diagnostic',{event:'reward_callback',widgetId:WIDGET_ID,adId:String(adId||''),at:new Date().toISOString()});
           const x=state();
-          if(x.count<MAX_VIEWS && remaining(x)===0){x.count++;x.last=Date.now();save(x);}
+          if(remaining(x)===0){x.last=Date.now();save(x);}
           // On-screen progress is provisional. Only the TADS server webhook credits 3 MIMA.
           status();
         },
@@ -11804,7 +11801,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     
     const btn = document.getElementById('mimaTadsWatchBtn');
     const before=state();
-    if(!btn || busy || before.count>=MAX_VIEWS || remaining(before)>0) return;
+    if(!btn || busy || remaining(before)>0) return;
     busy=true;noFillReported=false;status();
     try{
       const controller = await getController();
