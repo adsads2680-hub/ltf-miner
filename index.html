@@ -3270,6 +3270,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     render();
   }
 
+  let mimaLastSuccessfulStatusAt = 0;
   async function syncServerStatus(showError=false,lightweight=false){
     if(!serverMode || syncing) return;
 
@@ -3278,6 +3279,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     try{
       const data = await apiCall(lightweight ? 'status_refresh' : 'status');
       applyServerStatus(data);
+      mimaLastSuccessfulStatusAt = Date.now();
 
       if(isMimaAdmin()){
         loadAdminLiveStats().catch(()=>{});
@@ -4752,9 +4754,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       return;
     }
 
-    if(!document.hidden && serverMode){
-      syncServerStatus(false,true);
-    }
+    // Foreground status sync is handled by the single listener below.
   });
 
   window.tapMima = function tapMima(event){
@@ -5569,7 +5569,11 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     if(document.visibilityState === 'hidden'){
       flushTapBatch();
     }else if(serverMode){
-      syncServerStatus(false,true);
+      // Resume only when the last confirmed snapshot is stale.
+      // Explicit mining, task, ad-reward and withdrawal updates stay immediate.
+      if(Date.now() - mimaLastSuccessfulStatusAt >= 120000){
+        syncServerStatus(false,true);
+      }
 
       if(isMimaAdmin()){
         loadAdminLiveStats().catch(()=>{});
