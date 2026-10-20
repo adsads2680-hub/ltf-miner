@@ -5,6 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- MIMA emergency maintenance screen — remove this block to reopen public UI -->
+<style id="mima-maintenance-style">
+html.mima-maintenance-active body > :not(#mima-maintenance-screen){display:none!important}
+#mima-maintenance-screen{display:none}
+html.mima-maintenance-active #mima-maintenance-screen{display:flex!important;position:fixed;inset:0;z-index:2147483647;box-sizing:border-box;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 30%,#203342,#05080e 65%);color:#ffe8a5;font-family:Tahoma,Arial,sans-serif;text-align:center}
+#mima-maintenance-screen .mima-maintenance-card{width:min(100%,410px);border:1px solid #b58a33;border-radius:24px;padding:35px 22px;background:linear-gradient(150deg,#142332,#050a10);box-shadow:0 0 45px #bb8d2630}
+#mima-maintenance-screen .mima-maintenance-mark{font-size:60px;font-weight:900;color:#ffd25f;text-shadow:0 3px 22px #ac741b}
+#mima-maintenance-screen h1{font-size:26px;margin:12px 0;color:#ffe0a0}
+#mima-maintenance-screen p{font-size:15px;line-height:1.9;color:#d7dce1}
+#mima-maintenance-screen small{display:block;margin-top:24px;color:#91a4b3}
+</style>
+<script id="mima-maintenance-gate">
+(function(){
+  const adminId='1035565575';
+  const telegramUser=window.Telegram?.WebApp?.initDataUnsafe?.user;
+  const isAdmin=String(telegramUser?.id||'')===adminId;
+  if(!isAdmin){
+    document.documentElement.classList.add('mima-maintenance-active');
+    const mount=()=>{
+      if(document.getElementById('mima-maintenance-screen'))return;
+      const lang=String(telegramUser?.language_code||navigator.language||'en').toLowerCase();
+      const ar=lang.startsWith('ar');
+      const screen=document.createElement('div');
+      screen.id='mima-maintenance-screen';
+      screen.innerHTML='<section class="mima-maintenance-card" role="status"><div class="mima-maintenance-mark">M</div><h1>'+(ar?'MIMA قيد الصيانة':'MIMA Maintenance')+'</h1><p>'+(ar?'نجري حالياً صيانة وتحديثات لتحسين استقرار التطبيق. أرصدتكم محفوظة، يرجى المحاولة لاحقاً.':'We are performing maintenance to improve stability. Your balances remain stored. Please try again later.')+'</p><small>MIMA COIN</small></section>';
+      document.body.appendChild(screen);
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+  }
+})();
+</script>
 
 
 
