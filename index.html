@@ -5646,7 +5646,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       if(document.visibilityState === 'visible'){
         syncServerStatus(false,true);
       }
-    },900000);
+    },1800000);
   }else{
     loadPreviewState();
 
@@ -5668,7 +5668,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     if(document.visibilityState === 'visible'){
       loadPublicPayouts().catch(()=>{});
     }
-  },900000);
+  },1800000);
 
   setInterval(()=>{
     computeAccrued();
@@ -8392,7 +8392,7 @@ function init(){
  launch.addEventListener('click',event=>{if(!o.open&&!o.classList.contains('mimaOpen'))open(event)});
  wrap.style.display='flex';
  new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
- window.setInterval(()=>loadMarket(false),60000);
+ window.setInterval(()=>{if(document.visibilityState==='visible')loadMarket(false)},300000);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadMarket(false)});
  render();
 }
