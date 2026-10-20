@@ -1137,7 +1137,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <span class="ico" style="color:#f7c64e;font-family:Arial,sans-serif;font-size:30px;text-shadow:0 0 8px rgba(255,195,61,.32)" aria-hidden="true">▶</span>
     <main>
       <b id="mimaTadsTaskTitle">Watch Ad</b>
-      <small id="mimaTadsTaskInfo">TADS • 3 MIMA per verified view • every 5 minutes</small>
+      <small id="mimaTadsTaskInfo">3 MIMA per verified view • every 5 minutes</small>
     </main>
     <div class="taskActionGroup">
       <button class="taskJoinBtn" id="mimaTadsWatchBtn" type="button">Watch Ad</button>
@@ -11744,7 +11744,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const x=state(), wait=remaining(x), ar=arabic();
     const info=document.getElementById('mimaTadsTaskInfo');
     const btn=document.getElementById('mimaTadsWatchBtn');
-    if(info) info.textContent=ar ? 'TADS • +3 MIMA لكل مشاهدة مؤكدة • كل 5 دقائق' : 'TADS • +3 MIMA per verified ad • every 5 minutes';
+    if(info) info.textContent=ar ? '+3 MIMA لكل مشاهدة مؤكدة • كل 5 دقائق' : '+3 MIMA per verified ad • every 5 minutes';
     if(btn){btn.disabled=busy || wait>0;btn.textContent=busy?(ar?'جاري التحميل...':'Loading...'):wait>0?`${Math.floor(wait/60)}:${String(wait%60).padStart(2,'0')}`:(ar?'شاهد إعلان':'Watch Ad');}
   }
   const row = () => document.getElementById('mimaTadsTestTask');
