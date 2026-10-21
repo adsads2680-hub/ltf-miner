@@ -5351,6 +5351,42 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     document.body.classList.remove('withdrawHistoryModalOpen');
   }
 
+  let exchangeCooldownUntil = 0;
+  let exchangeHistoryPending = false;
+  function setExchangeCooldownFromHistory(rows){
+    const entries=Array.isArray(rows)?rows:[];
+    exchangeHistoryPending=entries.some(r=>['pending','approved'].includes(String(r.status||'').toLowerCase()));
+    exchangeCooldownUntil=entries.reduce((max,r)=>{
+      const start=Date.parse(r.approved_at||'');
+      return Number.isFinite(start)?Math.max(max,start+12*60*60*1000):max;
+    },0);
+    updateExchangeEstimate();
+  }
+  function updateExchangeCooldownButton(){
+    const button=$('exchangeConfirmBtn');
+    if(!button)return false;
+    const remaining=Math.max(0,exchangeCooldownUntil-Date.now());
+    if(remaining>0){
+      const h=Math.floor(remaining/3600000);
+      const m=Math.floor(remaining%3600000/60000);
+      const s=Math.floor(remaining%60000/1000);
+      button.textContent=tx('⏳ إرسال طلب التبادل بعد ','⏳ Request available in ')+[h,m,s].map(n=>String(n).padStart(2,'0')).join(':');
+      button.disabled=true;
+      return true;
+    }
+    if(exchangeHistoryPending){
+      button.textContent=tx('⏳ طلب السحب قيد المعالجة','⏳ Withdrawal under review');
+      button.disabled=true;
+      return true;
+    }
+    button.textContent=tx('إرسال طلب التبادل','Send exchange request');
+    return false;
+  }
+  setInterval(()=>{
+    if($('exchangePanel')?.classList.contains('show')){
+      if(!updateExchangeCooldownButton())updateExchangeEstimate();
+    }
+  },1000);
   function openExchangePanel(){
     $('wallet')?.classList.add('exchangeOpen');
     document.body.classList.add('exchangeModalOpen');
@@ -5359,6 +5395,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     renderExternalGramBalance();
     if(connectedTonWalletAddress) refreshConnectedGramBalance();
     updateExchangeEstimate();
+    if(serverMode) exchangeHistoryApiCall().then(setExchangeCooldownFromHistory).catch(()=>{});
   }
 
   function closeExchangePanel(){
@@ -5383,6 +5420,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     const confirm = $('exchangeConfirmBtn');
 
     if(!input || !estimate || !confirm) return;
+    if(updateExchangeCooldownButton())return;
 
     const amount = Math.max(0,Number(input.value || 0));
     const previewFee = referralCount >= 9 ? Number((amount*0.05).toFixed(8)) : 15;
@@ -5447,6 +5485,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     }
 
     const btn = $('exchangeConfirmBtn');
+    if(updateExchangeCooldownButton())return;
     btn.disabled = true;
     btn.textContent = tx('⏳ جاري إرسال الطلب...','⏳ Sending request…');
 
@@ -5455,6 +5494,11 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       // The server remains authoritative; this pre-check gives the user a clear message immediately.
       try{
         const existingWithdrawals = await exchangeHistoryApiCall();
+        setExchangeCooldownFromHistory(existingWithdrawals);
+        if(exchangeCooldownUntil>Date.now()){
+          toast(tx('⏳ لم تنته مهلة 12 ساعة بعد الموافقة','⏳ The 12-hour period after approval has not ended'));
+          return;
+        }
         const hasPendingWithdrawal = existingWithdrawals.some(row =>
           String(row?.status || '').toLowerCase() === 'pending'
         );
