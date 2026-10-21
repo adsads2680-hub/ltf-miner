@@ -22,7 +22,7 @@ html.mima-maintenance-active #mima-maintenance-screen{display:flex!important;pos
  document.documentElement.classList.add('mima-maintenance-active');
  const mount=()=>{
   if(document.getElementById('mima-maintenance-screen'))return;
-  const lang=String(user?.language_code||navigator.language||'en').toLowerCase();
+  const lang=String(localStorage.getItem('mima_language_manual_v1')||'en').toLowerCase();
   const arabic=lang.startsWith('ar');
   const el=document.createElement('div');
   el.id='mima-maintenance-screen';
@@ -810,7 +810,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 <!-- MIMA MAINTENANCE GATE -->
 <style>#mimaMaintenanceGate{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 25%,#30240f,#070708 70%);color:#f5d78b;font-family:Arial,sans-serif;text-align:center;padding:25px;box-sizing:border-box}#mimaMaintenanceGate section{max-width:440px;padding:36px 24px;border:1px solid #ab8237;border-radius:24px;background:#050506ed;box-shadow:0 0 45px #b8860b24}#mimaMaintenanceGate b{font-size:48px;letter-spacing:5px;color:#f5cd73}#mimaMaintenanceGate h2{font-size:23px;margin:20px 0 12px}#mimaMaintenanceGate p{line-height:1.8;color:#decfa8}</style>
 <div id="mimaMaintenanceGate" role="alert"><section><b>MIMA</b><h2 id="mimaMaintTitle">Under maintenance</h2><p id="mimaMaintText">We are improving MIMA. Your balances are safe. Thank you for your patience.</p></section></div>
-<script>(function(){const u=window.Telegram?.WebApp?.initDataUnsafe?.user;const admin=Boolean(window.Telegram?.WebApp?.initData)&&String(u?.id||'')==='1035565575';const gate=document.getElementById('mimaMaintenanceGate');if(admin){gate.remove();return}let lang='en';try{lang=localStorage.getItem('mima_language_v1')||navigator.language||'en'}catch(e){}if(lang.toLowerCase().startsWith('ar')){document.getElementById('mimaMaintTitle').textContent='MIMA قيد الصيانة';document.getElementById('mimaMaintText').textContent='نجري أعمال صيانة حالياً. أرصدتكم محفوظة. شكراً لصبركم.'}document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden'})()</script>
+<script>(function(){const u=window.Telegram?.WebApp?.initDataUnsafe?.user;const admin=Boolean(window.Telegram?.WebApp?.initData)&&String(u?.id||'')==='1035565575';const gate=document.getElementById('mimaMaintenanceGate');if(admin){gate.remove();return}let lang='en';try{lang=localStorage.getItem('mima_language_manual_v1')||'en'}catch(e){}if(lang.toLowerCase().startsWith('ar')){document.getElementById('mimaMaintTitle').textContent='MIMA قيد الصيانة';document.getElementById('mimaMaintText').textContent='نجري أعمال صيانة حالياً. أرصدتكم محفوظة. شكراً لصبركم.'}document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden'})()</script>
 <!-- END MIMA MAINTENANCE GATE -->
 
 <div id="mimaSplash" aria-label="MIMA loading screen">
@@ -1878,6 +1878,19 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   }
 
   const MIMA_UI_MISSING_PAIRS = [
+    ['تبادل MIMA إلى GRAM','Exchange MIMA to GRAM'],
+    ['رصيد MIMA القابل للتبادل','Exchangeable MIMA balance'],
+    ['رصيد GRAM في المحفظة المرتبطة','GRAM balance in connected wallet'],
+    ['كمية MIMA المراد تبديلها','MIMA amount to exchange'],
+    ['عنوان سحب GRAM','GRAM withdrawal address'],
+    ['Memo (إن توفر)','Memo (optional)'],
+    ['حد التبادل','Exchange limit'],
+    ['حد السحب','Withdrawal limit'],
+    ['الرسوم','Fee'],
+    ['الصافي بعد الرسوم','Net after fees'],
+    ['ستحصل تقريبًا على','Estimated amount to receive'],
+    ['إرسال طلب التبادل','Submit exchange request'],
+
     ['مهمة ممولة','Sponsored Task'],
     ['أكمل مهمة من AdsGram واحصل على 5 MIMA','Complete an AdsGram task and earn 5 MIMA'],
     ['تسجيل الحضور اليومي','Daily Check-in'],
