@@ -1145,14 +1145,15 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </div>
   </div>
 
-    <div class="item mimaTaskRow">
+    <div class="item mimaTaskRow" id="interactMimaPostTaskItem">
       <span class="ico">✈️</span>
       <main>
-        <b id="mimaCommunityTitle">Interact With the Post</b>
-        <small id="joinChannelTaskInfo">Open the post and interact with it</small>
+        <b id="interactMimaPostTitle">Interact With the Post</b>
+        <small id="interactMimaPostInfo">+5 MIMA • every 4 hours</small>
       </main>
       <div class="taskActionGroup">
-        <button id="joinChannelOpenBtn" class="taskJoinBtn" type="button" onclick="openMimaChannel()">Open Post</button>
+        <button id="interactMimaPostOpen" class="taskJoinBtn" type="button" onclick="openInteractMimaPost()">Open Post</button>
+        <button id="interactMimaPostClaim" type="button" onclick="claimInteractMimaPost(this)" disabled>Open post first</button>
       </div>
     </div>
 
@@ -4407,7 +4408,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     finally{renderMimaXTask()}
   }
   setInterval(()=>{if($('mimaXTaskItem'))renderMimaXTask()},1000);
-const MIMA_INTERACT_POST_URL='https://t.me/MIMA_COIN/3651';
+const MIMA_INTERACT_POST_URL='https://t.me/MIMA_COIN/3654';
 const MIMA_INTERACT_POST_KEY='mima_interact_post_open_v1';
 async function openInteractMimaPost(){
  if(serverMode){try{const r=await apiCall('open_channel_task',{task_code:'interact_mimacoin2_post'});if(r?.success!==true)throw Error('record failed')}catch(e){toast(tx('تعذر فتح المهمة، حاول مجدداً','Unable to open task, retry'));return}}
