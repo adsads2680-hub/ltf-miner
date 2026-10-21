@@ -1356,7 +1356,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <button class="exchangeClose" type="button" onclick="closeExchangePanel()">×</button>
 
     <h3>تبادل MIMA إلى GRAM</h3>
-    <p class="exchangeHint" id="exchangeRulesHint">الحد الأقصى للتبادل: 300 MIMA</p>
+    <p class="exchangeHint" id="exchangeRulesHint" style="display:none">الحد الأقصى للتبادل: 300 MIMA</p>
 
     <div class="exchangeBalanceBox">
       <small>رصيد MIMA القابل للتبادل</small>
@@ -1387,7 +1387,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
            maxlength="200">
 
     <div class="exchangeFeeBox">
-      <div><span>حد السحب</span><b id="exchangeLimitLabel">300 MIMA</b></div>
+      <div><span>حد التبادل</span><b id="exchangeLimitLabel">300 MIMA</b></div>
       <div><span>الرسوم</span><b id="exchangeFeeLabel">15 MIMA</b></div>
       <div><span>الصافي بعد الرسوم</span><b id="exchangeNetMima">0.000000 MIMA</b></div>
     </div>
@@ -1397,7 +1397,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <b id="exchangeGramEstimate">— GRAM</b>
     </div>
 
-    <div class="liveGramCard">
+    <div class="liveGramCard" style="display:none">
       <div>
         <small>سعر GRAM المباشر (prev. Toncoin)</small>
         <b id="liveGramUsd">—</b>
@@ -1405,7 +1405,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <span id="liveGramSource">CoinGecko • مباشر</span>
     </div>
 
-    <div id="exchangeRateInfo" class="exchangeRateInfo">جاري جلب سعر GRAM المباشر…</div>
+    <div id="exchangeRateInfo" class="exchangeRateInfo" style="display:none">جاري جلب سعر GRAM المباشر…</div>
 
     <button id="exchangeConfirmBtn" class="exchangeConfirmBtn" type="button"
             onclick="confirmExchange()" disabled>
