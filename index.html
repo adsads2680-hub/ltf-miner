@@ -5291,11 +5291,6 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
             </div>
           ` : ''}
 
-          ${String(row.status || '').toLowerCase() === 'pending' &&
-            Number.isSafeInteger(Number(row.id)) && Number(row.id) > 0 ? `
-            <button type="button" class="withdrawCancelBtn" data-request-id="${Number(row.id)}"
-              onclick="cancelWithdrawRequest(this)">${tx('🚫 إلغاء طلب السحب','🚫 Cancel withdrawal request')}</button>
-          ` : ''}
           <div class="withdrawDate">
             ${formatWithdrawalDate(row.created_at)}
           </div>
