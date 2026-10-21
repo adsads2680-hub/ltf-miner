@@ -89,7 +89,7 @@ box-shadow:0 10px 35px rgba(255,178,22,.28);transition:.18s}
 .start:active{transform:scale(.98)}.start.running{background:linear-gradient(100deg,#08ad73,#27e5a0);color:#03291c;box-shadow:0 10px 35px rgba(23,218,143,.2)}
 .progressWrap{position:relative;z-index:7;margin:12px 15px 0;padding:10px 12px;border-radius:14px;background:rgba(2,10,16,.82);border:1px solid #17384b}
 .progressTop{display:flex;justify-content:space-between;font-size:10px;color:#8ca7b8}.progress{height:7px;background:#07111a;border-radius:20px;overflow:hidden;margin-top:7px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f1a800,#ffe37b);border-radius:20px;transition:width .4s}
-.quick{position:relative;z-index:5;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 10px 0}.quick .q{padding:10px 5px;border-radius:13px;background:rgba(6,22,34,.9);border:1px solid #143c53;text-align:center}.q small{display:block;color:#7893a5;font-size:9px}.q b{display:block;margin-top:4px;color:#ffd35b;font-size:12px}
+.quick{position:relative;z-index:5;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 10px 0}.quick .q{padding:10px 5px;border-radius:13px;background:rgba(6,22,34,.9);border:1px solid #143c53;text-align:center}.q small{display:block;color:#7893a5;font-size:9px}.q b{display:block;margin-top:4px;color:#ffd35b;font-size:12px}
 .title{font-size:22px;margin:5px 0 8px}.sub{color:var(--muted);font-size:12px;line-height:1.7}
 .card{background:linear-gradient(145deg,rgba(9,29,44,.97),rgba(3,13,22,.98));border:1px solid var(--line);border-radius:17px;padding:15px;margin-top:12px}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}.badge{padding:5px 9px;border-radius:9px;background:#0a3447;color:#63d5ff;font-size:10px}
@@ -881,7 +881,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     </div>
     <div class="quick">
       <div class="q"><small>مستوى التعدين</small><b id="miningLevel">Lv. 1</b><span id="levelPoints" class="levelPoints">0 / 200 نقطة</span></div>
-      <div class="q" style="display:none" aria-hidden="true"><small>النقرات المتاحة</small><b id="tapProgress" dir="ltr">1000 / 1000</b></div>
+      
       <div class="q"><small>الإحالات</small><b id="homeReferralCount">0</b></div>
     </div>
 
