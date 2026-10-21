@@ -1356,7 +1356,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <button class="exchangeClose" type="button" onclick="closeExchangePanel()">×</button>
 
     <h3>تبادل MIMA إلى GRAM</h3>
-    <p class="exchangeHint">الحد الأدنى 500 MIMA • الرسوم 50 MIMA • سيتم إرسال الطلب للإدارة مع عنوان السحب.</p>
+    <p class="exchangeHint">المستخدم العادي: 300 MIMA فقط • أكثر من 30 إحالة مؤهلة: 500–3000 MIMA • طلب واحد كل 12 ساعة • الرسوم 50 MIMA</p>
 
     <div class="exchangeBalanceBox">
       <small>رصيد MIMA القابل للتبادل</small>
@@ -1370,8 +1370,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     <label class="exchangeLabel" for="exchangeMimaAmount">كمية MIMA المراد تبديلها</label>
     <div class="exchangeInputWrap">
-      <input id="exchangeMimaAmount" type="number" min="500" step="0.000001" inputmode="decimal"
-             placeholder="الحد الأدنى 500 MIMA" oninput="updateExchangeEstimate()">
+      <input id="exchangeMimaAmount" type="number" min="300" max="3000" step="0.000001" inputmode="decimal"
+             placeholder="300 MIMA أو 500–3000 لأصحاب الإحالات" oninput="updateExchangeEstimate()">
       <button type="button" onclick="setExchangeMax()">MAX</button>
     </div>
 
@@ -1387,7 +1387,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
            maxlength="200">
 
     <div class="exchangeFeeBox">
-      <div><span>الحد الأدنى</span><b>500 MIMA</b></div>
+      <div><span>حد السحب</span><b>300 أو 500–3000 MIMA</b></div>
       <div><span>الرسوم</span><b>50 MIMA</b></div>
       <div><span>الصافي بعد الرسوم</span><b id="exchangeNetMima">0.000000 MIMA</b></div>
     </div>
@@ -1510,7 +1510,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_4NQHH2wAc7MQPCxzcG8mHw_pJtX6r23';
   const MIMA_API_URL = SUPABASE_URL + '/functions/v1/mima-secure-api';
   const MIMA_EXCHANGE_REQUEST_URL = SUPABASE_URL + '/functions/v1/mima-exchange-request';
-  const EXCHANGE_MIN_MIMA = 500;
+  const EXCHANGE_MIN_MIMA = 300;
+  const EXCHANGE_MAX_MIMA = 3000;
   const EXCHANGE_FEE_MIMA = 50;
   const ADMIN_TELEGRAM_USER_ID = '1035565575';
 
@@ -5370,7 +5371,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
   function setExchangeMax(){
     const input = $('exchangeMimaAmount');
     if(!input) return;
-    input.value = exchangeableBalance > 0 ? String(exchangeableBalance) : '';
+    input.value = exchangeableBalance >= 300 ? String(Math.min(EXCHANGE_MAX_MIMA,exchangeableBalance)) : '';
     updateExchangeEstimate();
   }
 
@@ -5402,6 +5403,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
 
     confirm.disabled =
       amount < EXCHANGE_MIN_MIMA ||
+      amount > EXCHANGE_MAX_MIMA ||
       amount > exchangeableBalance ||
       walletAddress.length < 12;
   }
@@ -5421,8 +5423,8 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       return;
     }
 
-    if(amount < EXCHANGE_MIN_MIMA){
-      toast(tx('⚠️ الحد الأدنى للتبادل هو 500 MIMA','⚠️ Minimum exchange amount is 500 MIMA'));
+    if(amount < EXCHANGE_MIN_MIMA || amount > EXCHANGE_MAX_MIMA){
+      toast(tx('⚠️ العادي 300 MIMA، وأصحاب أكثر من 30 إحالة مؤهلة من 500 إلى 3000 MIMA','⚠️ Standard: 300 MIMA; over 30 qualified referrals: 500–3000 MIMA'));
       return;
     }
 
