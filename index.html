@@ -1356,7 +1356,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <button class="exchangeClose" type="button" onclick="closeExchangePanel()">×</button>
 
     <h3>تبادل MIMA إلى GRAM</h3>
-    <p class="exchangeHint">المستخدم العادي: 300 MIMA فقط • أكثر من 30 إحالة مؤهلة: 500–3000 MIMA • طلب واحد كل 12 ساعة • الرسوم 50 MIMA</p>
+    <p class="exchangeHint">المستخدم العادي: 300 MIMA فقط • أكثر من 10 إحالات مؤهلة: 500–3000 MIMA • طلب واحد كل 12 ساعة • رسوم العادي 15 MIMA، وأصحاب الإحالات 5%</p>
 
     <div class="exchangeBalanceBox">
       <small>رصيد MIMA القابل للتبادل</small>
@@ -1388,7 +1388,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     <div class="exchangeFeeBox">
       <div><span>حد السحب</span><b>300 أو 500–3000 MIMA</b></div>
-      <div><span>الرسوم</span><b>50 MIMA</b></div>
+      <div><span>الرسوم</span><b id="exchangeFeeLabel">15 MIMA أو 5%</b></div>
       <div><span>الصافي بعد الرسوم</span><b id="exchangeNetMima">0.000000 MIMA</b></div>
     </div>
 
@@ -5385,7 +5385,10 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     if(!input || !estimate || !confirm) return;
 
     const amount = Math.max(0,Number(input.value || 0));
-    const net = Math.max(0,amount - EXCHANGE_FEE_MIMA);
+    const previewFee = referralCount > 10 ? Number((amount*0.05).toFixed(8)) : 15;
+    const net = Math.max(0,amount - previewFee);
+    const feeEl = $('exchangeFeeLabel');
+    if(feeEl) feeEl.textContent = formatMima(previewFee) + ' MIMA';
     const walletAddress = String(wallet?.value || '').trim();
 
     if(netEl){
@@ -5424,7 +5427,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     }
 
     if(amount < EXCHANGE_MIN_MIMA || amount > EXCHANGE_MAX_MIMA){
-      toast(tx('⚠️ العادي 300 MIMA، وأصحاب أكثر من 30 إحالة مؤهلة من 500 إلى 3000 MIMA','⚠️ Standard: 300 MIMA; over 30 qualified referrals: 500–3000 MIMA'));
+      toast(tx('⚠️ العادي 300 MIMA، وأصحاب أكثر من 10 إحالات مؤهلة من 500 إلى 3000 MIMA','⚠️ Standard: 300 MIMA; over 10 qualified referrals: 500–3000 MIMA'));
       return;
     }
 
