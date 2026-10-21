@@ -5015,7 +5015,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
         <div class="publicPayoutItem">
           <div class="publicPayoutTop">
             <div>
-              <b>${tx('دفعة #','Payout #')}${escapeHtml(row.id)}</b>
+              <b>${tx('دفعة #','Payout #')}${escapeHtml(row.public_request_number ?? row.id)}</b>
               <small>${userLabel}</small>
             </div>
             <span>✅ ${tx('تم الدفع','Paid')}</span>
@@ -5492,8 +5492,8 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
 
       toast(
         tx('✅ تم إرسال الطلب #','✅ Request #') +
-        String(data.request_id || '') +
-        tx(' • الرسوم 50 MIMA',' sent • fee 50 MIMA')
+        String(data.public_request_number ?? data.request_id ?? '') +
+        tx(' • تم تسجيل الطلب',' registered successfully')
       );
 
       // Natural break: the exchange request is already completed.
