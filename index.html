@@ -1356,7 +1356,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <button class="exchangeClose" type="button" onclick="closeExchangePanel()">×</button>
 
     <h3>تبادل MIMA إلى GRAM</h3>
-    <p class="exchangeHint">المستخدم العادي: 300 MIMA فقط • 9 إحالات نشطة مؤهلة أو أكثر: 500–3000 MIMA • طلب واحد كل 12 ساعة • رسوم العادي 15 MIMA، وأصحاب الإحالات 5%</p>
+    <p class="exchangeHint" id="exchangeRulesHint">الحد الأقصى للتبادل: 300 MIMA</p>
 
     <div class="exchangeBalanceBox">
       <small>رصيد MIMA القابل للتبادل</small>
@@ -1370,8 +1370,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     <label class="exchangeLabel" for="exchangeMimaAmount">كمية MIMA المراد تبديلها</label>
     <div class="exchangeInputWrap">
-      <input id="exchangeMimaAmount" type="number" min="300" max="3000" step="0.000001" inputmode="decimal"
-             placeholder="300 MIMA أو 500–3000 لأصحاب الإحالات" oninput="updateExchangeEstimate()">
+      <input id="exchangeMimaAmount" type="number" min="300" max="300" step="0.000001" inputmode="decimal"
+             placeholder="300 MIMA" oninput="updateExchangeEstimate()">
       <button type="button" onclick="setExchangeMax()">MAX</button>
     </div>
 
@@ -1387,8 +1387,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
            maxlength="200">
 
     <div class="exchangeFeeBox">
-      <div><span>حد السحب</span><b>300 أو 500–3000 MIMA</b></div>
-      <div><span>الرسوم</span><b id="exchangeFeeLabel">15 MIMA أو 5%</b></div>
+      <div><span>حد السحب</span><b id="exchangeLimitLabel">300 MIMA</b></div>
+      <div><span>الرسوم</span><b id="exchangeFeeLabel">15 MIMA</b></div>
       <div><span>الصافي بعد الرسوم</span><b id="exchangeNetMima">0.000000 MIMA</b></div>
     </div>
 
@@ -5403,7 +5403,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
   function setExchangeMax(){
     const input = $('exchangeMimaAmount');
     if(!input) return;
-    input.value = exchangeableBalance >= 300 ? String(Math.min(EXCHANGE_MAX_MIMA,exchangeableBalance)) : '';
+    input.value = exchangeableBalance >= 300 ? String(Math.min(referralCount >= 9 ? EXCHANGE_MAX_MIMA : 300, exchangeableBalance)) : '';
     updateExchangeEstimate();
   }
 
@@ -5418,7 +5418,17 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     if(updateExchangeCooldownButton())return;
 
     const amount = Math.max(0,Number(input.value || 0));
-    const previewFee = referralCount >= 9 ? Number((amount*0.05).toFixed(8)) : 15;
+    const qualified = referralCount >= 9;
+    const maxAllowed = qualified ? EXCHANGE_MAX_MIMA : 300;
+    const minAllowed = qualified ? 500 : 300;
+    input.min = String(minAllowed);
+    input.max = String(maxAllowed);
+    input.placeholder = qualified ? '500–3000 MIMA' : '300 MIMA';
+    const limitEl = $('exchangeLimitLabel');
+    if(limitEl) limitEl.textContent = qualified ? '500–3000 MIMA' : '300 MIMA';
+    const hintEl = $('exchangeRulesHint');
+    if(hintEl) hintEl.textContent = qualified ? '9+ qualified referrals • 500–3000 MIMA' : 'الحد الأقصى للتبادل: 300 MIMA';
+    const previewFee = qualified ? Number((amount*0.05).toFixed(8)) : 15;
     const net = Math.max(0,amount - previewFee);
     const feeEl = $('exchangeFeeLabel');
     if(feeEl) feeEl.textContent = formatMima(previewFee) + ' MIMA';
@@ -5438,8 +5448,8 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     estimate.textContent = formatMima(gram) + ' GRAM';
 
     confirm.disabled =
-      amount < EXCHANGE_MIN_MIMA ||
-      amount > EXCHANGE_MAX_MIMA ||
+      amount < minAllowed ||
+      amount > maxAllowed ||
       amount > exchangeableBalance ||
       walletAddress.length < 12;
   }
@@ -5459,7 +5469,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       return;
     }
 
-    if(amount < EXCHANGE_MIN_MIMA || amount > EXCHANGE_MAX_MIMA){
+    if(amount < (referralCount >= 9 ? 500 : 300) || amount > (referralCount >= 9 ? EXCHANGE_MAX_MIMA : 300)){
       toast(tx('⚠️ العادي 300 MIMA، وأصحاب 9 إحالات نشطة مؤهلة أو أكثر من 500 إلى 3000 MIMA','⚠️ Standard: 300 MIMA; 9 or more active qualified referrals: 500–3000 MIMA'));
       return;
     }
