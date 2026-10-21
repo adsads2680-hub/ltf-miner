@@ -1356,7 +1356,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <button class="exchangeClose" type="button" onclick="closeExchangePanel()">×</button>
 
     <h3>تبادل MIMA إلى GRAM</h3>
-    <p class="exchangeHint">المستخدم العادي: 300 MIMA فقط • أكثر من 10 إحالات مؤهلة: 500–3000 MIMA • طلب واحد كل 12 ساعة • رسوم العادي 15 MIMA، وأصحاب الإحالات 5%</p>
+    <p class="exchangeHint">المستخدم العادي: 300 MIMA فقط • 9 إحالات نشطة مؤهلة أو أكثر: 500–3000 MIMA • طلب واحد كل 12 ساعة • رسوم العادي 15 MIMA، وأصحاب الإحالات 5%</p>
 
     <div class="exchangeBalanceBox">
       <small>رصيد MIMA القابل للتبادل</small>
@@ -5385,7 +5385,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     if(!input || !estimate || !confirm) return;
 
     const amount = Math.max(0,Number(input.value || 0));
-    const previewFee = referralCount > 10 ? Number((amount*0.05).toFixed(8)) : 15;
+    const previewFee = referralCount >= 9 ? Number((amount*0.05).toFixed(8)) : 15;
     const net = Math.max(0,amount - previewFee);
     const feeEl = $('exchangeFeeLabel');
     if(feeEl) feeEl.textContent = formatMima(previewFee) + ' MIMA';
@@ -5427,7 +5427,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     }
 
     if(amount < EXCHANGE_MIN_MIMA || amount > EXCHANGE_MAX_MIMA){
-      toast(tx('⚠️ العادي 300 MIMA، وأصحاب أكثر من 10 إحالات مؤهلة من 500 إلى 3000 MIMA','⚠️ Standard: 300 MIMA; over 10 qualified referrals: 500–3000 MIMA'));
+      toast(tx('⚠️ العادي 300 MIMA، وأصحاب 9 إحالات نشطة مؤهلة أو أكثر من 500 إلى 3000 MIMA','⚠️ Standard: 300 MIMA; 9 or more active qualified referrals: 500–3000 MIMA'));
       return;
     }
 
