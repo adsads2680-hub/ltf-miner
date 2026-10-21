@@ -5,6 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style id="mima-maintenance-style">
+html.mima-maintenance-active body > :not(#mima-maintenance-screen){display:none!important}
+#mima-maintenance-screen{display:none}
+html.mima-maintenance-active #mima-maintenance-screen{display:flex!important;position:fixed;inset:0;z-index:2147483647;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 28%,#253447,#02060c 70%);color:#fbe0a6;text-align:center;font-family:Tahoma,Arial,sans-serif}
+#mima-maintenance-screen .maintenance-card{width:min(100%,410px);padding:34px 22px;border-radius:23px;border:1px solid #b89135;background:linear-gradient(145deg,#152332,#05090f);box-shadow:0 0 45px #c1952830}
+#mima-maintenance-screen h1{font-size:26px;color:#ffda80;margin:12px 0}
+#mima-maintenance-screen p{font-size:15px;line-height:1.9;color:#d1dce5}
+#mima-maintenance-screen .mark{font-weight:900;font-size:64px;color:#ffcc54}
+</style>
+<script id="mima-maintenance-gate">
+(function(){
+ const adminId='1035565575';
+ const user=window.Telegram?.WebApp?.initDataUnsafe?.user;
+ if(String(user?.id||'')===adminId)return;
+ document.documentElement.classList.add('mima-maintenance-active');
+ const mount=()=>{
+  if(document.getElementById('mima-maintenance-screen'))return;
+  const lang=String(user?.language_code||navigator.language||'en').toLowerCase();
+  const arabic=lang.startsWith('ar');
+  const el=document.createElement('div');
+  el.id='mima-maintenance-screen';
+  el.innerHTML='<section class="maintenance-card" role="status"><div class="mark">M</div><h1>'+(arabic?'MIMA قيد الصيانة':'MIMA Maintenance')+'</h1><p>'+(arabic?'نجري حالياً صيانة لتحسين استقرار التطبيق. أرصدتكم محفوظة، يرجى المحاولة لاحقاً.':'We are performing maintenance to improve stability. Your balances remain stored. Please try again later.')+'</p><small>MIMA COIN</small></section>';
+  document.body.appendChild(el);
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+</script>
 
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
