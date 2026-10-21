@@ -1197,7 +1197,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     <div class="item mimaTaskRow" id="lootvaultPartnerTaskItem">
       <span class="ico">🤝</span>
-      <main><b id="lootvaultPartnerTitle">Join Our Partners</b><small id="lootvaultPartnerInfo">+5 MIMA • every 12 hours</small></main>
+      <main><b id="lootvaultPartnerTitle">Free NFT for Everyone</b><small id="lootvaultPartnerInfo">+5 MIMA • every 12 hours</small></main>
       <div class="taskActionGroup">
         <button id="lootvaultPartnerOpen" class="taskJoinBtn" type="button" onclick="openLootvaultPartner()">Join</button>
         <button id="lootvaultPartnerClaim" type="button" onclick="claimLootvaultPartner(this)" disabled>Claim</button>
@@ -4567,15 +4567,30 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
   // Retired partner task: intentionally no polling, timers or claims.
 
 
+  // Task label follows the user's selected MIMA language; reward logic remains unchanged.
+  function mimaFreeNftTitle(){
+    const names={
+      en:'Free NFT for Everyone', ar:'NFT مجاناً للجميع',
+      ru:'Бесплатный NFT для всех', fa:'NFT رایگان برای همه',
+      hi:'सभी के लिए मुफ्त NFT', id:'NFT Gratis untuk Semua',
+      fr:'NFT gratuit pour tous', zh:'人人免费领取 NFT',
+      de:'Kostenloses NFT für alle', es:'NFT gratis para todos',
+      bn:'সবার জন্য বিনামূল্যে NFT', tr:'Herkese Ücretsiz NFT',
+      pt:'NFT grátis para todos', uz:'Hamma uchun bepul NFT',
+      ur:'سب کے لیے مفت NFT'
+    };
+    return names[currentLang]||names.en;
+  }
+
   // LootVault partner mission; rewards and 12h cooldown are enforced by claim_mima_task.
-  const LOOTVAULT_LINK='https://t.me/LootVaultDexBot?start=ref_1035565575';
+  const LOOTVAULT_LINK='https://telegram.me/epic_gift_bot/app?startapp=ref_OP6lDg';
   const LOOTVAULT_OPEN_KEY='mima_lootvault_opened_v1';
   const LOOTVAULT_NEXT_KEY='mima_lootvault_next_v1';
   let lootvaultNextAt=Number(localStorage.getItem(LOOTVAULT_NEXT_KEY)||0);
   function renderLootvaultPartner(){
     const title=$('lootvaultPartnerTitle'),info=$('lootvaultPartnerInfo'),open=$('lootvaultPartnerOpen'),claim=$('lootvaultPartnerClaim');
     if(!title||!info||!open||!claim)return;
-    title.textContent=tx('انضم إلى شركائنا','Join Our Partners');
+    title.textContent=mimaFreeNftTitle();
     open.textContent=tx('انضم','Join');
     const remaining=Math.max(0,lootvaultNextAt-Date.now());
     const opened=Number(localStorage.getItem(LOOTVAULT_OPEN_KEY)||0);
@@ -4602,7 +4617,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       localStorage.removeItem(LOOTVAULT_OPEN_KEY);
       bal=Math.max(0,Number(data.balance??bal));
       exchangeableBalance=Math.max(0,Number(data.exchangeable_balance??exchangeableBalance));
-      showMimaTaskSuccess('انضم إلى شركائنا','Join Our Partners',data.reward);
+      showMimaTaskSuccess('NFT مجاناً للجميع','Free NFT for Everyone',data.reward);
       render();
     }catch(err){toast(localizeServerMessage(err?.message)||tx('تعذر استلام المكافأة','Could not claim reward'));}
     finally{renderLootvaultPartner();}
