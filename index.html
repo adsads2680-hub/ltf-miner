@@ -1501,6 +1501,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
   let referralCode = '';
   let referralCount = 0;
+  let withdrawalReferralEligible = false;
   let referralPoints = 0;
   let referralBonusTotal = 0;
 
@@ -3229,6 +3230,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
     referralCode = String(data.referral_code || referralCode || '');
     referralCount = Math.max(0,Number(data.referral_count || 0));
+    withdrawalReferralEligible = data.withdrawal_referral_eligible === true;
     referralPoints = Math.max(0,Number(data.referral_signup_reward_total || 0));
     referralBonusTotal = Math.max(0,Number(data.referral_mining_bonus_total || 0));
 
@@ -5299,7 +5301,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
   function setExchangeMax(){
     const input = $('exchangeMimaAmount');
     if(!input) return;
-    input.value = exchangeableBalance >= 300 ? String(Math.min(referralCount >= 9 ? EXCHANGE_MAX_MIMA : 300, exchangeableBalance)) : '';
+    input.value = exchangeableBalance >= 300 ? String(Math.min(withdrawalReferralEligible ? EXCHANGE_MAX_MIMA : 300, exchangeableBalance)) : '';
     updateExchangeEstimate();
   }
 
@@ -5314,7 +5316,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     if(updateExchangeCooldownButton())return;
 
     const amount = Math.max(0,Number(input.value || 0));
-    const qualified = referralCount >= 9;
+    const qualified = withdrawalReferralEligible;
     const maxAllowed = qualified ? EXCHANGE_MAX_MIMA : 300;
     const minAllowed = qualified ? 500 : 300;
     input.min = String(minAllowed);
@@ -5365,7 +5367,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       return;
     }
 
-    if(amount < (referralCount >= 9 ? 500 : 300) || amount > (referralCount >= 9 ? EXCHANGE_MAX_MIMA : 300)){
+    if(amount < (withdrawalReferralEligible ? 500 : 300) || amount > (withdrawalReferralEligible ? EXCHANGE_MAX_MIMA : 300)){
       toast(tx('⚠️ العادي 300 MIMA، وأصحاب 9 إحالات نشطة مؤهلة أو أكثر من 500 إلى 3000 MIMA','⚠️ Standard: 300 MIMA; 9 or more active qualified referrals: 500–3000 MIMA'));
       return;
     }
