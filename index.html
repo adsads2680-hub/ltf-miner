@@ -4388,7 +4388,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     finally{renderMimaXTask()}
   }
   setInterval(()=>{if($('mimaXTaskItem'))renderMimaXTask()},1000);
-const MIMA_INTERACT_POST_URL='https://t.me/MIMA_COIN/3655';
+const MIMA_INTERACT_POST_URL='https://t.me/MIMA_COIN/3657';
 const MIMA_INTERACT_POST_KEY='mima_interact_post_open_v1';
 async function openInteractMimaPost(){
  if(serverMode){try{const r=await apiCall('open_channel_task',{task_code:'interact_mimacoin2_post'});if(r?.success!==true)throw Error('record failed')}catch(e){toast(tx('تعذر فتح المهمة، حاول مجدداً','Unable to open task, retry'));return}}
