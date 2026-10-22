@@ -5301,7 +5301,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
   function setExchangeMax(){
     const input = $('exchangeMimaAmount');
     if(!input) return;
-    input.value = exchangeableBalance >= 300 ? String(withdrawalReferralEligible && exchangeableBalance >= 500 ? Math.min(EXCHANGE_MAX_MIMA, exchangeableBalance) : 300) : '';
+    input.value = exchangeableBalance >= 300 ? String(withdrawalReferralEligible && exchangeableBalance > 300 ? Math.min(EXCHANGE_MAX_MIMA, exchangeableBalance) : 300) : '';
     updateExchangeEstimate();
   }
 
@@ -5326,7 +5326,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     if(limitEl) limitEl.parentElement.style.display = 'none';
     const hintEl = $('exchangeRulesHint');
     if(hintEl) hintEl.style.display = 'none';
-    const previewFee = qualified && amount >= 500 ? Number((amount*0.05).toFixed(8)) : 15;
+    const previewFee = qualified && amount > 300 ? Number((amount*0.05).toFixed(8)) : 15;
     const net = Math.max(0,amount - previewFee);
     const feeEl = $('exchangeFeeLabel');
     if(feeEl) feeEl.textContent = formatMima(previewFee) + ' MIMA';
@@ -5346,7 +5346,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
     estimate.textContent = formatMima(gram) + ' GRAM';
 
     confirm.disabled =
-      (amount !== 300 && (!qualified || amount < 500)) ||
+      (amount !== 300 && !qualified) ||
       amount > maxAllowed ||
       amount > exchangeableBalance ||
       walletAddress.length < 12;
@@ -5367,7 +5367,7 @@ setInterval(()=>{if($('interactMimaPostTaskItem'))renderInteractPostTask()},1000
       return;
     }
 
-    if((amount !== 300 && (!withdrawalReferralEligible || amount < 500)) || amount > (withdrawalReferralEligible ? EXCHANGE_MAX_MIMA : 300)){
+    if((amount !== 300 && !withdrawalReferralEligible) || amount > (withdrawalReferralEligible ? EXCHANGE_MAX_MIMA : 300)){
       toast(tx('⚠️ مبلغ السحب غير متاح','⚠️ Withdrawal amount is not available'));
       return;
     }
