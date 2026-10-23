@@ -11015,6 +11015,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   let lastKnownRewardId=0;
   let baselineReady=false;
   let pendingReward=null;
+  let cooldownUntil=0;
+  let taskCountdownTimer=null;
 
   function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en;}catch(_){return en;}}
   function element(id){return document.getElementById(id);}
@@ -11046,6 +11048,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!card||!task||!row)return;
     card.style.display='';
     if(value)value.textContent='';
+    const waitSeconds=Math.max(0,Math.ceil((cooldownUntil-Date.now())/1000));
     if(dailyLimitReached){
       task.style.setProperty('display','none','important');
       row.style.setProperty('display','flex','important');
@@ -11053,6 +11056,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       const label=element('mimaAdsgramTaskCooldownLabel');
       if(label)label.textContent=tr('الحد اليومي للمكافآت','Daily reward limit');
       showMessage('بلغت حد 10 مكافآت خلال 24 ساعة','Daily limit: 10 rewards in 24 hours');
+      return;
+    }
+    if(waitSeconds>0){
+      task.style.setProperty('display','none','important');
+      row.style.setProperty('display','flex','important');
+      if(notice)notice.style.display='none';
+      if(value)value.textContent=String(Math.floor(waitSeconds/60)).padStart(2,'0')+':'+String(waitSeconds%60).padStart(2,'0');
+      const label=element('mimaAdsgramTaskCooldownLabel');
+      if(label)label.textContent=tr('المهمة التالية بعد انتهاء الانتظار','Next task after cooldown');
+      showMessage('انتظر 5 دقائق بعد المكافأة','Wait 5 minutes after reward');
       return;
     }
     row.style.setProperty('display','none','important');
@@ -11077,6 +11090,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function recordStatus(data,initialize){
     if(!data||data.success!==true)return false;
     dailyLimitReached=data.limit_reached===true;
+    const next=Date.parse(data.next_available_at||'');
+    cooldownUntil=Number.isFinite(next)&&next>Date.now()?next:0;
     // Remember a previous confirmed transaction without treating it as a new reward.
     if(initialize&&!pendingReward){
       lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
@@ -11102,6 +11117,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     pendingReward=null;
     verificationState='idle';
     adAvailable=true;
+    // The next server status contains the authoritative five-minute cutoff.
     window.mimaAdDiag?.('task','reward_confirmed');
     try{
       if(typeof window.showMimaTaskSuccess==='function')
@@ -11151,6 +11167,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     try{localStorage.removeItem('mima_adsgram_task_cooldown_until_v1');}catch(_){}
     render();
     syncStatus(true);
+    if(!taskCountdownTimer)taskCountdownTimer=window.setInterval(()=>{if(cooldownUntil>Date.now())render();else if(cooldownUntil){cooldownUntil=0;render();syncStatus(false);}},1000);
     bindTaskEvents(task);
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible')syncStatus(false);
@@ -11161,7 +11178,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
       const slots=path.map(el=>el&&typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
       if(slots.includes('button'))window.mimaAdDiag?.('task','request');
-      if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached){
+      if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached&&cooldownUntil<=Date.now()){
         verificationState='started';
         render();
       }
