@@ -4184,8 +4184,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
   }
 
-  // Show one AdsGram interstitial shortly after MIMA opens.
-  scheduleEntryInterstitial();
+  // Entry interstitial disabled: ads are attempted after successful mining collection only.
+  // Do not invoke scheduleEntryInterstitial on app launch.
 
   async function openMimaChannel(){
     const url = 'https://t.me/MIMA_COIN/3655';
