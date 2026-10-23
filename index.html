@@ -3591,7 +3591,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     if(adsgramController) return adsgramController;
     if(!window.Adsgram || typeof window.Adsgram.init !== 'function') return null;
 
-    adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+    try{adsgramController = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });}catch(_){adsgramController=null;return null;}
 
     if(
       adsgramController &&
@@ -3601,8 +3601,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       adsgramController.addEventListener('onStart',log('on_start'));
       adsgramController.addEventListener('onReward',log('on_reward'));
       adsgramController.addEventListener('onSkip',log('on_skip'));
-      adsgramController.addEventListener('onError',log('sdk_error'));
-      adsgramController.addEventListener('onBannerNotFound',log('no_fill'));
+      adsgramController.addEventListener('onError',()=>{log('sdk_error')();adsgramController=null;});
+      adsgramController.addEventListener('onBannerNotFound',()=>{log('no_fill')();adsgramController=null;});
       adsgramController.addEventListener('onNonStopShow',log('nonstop'));
       adsgramController.addEventListener('onTooLongSession',log('too_long'));
     }
@@ -3687,6 +3687,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }catch(err){
       const desc = String(err?.description || err?.message || '');
       window.mimaAdDiag?.('rewarded',/no ads|no banner|banner not found/i.test(desc)?'no_fill':'show_rejected');
+      // Recreate the SDK controller on the next user click; never auto-play or auto-reward.
+      adsgramController=null;
 
       // No-ad / no-fill cases should stay completely silent.
       if(!/no ads|no banner|banner not found|not found|non.?stop|too long session/i.test(desc)){
@@ -11126,6 +11128,21 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     window.mimaAdDiag?.('task',type);
     adAvailable=false;
     if(verificationState==='idle')render();
+    // Recreate AdsGram's native task after a no-fill/error, without automatic clicks.
+    // Keep the existing server confirmation gate and user-initiated reward flow.
+    if(type==='no_fill'||type==='sdk_error'||type==='too_long'){
+      window.setTimeout(()=>{
+        if(dailyLimitReached||verifyingReward||pendingReward)return;
+        const old=element('mimaAdsgramTaskUnit');
+        if(!old||!old.parentNode)return;
+        const fresh=old.cloneNode(true);
+        old.replaceWith(fresh);
+        adAvailable=true;
+        verificationState='idle';
+        bindTaskEvents(fresh);
+        render();
+      },5000);
+    }
   }
   function init(){
     const task=element('mimaAdsgramTaskUnit');
@@ -11134,6 +11151,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     try{localStorage.removeItem('mima_adsgram_task_cooldown_until_v1');}catch(_){}
     render();
     syncStatus(true);
+    bindTaskEvents(task);
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible')syncStatus(false);
+    });
+  }
+  function bindTaskEvents(task){
     task.addEventListener('click',(event)=>{
       const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
       const slots=path.map(el=>el&&typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
@@ -11167,9 +11190,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     task.addEventListener('onBannerNotFound',()=>unavailable('no_fill'));
     task.addEventListener('onError',()=>unavailable('sdk_error'));
     task.addEventListener('onTooLongSession',()=>unavailable('too_long'));
-    document.addEventListener('visibilitychange',()=>{
-      if(document.visibilityState==='visible')syncStatus(false);
-    });
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
