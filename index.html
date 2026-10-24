@@ -2409,7 +2409,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       headers:{
         'Content-Type':'application/json',
         'apikey':SUPABASE_PUBLISHABLE_KEY,
-        'x-telegram-init-data':telegramInitData
+        'x-telegram-init-data':telegramInitData,
+        'x-mima-verified-session':sessionStorage.getItem('mima_verified_session_v1')||''
       },
       body:JSON.stringify({action,...extra,selected_language:currentLang})
     });
@@ -7681,7 +7682,7 @@ body.privacyModalOpen{overflow:hidden!important}
       if(!initData)throw Error('Please open MIMA from Telegram.');
       var response=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json','x-telegram-init-data':initData},body:JSON.stringify({action:'turnstile_verify',turnstile_token:token}),signal:AbortSignal.timeout(15000)});
       var result=await response.json();
-      if(response.ok&&result&&result.verified===true){pending=false;finish();}
+      if(response.ok&&result&&result.verified===true&&result.session_token){try{sessionStorage.setItem('mima_verified_session_v1',result.session_token);}catch(e){}pending=false;finish();}
       else failed('Verification failed. Please retry.');
     }catch(e){failed(e&&e.message==='Please open MIMA from Telegram.'?e.message:'Connection problem. Please retry.');}
   }
