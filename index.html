@@ -7648,7 +7648,8 @@ body.privacyModalOpen{overflow:hidden!important}
 
 
 <style id="mima-entry-turnstile-style">
-#mimaEntryCaptcha{position:absolute;left:50%;top:73.8%;transform:translateX(-50%);z-index:2;width:min(340px,94vw);padding:7px 10px 9px;border-radius:14px;background:rgba(7,11,34,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-sizing:border-box}
+#mimaSplash::before{content:'';position:absolute;left:0;right:0;top:72%;bottom:0;background:linear-gradient(180deg,rgba(7,11,34,.96),#070b22 50%);z-index:1;pointer-events:none}
+#mimaEntryCaptcha{position:absolute;left:50%;top:75%;transform:translateX(-50%);z-index:2;width:min(340px,94vw);padding:12px 10px 13px;border-radius:14px;background:#070b22;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;box-sizing:border-box}
 #mimaEntryTurnstile{min-height:65px;display:flex;align-items:center;justify-content:center}
 #mimaEntryCaptchaStatus{font:500 11px/1.35 system-ui,sans-serif;color:#f0d88d;text-align:center;margin:0}
 #mimaEntryCaptchaRetry{background:#e2b648;color:#100d0b;border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer}
@@ -7689,7 +7690,7 @@ body.privacyModalOpen{overflow:hidden!important}
   function mount(){
     if(!window.turnstile){failed('Security check unavailable. Please retry.');return;}
     if(widgetId!==null)return;
-    try{widgetId=window.turnstile.render(widget,{sitekey:sitekey,theme:'light',size:'normal',callback:check,'error-callback':function(){failed('Security check unavailable. Please retry.');},'expired-callback':function(){failed('Verification expired. Please retry.');}});}
+    try{widgetId=window.turnstile.render(widget,{sitekey:sitekey,theme:'light',language:'en',size:'normal',callback:check,'error-callback':function(){failed('Security check unavailable. Please retry.');},'expired-callback':function(){failed('Verification expired. Please retry.');}});}
     catch(e){failed('Security check could not load. Please retry.');}
   }
   window.mimaTurnstileLoaded=mount;
