@@ -11054,6 +11054,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   let pendingReward=null;
   let cooldownUntil=0;
   let taskCountdownTimer=null;
+  let adRetryTimer=null;
 
   function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en;}catch(_){return en;}}
   function element(id){return document.getElementById(id);}
@@ -11152,6 +11153,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!pendingReward||!completedFromServer(data,pendingReward))return false;
     lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
     pendingReward=null;
+    if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}
     verificationState='idle';
     adAvailable=true;
     // The next server status contains the authoritative five-minute cutoff.
@@ -11184,17 +11186,18 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     // Recreate AdsGram's native task after a no-fill/error, without automatic clicks.
     // Keep the existing server confirmation gate and user-initiated reward flow.
     if(type==='no_fill'||type==='sdk_error'||type==='too_long'){
-      window.setTimeout(()=>{
-        if(dailyLimitReached||verifyingReward||pendingReward)return;
+      // Retry the AdsGram SDK locally every 3 seconds while no ad is available.
+      // Do not poll Supabase or auto-click/watch/claim advertiser tasks.
+      if(adRetryTimer===null)adRetryTimer=window.setInterval(()=>{
+        if(document.visibilityState==='hidden'||dailyLimitReached||verifyingReward||pendingReward||cooldownUntil>Date.now())return;
         const old=element('mimaAdsgramTaskUnit');
         if(!old||!old.parentNode)return;
         const fresh=old.cloneNode(true);
         old.replaceWith(fresh);
-        adAvailable=true;
         verificationState='idle';
         bindTaskEvents(fresh);
         render();
-      },5000);
+      },3000);
     }
   }
   function init(){
@@ -11214,7 +11217,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     task.addEventListener('click',(event)=>{
       const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
       const slots=path.map(el=>el&&typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
-      if(slots.includes('button'))window.mimaAdDiag?.('task','request');
+      if(slots.includes('button')){if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}adAvailable=true;window.mimaAdDiag?.('task','request');}
       if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached&&cooldownUntil<=Date.now()){
         verificationState='started';
         render();
