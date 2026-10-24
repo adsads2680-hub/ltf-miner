@@ -11126,6 +11126,36 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   let cooldownUntil=0;
   let taskCountdownTimer=null;
   let adRetryTimer=null;
+  let sponsoredVisitPending=false;
+  let sponsoredLastAutoCheck=0;
+  let sponsoredReturnCheckTimer=null;
+  function autoCheckSponsoredReturn(){
+    if(!sponsoredVisitPending||document.visibilityState==='hidden'||dailyLimitReached)return;
+    if(Date.now()-sponsoredLastAutoCheck<4000)return;
+    sponsoredLastAutoCheck=Date.now();
+    // The AdsGram component owns the completion/claim transition.
+    // Only invoke its claim action after a user-initiated advertiser visit.
+    const task=element('mimaAdsgramTaskUnit');
+    const claim=task?.querySelector('[slot="claim"]');
+    const activeSlot=claim?.assignedSlot;
+    const visibleClaim=!!(activeSlot && activeSlot.getClientRects().length && getComputedStyle(activeSlot).display!=='none');
+    if(visibleClaim){
+      try{claim.click();}catch(_){}
+    }
+    syncStatus(false);
+    if(sponsoredReturnCheckTimer!==null)clearTimeout(sponsoredReturnCheckTimer);
+    let checks=0;
+    sponsoredReturnCheckTimer=window.setInterval(()=>{
+      if(document.visibilityState==='hidden'||!sponsoredVisitPending||checks++>=9){clearInterval(sponsoredReturnCheckTimer);sponsoredReturnCheckTimer=null;return;}
+      const current=element('mimaAdsgramTaskUnit')?.querySelector('[slot="claim"]');
+      const slot=current?.assignedSlot;
+      if(slot&&slot.getClientRects().length&&getComputedStyle(slot).display!=='none'){
+        try{current.click();}catch(_){}
+      }
+      syncStatus(false);
+    },3000);
+  }
+
 
   function tr(ar,en){try{return typeof tx==='function'?tx(ar,en):en;}catch(_){return en;}}
   function element(id){return document.getElementById(id);}
@@ -11140,7 +11170,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!task)return;
     const slots=[
       ['button','ابدأ','Start'],
-      ['claim','تحقق من الإكمال','Verify completion'],
+      ['claim','جارٍ التحقق تلقائياً','Checking automatically'],
       ['done','بانتظار التأكيد','Awaiting confirmation']
     ];
     slots.forEach(([key,ar,en])=>{
@@ -11224,6 +11254,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!pendingReward||!completedFromServer(data,pendingReward))return false;
     lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
     pendingReward=null;
+    sponsoredVisitPending=false;
+    if(sponsoredReturnCheckTimer!==null){clearInterval(sponsoredReturnCheckTimer);sponsoredReturnCheckTimer=null;}
     if(adRetryTimer!==null){clearTimeout(adRetryTimer);adRetryTimer=null;}
     verificationState='idle';
     adAvailable=true;
@@ -11282,14 +11314,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!taskCountdownTimer)taskCountdownTimer=window.setInterval(()=>{if(cooldownUntil>Date.now())render();else if(cooldownUntil){cooldownUntil=0;render();syncStatus(false);}},1000);
     bindTaskEvents(task);
     document.addEventListener('visibilitychange',()=>{
-      if(document.visibilityState==='visible')syncStatus(false);
+      if(document.visibilityState==='visible')autoCheckSponsoredReturn();
     });
+    window.addEventListener('focus',autoCheckSponsoredReturn);
+    window.addEventListener('pageshow',autoCheckSponsoredReturn);
   }
   function bindTaskEvents(task){
     task.addEventListener('click',(event)=>{
       const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
       const slots=path.map(el=>el&&typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
-      if(slots.includes('button')){if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}adAvailable=true;window.mimaAdDiag?.('task','request');}
+      if(slots.includes('button')){sponsoredVisitPending=true;if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}adAvailable=true;window.mimaAdDiag?.('task','request');}
       if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached&&cooldownUntil<=Date.now()){
         verificationState='started';
         render();
@@ -11300,6 +11334,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       verifyingReward=true;
       verificationState='checking';
       window.mimaAdDiag?.('task','on_reward');
+      sponsoredVisitPending=true;
       pendingReward={baselineId:lastKnownRewardId,baselineReady,startedAt:Date.now()};
       render();
       let confirmed=false;
