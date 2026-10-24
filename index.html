@@ -11153,7 +11153,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!pendingReward||!completedFromServer(data,pendingReward))return false;
     lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
     pendingReward=null;
-    if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}
+    if(adRetryTimer!==null){clearTimeout(adRetryTimer);adRetryTimer=null;}
     verificationState='idle';
     adAvailable=true;
     // The next server status contains the authoritative five-minute cutoff.
@@ -11188,7 +11188,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(type==='no_fill'||type==='sdk_error'||type==='too_long'){
       // Retry the AdsGram SDK locally every 3 seconds while no ad is available.
       // Do not poll Supabase or auto-click/watch/claim advertiser tasks.
-      if(adRetryTimer===null)adRetryTimer=window.setInterval(()=>{
+      if(adRetryTimer===null)adRetryTimer=window.setTimeout(()=>{
+        adRetryTimer=null;
         if(document.visibilityState==='hidden'||dailyLimitReached||verifyingReward||pendingReward||cooldownUntil>Date.now())return;
         const old=element('mimaAdsgramTaskUnit');
         if(!old||!old.parentNode)return;
