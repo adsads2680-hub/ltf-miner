@@ -7650,6 +7650,7 @@ body.privacyModalOpen{overflow:hidden!important}
 
 
 <style id="mima-admin-test-style">
+#mimaEntryCaptcha.mimaImageActive{top:50%!important;transform:translate(-50%,-50%)!important;max-height:78dvh;overflow-y:auto;width:min(350px,92vw);z-index:30}
 #mimaAdminImage[hidden]{display:none!important}
 #mimaAdminImage{max-height:55dvh;overflow:auto;width:100%;text-align:center;color:#efce71;font-family:system-ui}
 #mimaAdminPrompt{display:block;margin:9px 0;font-size:15px}
@@ -7691,7 +7692,7 @@ body.privacyModalOpen{overflow:hidden!important}
       var response=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json','x-telegram-init-data':initData},body:JSON.stringify({action:'turnstile_verify',turnstile_token:token}),signal:AbortSignal.timeout(15000)});
       var result=await response.json();
       if(response.ok&&result&&result.verified===true&&result.image_challenge){
-        pending=false;widget.hidden=true;
+        pending=false;widget.hidden=true;document.getElementById('mimaEntryCaptcha').classList.add('mimaImageActive');
         var challenge=result.image_challenge;
         var wrap=document.getElementById('mimaAdminImage'),prompt=document.getElementById('mimaAdminPrompt'),options=document.getElementById('mimaAdminOptions');
         wrap.hidden=false;prompt.textContent=challenge.prompt;options.replaceChildren();
@@ -7702,7 +7703,7 @@ body.privacyModalOpen{overflow:hidden!important}
             try{
               var res=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json','x-telegram-init-data':initData},body:JSON.stringify({action:'mima_admin_image_answer',ticket:challenge.ticket,selected:index}),signal:AbortSignal.timeout(15000)});
               var reply=await res.json();
-              if(res.ok&&reply.session_token){try{sessionStorage.setItem('mima_verified_session_v1',reply.session_token);}catch(e){}wrap.hidden=true;pending=false;finish();}
+              if(res.ok&&reply.session_token){try{sessionStorage.setItem('mima_verified_session_v1',reply.session_token);}catch(e){}wrap.hidden=true;document.getElementById('mimaEntryCaptcha').classList.remove('mimaImageActive');pending=false;finish();}
               else{pending=false;message('Incorrect image or expired challenge. Please retry.');retry.hidden=false;}
             }catch(e){pending=false;message('Connection error. Please retry.');retry.hidden=false;}
           });options.appendChild(btn);
@@ -7712,7 +7713,7 @@ body.privacyModalOpen{overflow:hidden!important}
       else failed('Verification failed. Please retry.');
     }catch(e){failed(e&&e.message==='Please open MIMA from Telegram.'?e.message:'Connection problem. Please retry.');}
   }
-  retry.addEventListener('click',function(){retry.hidden=true;message('Complete the security check to enter MIMA.');try{if(widgetId!==null)window.turnstile.reset(widgetId);else mount();}catch(e){mount();}});
+  retry.addEventListener('click',function(){var box=document.getElementById('mimaAdminImage');if(box)box.hidden=true;widget.hidden=false;document.getElementById('mimaEntryCaptcha').classList.remove('mimaImageActive');retry.hidden=true;message('Complete the security check to enter MIMA.');try{if(widgetId!==null)window.turnstile.reset(widgetId);else mount();}catch(e){mount();}});
   function mount(){
     if(!window.turnstile){failed('Security check unavailable. Please retry.');return;}
     if(widgetId!==null)return;
