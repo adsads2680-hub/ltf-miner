@@ -11187,7 +11187,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     if(!card||!task||!row)return;
     card.style.display='';
     if(value)value.textContent='';
-    const waitSeconds=Math.max(0,Math.ceil((cooldownUntil-Date.now())/1000));
     if(dailyLimitReached){
       task.style.setProperty('display','none','important');
       row.style.setProperty('display','flex','important');
@@ -11195,16 +11194,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       const label=element('mimaAdsgramTaskCooldownLabel');
       if(label)label.textContent=tr('الحد اليومي للمكافآت','Daily reward limit');
       showMessage('بلغت حد 10 مكافآت خلال 24 ساعة','Daily limit: 10 rewards in 24 hours');
-      return;
-    }
-    if(waitSeconds>0){
-      task.style.setProperty('display','none','important');
-      row.style.setProperty('display','flex','important');
-      if(notice)notice.style.display='none';
-      if(value)value.textContent=String(Math.floor(waitSeconds/60)).padStart(2,'0')+':'+String(waitSeconds%60).padStart(2,'0');
-      const label=element('mimaAdsgramTaskCooldownLabel');
-      if(label)label.textContent=tr('المهمة التالية بعد انتهاء الانتظار','Next task after cooldown');
-      showMessage('انتظر 5 دقائق بعد المكافأة','Wait 5 minutes after reward');
       return;
     }
     row.style.setProperty('display','none','important');
@@ -11229,8 +11218,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   function recordStatus(data,initialize){
     if(!data||data.success!==true)return false;
     dailyLimitReached=data.limit_reached===true;
-    const next=Date.parse(data.next_available_at||'');
-    cooldownUntil=Number.isFinite(next)&&next>Date.now()?next:0;
+    // Sponsored Task no longer has a user-visible five-minute wait.
+    cooldownUntil=0;
     // Remember a previous confirmed transaction without treating it as a new reward.
     if(initialize&&!pendingReward){
       lastKnownRewardId=Math.max(lastKnownRewardId,Number(data.last_reward_id)||0);
@@ -11293,7 +11282,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       // Do not poll Supabase or auto-click/watch/claim advertiser tasks.
       if(adRetryTimer===null)adRetryTimer=window.setTimeout(()=>{
         adRetryTimer=null;
-        if(document.visibilityState==='hidden'||dailyLimitReached||verifyingReward||pendingReward||cooldownUntil>Date.now())return;
+        if(document.visibilityState==='hidden'||dailyLimitReached||verifyingReward||pendingReward)return;
         const old=element('mimaAdsgramTaskUnit');
         if(!old||!old.parentNode)return;
         const fresh=old.cloneNode(true);
@@ -11311,7 +11300,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     try{localStorage.removeItem('mima_adsgram_task_cooldown_until_v1');}catch(_){}
     render();
     syncStatus(true);
-    if(!taskCountdownTimer)taskCountdownTimer=window.setInterval(()=>{if(cooldownUntil>Date.now())render();else if(cooldownUntil){cooldownUntil=0;render();syncStatus(false);}},1000);
     bindTaskEvents(task);
     document.addEventListener('visibilitychange',()=>{
       if(document.visibilityState==='visible')autoCheckSponsoredReturn();
@@ -11324,7 +11312,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
       const slots=path.map(el=>el&&typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
       if(slots.includes('button')){sponsoredVisitPending=true;if(!pendingReward)pendingReward={baselineId:lastKnownRewardId,baselineReady,startedAt:Date.now()};if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}adAvailable=true;window.mimaAdDiag?.('task','request');}
-      if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached&&cooldownUntil<=Date.now()){
+      if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached){
         verificationState='started';
         render();
       }
