@@ -11323,7 +11323,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     task.addEventListener('click',(event)=>{
       const path=typeof event.composedPath==='function'?event.composedPath():[event.target];
       const slots=path.map(el=>el&&typeof el.getAttribute==='function'?el.getAttribute('slot'):null);
-      if(slots.includes('button')){sponsoredVisitPending=true;if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}adAvailable=true;window.mimaAdDiag?.('task','request');}
+      if(slots.includes('button')){sponsoredVisitPending=true;if(!pendingReward)pendingReward={baselineId:lastKnownRewardId,baselineReady,startedAt:Date.now()};if(adRetryTimer!==null){clearInterval(adRetryTimer);adRetryTimer=null;}adAvailable=true;window.mimaAdDiag?.('task','request');}
       if((slots.includes('button')||slots.includes('claim'))&&!dailyLimitReached&&cooldownUntil<=Date.now()){
         verificationState='started';
         render();
