@@ -7741,7 +7741,7 @@ body.privacyModalOpen{overflow:hidden!important}
         var questionKey=String(challenge.prompt||'').toLowerCase().match(/flower|coin|apple|rocket|gift/);
         wrap.hidden=false;prompt.textContent=dictionary[questionKey?questionKey[0]:'flower'];options.replaceChildren();
         challenge.choices.forEach(function(symbol,index){
-          var btn=document.createElement('button');btn.type='button';var photo=document.createElement('img');photo.src=photoUrls[pictureIds[symbol]]||photoUrls.flower;photo.alt='';photo.loading='eager';btn.appendChild(photo);btn.setAttribute('aria-label','Choice '+(index+1));
+          var btn=document.createElement('button');btn.type='button';var photo=document.createElement('img');photo.src=photoUrls[pictureIds[symbol]]||photoUrls.flower;photo.alt='';photo.loading='eager';photo.onerror=function(){btn.textContent=symbol;};btn.appendChild(photo);btn.setAttribute('aria-label','Choice '+(index+1));
           btn.addEventListener('click',async function(){
             if(pending)return;pending=true;message(dictionary.checking);
             try{
