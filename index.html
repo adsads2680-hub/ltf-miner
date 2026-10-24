@@ -11137,9 +11137,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     // Only invoke its claim action after a user-initiated advertiser visit.
     const task=element('mimaAdsgramTaskUnit');
     const claim=task?.querySelector('[slot="claim"]');
-    const activeSlot=claim?.assignedSlot;
-    const visibleClaim=!!(activeSlot && activeSlot.getClientRects().length && getComputedStyle(activeSlot).display!=='none');
-    if(visibleClaim){
+    // Slotted nodes are often visually rendered inside AdsGram shadow DOM.
+    // assignedSlot/getClientRects can be empty even when the Claim control works.
+    if(claim && task?.isConnected){
       try{claim.click();}catch(_){}
     }
     syncStatus(false);
@@ -11148,8 +11148,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     sponsoredReturnCheckTimer=window.setInterval(()=>{
       if(document.visibilityState==='hidden'||!sponsoredVisitPending||checks++>=9){clearInterval(sponsoredReturnCheckTimer);sponsoredReturnCheckTimer=null;return;}
       const current=element('mimaAdsgramTaskUnit')?.querySelector('[slot="claim"]');
-      const slot=current?.assignedSlot;
-      if(slot&&slot.getClientRects().length&&getComputedStyle(slot).display!=='none'){
+      if(current && current.isConnected){
         try{current.click();}catch(_){}
       }
       syncStatus(false);
@@ -11306,6 +11305,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     });
     window.addEventListener('focus',autoCheckSponsoredReturn);
     window.addEventListener('pageshow',autoCheckSponsoredReturn);
+    window.addEventListener('blur',function(){if(sponsoredVisitPending)window.setTimeout(autoCheckSponsoredReturn,1200);});
   }
   function bindTaskEvents(task){
     task.addEventListener('click',(event)=>{
