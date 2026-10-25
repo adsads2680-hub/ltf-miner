@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+<meta name="mima-partner-release" content="pickaxe-20261025-v2">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MIMA — Mining Bot</title>
@@ -1150,7 +1154,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       </div>
     </div>
 
-    <div class="item mimaTaskRow" id="lootvaultPartnerTaskItem">
+    <div class="item mimaTaskRow" id="lootvaultPartnerTaskItem" data-partner-release="pickaxe-20261025-v2">
       <span class="ico">🤝</span>
       <main>
         <b id="lootvaultPartnerTitle">Join Our Partners</b>
@@ -11904,5 +11908,43 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 
 
+
+<style id="mima-pickaxe-partner-open-v2">
+/* Partner visit must never inherit the old partner's cooldown or hidden task state. */
+#tasks .mimaTaskList #lootvaultPartnerTaskItem{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+#tasks .mimaTaskList #lootvaultPartnerOpen{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+</style>
+<script id="mima-pickaxe-partner-availability-v2">
+(function(){
+  function ensurePartnerAvailable(){
+    var card=document.getElementById('lootvaultPartnerTaskItem');
+    var button=document.getElementById('lootvaultPartnerOpen');
+    if(!card||!button)return;
+    card.hidden=false;
+    card.removeAttribute('aria-hidden');
+    button.disabled=false;
+    button.removeAttribute('aria-disabled');
+    button.removeAttribute('hidden');
+    button.style.removeProperty('display');
+    button.style.removeProperty('visibility');
+    button.style.removeProperty('pointer-events');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensurePartnerAvailable,{once:true});
+  else ensurePartnerAvailable();
+  window.addEventListener('pageshow',ensurePartnerAvailable);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)ensurePartnerAvailable();});
+})();
+</script>
 </body>
 </html>
