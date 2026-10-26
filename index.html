@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-<meta name="mima-partner-release" content="pickaxe-20261025-v2">
+<meta name="mima-partner-release" content="henova-partner-20261026-v1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -1158,7 +1158,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       <span class="ico">🤝</span>
       <main>
         <b id="lootvaultPartnerTitle">Join Our Partners</b>
-        <small id="lootvaultPartnerInfo">15 MIMA • every 12 hours • verification pending</small>
+        <small id="lootvaultPartnerInfo">10 MIMA • every 2 hours • reward activation pending</small>
       </main>
       <div class="taskActionGroup">
         <button id="lootvaultPartnerOpen" class="taskJoinBtn" type="button" onclick="openLootvaultPartner()">Join</button>
@@ -4414,7 +4414,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   setInterval(()=>{if($('mimaXTaskItem'))renderMimaXTask()},1000);
   // Partner Mini App: open public link only; rewards still require trusted completion verification.
   function openLootvaultPartner(){
-    const url='https://t.me/PickaxeEmpireApp/app?startapp=r_IhKFawc862wR';
+    const url='https://t.me/HenovaEggsBot/farm';
     try{
       if(window.Telegram?.WebApp?.openTelegramLink) window.Telegram.WebApp.openTelegramLink(url);
       else window.open(url,'_blank','noopener,noreferrer');
