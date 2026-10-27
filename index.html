@@ -1165,6 +1165,17 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       </div>
     </div>
 
+    <div class="item mimaTaskRow" id="plathoPartnerTaskItem">
+      <span class="ico">🤝</span>
+      <main>
+        <b id="plathoPartnerTitle">Join Our Partners</b>
+        <small id="plathoPartnerInfo">Visit our partner</small>
+      </main>
+      <div class="taskActionGroup">
+        <button id="plathoPartnerOpen" class="taskJoinBtn" type="button" onclick="openPlathoPartner()">Join</button>
+      </div>
+    </div>
+
     <!-- Removed retired task: joinChannel2TaskItem -->
 
     <div class="item mimaTaskRow" id="mimaExchangeChannelTaskItem">
@@ -11944,6 +11955,44 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   else ensurePartnerAvailable();
   window.addEventListener('pageshow',ensurePartnerAvailable);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)ensurePartnerAvailable();});
+})();
+</script>
+<script id="mima-platho-partner-task-v1">
+(function(){
+  const url='https://t.me/plathominer_app?start=1905092091';
+  window.openPlathoPartner=function(){
+    try{
+      if(window.Telegram?.WebApp?.openTelegramLink)window.Telegram.WebApp.openTelegramLink(url);
+      else window.open(url,'_blank','noopener,noreferrer');
+    }catch(e){window.location.href=url;}
+  };
+  const translations={
+    en:['Join Our Partners','Visit our partner','Join'],
+    ar:['انضم إلى شركائنا','قم بزيارة شريكنا','انضم'],
+    tr:['Ortaklarımıza Katıl','Ortağımızı ziyaret edin','Katıl'],
+    ru:['Присоединяйтесь к партнёрам','Посетите нашего партнёра','Перейти'],
+    es:['Únete a nuestros socios','Visita a nuestro socio','Unirse'],
+    fr:['Rejoignez nos partenaires','Visitez notre partenaire','Rejoindre'],
+    de:['Tritt unseren Partnern bei','Besuche unseren Partner','Beitreten'],
+    fa:['به شرکای ما بپیوندید','از شریک ما بازدید کنید','پیوستن'],
+    hi:['हमारे भागीदारों से जुड़ें','हमारे भागीदार पर जाएँ','जुड़ें'],
+    id:['Bergabung dengan Mitra Kami','Kunjungi mitra kami','Gabung'],
+    pt:['Junte-se aos nossos parceiros','Visite nosso parceiro','Participar'],
+    uz:['Hamkorlarimizga qoʻshiling','Hamkorimizga tashrif buyuring','Qoʻshilish'],
+    ur:['ہمارے پارٹنرز میں شامل ہوں','ہمارے پارٹنر کو دیکھیں','شامل ہوں']
+  };
+  function localize(){
+    const title=document.getElementById('plathoPartnerTitle'),info=document.getElementById('plathoPartnerInfo'),btn=document.getElementById('plathoPartnerOpen');
+    if(!title||!info||!btn)return;
+    let lang='en';
+    try{if(typeof currentLang!=='undefined')lang=currentLang;}catch(e){}
+    const labels=translations[lang]||translations.en;
+    title.textContent=labels[0];info.textContent=labels[1];btn.textContent=labels[2];
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',localize,{once:true});else localize();
+  document.addEventListener('click',function(e){if(e.target.closest('[data-lang]'))setTimeout(localize,0);});
+  window.addEventListener('pageshow',localize);
+  setInterval(localize,2500);
 })();
 </script>
 </body>
