@@ -7674,118 +7674,14 @@ body.privacyModalOpen{overflow:hidden!important}
 #mimaAdminOptions button{padding:3px;overflow:hidden;aspect-ratio:1/1;min-height:0}
 #mimaAdminOptions button img{display:block;width:100%;height:100%;object-fit:cover;border-radius:7px}
 </style>
-<style id="mima-entry-turnstile-style">
-#mimaEntryCaptcha{position:absolute;left:50%;top:71%;transform:translateX(-50%);z-index:2;width:min(340px,94vw);padding:12px 10px 13px;border-radius:14px;background:#070b22;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;box-sizing:border-box}
-#mimaEntryTurnstile{min-height:65px;display:flex;align-items:center;justify-content:center}
-#mimaEntryCaptchaStatus{font:500 11px/1.35 system-ui,sans-serif;color:#f0d88d;text-align:center;margin:0}
-#mimaEntryCaptchaRetry{background:#e2b648;color:#100d0b;border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer}
-@media(max-height:680px){#mimaEntryCaptcha{top:71.5%;}}
+<style id="mima-entry-check-removal-v1">
+#mimaSplash,#mimaEntryCaptcha{display:none!important;visibility:hidden!important;pointer-events:none!important}
 </style>
-<script>
+<script id="mima-entry-check-removal-script-v1">
 (function(){
-  'use strict';
-  var splash=document.getElementById('mimaSplash');
-  var widget=document.getElementById('mimaEntryTurnstile');
-  var status=document.getElementById('mimaEntryCaptchaStatus');
-  var retry=document.getElementById('mimaEntryCaptchaRetry');
-  if(!splash||!widget||!status||!retry) return;
-  var verified=false, widgetId=null, pending=false;
-  var sitekey='0x4AAAAAAFaY4eQx6IE84pPY';
-  var api='https://julnowgcrkazepbfxkau.supabase.co/functions/v1/mima-secure-api';
-  function message(value){status.textContent=value;}
-  function failed(value){pending=false;message(value||'Verification failed. Please retry.');retry.hidden=false;try{if(widgetId!==null)window.turnstile.reset(widgetId);}catch(e){}}
-  function finish(){
-    if(verified)return;
-    verified=true;message('Verified. Opening MIMA...');
-    splash.classList.add('hide');
-    setTimeout(function(){if(splash.parentNode)splash.parentNode.removeChild(splash);},450);
-  }
-  async function check(token){
-    if(pending||verified)return;
-    pending=true;retry.hidden=true;message('Verifying security check...');
-    try{
-      var initData=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData;
-      if(!initData)throw Error('Please open MIMA from Telegram.');
-      var response=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json','x-telegram-init-data':initData},body:JSON.stringify({action:'turnstile_verify',turnstile_token:token}),signal:AbortSignal.timeout(15000)});
-      var result=await response.json();
-      if(response.ok&&result&&result.verified===true&&result.image_challenge){
-        pending=false;widget.hidden=true;document.getElementById('mimaEntryCaptcha').classList.add('mimaImageActive');
-        var challenge=result.image_challenge;
-        var wrap=document.getElementById('mimaAdminImage'),prompt=document.getElementById('mimaAdminPrompt'),options=document.getElementById('mimaAdminOptions');
-        var detectMimaCaptchaLanguage=function(){
-          var preferred='';try{preferred=String(localStorage.getItem('mima_language_manual_v1')||'').toLowerCase().split(/[-_]/)[0];}catch(e){}
-          if(preferred&&preferred!=='auto')return preferred;
-          var device=String(navigator.language||'').toLowerCase().split(/[-_]/)[0];
-          var tg=String(window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code||'').toLowerCase().split(/[-_]/)[0];
-          return device==='ar'&&tg==='ar'?'ar':'en';
-        };
-        var lang=detectMimaCaptchaLanguage();
-        var captchaWords={
-          en:{flower:'Choose the flower',coin:'Choose the coin',apple:'Choose the apple',rocket:'Choose the rocket',gift:'Choose the gift',checking:'Checking answer...',wrong:'Incorrect image or expired challenge. Please retry.',connection:'Connection problem. Please retry.',select:'Select the requested picture.'},
-          ar:{flower:'اختر الوردة',coin:'اختر العملة',apple:'اختر التفاحة',rocket:'اختر الصاروخ',gift:'اختر الهدية',checking:'جارٍ فحص الإجابة...',wrong:'إجابة خاطئة أو انتهت صلاحية الاختبار. حاول مجدداً.',connection:'مشكلة اتصال. حاول مجدداً.',select:'اختر الصورة المطلوبة.'},
-          tr:{flower:'Çiçeği seç',coin:'Madeni parayı seç',apple:'Elmayı seç',rocket:'Roketi seç',gift:'Hediyeyi seç',checking:'Yanıt kontrol ediliyor...',wrong:'Yanlış cevap veya süresi doldu. Yeniden dene.',connection:'Bağlantı sorunu. Yeniden dene.',select:'İstenen resmi seç.'},
-          ru:{flower:'Выберите цветок',coin:'Выберите монету',apple:'Выберите яблоко',rocket:'Выберите ракету',gift:'Выберите подарок',checking:'Проверка ответа...',wrong:'Неверный ответ или время истекло. Повторите.',connection:'Ошибка сети. Повторите.',select:'Выберите нужное изображение.'},
-          es:{flower:'Elige la flor',coin:'Elige la moneda',apple:'Elige la manzana',rocket:'Elige el cohete',gift:'Elige el regalo',checking:'Verificando...',wrong:'Respuesta incorrecta o caducada. Inténtalo otra vez.',connection:'Error de conexión. Inténtalo otra vez.',select:'Selecciona la imagen solicitada.'},
-          fr:{flower:'Choisissez la fleur',coin:'Choisissez la pièce',apple:'Choisissez la pomme',rocket:'Choisissez la fusée',gift:'Choisissez le cadeau',checking:'Vérification...',wrong:'Réponse incorrecte ou expirée. Réessayez.',connection:'Problème de connexion. Réessayez.',select:'Choisissez la bonne image.'},
-          pt:{flower:'Escolha a flor',coin:'Escolha a moeda',apple:'Escolha a maçã',rocket:'Escolha o foguete',gift:'Escolha o presente',checking:'Verificando...',wrong:'Resposta incorreta ou expirada. Tente novamente.',connection:'Erro de conexão. Tente novamente.',select:'Selecione a imagem solicitada.'}
-        };
-        var dictionary=captchaWords[lang]||captchaWords.en;
-        var pictureIds={'🌸':'flower','🌷':'flower','🌼':'flower','🌻':'flower','🪙':'coin','🍎':'apple','🚀':'rocket','🎁':'gift','🐱':'cat','🐶':'dog','🚗':'car','🗓️':'calendar','📆':'calendar','📘':'book','🎒':'backpack','🥚':'egg','🧸':'teddy','💎':'diamond','🎩':'hat','🍉':'watermelon','🧩':'puzzle','⭐':'star','🍓':'strawberry','💰':'money'};
-        var photoUrls={
-          flower:'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=240&h=240&fit=crop',
-          coin:'https://images.unsplash.com/photo-1610375461246-83df859d849d?w=240&h=240&fit=crop',
-          apple:'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=240&h=240&fit=crop',
-          rocket:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=240&h=240&fit=crop',
-          gift:'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=240&h=240&fit=crop',
-          cat:'https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=240&h=240&fit=crop',
-          dog:'https://images.unsplash.com/photo-1552053831-71594a27632d?w=240&h=240&fit=crop',
-          car:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=240&h=240&fit=crop',
-          calendar:'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=240&h=240&fit=crop',
-          book:'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=240&h=240&fit=crop',
-          backpack:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=240&h=240&fit=crop',
-          egg:'https://images.unsplash.com/photo-1506976785307-8732e854ad03?w=240&h=240&fit=crop',
-          teddy:'https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=240&h=240&fit=crop',
-          diamond:'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=240&h=240&fit=crop',
-          hat:'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=240&h=240&fit=crop',
-          watermelon:'https://images.unsplash.com/photo-1563114773-84221bd62daa?w=240&h=240&fit=crop',
-          puzzle:'https://images.unsplash.com/photo-1494059980473-813e73ee784b?w=240&h=240&fit=crop',
-          star:'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=240&h=240&fit=crop',
-          strawberry:'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=240&h=240&fit=crop',
-          money:'https://images.unsplash.com/photo-1554672723-d42a16e533db?w=240&h=240&fit=crop'
-        };
-        var questionKey=String(challenge.prompt||'').toLowerCase().match(/flower|coin|apple|rocket|gift/);
-        wrap.hidden=false;prompt.textContent=dictionary[questionKey?questionKey[0]:'flower'];options.replaceChildren();
-        challenge.choices.forEach(function(symbol,index){
-          var btn=document.createElement('button');btn.type='button';var photo=document.createElement('img');photo.src=photoUrls[pictureIds[symbol]]||photoUrls.flower;photo.alt='';photo.loading='eager';photo.onerror=function(){btn.textContent=symbol;};btn.appendChild(photo);btn.setAttribute('aria-label','Choice '+(index+1));
-          btn.addEventListener('click',async function(){
-            if(pending)return;pending=true;message(dictionary.checking);
-            try{
-              var res=await fetch(api,{method:'POST',headers:{'Content-Type':'application/json','x-telegram-init-data':initData},body:JSON.stringify({action:'mima_admin_image_answer',ticket:challenge.ticket,selected:index}),signal:AbortSignal.timeout(15000)});
-              var reply=await res.json();
-              if(res.ok&&reply.session_token){try{sessionStorage.setItem('mima_verified_session_v1',reply.session_token);}catch(e){}wrap.hidden=true;document.getElementById('mimaEntryCaptcha').classList.remove('mimaImageActive');pending=false;finish();}
-              else{pending=false;message(dictionary.wrong);retry.hidden=false;}
-            }catch(e){pending=false;message(dictionary.connection);retry.hidden=false;}
-          });options.appendChild(btn);
-        });message(dictionary.select);
-      }
-      else if(response.ok&&result&&result.verified===true&&result.session_token){try{sessionStorage.setItem('mima_verified_session_v1',result.session_token);}catch(e){}pending=false;finish();}
-      else failed('Verification failed. Please retry.');
-    }catch(e){failed(e&&e.message==='Please open MIMA from Telegram.'?e.message:'Connection problem. Please retry.');}
-  }
-  retry.addEventListener('click',function(){var box=document.getElementById('mimaAdminImage');if(box)box.hidden=true;widget.hidden=false;document.getElementById('mimaEntryCaptcha').classList.remove('mimaImageActive');retry.hidden=true;message('Complete the security check to enter MIMA.');try{if(widgetId!==null)window.turnstile.reset(widgetId);else mount();}catch(e){mount();}});
-  function mount(){
-    if(!window.turnstile){failed('Security check unavailable. Please retry.');return;}
-    if(widgetId!==null)return;
-    try{widgetId=window.turnstile.render(widget,{sitekey:sitekey,theme:'light',language:'en',size:'normal',callback:check,'error-callback':function(){failed('Security check unavailable. Please retry.');},'expired-callback':function(){failed('Verification expired. Please retry.');}});}
-    catch(e){failed('Security check could not load. Please retry.');}
-  }
-  window.mimaTurnstileLoaded=mount;
-  var js=document.createElement('script');
-  js.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=mimaTurnstileLoaded';
-  js.async=true;js.defer=true;
-  js.onerror=function(){failed('Unable to load security check. Please retry.');};
-  document.head.appendChild(js);
-  // No timeout-based bypass: splash closes only on verified Siteverify result.
+  function clearOldEntryScreen(){var splash=document.getElementById('mimaSplash');if(splash)splash.remove();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',clearOldEntryScreen,{once:true});
+  else clearOldEntryScreen();
 })();
 </script>
 
