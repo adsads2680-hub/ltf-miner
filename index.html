@@ -1168,7 +1168,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     <div class="item mimaTaskRow" id="plathoPartnerTaskItem">
       <span class="ico">🤝</span>
       <main>
-        <b id="plathoPartnerTitle">Join Our Partners</b>
+        <b id="plathoPartnerTitle">Loot — Join Our Partners</b>
         <small id="plathoPartnerInfo">Visit our partner</small>
       </main>
       <div class="taskActionGroup">
@@ -11889,6 +11889,28 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   document.addEventListener('click',function(e){if(e.target.closest('[data-lang]'))setTimeout(localize,0);});
   window.addEventListener('pageshow',localize);
   setInterval(localize,2500);
+})();
+</script>
+<style id="mima-loot-visible-20261031">
+#tasks #plathoPartnerTaskItem{display:grid!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+#tasks #plathoPartnerOpen{display:inline-flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+</style>
+<script id="mima-loot-visibility-20261031">
+(function(){
+ const label='Loot — Join Our Partners';
+ function show(){
+  const task=document.getElementById('plathoPartnerTaskItem');
+  const title=document.getElementById('plathoPartnerTitle');
+  const button=document.getElementById('plathoPartnerOpen');
+  if(!task||!button)return;
+  task.hidden=false;task.removeAttribute('aria-hidden');task.style.removeProperty('display');
+  button.hidden=false;button.disabled=false;button.removeAttribute('aria-disabled');
+  if(title&&title.textContent&&!title.textContent.includes('Loot'))title.textContent=label;
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',show,{once:true});else show();
+ window.addEventListener('pageshow',show);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)show()});
+ document.addEventListener('click',e=>{if(e.target.closest('[data-lang], [data-tab], [data-page]'))setTimeout(show,150)});
 })();
 </script>
 </body>
