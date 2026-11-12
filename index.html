@@ -4184,9 +4184,8 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
   function scheduleEntryInterstitial(){
     const run = ()=>{
-      setTimeout(()=>{
-        showEntryInterstitialOnce().catch(()=>{});
-      },1800);
+      // Start the entry ad immediately when the app finishes loading.
+      showEntryInterstitialOnce().catch(()=>{});
     };
 
     if(document.readyState === 'complete'){
