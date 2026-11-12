@@ -4089,14 +4089,14 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
   setTimeout(warmMiningInterstitialController,250);
   setTimeout(warmMiningInterstitialController,900);
 
-  async function showInterstitialSilently(controller){
+  async function showInterstitialSilently(controller, forceEntry = false){
     if(!serverMode || !controller || typeof controller.show !== 'function') return;
     if(miningInterstitialBusy) return;
 
     let lastShownAt = 0;
     try{ lastShownAt = Number(localStorage.getItem(MIMA_INTERSTITIAL_LAST_AT_KEY) || 0); }catch(e){}
     const now = Date.now();
-    if(Number.isFinite(lastShownAt) && lastShownAt > 0 && now - lastShownAt < MIMA_INTERSTITIAL_COOLDOWN_MS) return;
+    if(!forceEntry && Number.isFinite(lastShownAt) && lastShownAt > 0 && now - lastShownAt < MIMA_INTERSTITIAL_COOLDOWN_MS) return;
 
     // Prevent concurrent displays; persist cooldown only after SDK onStart.
     // Unavailable ads never take away the user's next eligible opportunity.
@@ -4173,7 +4173,7 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
       // one-time entry attempt. This also lets the admin account see it.
       const controller = await waitForMiningInterstitialController(6500);
       if(controller && typeof controller.show === 'function'){
-        await showInterstitialSilently(controller);
+        await showInterstitialSilently(controller, true);
       }else{
         window.mimaAdDiag?.('interstitial','sdk_error');
       }
@@ -4196,8 +4196,9 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
     }
   }
 
-  // Entry interstitial disabled: ads are attempted after successful mining collection only.
-  // Do not invoke scheduleEntryInterstitial on app launch.
+  // Attempt one full-screen interstitial on every fresh MIMA app entry.
+  // Entry ads bypass the mining/exchange cooldown; failures never block app access.
+  scheduleEntryInterstitial();
 
   async function openMimaChannel(){
     const url = 'https://t.me/MIMA_COIN/3655';
