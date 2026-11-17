@@ -1077,19 +1077,20 @@ body.mimaMarketBetaBodyOpen{overflow:hidden!important}
 
   <div class="mimaAdTaskCard" id="adsgramRewardTaskItem">
     <div class="mimaAdTop">
-      <div class="mimaAdIcon" aria-label="Advertisement">
-        <svg class="mimaAdPremiumIcon" viewBox="0 0 64 64" aria-hidden="true">
-          <rect class="mimaAdScreen" x="10" y="14" width="44" height="30" rx="8"></rect>
-          <path class="mimaAdPlay" d="M29 23.5L40 29L29 34.5Z"></path>
-          <path class="mimaAdStem" d="M32 44v5"></path>
-          <path class="mimaAdStand" d="M24 50h16"></path>
-          <circle class="mimaAdSpark" cx="49" cy="19" r="2.1"></circle>
-          <path class="mimaAdSparkLine1" d="M49 13v3"></path>
-          <path class="mimaAdSparkLine2" d="M54 19h-3"></path>
+      <div class="mimaAdIcon" aria-label="Official MIMA video rewards">
+        <svg class="mimaAdPremiumIcon" viewBox="0 0 72 72" aria-hidden="true">
+          <rect x="8" y="12" width="44" height="34" rx="8" fill="none" stroke="currentColor" stroke-width="3.2"/>
+          <path d="M27 21.5L40 29L27 36.5Z" fill="currentColor"/>
+          <path d="M30 47v6M20 54h20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="53" cy="49" r="14" fill="#07111c" stroke="#f7d779" stroke-width="2.5"/>
+          <path d="M53 39.5l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2-4.5-4.4 6.2-.9z" fill="#f7d779"/>
         </svg>
       </div>
       <div class="mimaAdCopy">
-        <b id="adsgramRewardTaskTitle">شاهد الإعلانات</b>
+        <div class="mimaAdTitleLine">
+          <b id="adsgramRewardTaskTitle">شاهد الإعلانات</b>
+          <span class="mimaAdOfficialBadge">MIMA OFFICIAL</span>
+        </div>
         <small id="adsgramRewardTaskInfo">+5 MIMA لكل إعلان • 0/7 خلال 24 ساعة</small>
       </div>
     </div>
@@ -11905,3 +11906,62 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 </body>
 </html>
+
+
+<style id="mima-watch-ad-official-redesign">
+#tasks .mimaAdTaskCard{
+  padding:17px!important;
+  border:1px solid rgba(224,184,83,.42)!important;
+  border-radius:21px!important;
+  background:
+    radial-gradient(ellipse at 5% 0%,rgba(25,130,190,.16),transparent 42%),
+    linear-gradient(145deg,#07121c 0%,#090d12 54%,#151006 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 12px 30px rgba(0,0,0,.3)!important;
+}
+#tasks .mimaAdTaskCard:before{
+  background:linear-gradient(112deg,transparent 0 38%,rgba(255,218,126,.055) 50%,transparent 62%)!important;
+}
+#tasks .mimaAdTop{gap:13px!important;align-items:center!important}
+#tasks .mimaAdIcon{
+  width:58px!important;height:58px!important;flex:0 0 58px!important;
+  padding:0!important;border-radius:17px!important;
+  color:#201500!important;
+  background:linear-gradient(145deg,#fff0b4 0%,#e4b54b 48%,#a86d12 100%)!important;
+  border:1px solid rgba(255,229,160,.9)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.62),0 7px 18px rgba(190,133,27,.2)!important;
+}
+#tasks .mimaAdPremiumIcon{width:47px!important;height:47px!important;display:block!important}
+#tasks .mimaAdCopy{min-width:0!important}
+#tasks .mimaAdTitleLine{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+#tasks .mimaAdCopy b{font-size:15px!important;letter-spacing:.15px;color:#fff0bd!important}
+#tasks .mimaAdOfficialBadge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 6px;border-radius:6px;
+  border:1px solid rgba(224,184,83,.38);
+  background:rgba(213,167,65,.09);
+  color:#d9b96c;font-size:7px;font-weight:900;letter-spacing:.65px;
+  white-space:nowrap;
+}
+#tasks .mimaAdCopy small{margin-top:6px!important;color:#a9b4bd!important;font-size:10px!important}
+#tasks .mimaAdProgressTrack{
+  height:6px!important;margin-top:16px!important;
+  background:#03080d!important;border-color:rgba(210,174,93,.25)!important;
+}
+#tasks .mimaAdProgressTrack i{
+  background:linear-gradient(90deg,#8a5a12,#ffe39a,#c38b20)!important;
+}
+#tasks .mimaAdProgressMeta{color:#a5aeb4!important;font-size:9px!important}
+#tasks .mimaAdWatchBtn{
+  min-height:47px!important;border-radius:13px!important;margin-top:14px!important;
+  color:#171006!important;
+  background:linear-gradient(180deg,#ffedb0 0%,#e6b84e 52%,#b77b17 100%)!important;
+  border:1px solid #f2d17a!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 7px 16px rgba(177,124,26,.17)!important;
+}
+#tasks .mimaAdWatchBtn strong{font-weight:1000!important;letter-spacing:.1px}
+@media(max-width:380px){
+ #tasks .mimaAdIcon{width:52px!important;height:52px!important;flex-basis:52px!important}
+ #tasks .mimaAdPremiumIcon{width:42px!important;height:42px!important}
+ #tasks .mimaAdOfficialBadge{font-size:6.5px}
+}
+</style>
